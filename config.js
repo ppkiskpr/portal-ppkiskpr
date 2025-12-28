@@ -4,6 +4,6 @@
 
 window.PORTAL_CONFIG = {
   SCHOOL_NAME: "PPKI SK Paya Resak",
-  CSV_URL: "", // contoh: "https://contoh.com/kehadiran.csv"
+  CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv", // contoh: "https://contoh.com/kehadiran.csv"
   ANN_URL: "./data/announcements.json"
 };
