@@ -114,7 +114,6 @@
     .stat-sub { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
     .stat-sub.red { color: #D92D20; font-weight: 600; }
 
-    /* Clickable Card Effect */
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
 
@@ -132,7 +131,6 @@
     }
     .btn-action:hover { background: rgba(255,255,255,0.3); }
 
-    /* Forms */
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .form-select, .form-input {
       background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
@@ -150,17 +148,18 @@
     .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
     .filter-label { font-size: 12px; font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-muted); }
 
-    /* Tables */
     .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
     table { width: 100%; border-collapse: collapse; min-width: 800px; font-size: 13px; }
     th { text-align: left; padding: 14px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
-    td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); vertical-align: top;}
+    td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
     .b-blue { background: #EFF8FF; color: #175CD3; }
 
-    /* Modal */
+    .link-card { cursor: pointer; transition: transform 0.2s; height: 100%; }
+    .link-card:hover { transform: translateY(-4px); border-color: var(--primary); }
+
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100;
       display: none; place-items: center; backdrop-filter: blur(2px);
@@ -454,7 +453,7 @@ const DEFAULTS = {
   pin: "5235", 
   urls: {
     attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
-    pajsk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
+    pajsk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGcqw1v5SRbEL_2LMhX9I_X8uIo5CTQRzOpY5nTlbSc8_6Q4cx56LWtTI3-I5D9pJYeS20nEgADikT/pub?gid=0&single=true&output=csv",
     announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
     parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
     calendar: ""
@@ -539,15 +538,16 @@ function getVal(row, keyPart) {
   return key ? row[key] : "";
 }
 
-// FORMAT TARIKH MALAYSIA DD/MM/YYYY
+// Convert DD/MM/YYYY to YYYY-MM-DD (ISO)
 function parseDateStr(dStr) {
   if(!dStr) return null;
-  // If format DD/MM/YYYY
+  dStr = dStr.trim();
+  // Match DD/MM/YYYY
   if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
     const p = dStr.split('/');
     const day = p[0].padStart(2, '0');
     const month = p[1].padStart(2, '0');
-    return `${p[2]}-${month}-${day}`; // ISO Format for Comparison
+    return `${p[2]}-${month}-${day}`; 
   }
   return dStr;
 }
@@ -589,7 +589,7 @@ function processAttendance() {
 
   DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
 
-  // Global Stats
+  // Global Stats (Today)
   const todayStr = new Date().toISOString().split('T')[0];
   const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
   const present = todayRecs.filter(r => r.status === 'HADIR').length;
@@ -667,7 +667,7 @@ function populateAttSelectors() {
 
 /* ================= PAJSK ================= */
 function initPajsk() {
-  // Check empty rows
+  // Clean empty rows first
   const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
   DATA.pajsk = cleanPajsk;
 
@@ -697,9 +697,9 @@ function renderPajskTable() {
     const acara = (getVal(r, 'ACARA')||"").toLowerCase();
     const searchMatch = !q || name.includes(q) || acara.includes(q);
     
-    // Parse CSV Date DD/MM/YYYY
+    // Parse CSV Date
     const dStr = getVal(r, 'TARIKH');
-    const iso = parseDateStr(dStr); // becomes YYYY-MM-DD
+    const iso = parseDateStr(dStr); 
     
     return searchMatch &&
            (!fDate || iso === fDate) &&
@@ -733,11 +733,13 @@ function resetPajskFilters() {
 function renderAnn() {
   const today = new Date().toISOString().split('T')[0];
   const list = DATA.ann.filter(a => {
+    // If user inputs 28/12/2025, convert to 2025-12-28
     const start = parseDateStr(getVal(a, 'MULA'));
     const end = parseDateStr(getVal(a, 'TAMAT'));
     const title = getVal(a, 'TAJUK');
     if(!title) return false;
-    // Show if today >= start AND (today <= end OR no end date)
+    
+    // Logic: Active if today >= start AND (no end date OR today <= end)
     if(start && today < start) return false;
     if(end && today > end) return false;
     return true;
