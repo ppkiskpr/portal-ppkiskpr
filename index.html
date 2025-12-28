@@ -1,836 +1,790 @@
 <!doctype html>
-<html lang="ms">
+<html lang="ms" class="h-full">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal PPKI SK Paya Resak</title>
-
-  <!-- Chart.js (untuk line chart) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portal Rasmi PPKI SK Paya Resak</title>
   <style>
     :root{
-      --bg: #EAF4EA;
-      --bg2:#F6FBF6;
-      --card:#FFFFFF;
-      --text:#0B1220;
-      --muted:#51606f;
-      --line:#dbe7db;
-      --primary:#1F4D3A;
-      --accent:#2AA198;
-      --danger:#d33;
-      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --bg: #0b1220;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.65);
+      --border: rgba(255,255,255,.12);
+      --shadow: 0 12px 40px rgba(0,0,0,.35);
+      --accent: #2AA198;
+      --accent2:#1F4D3A;
+      --danger:#ef4444;
+      --warn:#f59e0b;
+      --ok:#22c55e;
+      --chip: rgba(255,255,255,.07);
+      --chip2: rgba(255,255,255,.10);
+      --focus: rgba(42,161,152,.35);
       --radius: 18px;
+      --radius2: 22px;
+      --sidebarW: 292px;
+      --sidebarWC: 86px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
-    [data-theme="dark"]{
-      --bg:#0B1220;
-      --bg2:#0f1a2f;
-      --card:#111827;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --line:#22304b;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    /* Light theme variables */
+    html[data-mode="light"]{
+      --bg: #eaf4ea;
+      --panel: rgba(255,255,255,.75);
+      --panel2: rgba(255,255,255,.92);
+      --text: rgba(17,24,39,.92);
+      --muted: rgba(17,24,39,.60);
+      --border: rgba(17,24,39,.12);
+      --shadow: 0 14px 40px rgba(17,24,39,.12);
+      --chip: rgba(17,24,39,.06);
+      --chip2: rgba(17,24,39,.10);
+      --focus: rgba(42,161,152,.25);
     }
-
-    /* Theme presets (warna primary/accent) */
-    [data-preset="forest"] { --primary:#1F4D3A; --accent:#2AA198; }
-    [data-preset="ocean"]  { --primary:#0b3b6e; --accent:#3aa0ff; }
-    [data-preset="purple"] { --primary:#4c1d95; --accent:#a78bfa; }
-    [data-preset="amber"]  { --primary:#92400e; --accent:#f59e0b; }
+    /* Preset accents */
+    html[data-preset="forest"]{ --accent2:#1F4D3A; --accent:#2AA198; }
+    html[data-preset="ocean"]{ --accent2:#0b3d91; --accent:#22a3d6; }
+    html[data-preset="sunset"]{ --accent2:#7c2d12; --accent:#f97316; }
+    html[data-preset="violet"]{ --accent2:#4c1d95; --accent:#a78bfa; }
 
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
-      color: var(--text);
-      min-height:100vh;
+    body{ margin:0; font-family:var(--font); background: radial-gradient(1100px 700px at 20% -10%, rgba(42,161,152,.25), transparent 60%),
+          radial-gradient(900px 600px at 90% 10%, rgba(31,77,58,.25), transparent 55%),
+          var(--bg);
+          color:var(--text);
+          min-height:100vh;
     }
-    a{color:inherit}
-    .app{display:flex; min-height:100vh;}
+    a{ color:inherit; text-decoration:none; }
+    button,input,select,textarea{ font-family:inherit; }
+
+    /* Layout */
+    .app{ display:flex; min-height:100vh; }
     .sidebar{
-      width: 280px;
-      background: var(--card);
-      border-right: 1px solid var(--line);
-      padding: 14px;
-      position: sticky;
-      top:0;
-      height:100vh;
-      overflow:auto;
-      box-shadow: var(--shadow);
-    }
-    .sidebar.collapsed{
-      width: 84px;
-      padding: 14px 10px;
-    }
-    .brand{
-      display:flex; gap:12px; align-items:center;
-      padding: 10px;
-      border-radius: var(--radius);
-      background: linear-gradient(135deg, rgba(31,77,58,.12), rgba(42,161,152,.12));
-      border: 1px solid var(--line);
-    }
-    .logoBox{
-      width: 46px; height: 46px;
-      border-radius: 14px;
-      background: rgba(0,0,0,.06);
-      overflow:hidden;
-      display:grid; place-items:center;
-      flex:0 0 auto;
-    }
-    .logoBox img{width:100%; height:100%; object-fit:cover}
-    .brandText{min-width:0}
-    .schoolName{
-      font-weight: 800;
-      font-size: 14.5px;
-      line-height: 1.2;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .motto{
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .nav{
-      margin-top: 14px;
-      display:flex; flex-direction:column; gap:8px;
-    }
-    .navBtn{
-      display:flex; align-items:center; gap:10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid transparent;
-      cursor:pointer;
-      user-select:none;
-      transition: .15s;
-    }
-    .navBtn:hover{background: rgba(0,0,0,.04)}
-    [data-theme="dark"] .navBtn:hover{background: rgba(255,255,255,.06)}
-    .navBtn.active{
-      background: linear-gradient(135deg, rgba(31,77,58,.14), rgba(42,161,152,.14));
-      border-color: var(--line);
-    }
-    .icon{
-      width: 38px; height: 38px;
-      border-radius: 14px;
-      display:grid; place-items:center;
-      background: rgba(0,0,0,.05);
-      flex:0 0 auto;
-      font-size: 18px;
-    }
-    [data-theme="dark"] .icon{background: rgba(255,255,255,.06)}
-    .label{
-      font-weight: 700;
-      font-size: 14px;
-    }
-    .sidebar.collapsed .brandText,
-    .sidebar.collapsed .label,
-    .sidebar.collapsed .motto,
-    .sidebar.collapsed .schoolName{
-      display:none;
-    }
-
-    .sidebarFooter{
-      margin-top: 16px;
-      padding: 12px 10px;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-
-    .main{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      min-width: 0;
-    }
-    .header{
+      width: var(--sidebarW);
+      background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 42%),
+                  rgba(255,255,255,.04);
+      border-right: 1px solid var(--border);
+      padding: 16px 14px;
       position: sticky;
       top: 0;
-      z-index: 5;
-      background: rgba(255,255,255,.65);
+      height: 100vh;
+      overflow: hidden;
+      transition: width .22s ease, transform .22s ease;
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--line);
-      padding: 12px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
     }
-    [data-theme="dark"] .header{background: rgba(17,24,39,.65)}
-    .headerLeft{display:flex; align-items:center; gap:10px; min-width:0}
-    .hamburger{
-      width: 44px; height: 44px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--card);
+    html[data-mode="light"] .sidebar{
+      background: rgba(255,255,255,.55);
+    }
+    .sidebar.collapsed{ width: var(--sidebarWC); }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+      padding: 10px 10px;
+      border-radius: var(--radius);
+      background: var(--chip);
+      border:1px solid var(--border);
+    }
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.06));
+      border:1px solid var(--border);
+      overflow:hidden;
+      display:grid; place-items:center;
+      flex: 0 0 auto;
+    }
+    .logo img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .brandText{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+    .brandText .name{ font-weight:800; letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .brandText .motto{ font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sidebar.collapsed .brandText{ display:none; }
+
+    .nav{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
+    .navBtn{
+      display:flex; align-items:center; gap:12px;
+      padding: 12px 12px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: background .15s ease, border-color .15s ease, transform .04s ease;
+      text-align:left;
+    }
+    .navBtn:hover{ background: var(--chip); border-color: var(--border); }
+    .navBtn:active{ transform: translateY(1px); }
+    .navBtn.active{
+      background: linear-gradient(135deg, rgba(42,161,152,.18), rgba(255,255,255,.06));
+      border-color: rgba(42,161,152,.35);
+    }
+    .navIcon{ width:34px; height:34px; border-radius: 12px; display:grid; place-items:center; background: var(--chip); border:1px solid var(--border); flex:0 0 auto; }
+    .navLabel{ font-weight:700; letter-spacing:.1px; }
+    .sidebar.collapsed .navLabel{ display:none; }
+    .sidebarFooter{
+      position:absolute; left:14px; right:14px; bottom:14px;
+      padding: 10px 10px;
+      border-radius: var(--radius);
+      background: var(--chip);
+      border:1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .sidebar.collapsed .sidebarFooter{ font-size: 10px; }
+    .main{ flex:1; padding: 18px 18px 30px; min-width:0; }
+
+    /* Header */
+    .header{
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 12px;
+      padding: 14px 14px;
+      border-radius: var(--radius2);
+      background: var(--panel);
+      border:1px solid var(--border);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 10px;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+    }
+    .headerLeft{ display:flex; align-items:center; gap:10px; min-width:0; }
+    .iconBtn{
+      width:42px; height:42px; border-radius: 14px;
+      border:1px solid var(--border);
+      background: var(--chip);
+      color: var(--text);
       cursor:pointer;
       display:grid; place-items:center;
-      font-size: 18px;
-      box-shadow: var(--shadow);
+      transition: transform .04s ease, background .15s ease;
     }
+    .iconBtn:hover{ background: var(--chip2); }
+    .iconBtn:active{ transform: translateY(1px); }
+    .pageTitleWrap{ display:flex; align-items:center; gap:10px; min-width:0; }
+    .miniLogo{
+      width:38px;height:38px;border-radius:14px;
+      border:1px solid var(--border);
+      overflow:hidden;
+      background: var(--chip);
+      display:none;
+    }
+    .miniLogo img{ width:100%; height:100%; object-fit:cover; display:block; }
     .pageTitle{
-      font-weight: 900;
-      font-size: 16px;
+      font-weight:900;
+      letter-spacing: .2px;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
-    .headerRight{display:flex; align-items:center; gap:10px}
-    .chip{
-      border: 1px solid var(--line);
-      background: var(--card);
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-weight: 800;
-      cursor:pointer;
-      display:flex; align-items:center; gap:8px;
-      box-shadow: var(--shadow);
-    }
-    .chip small{color:var(--muted); font-weight:700}
-    .badge{
-      background: var(--danger);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 900;
-      padding: 2px 8px;
-      border-radius: 999px;
-    }
-
-    .content{
-      padding: 16px;
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .banner{
-      border-radius: var(--radius);
-      border: 1px solid var(--line);
-      background: linear-gradient(135deg, rgba(31,77,58,.16), rgba(42,161,152,.16));
-      padding: 18px;
-      box-shadow: var(--shadow);
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .banner h2{margin:0; font-size: 18px; font-weight: 1000}
-    .banner p{margin:6px 0 0; color: var(--muted); font-weight:700}
-    .clock{
-      font-weight: 1000;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      white-space: nowrap;
-    }
-
-    .grid{
-      display:grid;
-      gap: 12px;
-      margin-top: 14px;
-    }
-    .grid.cards{grid-template-columns: repeat(4, minmax(0, 1fr));}
-    @media (max-width: 1024px){
-      .grid.cards{grid-template-columns: repeat(2, minmax(0, 1fr));}
-    }
-    @media (max-width: 520px){
-      .grid.cards{grid-template-columns: 1fr;}
-    }
-
-    .card{
-      border-radius: var(--radius);
-      border: 1px solid var(--line);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      padding: 14px;
-      min-width:0;
-    }
-    .statCard{
-      cursor:pointer;
-      transition:.15s;
-    }
-    .statCard:hover{transform: translateY(-1px)}
-    .statTop{display:flex; align-items:center; justify-content:space-between; gap:10px}
-    .statTop .k{color: var(--muted); font-weight: 900; font-size: 12px}
-    .statTop .i{font-size: 18px}
-    .statVal{margin-top: 6px; font-size: 26px; font-weight: 1100}
-    .statSub{margin-top: 6px; color: var(--muted); font-weight: 800; font-size: 12px}
-
-    .sectionTitle{
-      margin: 16px 0 10px;
-      font-size: 14px;
-      font-weight: 1000;
+    .headerRight{ display:flex; align-items:center; gap:10px; }
+    .pill{
+      display:flex; align-items:center; gap:10px;
+      padding: 8px 10px;
+      border-radius: 16px;
+      background: var(--chip);
+      border:1px solid var(--border);
       color: var(--muted);
-      letter-spacing: .02em;
-      text-transform: uppercase;
+      font-weight:700;
+      font-size: 13px;
     }
-
-    .tableWrap{
-      border-radius: var(--radius);
-      overflow:hidden;
-      border: 1px solid var(--line);
-      background: var(--card);
-      box-shadow: var(--shadow);
-    }
-    table{width:100%; border-collapse:collapse; font-size: 13px}
-    th, td{padding: 10px 10px; border-bottom: 1px solid var(--line); vertical-align:top}
-    th{background: rgba(0,0,0,.04); text-align:left; font-size: 12px; font-weight: 1000}
-    [data-theme="dark"] th{background: rgba(255,255,255,.06)}
-    tr:hover td{background: rgba(0,0,0,.02)}
-    [data-theme="dark"] tr:hover td{background: rgba(255,255,255,.03)}
-
-    .filters{
-      display:grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 10px;
-      margin: 12px 0;
-    }
-    @media (max-width: 1024px){ .filters{grid-template-columns: repeat(3, minmax(0, 1fr));} }
-    @media (max-width: 520px){ .filters{grid-template-columns: 1fr;} }
-
-    input, select, textarea{
-      width:100%;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--card);
+    select.preset{
+      border:1px solid var(--border);
+      background: transparent;
       color: var(--text);
+      border-radius: 12px;
+      padding: 8px 10px;
       outline:none;
-      font-weight: 800;
     }
-    textarea{min-height: 90px; resize: vertical; font-weight: 700}
-    .btn{
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--card);
+    .toggleBtn{
+      width:42px; height:42px; border-radius: 14px;
+      border:1px solid var(--border);
+      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
       cursor:pointer;
-      font-weight: 1000;
-      box-shadow: var(--shadow);
-    }
-    .btn.primary{
-      border-color: transparent;
-      background: linear-gradient(135deg, rgba(31,77,58,.95), rgba(42,161,152,.95));
-      color:#fff;
-    }
-    .btn.danger{
-      background: rgba(211,51,51,.12);
-      border-color: rgba(211,51,51,.35);
-      color: var(--text);
-    }
-    .row{display:flex; gap:10px; flex-wrap:wrap}
-    .row > *{flex:1; min-width: 220px}
-
-    /* Modals */
-    .overlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.45);
-      display:none;
-      z-index: 50;
-      padding: 18px;
-      overflow:auto;
-    }
-    .overlay.show{display:block}
-    .modal{
-      max-width: 760px;
-      margin: 30px auto;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .modalHeader{
-      display:flex; align-items:center; justify-content:space-between;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      gap: 12px;
-    }
-    .modalHeader h3{margin:0; font-size: 15px; font-weight: 1100}
-    .modalBody{padding: 16px}
-    .closeX{
-      width: 42px; height: 42px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--card);
-      cursor:pointer;
-      font-size: 18px;
       display:grid; place-items:center;
     }
-    .warn{
-      background: rgba(211,51,51,.12);
-      border: 1px solid rgba(211,51,51,.35);
+
+    /* Content */
+    .content{ margin-top: 16px; }
+    .grid{ display:grid; gap:14px; }
+    .grid.cols2{ grid-template-columns: 1.35fr .65fr; }
+    .card{
+      border-radius: var(--radius2);
+      background: var(--panel);
+      border:1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      backdrop-filter: blur(10px);
+      min-width:0;
+    }
+    .cardTitle{
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap:10px;
+      margin-bottom: 8px;
+    }
+    .cardTitle h2{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:.2px;
+    }
+    .sub{ color: var(--muted); font-size: 13px; margin: 0; }
+    .banner{
+      border-radius: var(--radius2);
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(31,77,58,.65), rgba(42,161,152,.45));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    html[data-mode="light"] .banner{
+      background: linear-gradient(135deg, rgba(31,77,58,.16), rgba(42,161,152,.16));
+      border:1px solid rgba(17,24,39,.10);
+    }
+    .banner h1{ margin:0 0 6px 0; font-size: 18px; letter-spacing:.2px; }
+    .banner .time{ margin:0; font-size: 14px; color: rgba(255,255,255,.88); font-weight:800; }
+    html[data-mode="light"] .banner .time{ color: rgba(17,24,39,.85); }
+
+    .stats{ display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .stat{
+      padding: 12px;
+      border-radius: 18px;
+      border:1px solid var(--border);
+      background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      cursor:pointer;
+      transition: transform .05s ease, background .15s ease;
+      min-width:0;
+    }
+    .stat:hover{ background: linear-gradient(135deg, rgba(42,161,152,.12), rgba(255,255,255,.04)); }
+    .stat:active{ transform: translateY(1px); }
+    .stat .k{ font-size: 12px; color: var(--muted); font-weight:800; }
+    .stat .v{ font-size: 26px; font-weight:950; margin-top: 6px; letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .stat .s{ font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .chips{ display:flex; gap:10px; flex-wrap:wrap; }
+    .chip{
       padding: 10px 12px;
       border-radius: 14px;
-      font-weight: 900;
+      border:1px solid var(--border);
+      background: var(--chip);
+      cursor:pointer;
+      font-weight:900;
+      color: var(--muted);
+      transition: background .15s ease, transform .04s ease;
+      user-select:none;
     }
-    .muted{color:var(--muted); font-weight: 800}
+    .chip.active{ background: rgba(42,161,152,.18); border-color: rgba(42,161,152,.35); color: var(--text); }
+    .chip:active{ transform: translateY(1px); }
 
-    /* Mobile default: sidebar closed */
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .field{
+      border:1px solid var(--border);
+      background: var(--chip);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      outline:none;
+      min-width: 170px;
+    }
+    .field:focus{ box-shadow: 0 0 0 3px var(--focus); }
+
+    /* Table */
+    .tableWrap{ overflow:auto; border-radius: 18px; border:1px solid var(--border); }
+    table{ border-collapse: separate; border-spacing: 0; width:100%; min-width: 880px; }
+    th,td{ padding: 10px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+    th{ position:sticky; top:0; background: var(--panel2); text-align:left; font-size: 12px; color: var(--muted); letter-spacing:.3px; z-index:1; }
+    td{ font-size: 13px; }
+    tr:hover td{ background: rgba(255,255,255,.03); }
+    html[data-mode="light"] tr:hover td{ background: rgba(17,24,39,.03); }
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      background: var(--chip);
+      font-weight:900;
+      font-size:12px;
+    }
+    .b-ok{ border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.12); }
+    .b-no{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.12); }
+    .b-hi{ border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.12); }
+
+    /* Modal */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      z-index: 60;
+      padding: 14px;
+      overflow:auto; /* FIX: boleh scroll */
+    }
+    .overlay.show{ display:block; }
+    .modal{
+      width:min(980px, 100%);
+      margin: 40px auto;
+      border-radius: 22px;
+      background: var(--panel2);
+      border:1px solid var(--border);
+      box-shadow: 0 22px 70px rgba(0,0,0,.45);
+      overflow:hidden;
+      max-height: calc(100vh - 80px); /* FIX: muat skrin */
+      display:flex;
+      flex-direction:column;
+    }
+    .modalHead{
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 10px;
+      padding: 14px 14px;
+      border-bottom:1px solid var(--border);
+      background: linear-gradient(135deg, rgba(255,255,255,.05), transparent);
+    }
+    .modalHead h3{ margin:0; font-size: 15px; letter-spacing:.2px; }
+    .modalBody{
+      padding: 14px;
+      overflow:auto; /* FIX: dalam modal pun scroll */
+    }
+    .modalGrid{
+      display:grid;
+      gap: 14px;
+      grid-template-columns: 1fr 1fr;
+    }
+    .help{ font-size:12px; color:var(--muted); margin: 6px 0 0; }
+    .btn{
+      border:1px solid var(--border);
+      background: var(--chip);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .btnPrimary{
+      border-color: rgba(42,161,152,.35);
+      background: rgba(42,161,152,.18);
+    }
+    .btnDanger{
+      border-color: rgba(239,68,68,.35);
+      background: rgba(239,68,68,.16);
+    }
+    .warnBox{
+      border:1px solid rgba(239,68,68,.35);
+      background: rgba(239,68,68,.10);
+      border-radius: 16px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-weight:900;
+      display:none;
+      margin-top: 10px;
+    }
+    .warnBox.show{ display:block; }
+
+    /* Chart */
+    .chartWrap{
+      border:1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      padding: 10px;
+      overflow:hidden;
+    }
+    .chartCaption{ margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+
+    /* Mobile */
+    .mobileTopRow{ display:none; }
+    @media (max-width: 980px){
+      .grid.cols2{ grid-template-columns: 1fr; }
+      .stats{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
     @media (max-width: 860px){
       .sidebar{
         position: fixed;
-        left: 0;
-        top: 0;
-        z-index: 30;
-        transform: translateX(-110%);
-        transition: .2s;
+        left: 0; top: 0;
+        transform: translateX(-105%);
+        z-index: 80;
+        box-shadow: 0 25px 70px rgba(0,0,0,.55);
       }
-      .sidebar.open{transform: translateX(0)}
-      .sidebarBackdrop{
-        display:none;
-        position: fixed;
-        inset:0;
-        background: rgba(0,0,0,.38);
-        z-index: 25;
-      }
-      .sidebarBackdrop.show{display:block}
-      .content{padding: 14px}
+      .sidebar.open{ transform: translateX(0); }
+      .main{ padding: 14px; }
+      .mobileTopRow{ display:flex; gap:10px; }
+      .miniLogo{ display:block; }
     }
   </style>
 </head>
 
-<body data-theme="light" data-preset="forest">
-  <div class="sidebarBackdrop" id="sidebarBackdrop"></div>
-
+<body>
   <div class="app">
-    <!-- SIDEBAR -->
-    <aside class="sidebar collapsed" id="sidebar">
-      <div class="brand" title="Portal PPKI">
-        <div class="logoBox" id="logoBox">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand" title="Klik untuk ke Laman Utama">
+        <div class="logo" id="sidebarLogo">
           <span style="font-weight:1000;">🏫</span>
         </div>
         <div class="brandText">
-          <div class="schoolName" id="schoolName">SK Paya Resak</div>
-          <div class="motto" id="schoolMotto">Moving Forward</div>
+          <div class="name" id="schoolNameSide">SK Paya Resak</div>
+          <div class="motto" id="schoolMottoSide">Moving Forward</div>
         </div>
       </div>
 
       <nav class="nav" id="nav">
-        <div class="navBtn active" data-page="home">
-          <div class="icon">🏠</div>
-          <div class="label">Laman Utama</div>
-        </div>
-
-        <div class="navBtn" data-page="kehadiran">
-          <div class="icon">📋</div>
-          <div class="label">Kehadiran</div>
-        </div>
-
-        <div class="navBtn" data-page="pengumuman">
-          <div class="icon">📢</div>
-          <div class="label">
-            Pengumuman
-            <span id="annBadgeSide" class="badge" style="display:none; margin-left:8px;">0</span>
-          </div>
-        </div>
-
-        <div class="navBtn" data-page="takwim">
-          <div class="icon">🗓️</div>
-          <div class="label">Takwim</div>
-        </div>
-
-        <div class="navBtn" data-page="ibubapa">
-          <div class="icon">👨‍👩‍👧‍👦</div>
-          <div class="label">Ibu Bapa</div>
-        </div>
+        <button class="navBtn active" data-page="home">
+          <span class="navIcon">🏠</span><span class="navLabel">Laman Utama</span>
+        </button>
+        <button class="navBtn" data-page="attendance">
+          <span class="navIcon">🧾</span><span class="navLabel">Kehadiran</span>
+        </button>
+        <button class="navBtn" data-page="announcements">
+          <span class="navIcon">📢</span><span class="navLabel">Pengumuman</span>
+        </button>
+        <button class="navBtn" data-page="calendar">
+          <span class="navIcon">🗓️</span><span class="navLabel">Takwim</span>
+        </button>
+        <button class="navBtn" data-page="parents">
+          <span class="navIcon">👨‍👩‍👧‍👦</span><span class="navLabel">Ibu Bapa</span>
+        </button>
       </nav>
 
       <div class="sidebarFooter">
-        <div id="footerText">© 2025 NK. <br/>Hak Cipta Terpelihara.</div>
+        <div id="footerLine1Side">© 2025 NK.</div>
+        <div id="footerLine2Side">Hak Cipta Terpelihara.</div>
       </div>
     </aside>
 
-    <!-- MAIN -->
+    <!-- Main -->
     <main class="main">
+      <!-- Header -->
       <header class="header">
         <div class="headerLeft">
-          <button class="hamburger" id="btnSidebar" title="Buka/Tutup Sidebar">☰</button>
-          <div class="pageTitle" id="pageTitle">Laman Utama</div>
+          <button class="iconBtn" id="btnMenu" title="Menu">☰</button>
+
+          <div class="pageTitleWrap">
+            <div class="miniLogo" id="miniLogo" title="Kembali ke Laman Utama">
+              <img id="miniLogoImg" alt="" style="display:none;">
+              <div id="miniLogoFallback" style="width:100%;height:100%;display:grid;place-items:center;">🏫</div>
+            </div>
+            <div class="pageTitle" id="pageTitle">Laman Utama</div>
+          </div>
         </div>
 
         <div class="headerRight">
-          <div class="chip" id="themeToggle" title="Tukar Light/Dark">
-            <span id="themeIcon">🌙</span>
-            <span style="font-weight:1100;">Tema</span>
-            <small id="themeLabel">Light</small>
-          </div>
+          <select class="preset" id="presetSelect" title="Tema preset">
+            <option value="forest">Forest (Hijau)</option>
+            <option value="ocean">Ocean (Biru)</option>
+            <option value="sunset">Sunset (Oren)</option>
+            <option value="violet">Violet (Ungu)</option>
+          </select>
 
-          <div class="chip" id="btnGear" title="Tetapan (Perlu PIN)">
-            <span>⚙️</span>
-            <span style="font-weight:1100;">Tetapan</span>
-          </div>
-
-          <div class="chip" title="Pengumuman Aktif">
-            <span>🔔</span>
-            <span id="annBadgeTop" class="badge">0</span>
-          </div>
+          <button class="toggleBtn" id="btnMode" title="Tukar Light/Dark">🌙</button>
+          <button class="iconBtn" id="btnSettings" title="Tetapan">⚙️</button>
         </div>
       </header>
 
-      <div class="content">
+      <section class="content" id="content">
         <!-- HOME -->
-        <section id="page-home">
-          <div class="banner">
-            <div>
-              <h2 id="welcomeTitle">Selamat Datang ke Portal Rasmi PPKI SK Paya Resak</h2>
-              <p class="muted">Maklumat ringkas & pantas untuk rujukan warga sekolah.</p>
-            </div>
-            <div class="clock" id="clock">--:--</div>
-          </div>
+        <div class="page" id="page-home">
+          <div class="grid cols2">
+            <div class="card">
+              <div class="banner">
+                <h1 id="bannerText">Selamat Datang ke Portal Rasmi PPKI SK Paya Resak</h1>
+                <p class="time" id="timeNow">--:--:--</p>
+              </div>
 
-          <div class="grid cards" style="margin-top:14px;">
-            <div class="card statCard" id="cardToday" title="Klik untuk pergi ke Kehadiran">
-              <div class="statTop">
+              <div class="stats">
+                <div class="stat" id="statToday" data-jump="today">
+                  <div class="k">Kehadiran Hari Ini</div>
+                  <div class="v" id="vToday">-</div>
+                  <div class="s" id="sToday">—</div>
+                </div>
+                <div class="stat" id="statWeek" data-jump="week">
+                  <div class="k">Kehadiran Minggu Ini</div>
+                  <div class="v" id="vWeek">-</div>
+                  <div class="s" id="sWeek">—</div>
+                </div>
+                <div class="stat" id="statMonth" data-jump="month">
+                  <div class="k">Kehadiran Bulan Ini</div>
+                  <div class="v" id="vMonth">-</div>
+                  <div class="s" id="sMonth">—</div>
+                </div>
+                <div class="stat" id="statPct" data-jump="pct">
+                  <div class="k">Peratus Kehadiran Bulanan</div>
+                  <div class="v" id="vPct">-</div>
+                  <div class="s" id="sPct">Bulan semasa</div>
+                </div>
+              </div>
+
+              <div style="margin-top:14px" class="card">
+                <div class="cardTitle">
+                  <h2>Trend Harian (Bulan Dipilih)</h2>
+                  <div class="sub">Pilih Bulan + Kelas dan mod paparan.</div>
+                </div>
+
+                <div class="row" style="justify-content:space-between; gap:12px; margin:10px 0 10px;">
+                  <div class="chips" id="trendMode">
+                    <div class="chip active" data-mode="hadir">Hadir</div>
+                    <div class="chip" data-mode="tidak">Tidak Hadir</div>
+                    <div class="chip" data-mode="pct">%</div>
+                  </div>
+
+                  <div class="row" style="gap:10px;">
+                    <select class="field" id="trendMonth"></select>
+                    <select class="field" id="trendYear"></select>
+                    <select class="field" id="trendClass"><option value="">Semua Kelas</option></select>
+                  </div>
+                </div>
+
+                <div class="chartWrap">
+                  <div id="trendChart"></div>
+                </div>
+                <p class="chartCaption">*Graf ringkas berdasarkan data kehadiran (Tarikh dd/mm/yyyy).</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitle">
+                <h2>📢 Pengumuman Aktif</h2>
+                <div class="sub" id="annCount">—</div>
+              </div>
+              <div id="annListHome" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ATTENDANCE -->
+        <div class="page" id="page-attendance" style="display:none;">
+          <div class="card">
+            <div class="cardTitle">
+              <div>
+                <h2>Dashboard Kehadiran</h2>
+                <p class="sub">Data daripada CSV kehadiran. Filter kolum + carian + date range.</p>
+              </div>
+              <div class="row">
+                <button class="btn" id="btnReloadAttendance">Segar Semula</button>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="stat" data-jump="today">
                 <div class="k">Kehadiran Hari Ini</div>
-                <div class="i">✅</div>
+                <div class="v" id="vToday2">-</div>
+                <div class="s" id="sToday2">—</div>
               </div>
-              <div class="statVal" id="vToday">-</div>
-              <div class="statSub" id="sToday">Memuatkan...</div>
-            </div>
-
-            <div class="card statCard" id="cardWeek" title="Klik untuk pergi ke Kehadiran">
-              <div class="statTop">
+              <div class="stat" data-jump="week">
                 <div class="k">Kehadiran Minggu Ini</div>
-                <div class="i">📆</div>
+                <div class="v" id="vWeek2">-</div>
+                <div class="s" id="sWeek2">—</div>
               </div>
-              <div class="statVal" id="vWeek">-</div>
-              <div class="statSub" id="sWeek">Memuatkan...</div>
-            </div>
-
-            <div class="card statCard" id="cardMonth" title="Klik untuk pergi ke Kehadiran">
-              <div class="statTop">
+              <div class="stat" data-jump="month">
                 <div class="k">Kehadiran Bulan Ini</div>
-                <div class="i">🗓️</div>
+                <div class="v" id="vMonth2">-</div>
+                <div class="s" id="sMonth2">—</div>
               </div>
-              <div class="statVal" id="vMonth">-</div>
-              <div class="statSub" id="sMonth">Memuatkan...</div>
-            </div>
-
-            <div class="card statCard" id="cardPct" title="Klik untuk pergi ke Kehadiran">
-              <div class="statTop">
+              <div class="stat" data-jump="pct">
                 <div class="k">Peratus Kehadiran Bulanan</div>
-                <div class="i">📈</div>
+                <div class="v" id="vPct2">-</div>
+                <div class="s" id="sPct2">Bulan semasa</div>
               </div>
-              <div class="statVal" id="vPct">-</div>
-              <div class="statSub" id="sPct">Memuatkan...</div>
+            </div>
+
+            <div class="card" style="margin-top:14px;">
+              <div class="row" style="gap:10px; justify-content:space-between;">
+                <div class="row" style="gap:10px; flex:1; min-width:0;">
+                  <input class="field" id="searchAttendance" placeholder="Carian (nama/kelas/status...)" style="flex:1; min-width:220px;">
+                  <select class="field" id="filterClass"><option value="">Kelas: Semua</option></select>
+                  <select class="field" id="filterStatus">
+                    <option value="">Status: Semua</option>
+                    <option value="HADIR">Hadir</option>
+                    <option value="TIDAK HADIR">Tidak Hadir</option>
+                  </select>
+                </div>
+
+                <div class="row" style="gap:10px;">
+                  <input class="field" id="dateFrom" type="date" title="Tarikh mula">
+                  <input class="field" id="dateTo" type="date" title="Tarikh hingga">
+                  <button class="btn btnPrimary" id="btnApplyFilter">Tapis</button>
+                  <button class="btn" id="btnResetFilter">Reset</button>
+                </div>
+              </div>
+
+              <div style="margin-top:12px;" class="tableWrap">
+                <table id="attendanceTable">
+                  <thead><tr id="attendanceHead"></tr></thead>
+                  <tbody id="attendanceBody"></tbody>
+                </table>
+              </div>
+
+              <p class="help" id="attendanceMeta">—</p>
             </div>
           </div>
+        </div>
 
-          <div class="sectionTitle">Trend Kehadiran (Bulanan)</div>
+        <!-- ANNOUNCEMENTS -->
+        <div class="page" id="page-announcements" style="display:none;">
           <div class="card">
-            <canvas id="attChart" height="90"></canvas>
-            <div class="muted" style="margin-top:10px; font-size:12px;">
-              Paksi-X: Bulan • Paksi-Y: Bilangan “Hadir”
+            <div class="cardTitle">
+              <div>
+                <h2>Pengumuman</h2>
+                <p class="sub">Klik kad untuk lihat butiran penuh (pop out).</p>
+              </div>
+              <div class="row">
+                <button class="btn" id="btnReloadAnnouncements">Segar Semula</button>
+              </div>
             </div>
-          </div>
 
-          <div class="sectionTitle">Pengumuman Aktif</div>
-          <div class="card statCard" id="cardAnn" title="Klik untuk pergi ke Pengumuman">
-            <div class="statTop">
-              <div class="k">Senarai Pengumuman Aktif</div>
-              <div class="i">📢</div>
-            </div>
-            <div class="statVal"><span id="vAnnCount">0</span></div>
-            <div class="statSub" id="annListShort">Memuatkan...</div>
+            <div id="annGrid" class="grid" style="grid-template-columns: repeat(2, minmax(0,1fr));"></div>
           </div>
-        </section>
+        </div>
 
-        <!-- KEHADIRAN -->
-        <section id="page-kehadiran" style="display:none;">
-          <div class="banner" style="margin-bottom:14px;">
-            <div>
-              <h2>Dashboard Kehadiran</h2>
-              <p class="muted">Penapisan mengikut kolum, carian, dan julat tarikh.</p>
-            </div>
-            <div class="row" style="gap:10px;">
-              <button class="btn" id="btnReloadKehadiran">🔄 Muat Semula</button>
-              <button class="btn" id="btnAdminCols" style="display:none;">👁️ Kolum Admin</button>
-            </div>
-          </div>
-
-          <div class="grid cards">
-            <div class="card statCard" id="cardToday2">
-              <div class="statTop"><div class="k">Kehadiran Hari Ini</div><div class="i">✅</div></div>
-              <div class="statVal" id="vToday2">-</div>
-              <div class="statSub" id="sToday2">—</div>
-            </div>
-            <div class="card statCard" id="cardWeek2">
-              <div class="statTop"><div class="k">Kehadiran Minggu Ini</div><div class="i">📆</div></div>
-              <div class="statVal" id="vWeek2">-</div>
-              <div class="statSub" id="sWeek2">—</div>
-            </div>
-            <div class="card statCard" id="cardMonth2">
-              <div class="statTop"><div class="k">Kehadiran Bulan Ini</div><div class="i">🗓️</div></div>
-              <div class="statVal" id="vMonth2">-</div>
-              <div class="statSub" id="sMonth2">—</div>
-            </div>
-            <div class="card statCard" id="cardPct2">
-              <div class="statTop"><div class="k">Peratus Kehadiran Bulanan</div><div class="i">📈</div></div>
-              <div class="statVal" id="vPct2">-</div>
-              <div class="statSub" id="sPct2">—</div>
-            </div>
-          </div>
-
-          <div class="filters">
-            <div>
-              <div class="muted" style="font-size:12px; margin:0 0 6px;">Carian</div>
-              <input id="fSearch" placeholder="Cari apa-apa (Nama/Kelas/Status...)" />
-            </div>
-            <div>
-              <div class="muted" style="font-size:12px; margin:0 0 6px;">Tarikh Mula</div>
-              <input id="fDateFrom" type="date" />
-            </div>
-            <div>
-              <div class="muted" style="font-size:12px; margin:0 0 6px;">Tarikh Tamat</div>
-              <input id="fDateTo" type="date" />
-            </div>
-            <div>
-              <div class="muted" style="font-size:12px; margin:0 0 6px;">Filter Kelas</div>
-              <input id="fKelas" placeholder="cth: 1 AL-FARABI" />
-            </div>
-            <div>
-              <div class="muted" style="font-size:12px; margin:0 0 6px;">Filter Nama</div>
-              <input id="fNama" placeholder="cth: Ali" />
-            </div>
-            <div>
-              <div class="muted" style="font-size:12px; margin:0 0 6px;">Filter Status</div>
-              <input id="fStatus" placeholder="cth: Hadir" />
-            </div>
-          </div>
-
-          <div class="tableWrap">
-            <table id="kehadiranTable">
-              <thead id="kehadiranThead"></thead>
-              <tbody id="kehadiranTbody"></tbody>
-            </table>
-          </div>
-
-          <div class="muted" style="margin-top:10px; font-size:12px;">
-            Nota: Kolum kehadiran dibaca secara “LOCK MAPPING” (Tarikh, Kelas, Nama Murid, Status, Jantina).
-            Cikgu boleh guna `Nama Murid` atau `Nama_Murid`.
-          </div>
-        </section>
-
-        <!-- PENGUMUMAN -->
-        <section id="page-pengumuman" style="display:none;">
-          <div class="banner" style="margin-bottom:14px;">
-            <div>
-              <h2>Pengumuman</h2>
-              <p class="muted">Kad pengumuman boleh diklik untuk paparan detail.</p>
-            </div>
-            <button class="btn" id="btnReloadAnn">🔄 Muat Semula</button>
-          </div>
-
-          <div id="annContainer" class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));"></div>
-          <div class="muted" style="margin-top:12px; font-size:12px;">
-            Pengumuman aktif ditapis automatik berdasarkan Tarikh Mula/Tamat & kolum AKTIF (YA/TIDAK).
-          </div>
-        </section>
-
-        <!-- TAKWIM -->
-        <section id="page-takwim" style="display:none;">
-          <div class="banner" style="margin-bottom:14px;">
-            <div>
-              <h2>Takwim</h2>
-              <p class="muted">Boleh disambungkan ke Google Sheet (CSV) melalui Tetapan (PIN).</p>
-            </div>
-            <button class="btn" id="btnReloadTakwim">🔄 Muat Semula</button>
-          </div>
-
+        <!-- CALENDAR -->
+        <div class="page" id="page-calendar" style="display:none;">
           <div class="card">
-            <div class="muted" style="font-size:13px;">
-              Buat masa ini URL Takwim belum diisi (cikgu boleh isi di Tetapan).
+            <div class="cardTitle">
+              <div>
+                <h2>Takwim</h2>
+                <p class="sub">Pautan CSV takwim boleh ditambah dalam Tetapan (PIN diperlukan).</p>
+              </div>
             </div>
-            <div style="margin-top:12px;" class="tableWrap">
-              <table id="takwimTable">
-                <thead id="takwimThead"></thead>
-                <tbody id="takwimTbody"></tbody>
-              </table>
-            </div>
+            <div id="calendarArea" class="sub">Belum disambungkan.</div>
           </div>
-        </section>
+        </div>
 
-        <!-- IBU BAPA -->
-        <section id="page-ibubapa" style="display:none;">
-          <div class="banner" style="margin-bottom:14px;">
-            <div>
-              <h2>Ibu Bapa</h2>
-              <p class="muted">Kad makluman / pautan — boleh pilih pop-out atau buka tab baru (ikut data CSV).</p>
+        <!-- PARENTS -->
+        <div class="page" id="page-parents" style="display:none;">
+          <div class="card">
+            <div class="cardTitle">
+              <div>
+                <h2>Ibu Bapa</h2>
+                <p class="sub">Kad info (pilih: pop out atau buka URL tab baru).</p>
+              </div>
+              <div class="row">
+                <button class="btn" id="btnReloadParents">Segar Semula</button>
+              </div>
             </div>
-            <button class="btn" id="btnReloadParents">🔄 Muat Semula</button>
-          </div>
 
-          <div id="parentsContainer" class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));"></div>
-          <div class="muted" style="margin-top:12px; font-size:12px;">
-            Cadangan kolum: Tajuk, Isi Kandungan, URL, Mod (POPUP / TAB).
+            <div id="parentsGrid" class="grid" style="grid-template-columns: repeat(2, minmax(0,1fr));"></div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
   </div>
 
-  <!-- PIN MODAL -->
-  <div class="overlay" id="pinOverlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true">
-      <div class="modalHeader">
-        <h3>Masukkan PIN Tetapan</h3>
-        <button class="closeX" id="pinClose">✕</button>
+  <!-- Modal: Announcement Detail -->
+  <div class="overlay" id="overlayAnn">
+    <div class="modal">
+      <div class="modalHead">
+        <h3 id="annModalTitle">Butiran Pengumuman</h3>
+        <button class="iconBtn" id="btnCloseAnn" title="Tutup">✕</button>
       </div>
-      <div class="modalBody">
-        <div class="muted" style="margin-bottom:10px;">
-          Hanya pemilik boleh kemaskini logo, nama sekolah, moto, footer, URL data & tema preset.
-        </div>
-
-        <div class="row">
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">PIN</div>
-            <input id="pinInput" type="password" placeholder="••••" inputmode="numeric" />
-          </div>
-          <div style="display:flex; align-items:end;">
-            <button class="btn primary" id="pinSubmit">Buka Tetapan</button>
-          </div>
-        </div>
-
-        <div id="pinWarn" class="warn" style="display:none; margin-top:12px;">
-          PIN salah. Sila cuba lagi.
-        </div>
-      </div>
+      <div class="modalBody" id="annModalBody"></div>
     </div>
   </div>
 
-  <!-- SETTINGS MODAL -->
-  <div class="overlay" id="settingsOverlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" style="max-width: 980px;">
-      <div class="modalHeader">
-        <h3>Tetapan Portal (Admin)</h3>
-        <button class="closeX" id="settingsClose">✕</button>
+  <!-- Modal: Settings (PIN gate) -->
+  <div class="overlay" id="overlaySettings">
+    <div class="modal">
+      <div class="modalHead">
+        <h3>Tetapan Portal</h3>
+        <button class="iconBtn" id="btnCloseSettings" title="Tutup">✕</button>
       </div>
+
       <div class="modalBody">
-        <div class="warn" style="margin-bottom:12px;">
-          Perubahan disimpan dalam peranti (localStorage). Pengguna lain masih boleh tukar Light/Dark sahaja.
+        <!-- PIN STEP -->
+        <div id="pinStep">
+          <p class="sub" style="margin:0 0 10px;">
+            Untuk kemaskini (logo/nama/moto/footer/URL CSV), masukkan PIN.
+            <br><span style="font-weight:900;color:var(--muted);">Tema preset & light/dark boleh diubah tanpa PIN.</span>
+          </p>
+
+          <div class="row" style="gap:10px;">
+            <input class="field" id="pinInput" inputmode="numeric" placeholder="Masukkan PIN" style="min-width:240px;">
+            <button class="btn btnPrimary" id="btnPinOk">Masuk</button>
+          </div>
+
+          <div class="warnBox" id="pinWarn">PIN salah. Sila cuba lagi.</div>
+
+          <div style="margin-top:14px;">
+            <p class="help" style="margin:0;">
+              Nota: Jika cikgu hanya nak tukar tema, guna dropdown preset di header dan butang 🌙.
+            </p>
+          </div>
         </div>
 
-        <div class="sectionTitle">Maklumat Portal</div>
-        <div class="row">
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">Nama Sekolah</div>
-            <input id="setSchoolName" />
-          </div>
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">Moto</div>
-            <input id="setMotto" />
-          </div>
-        </div>
+        <!-- SETTINGS STEP -->
+        <div id="settingsStep" style="display:none;">
+          <div class="modalGrid">
+            <div class="card">
+              <div class="cardTitle">
+                <h2>Identiti Portal</h2>
+                <div class="sub">Kemaskini nama/moto/footer/logo</div>
+              </div>
 
-        <div class="row">
-          <div>
-            <div class="muted" style="font-size:12px; margin:10px 0 6px;">URL Logo (gambar)</div>
-            <input id="setLogoUrl" placeholder="cth: https://.../logo.png" />
-            <div class="muted" style="font-size:12px; margin-top:6px;">
-              Jika kosong, portal guna ikon 🏫.
+              <input class="field" id="setSchoolName" placeholder="Nama Sekolah" style="width:100%; margin-top:8px;">
+              <input class="field" id="setSchoolMotto" placeholder="Moto Sekolah" style="width:100%; margin-top:10px;">
+              <input class="field" id="setFooter1" placeholder="Footer (Baris 1)" style="width:100%; margin-top:10px;">
+              <input class="field" id="setFooter2" placeholder="Footer (Baris 2)" style="width:100%; margin-top:10px;">
+
+              <div style="margin-top:10px;">
+                <label class="sub" style="font-weight:900;">Logo Sekolah</label>
+                <input class="field" id="setLogoFile" type="file" accept="image/*" style="width:100%; margin-top:6px;">
+                <p class="help">Logo disimpan dalam pelayar (localStorage). Untuk pindah komputer, perlu upload semula.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="cardTitle">
+                <h2>URL CSV</h2>
+                <div class="sub">Kehadiran / Pengumuman / Ibu Bapa / Takwim</div>
+              </div>
+
+              <label class="sub" style="font-weight:900; margin-top:6px;">Kehadiran</label>
+              <input class="field" id="setUrlAttendance" style="width:100%; margin-top:6px;">
+
+              <label class="sub" style="font-weight:900; margin-top:10px;">Pengumuman</label>
+              <input class="field" id="setUrlAnnouncements" style="width:100%; margin-top:6px;">
+
+              <label class="sub" style="font-weight:900; margin-top:10px;">Ibu Bapa</label>
+              <input class="field" id="setUrlParents" style="width:100%; margin-top:6px;">
+
+              <label class="sub" style="font-weight:900; margin-top:10px;">Takwim (optional)</label>
+              <input class="field" id="setUrlCalendar" style="width:100%; margin-top:6px;" placeholder="(optional)">
+
+              <div class="row" style="gap:10px; margin-top:12px;">
+                <button class="btn btnPrimary" id="btnSaveSettings">Simpan</button>
+                <button class="btn" id="btnResetSettings">Segar Semula</button>
+                <button class="btn btnDanger" id="btnLogoutSettings" title="Keluar tetapan (PIN akan diminta semula)">Kunci Semula</button>
+              </div>
+              <p class="help">Kesemua tetapan disimpan dalam browser (localStorage).</p>
             </div>
           </div>
-          <div>
-            <div class="muted" style="font-size:12px; margin:10px 0 6px;">Footer</div>
-            <textarea id="setFooter"></textarea>
-          </div>
-        </div>
 
-        <div class="sectionTitle">Tema</div>
-        <div class="row">
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">Preset Tema</div>
-            <select id="setPreset">
-              <option value="forest">Forest (Default)</option>
-              <option value="ocean">Ocean</option>
-              <option value="purple">Purple</option>
-              <option value="amber">Amber</option>
-            </select>
-            <div class="muted" style="font-size:12px; margin-top:6px;">
-              Semua pengguna boleh toggle Light/Dark di header.
+          <div class="card" style="margin-top:14px;">
+            <div class="cardTitle">
+              <h2>Pemetaan Kolum Kehadiran</h2>
+              <div class="sub">Jika nama kolum berubah, edit di sini (tanpa ubah kod).</div>
+            </div>
+
+            <div class="modalGrid" style="grid-template-columns: 1fr 1fr;">
+              <div>
+                <label class="sub" style="font-weight:900;">Tarikh</label>
+                <input class="field" id="mapTarikh" style="width:100%; margin-top:6px;" placeholder="Contoh: Tarikh">
+                <p class="help">Terima: Tarikh / TARIKH / tarikh</p>
+              </div>
+              <div>
+                <label class="sub" style="font-weight:900;">Kelas</label>
+                <input class="field" id="mapKelas" style="width:100%; margin-top:6px;" placeholder="Contoh: Kelas">
+              </div>
+              <div>
+                <label class="sub" style="font-weight:900;">Nama Murid</label>
+                <input class="field" id="mapNama" style="width:100%; margin-top:6px;" placeholder="Contoh: Nama Murid / Nama_Murid">
+                <p class="help">Contoh: <b>Nama Murid</b> atau <b>Nama_Murid</b></p>
+              </div>
+              <div>
+                <label class="sub" style="font-weight:900;">Status</label>
+                <input class="field" id="mapStatus" style="width:100%; margin-top:6px;" placeholder="Contoh: Status">
+              </div>
+              <div>
+                <label class="sub" style="font-weight:900;">Jantina</label>
+                <input class="field" id="mapJantina" style="width:100%; margin-top:6px;" placeholder="Contoh: Jantina">
+              </div>
+            </div>
+
+            <div class="row" style="gap:10px; margin-top:12px;">
+              <button class="btn btnPrimary" id="btnSaveMapping">Simpan Pemetaan</button>
             </div>
           </div>
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">Mod Default</div>
-            <select id="setDefaultTheme">
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="sectionTitle">URL Data (CSV)</div>
-        <div class="row">
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">Kehadiran (CSV)</div>
-            <input id="setUrlKehadiran" />
-          </div>
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">Pengumuman (CSV)</div>
-            <input id="setUrlAnn" />
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">Ibu Bapa (CSV)</div>
-            <input id="setUrlParents" />
-          </div>
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">Takwim (CSV)</div>
-            <input id="setUrlTakwim" placeholder="(isi bila sudah ada sheet)" />
-          </div>
-        </div>
-
-        <div class="sectionTitle">Kehadiran (Kolum Admin)</div>
-        <div class="row">
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">Sembunyikan kolum bila bukan admin</div>
-            <input id="setHideCols" placeholder="cth: Jantina, (lain-lain)" />
-            <div class="muted" style="font-size:12px; margin-top:6px;">
-              Asingkan dengan koma. Contoh: <b>Jantina</b>
-            </div>
-          </div>
-          <div>
-            <div class="muted" style="font-size:12px; margin:0 0 6px;">PIN Admin (paparan sahaja)</div>
-            <input value="5235" disabled />
-            <div class="muted" style="font-size:12px; margin-top:6px;">
-              PIN disimpan dalam kod. (Jika cikgu nak ubah, cari <b>ADMIN_PIN</b> dalam script.)
-            </div>
-          </div>
-        </div>
-
-        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px;">
-          <button class="btn danger" id="btnReset">Reset Tetapan</button>
-          <button class="btn primary" id="btnSave">Simpan</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DETAIL MODAL (untuk Pengumuman/Ibu Bapa) -->
-  <div class="overlay" id="detailOverlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true">
-      <div class="modalHeader">
-        <h3 id="detailTitle">Detail</h3>
-        <button class="closeX" id="detailClose">✕</button>
-      </div>
-      <div class="modalBody">
-        <div id="detailMeta" class="muted" style="margin-bottom:10px;"></div>
-        <div id="detailBody" style="white-space:pre-wrap; font-weight:800; line-height:1.5;"></div>
-        <div id="detailLinkWrap" style="margin-top:12px; display:none;">
-          <a id="detailLink" class="btn primary" href="#" target="_blank" rel="noopener">Buka Pautan</a>
         </div>
       </div>
     </div>
@@ -838,1010 +792,1344 @@
 
   <script>
     /***********************
-     *  CONFIG (DEFAULT)
+     * DEFAULT CONFIG
      ***********************/
-    const ADMIN_PIN = "5235";
-
     const DEFAULTS = {
       schoolName: "SK Paya Resak",
-      motto: "Moving Forward",
-      logoUrl: "",
-      footer: "© 2025 NK.\nHak Cipta Terpelihara.",
+      schoolMotto: "Moving Forward",
+      footer1: "© 2025 NK.",
+      footer2: "Hak Cipta Terpelihara.",
       preset: "forest",
-      theme: "light",
-
-      urlKehadiran: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
-      urlAnn: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
-      urlParents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
-      urlTakwim: "",
-
-      hideColsNonAdmin: "Jantina"
+      mode: "dark",
+      pin: "5235",
+      urls: {
+        attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
+        announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
+        parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
+        calendar: ""
+      },
+      attendanceMap: {
+        tarikh: "Tarikh",
+        kelas: "Kelas",
+        nama: "Nama Murid",
+        status: "Status",
+        jantina: "Jantina"
+      }
     };
 
-    const LS_KEY = "ppki_portal_settings_v1";
-    const SS_ADMIN = "ppki_admin_unlocked_v1";
-
-    const state = {
-      settings: loadSettings(),
-      adminUnlocked: sessionStorage.getItem(SS_ADMIN) === "1",
-      page: "home",
-
-      // data cache
-      kehadiran: { headers: [], rows: [] },
-      pengumuman: { headers: [], rows: [] },
-      parents:   { headers: [], rows: [] },
-      takwim:    { headers: [], rows: [] },
-
-      chart: null,
-      showAdminCols: false
+    const LS = {
+      settings: "ppki_portal_settings_v1",
+      logo: "ppki_portal_logo_v1"
     };
 
-    applySettingsToUI();
-
-    /***********************
-     *  UTIL: CSV PARSER
-     ***********************/
-    function parseCSV(text){
-      // Basic robust CSV parser (handles quotes)
-      const rows = [];
-      let row = [];
-      let cur = "";
-      let inQuotes = false;
-
-      for (let i=0; i<text.length; i++){
-        const c = text[i];
-        const n = text[i+1];
-
-        if (c === '"' ){
-          if (inQuotes && n === '"'){ cur += '"'; i++; }
-          else { inQuotes = !inQuotes; }
-        } else if (c === ',' && !inQuotes){
-          row.push(cur); cur = "";
-        } else if ((c === '\n' || c === '\r') && !inQuotes){
-          if (c === '\r' && n === '\n') i++;
-          row.push(cur); cur = "";
-          if (row.some(v => v.trim() !== "")) rows.push(row);
-          row = [];
-        } else {
-          cur += c;
-        }
-      }
-      // last cell
-      row.push(cur);
-      if (row.some(v => v.trim() !== "")) rows.push(row);
-
-      // trim
-      return rows.map(r => r.map(v => (v ?? "").trim()));
-    }
-
-    function rowsToObjects(headers, rows){
-      return rows.map(r => {
-        const o = {};
-        headers.forEach((h, idx) => o[h] = (r[idx] ?? "").trim());
-        return o;
-      });
-    }
-
-    function normalizeHeader(h){
-      return (h || "").trim();
-    }
-
-    /***********************
-     *  UTIL: DATE PARSER
-     ***********************/
-    function parseDateSmart(s){
-      const t = (s || "").trim();
-      if (!t) return null;
-
-      // try YYYY-MM-DD
-      if (/^\d{4}-\d{2}-\d{2}$/.test(t)){
-        const d = new Date(t + "T00:00:00");
-        return isNaN(d.getTime()) ? null : d;
-      }
-
-      // try DD/MM/YYYY
-      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(t)){
-        const [dd, mm, yyyy] = t.split("/").map(Number);
-        const d = new Date(yyyy, mm-1, dd);
-        return isNaN(d.getTime()) ? null : d;
-      }
-
-      // fallback
-      const d = new Date(t);
-      return isNaN(d.getTime()) ? null : d;
-    }
-
-    function isSameDay(a,b){
-      return a && b &&
-        a.getFullYear()===b.getFullYear() &&
-        a.getMonth()===b.getMonth() &&
-        a.getDate()===b.getDate();
-    }
-    function startOfWeek(d){
-      // Monday as start
-      const x = new Date(d);
-      const day = (x.getDay()+6)%7; // Mon=0
-      x.setDate(x.getDate() - day);
-      x.setHours(0,0,0,0);
-      return x;
-    }
-    function endOfWeek(d){
-      const s = startOfWeek(d);
-      const e = new Date(s);
-      e.setDate(e.getDate()+6);
-      e.setHours(23,59,59,999);
-      return e;
-    }
-
-    function fmtDateMY(d){
-      if (!d) return "-";
-      const opts = { weekday:'short', year:'numeric', month:'short', day:'2-digit' };
-      return d.toLocaleDateString('ms-MY', opts);
-    }
-
-    function monthKey(d){
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,"0");
-      return `${y}-${m}`;
-    }
-
-    /***********************
-     *  LOCKED COLUMN MAPPING (Kehadiran)
-     ***********************/
-    function getKehadiranColumns(headers){
-      // ===== LOCKED COLUMN MAPPING =====
-      const COL_TARIKH = "Tarikh";
-      const COL_KELAS = "Kelas";
-      const COL_NAMA  = headers.includes("Nama Murid") ? "Nama Murid" : "Nama_Murid"; // fallback
-      const COL_STATUS = "Status";
-      const COL_JANTINA = "Jantina";
-
-      const missing = [];
-      [COL_TARIKH, COL_KELAS, COL_NAMA, COL_STATUS].forEach(col=>{
-        if (!headers.includes(col)) missing.push(col);
-      });
-      if (missing.length){
-        console.warn("❌ Kolum Kehadiran tidak dijumpai:", missing.join(", "));
-      }
-
-      return { tarikh: COL_TARIKH, kelas: COL_KELAS, nama: COL_NAMA, status: COL_STATUS, jantina: COL_JANTINA };
-    }
-
-    /***********************
-     *  LOAD & SAVE SETTINGS
-     ***********************/
     function loadSettings(){
       try{
-        const raw = localStorage.getItem(LS_KEY);
-        if (!raw) return {...DEFAULTS};
-        const parsed = JSON.parse(raw);
-        return { ...DEFAULTS, ...parsed };
-      }catch{
-        return {...DEFAULTS};
+        const raw = localStorage.getItem(LS.settings);
+        if(!raw) return structuredClone(DEFAULTS);
+        const s = JSON.parse(raw);
+        return {
+          ...structuredClone(DEFAULTS),
+          ...s,
+          urls: { ...structuredClone(DEFAULTS.urls), ...(s.urls||{}) },
+          attendanceMap: { ...structuredClone(DEFAULTS.attendanceMap), ...(s.attendanceMap||{}) }
+        };
+      }catch(e){
+        return structuredClone(DEFAULTS);
       }
     }
     function saveSettings(s){
-      localStorage.setItem(LS_KEY, JSON.stringify(s));
+      localStorage.setItem(LS.settings, JSON.stringify(s));
     }
-
-    function applySettingsToUI(){
-      const s = state.settings;
-
-      document.body.setAttribute("data-preset", s.preset);
-      document.body.setAttribute("data-theme", s.theme);
-
-      // Sidebar brand
-      document.getElementById("schoolName").textContent = s.schoolName || DEFAULTS.schoolName;
-      document.getElementById("schoolMotto").textContent = s.motto || DEFAULTS.motto;
-
-      // Welcome
-      document.getElementById("welcomeTitle").textContent =
-        `Selamat Datang ke Portal Rasmi PPKI ${s.schoolName || DEFAULTS.schoolName}`;
-
-      // Footer
-      document.getElementById("footerText").innerText = s.footer || DEFAULTS.footer;
-
-      // Logo
-      const logoBox = document.getElementById("logoBox");
-      logoBox.innerHTML = "";
-      if (s.logoUrl && s.logoUrl.trim()){
-        const img = document.createElement("img");
-        img.src = s.logoUrl.trim();
-        img.alt = "Logo Sekolah";
-        img.onerror = () => {
-          logoBox.innerHTML = "<span style='font-weight:1000;'>🏫</span>";
-        };
-        logoBox.appendChild(img);
-      } else {
-        logoBox.innerHTML = "<span style='font-weight:1000;'>🏫</span>";
-      }
-
-      // Theme label
-      document.getElementById("themeLabel").textContent = s.theme === "dark" ? "Dark" : "Light";
-      document.getElementById("themeIcon").textContent = s.theme === "dark" ? "☀️" : "🌙";
-
-      // Admin btn columns visibility
-      document.getElementById("btnAdminCols").style.display = state.adminUnlocked ? "inline-block" : "none";
-    }
+    let SETTINGS = loadSettings();
 
     /***********************
-     *  CLOCK
-     ***********************/
-    function startClock(){
-      const el = document.getElementById("clock");
-      setInterval(()=>{
-        const now = new Date();
-        const t = now.toLocaleTimeString("ms-MY", { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-        const d = now.toLocaleDateString("ms-MY", { weekday:'short', year:'numeric', month:'short', day:'2-digit' });
-        el.textContent = `${d} • ${t}`;
-      }, 1000);
-    }
-    startClock();
-
-    /***********************
-     *  NAVIGATION
-     ***********************/
-    function setActivePage(page){
-      state.page = page;
-      const titles = {
-        home:"Laman Utama",
-        kehadiran:"Kehadiran",
-        pengumuman:"Pengumuman",
-        takwim:"Takwim",
-        ibubapa:"Ibu Bapa"
-      };
-      document.getElementById("pageTitle").textContent = titles[page] || "Portal";
-
-      // show/hide sections
-      ["home","kehadiran","pengumuman","takwim","ibubapa"].forEach(p=>{
-        document.getElementById("page-"+p).style.display = (p===page) ? "" : "none";
-      });
-
-      // nav active
-      document.querySelectorAll(".navBtn").forEach(btn=>{
-        btn.classList.toggle("active", btn.dataset.page === page);
-      });
-
-      // on mobile: close sidebar after click
-      if (window.matchMedia("(max-width: 860px)").matches){
-        closeMobileSidebar();
-      }
-    }
-
-    document.getElementById("nav").addEventListener("click", (e)=>{
-      const btn = e.target.closest(".navBtn");
-      if (!btn) return;
-      setActivePage(btn.dataset.page);
-    });
-
-    // Cards jump
-    document.getElementById("cardToday").onclick = ()=> setActivePage("kehadiran");
-    document.getElementById("cardWeek").onclick  = ()=> setActivePage("kehadiran");
-    document.getElementById("cardMonth").onclick = ()=> setActivePage("kehadiran");
-    document.getElementById("cardPct").onclick   = ()=> setActivePage("kehadiran");
-    document.getElementById("cardToday2").onclick = ()=>{};
-    document.getElementById("cardWeek2").onclick  = ()=>{};
-    document.getElementById("cardMonth2").onclick = ()=>{};
-    document.getElementById("cardPct2").onclick   = ()=>{};
-    document.getElementById("cardAnn").onclick   = ()=> setActivePage("pengumuman");
-
-    /***********************
-     *  SIDEBAR TOGGLE
+     * DOM REFS
      ***********************/
     const sidebar = document.getElementById("sidebar");
-    const backdrop = document.getElementById("sidebarBackdrop");
+    const btnMenu = document.getElementById("btnMenu");
+    const pageTitle = document.getElementById("pageTitle");
+    const nav = document.getElementById("nav");
 
-    function isMobile(){
-      return window.matchMedia("(max-width: 860px)").matches;
+    const schoolNameSide = document.getElementById("schoolNameSide");
+    const schoolMottoSide = document.getElementById("schoolMottoSide");
+    const footerLine1Side = document.getElementById("footerLine1Side");
+    const footerLine2Side = document.getElementById("footerLine2Side");
+
+    const miniLogo = document.getElementById("miniLogo");
+    const miniLogoImg = document.getElementById("miniLogoImg");
+    const miniLogoFallback = document.getElementById("miniLogoFallback");
+
+    const presetSelect = document.getElementById("presetSelect");
+    const btnMode = document.getElementById("btnMode");
+
+    const overlaySettings = document.getElementById("overlaySettings");
+    const btnSettings = document.getElementById("btnSettings");
+    const btnCloseSettings = document.getElementById("btnCloseSettings");
+
+    const pinStep = document.getElementById("pinStep");
+    const settingsStep = document.getElementById("settingsStep");
+    const pinInput = document.getElementById("pinInput");
+    const btnPinOk = document.getElementById("btnPinOk");
+    const pinWarn = document.getElementById("pinWarn");
+
+    // Settings fields
+    const setSchoolName = document.getElementById("setSchoolName");
+    const setSchoolMotto = document.getElementById("setSchoolMotto");
+    const setFooter1 = document.getElementById("setFooter1");
+    const setFooter2 = document.getElementById("setFooter2");
+    const setLogoFile = document.getElementById("setLogoFile");
+    const setUrlAttendance = document.getElementById("setUrlAttendance");
+    const setUrlAnnouncements = document.getElementById("setUrlAnnouncements");
+    const setUrlParents = document.getElementById("setUrlParents");
+    const setUrlCalendar = document.getElementById("setUrlCalendar");
+    const btnSaveSettings = document.getElementById("btnSaveSettings");
+    const btnResetSettings = document.getElementById("btnResetSettings");
+    const btnLogoutSettings = document.getElementById("btnLogoutSettings");
+
+    // Mapping
+    const mapTarikh = document.getElementById("mapTarikh");
+    const mapKelas = document.getElementById("mapKelas");
+    const mapNama = document.getElementById("mapNama");
+    const mapStatus = document.getElementById("mapStatus");
+    const mapJantina = document.getElementById("mapJantina");
+    const btnSaveMapping = document.getElementById("btnSaveMapping");
+
+    // Home stats
+    const timeNow = document.getElementById("timeNow");
+    const vToday = document.getElementById("vToday");
+    const sToday = document.getElementById("sToday");
+    const vWeek = document.getElementById("vWeek");
+    const sWeek = document.getElementById("sWeek");
+    const vMonth = document.getElementById("vMonth");
+    const sMonth = document.getElementById("sMonth");
+    const vPct = document.getElementById("vPct");
+
+    const vToday2 = document.getElementById("vToday2");
+    const sToday2 = document.getElementById("sToday2");
+    const vWeek2 = document.getElementById("vWeek2");
+    const sWeek2 = document.getElementById("sWeek2");
+    const vMonth2 = document.getElementById("vMonth2");
+    const sMonth2 = document.getElementById("sMonth2");
+    const vPct2 = document.getElementById("vPct2");
+
+    // Trend chart controls
+    const trendMode = document.getElementById("trendMode");
+    const trendMonth = document.getElementById("trendMonth");
+    const trendYear = document.getElementById("trendYear");
+    const trendClass = document.getElementById("trendClass");
+    const trendChart = document.getElementById("trendChart");
+
+    // Attendance page controls
+    const btnReloadAttendance = document.getElementById("btnReloadAttendance");
+    const searchAttendance = document.getElementById("searchAttendance");
+    const filterClass = document.getElementById("filterClass");
+    const filterStatus = document.getElementById("filterStatus");
+    const dateFrom = document.getElementById("dateFrom");
+    const dateTo = document.getElementById("dateTo");
+    const btnApplyFilter = document.getElementById("btnApplyFilter");
+    const btnResetFilter = document.getElementById("btnResetFilter");
+    const attendanceHead = document.getElementById("attendanceHead");
+    const attendanceBody = document.getElementById("attendanceBody");
+    const attendanceMeta = document.getElementById("attendanceMeta");
+
+    // Announcements
+    const annCount = document.getElementById("annCount");
+    const annListHome = document.getElementById("annListHome");
+    const annGrid = document.getElementById("annGrid");
+    const btnReloadAnnouncements = document.getElementById("btnReloadAnnouncements");
+
+    const overlayAnn = document.getElementById("overlayAnn");
+    const btnCloseAnn = document.getElementById("btnCloseAnn");
+    const annModalTitle = document.getElementById("annModalTitle");
+    const annModalBody = document.getElementById("annModalBody");
+
+    // Parents
+    const parentsGrid = document.getElementById("parentsGrid");
+    const btnReloadParents = document.getElementById("btnReloadParents");
+
+    // Calendar
+    const calendarArea = document.getElementById("calendarArea");
+
+    /***********************
+     * UTIL
+     ***********************/
+    function normKey(s){
+      return String(s||"")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g,"")
+        .replace(/_/g,"")
+        .replace(/[^\p{L}\p{N}]/gu,"");
+    }
+    function pickCol(headers, desired){
+      const want = normKey(desired);
+      const idx = headers.findIndex(h => normKey(h) === want);
+      if(idx !== -1) return headers[idx];
+
+      // fallback common aliases
+      const aliases = {
+        tarikh: ["tarikh","date","tanggal"],
+        kelas: ["kelas","class"],
+        namamurid: ["namamurid","nama","murid","name","namastudent","namamurid"],
+        status: ["status","kehadiran","attendancestatus"],
+        jantina: ["jantina","gender","sex"]
+      };
+      const key = normKey(desired);
+      const list = aliases[key] || [];
+      for(const a of list){
+        const j = headers.findIndex(h => normKey(h) === a);
+        if(j !== -1) return headers[j];
+      }
+      // partial match
+      const part = headers.find(h => normKey(h).includes(want) || want.includes(normKey(h)));
+      return part || null;
     }
 
-    function openMobileSidebar(){
-      sidebar.classList.add("open");
-      backdrop.classList.add("show");
-    }
-    function closeMobileSidebar(){
-      sidebar.classList.remove("open");
-      backdrop.classList.remove("show");
+    function parseCSV(text){
+      // Simple CSV parser supporting quotes
+      const rows = [];
+      let row = [], cur = "", inQ = false;
+      for(let i=0;i<text.length;i++){
+        const ch = text[i];
+        const next = text[i+1];
+        if(ch === '"' ){
+          if(inQ && next === '"'){ cur += '"'; i++; }
+          else inQ = !inQ;
+        } else if(ch === "," && !inQ){
+          row.push(cur); cur="";
+        } else if((ch === "\n" || ch === "\r") && !inQ){
+          if(ch === "\r" && next === "\n"){ i++; }
+          row.push(cur);
+          if(row.some(v => String(v).trim()!=="")) rows.push(row);
+          row = []; cur="";
+        } else {
+          cur += ch;
+        }
+      }
+      // last
+      row.push(cur);
+      if(row.some(v => String(v).trim()!=="")) rows.push(row);
+      if(rows.length === 0) return { headers: [], data: [] };
+      const headers = rows[0].map(h => String(h||"").trim());
+      const data = rows.slice(1).map(r => {
+        const obj = {};
+        headers.forEach((h,idx)=> obj[h] = (r[idx] ?? "").trim());
+        return obj;
+      });
+      return { headers, data };
     }
 
-    function toggleSidebar(){
-      if (isMobile()){
-        if (sidebar.classList.contains("open")) closeMobileSidebar();
-        else openMobileSidebar();
-      } else {
-        sidebar.classList.toggle("collapsed");
+    function parseDateDMY(s){
+      // dd/mm/yyyy OR yyyy-mm-dd
+      if(!s) return null;
+      const str = String(s).trim();
+      if(/^\d{4}-\d{2}-\d{2}/.test(str)){
+        const d = new Date(str + "T00:00:00");
+        return isNaN(d) ? null : d;
+      }
+      const m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if(!m) return null;
+      const dd = Number(m[1]), mm = Number(m[2]), yy = Number(m[3]);
+      const d = new Date(yy, mm-1, dd, 0,0,0,0);
+      if(d.getFullYear()!==yy || d.getMonth()!==mm-1 || d.getDate()!==dd) return null;
+      return d;
+    }
+
+    function formatDMY(d){
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const yy = d.getFullYear();
+      return `${dd}/${mm}/${yy}`;
+    }
+
+    function startOfWeekMonday(d){
+      const x = new Date(d); x.setHours(0,0,0,0);
+      const day = x.getDay(); // 0 Sun .. 6 Sat
+      const diff = (day === 0 ? -6 : (1 - day));
+      x.setDate(x.getDate() + diff);
+      return x;
+    }
+    function endOfWeekSunday(d){
+      const s = startOfWeekMonday(d);
+      const e = new Date(s); e.setDate(e.getDate()+6); e.setHours(23,59,59,999);
+      return e;
+    }
+
+    function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+
+    /***********************
+     * APPLY SETTINGS (THEME + IDENTITY)
+     ***********************/
+    function applyTheme(){
+      document.documentElement.dataset.preset = SETTINGS.preset || "forest";
+      document.documentElement.dataset.mode = SETTINGS.mode || "dark";
+      presetSelect.value = document.documentElement.dataset.preset;
+      btnMode.textContent = (document.documentElement.dataset.mode === "dark") ? "🌙" : "☀️";
+    }
+
+    function applyIdentity(){
+      schoolNameSide.textContent = SETTINGS.schoolName;
+      schoolMottoSide.textContent = SETTINGS.schoolMotto;
+      footerLine1Side.textContent = SETTINGS.footer1;
+      footerLine2Side.textContent = SETTINGS.footer2;
+
+      // logo (from localStorage)
+      const logoData = localStorage.getItem(LS.logo);
+      const sidebarLogo = document.getElementById("sidebarLogo");
+      sidebarLogo.innerHTML = "";
+      if(logoData){
+        const img = document.createElement("img");
+        img.src = logoData;
+        sidebarLogo.appendChild(img);
+
+        miniLogoImg.src = logoData;
+        miniLogoImg.style.display = "block";
+        miniLogoFallback.style.display = "none";
+      }else{
+        sidebarLogo.innerHTML = "<span style='font-weight:1000;'>🏫</span>";
+        miniLogoImg.style.display = "none";
+        miniLogoFallback.style.display = "grid";
       }
     }
 
-    document.getElementById("btnSidebar").onclick = toggleSidebar;
-    backdrop.onclick = closeMobileSidebar;
+    /***********************
+     * PAGES NAVIGATION
+     ***********************/
+    function showPage(page){
+      document.querySelectorAll(".page").forEach(p => p.style.display="none");
+      const el = document.getElementById("page-"+page);
+      if(el) el.style.display="block";
 
-    // Mobile default: sidebar closed
-    window.addEventListener("resize", ()=>{
-      if (!isMobile()){
-        closeMobileSidebar();
-      } else {
-        // keep default closed
+      document.querySelectorAll(".navBtn").forEach(b => b.classList.toggle("active", b.dataset.page===page));
+      const titles = {
+        home: "Laman Utama",
+        attendance: "Kehadiran",
+        announcements: "Pengumuman",
+        calendar: "Takwim",
+        parents: "Ibu Bapa"
+      };
+      pageTitle.textContent = titles[page] || "Portal";
+
+      // close sidebar on mobile after select
+      if(window.matchMedia("(max-width: 860px)").matches){
+        sidebar.classList.remove("open");
       }
+    }
+
+    nav.addEventListener("click", (e)=>{
+      const btn = e.target.closest(".navBtn");
+      if(!btn) return;
+      showPage(btn.dataset.page);
     });
 
     /***********************
-     *  THEME TOGGLE (public)
+     * MOBILE SIDEBAR DEFAULT CLOSED
      ***********************/
-    document.getElementById("themeToggle").onclick = ()=>{
-      state.settings.theme = (state.settings.theme === "dark") ? "light" : "dark";
-      // semua orang boleh toggle; simpan supaya peranti itu ingat
-      saveSettings(state.settings);
-      applySettingsToUI();
-      if (state.chart) state.chart.update();
-    };
+    function syncSidebarDefault(){
+      const isMobile = window.matchMedia("(max-width: 860px)").matches;
+      if(isMobile){
+        sidebar.classList.remove("collapsed"); // use slide-out on mobile
+        sidebar.classList.remove("open"); // default closed
+      }else{
+        sidebar.classList.remove("open");
+      }
+    }
+    window.addEventListener("resize", syncSidebarDefault);
+
+    btnMenu.addEventListener("click", ()=>{
+      const isMobile = window.matchMedia("(max-width: 860px)").matches;
+      if(isMobile){
+        sidebar.classList.toggle("open");
+      }else{
+        sidebar.classList.toggle("collapsed");
+      }
+    });
+
+    miniLogo.addEventListener("click", ()=> showPage("home"));
 
     /***********************
-     *  PIN FLOW + SETTINGS
-     *  - Klik gear => keluar PIN modal
-     *  - PIN betul => buka settings modal
+     * HEADER THEME CONTROLS (NO PIN)
      ***********************/
-    const pinOverlay = document.getElementById("pinOverlay");
-    const settingsOverlay = document.getElementById("settingsOverlay");
-    const detailOverlay = document.getElementById("detailOverlay");
+    presetSelect.addEventListener("change", ()=>{
+      SETTINGS.preset = presetSelect.value;
+      saveSettings(SETTINGS);
+      applyTheme();
+      // redraw chart if exists
+      renderTrend();
+    });
 
-    function show(el){ el.classList.add("show"); el.setAttribute("aria-hidden","false"); }
-    function hide(el){ el.classList.remove("show"); el.setAttribute("aria-hidden","true"); }
+    btnMode.addEventListener("click", ()=>{
+      SETTINGS.mode = (SETTINGS.mode === "dark") ? "light" : "dark";
+      saveSettings(SETTINGS);
+      applyTheme();
+      renderTrend();
+    });
 
-    document.getElementById("btnGear").onclick = ()=>{
-      // buka PIN modal sahaja
-      document.getElementById("pinInput").value = "";
-      document.getElementById("pinWarn").style.display = "none";
-      show(pinOverlay);
-      setTimeout(()=> document.getElementById("pinInput").focus(), 50);
-    };
-    document.getElementById("pinClose").onclick = ()=> hide(pinOverlay);
+    /***********************
+     * SETTINGS MODAL (PIN GATE)
+     ***********************/
+    let settingsUnlocked = false;
 
-    document.getElementById("pinSubmit").onclick = ()=>{
-      const val = document.getElementById("pinInput").value.trim();
-      if (val !== ADMIN_PIN){
-        document.getElementById("pinWarn").style.display = "";
+    function openSettings(){
+      overlaySettings.classList.add("show");
+      pinWarn.classList.remove("show");
+      pinInput.value = "";
+      settingsUnlocked = false;
+      pinStep.style.display = "block";
+      settingsStep.style.display = "none";
+      // preload fields (once unlocked)
+    }
+
+    function closeSettings(){
+      overlaySettings.classList.remove("show");
+    }
+
+    btnSettings.addEventListener("click", openSettings);
+    btnCloseSettings.addEventListener("click", closeSettings);
+    overlaySettings.addEventListener("click", (e)=>{
+      if(e.target === overlaySettings) closeSettings();
+    });
+
+    btnPinOk.addEventListener("click", ()=>{
+      const pin = String(pinInput.value||"").trim();
+      if(pin !== SETTINGS.pin){
+        pinWarn.classList.add("show");
         return;
       }
-      // unlock
-      state.adminUnlocked = true;
-      sessionStorage.setItem(SS_ADMIN, "1");
-      document.getElementById("btnAdminCols").style.display = "inline-block";
-      hide(pinOverlay);
-      openSettingsModal();
-    };
+      pinWarn.classList.remove("show");
+      settingsUnlocked = true;
+      pinStep.style.display = "none";
+      settingsStep.style.display = "block";
 
-    document.getElementById("settingsClose").onclick = ()=> hide(settingsOverlay);
+      // load fields
+      setSchoolName.value = SETTINGS.schoolName;
+      setSchoolMotto.value = SETTINGS.schoolMotto;
+      setFooter1.value = SETTINGS.footer1;
+      setFooter2.value = SETTINGS.footer2;
 
-    function openSettingsModal(){
-      // fill inputs
-      const s = state.settings;
-      document.getElementById("setSchoolName").value = s.schoolName || "";
-      document.getElementById("setMotto").value = s.motto || "";
-      document.getElementById("setLogoUrl").value = s.logoUrl || "";
-      document.getElementById("setFooter").value = s.footer || "";
-      document.getElementById("setPreset").value = s.preset || "forest";
-      document.getElementById("setDefaultTheme").value = s.theme || "light";
-      document.getElementById("setUrlKehadiran").value = s.urlKehadiran || "";
-      document.getElementById("setUrlAnn").value = s.urlAnn || "";
-      document.getElementById("setUrlParents").value = s.urlParents || "";
-      document.getElementById("setUrlTakwim").value = s.urlTakwim || "";
-      document.getElementById("setHideCols").value = s.hideColsNonAdmin || "";
-      show(settingsOverlay);
+      setUrlAttendance.value = SETTINGS.urls.attendance;
+      setUrlAnnouncements.value = SETTINGS.urls.announcements;
+      setUrlParents.value = SETTINGS.urls.parents;
+      setUrlCalendar.value = SETTINGS.urls.calendar || "";
+
+      mapTarikh.value = SETTINGS.attendanceMap.tarikh;
+      mapKelas.value = SETTINGS.attendanceMap.kelas;
+      mapNama.value = SETTINGS.attendanceMap.nama;
+      mapStatus.value = SETTINGS.attendanceMap.status;
+      mapJantina.value = SETTINGS.attendanceMap.jantina;
+    });
+
+    pinInput.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter") btnPinOk.click();
+    });
+
+    btnSaveSettings.addEventListener("click", ()=>{
+      if(!settingsUnlocked) return;
+      SETTINGS.schoolName = setSchoolName.value.trim() || DEFAULTS.schoolName;
+      SETTINGS.schoolMotto = setSchoolMotto.value.trim() || DEFAULTS.schoolMotto;
+      SETTINGS.footer1 = setFooter1.value.trim() || DEFAULTS.footer1;
+      SETTINGS.footer2 = setFooter2.value.trim() || DEFAULTS.footer2;
+
+      SETTINGS.urls.attendance = setUrlAttendance.value.trim() || DEFAULTS.urls.attendance;
+      SETTINGS.urls.announcements = setUrlAnnouncements.value.trim() || DEFAULTS.urls.announcements;
+      SETTINGS.urls.parents = setUrlParents.value.trim() || DEFAULTS.urls.parents;
+      SETTINGS.urls.calendar = setUrlCalendar.value.trim();
+
+      saveSettings(SETTINGS);
+      applyIdentity();
+
+      // reload data
+      loadAll();
+      alert("Tetapan berjaya disimpan.");
+    });
+
+    btnResetSettings.addEventListener("click", ()=>{
+      if(!settingsUnlocked) return;
+      // reload from storage
+      SETTINGS = loadSettings();
+      applyTheme();
+      applyIdentity();
+
+      setSchoolName.value = SETTINGS.schoolName;
+      setSchoolMotto.value = SETTINGS.schoolMotto;
+      setFooter1.value = SETTINGS.footer1;
+      setFooter2.value = SETTINGS.footer2;
+
+      setUrlAttendance.value = SETTINGS.urls.attendance;
+      setUrlAnnouncements.value = SETTINGS.urls.announcements;
+      setUrlParents.value = SETTINGS.urls.parents;
+      setUrlCalendar.value = SETTINGS.urls.calendar || "";
+
+      mapTarikh.value = SETTINGS.attendanceMap.tarikh;
+      mapKelas.value = SETTINGS.attendanceMap.kelas;
+      mapNama.value = SETTINGS.attendanceMap.nama;
+      mapStatus.value = SETTINGS.attendanceMap.status;
+      mapJantina.value = SETTINGS.attendanceMap.jantina;
+
+      alert("Tetapan disegar semula.");
+    });
+
+    btnLogoutSettings.addEventListener("click", ()=>{
+      settingsUnlocked = false;
+      pinStep.style.display = "block";
+      settingsStep.style.display = "none";
+      pinInput.value = "";
+      pinWarn.classList.remove("show");
+    });
+
+    setLogoFile.addEventListener("change", async (e)=>{
+      if(!settingsUnlocked) return;
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const dataUrl = await fileToDataURL(file);
+      localStorage.setItem(LS.logo, dataUrl);
+      applyIdentity();
+    });
+
+    btnSaveMapping.addEventListener("click", ()=>{
+      if(!settingsUnlocked) return;
+      SETTINGS.attendanceMap = {
+        tarikh: mapTarikh.value.trim() || DEFAULTS.attendanceMap.tarikh,
+        kelas: mapKelas.value.trim() || DEFAULTS.attendanceMap.kelas,
+        nama: mapNama.value.trim() || DEFAULTS.attendanceMap.nama,
+        status: mapStatus.value.trim() || DEFAULTS.attendanceMap.status,
+        jantina: mapJantina.value.trim() || DEFAULTS.attendanceMap.jantina
+      };
+      saveSettings(SETTINGS);
+      alert("Pemetaan disimpan. Data akan dikira ikut kolum ini.");
+      loadAttendance(); // refresh
+    });
+
+    function fileToDataURL(file){
+      return new Promise((resolve,reject)=>{
+        const r = new FileReader();
+        r.onload = ()=> resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
     }
 
-    document.getElementById("btnSave").onclick = async ()=>{
-      state.settings.schoolName = document.getElementById("setSchoolName").value.trim() || DEFAULTS.schoolName;
-      state.settings.motto = document.getElementById("setMotto").value.trim() || DEFAULTS.motto;
-      state.settings.logoUrl = document.getElementById("setLogoUrl").value.trim();
-      state.settings.footer = document.getElementById("setFooter").value.trim() || DEFAULTS.footer;
-      state.settings.preset = document.getElementById("setPreset").value;
-      state.settings.theme = document.getElementById("setDefaultTheme").value;
-
-      state.settings.urlKehadiran = document.getElementById("setUrlKehadiran").value.trim();
-      state.settings.urlAnn = document.getElementById("setUrlAnn").value.trim();
-      state.settings.urlParents = document.getElementById("setUrlParents").value.trim();
-      state.settings.urlTakwim = document.getElementById("setUrlTakwim").value.trim();
-
-      state.settings.hideColsNonAdmin = document.getElementById("setHideCols").value.trim();
-
-      saveSettings(state.settings);
-      applySettingsToUI();
-      hide(settingsOverlay);
-
-      // refresh data
-      await loadAllData();
-    };
-
-    document.getElementById("btnReset").onclick = async ()=>{
-      state.settings = {...DEFAULTS};
-      saveSettings(state.settings);
-      applySettingsToUI();
-      hide(settingsOverlay);
-      await loadAllData();
-    };
-
     /***********************
-     *  DETAIL MODAL
+     * LIVE CLOCK
      ***********************/
-    document.getElementById("detailClose").onclick = ()=> hide(detailOverlay);
-
-    function openDetail({title, meta, body, url}){
-      document.getElementById("detailTitle").textContent = title || "Detail";
-      document.getElementById("detailMeta").textContent = meta || "";
-      document.getElementById("detailBody").textContent = body || "";
-      const wrap = document.getElementById("detailLinkWrap");
-      const a = document.getElementById("detailLink");
-      if (url && url.trim()){
-        a.href = url.trim();
-        wrap.style.display = "";
-      } else {
-        wrap.style.display = "none";
-      }
-      show(detailOverlay);
+    function tickClock(){
+      const d = new Date();
+      const pad = n => String(n).padStart(2,"0");
+      timeNow.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     }
+    setInterval(tickClock, 1000);
 
     /***********************
-     *  FETCH CSV
+     * DATA STATE
+     ***********************/
+    let attendanceRaw = [];     // normalized objects
+    let attendanceHeaders = [];
+    let announcementsRaw = [];
+    let parentsRaw = [];
+    let calendarRaw = [];
+
+    /***********************
+     * FETCH + NORMALIZE
      ***********************/
     async function fetchCSV(url){
-      if (!url) return { headers: [], rows: [] };
       const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("Gagal fetch CSV: " + res.status);
-      const text = await res.text();
-      const matrix = parseCSV(text);
-      if (!matrix.length) return { headers: [], rows: [] };
-      const headers = matrix[0].map(normalizeHeader);
-      const rows = matrix.slice(1);
-      return { headers, rows: rowsToObjects(headers, rows) };
+      if(!res.ok) throw new Error(`Gagal fetch CSV (${res.status})`);
+      const txt = await res.text();
+      return parseCSV(txt);
+    }
+
+    function normalizeAttendance(parsed){
+      const headers = parsed.headers;
+      attendanceHeaders = headers;
+
+      // map columns by user mapping
+      const colTarikh = pickCol(headers, SETTINGS.attendanceMap.tarikh) || pickCol(headers, "Tarikh");
+      const colKelas  = pickCol(headers, SETTINGS.attendanceMap.kelas)  || pickCol(headers, "Kelas");
+      const colNama   = pickCol(headers, SETTINGS.attendanceMap.nama)   || pickCol(headers, "Nama Murid") || pickCol(headers, "Nama_Murid");
+      const colStatus = pickCol(headers, SETTINGS.attendanceMap.status) || pickCol(headers, "Status");
+      const colJantina= pickCol(headers, SETTINGS.attendanceMap.jantina)|| pickCol(headers, "Jantina");
+
+      const data = parsed.data.map(r=>{
+        const tarikh = parseDateDMY(r[colTarikh]);
+        const statusRaw = (r[colStatus]||"").trim().toUpperCase();
+        const status = statusRaw.includes("TIDAK") ? "TIDAK HADIR" : (statusRaw ? "HADIR" : "");
+        return {
+          __tarikh: tarikh,
+          Tarikh: r[colTarikh] || "",
+          Kelas: r[colKelas] || "",
+          "Nama Murid": r[colNama] || "",
+          Status: status || (r[colStatus]||""),
+          Jantina: r[colJantina] || "",
+          __raw: r
+        };
+      }).filter(x=> x.__tarikh); // keep valid dates
+
+      // sort by date desc
+      data.sort((a,b)=> b.__tarikh - a.__tarikh);
+      return data;
+    }
+
+    function normalizeAnnouncements(parsed){
+      // Expected columns:
+      // ID, TARIKH MULA, TARIKH TAMAT, TAJUK, ISI KANDUNGAN, URL, KEUTAMAAN, AKTIF
+      const H = parsed.headers;
+
+      const colStart = pickCol(H,"TARIKH MULA") || pickCol(H,"Tarikh Mula");
+      const colEnd   = pickCol(H,"TARIKH TAMAT") || pickCol(H,"Tarikh Tamat");
+      const colTitle = pickCol(H,"TAJUK");
+      const colBody  = pickCol(H,"ISI KANDUNGAN") || pickCol(H,"Isi Kandungan");
+      const colUrl   = pickCol(H,"URL");
+      const colPri   = pickCol(H,"KEUTAMAAN");
+      const colAktif = pickCol(H,"AKTIF");
+
+      const now = new Date(); now.setHours(0,0,0,0);
+
+      const data = parsed.data.map(r=>{
+        const start = parseDateDMY(r[colStart]);
+        const end = parseDateDMY(r[colEnd]);
+        const title = (r[colTitle]||"").trim();
+        const body = (r[colBody]||"").trim();
+        const url = (r[colUrl]||"").trim();
+        const pri = (r[colPri]||"").trim().toUpperCase();
+        const aktif = (r[colAktif]||"").trim().toUpperCase(); // optional
+        // Auto rules:
+        // - Must have start and title
+        // - Active if start <= today AND (end empty OR end >= today)
+        // - If AKTIF filled, allow override: YA/TIDAK
+        let computedActive = false;
+        if(start && title){
+          computedActive = (start <= now) && (!end || end >= now);
+        }
+        let finalActive = computedActive;
+        if(aktif === "YA") finalActive = true;
+        if(aktif === "TIDAK") finalActive = false;
+
+        return {
+          start, end,
+          title, body, url,
+          pri: pri || "SEDERHANA",
+          active: finalActive,
+          startText: r[colStart] || "",
+          endText: r[colEnd] || ""
+        };
+      });
+
+      // sort by priority + start desc
+      const priRank = (p)=>{
+        p = String(p||"").toUpperCase();
+        if(p.includes("TINGGI")) return 3;
+        if(p.includes("SEDER")) return 2;
+        return 1;
+      };
+      data.sort((a,b)=>{
+        const pr = priRank(b.pri)-priRank(a.pri);
+        if(pr!==0) return pr;
+        return (b.start?.getTime()||0) - (a.start?.getTime()||0);
+      });
+
+      return data;
+    }
+
+    function normalizeParents(parsed){
+      // Flexible expected columns:
+      // Tajuk, Isi Kandungan, URL, Mod (POPUP/TAB) optional
+      const H = parsed.headers;
+      const colTitle = pickCol(H,"TAJUK") || pickCol(H,"Tajuk");
+      const colBody  = pickCol(H,"ISI KANDUNGAN") || pickCol(H,"Isi Kandungan") || pickCol(H,"Isi");
+      const colUrl   = pickCol(H,"URL") || pickCol(H,"Pautan");
+      const colMode  = pickCol(H,"MOD") || pickCol(H,"Mode") || pickCol(H,"TINDAKAN");
+
+      return parsed.data
+        .map(r=>({
+          title: (r[colTitle]||"").trim(),
+          body: (r[colBody]||"").trim(),
+          url: (r[colUrl]||"").trim(),
+          mode: ((r[colMode]||"POPUP").trim().toUpperCase()) // POPUP or TAB
+        }))
+        .filter(x=>x.title);
+    }
+
+    function normalizeCalendar(parsed){
+      // If provided, just show list for now
+      return parsed.data;
     }
 
     /***********************
-     *  KEHADIRAN: stats + table + chart
+     * COMPUTE ATTENDANCE STATS
      ***********************/
-    function calcAttendanceStats(rows, cols){
-      const now = new Date();
-      now.setHours(0,0,0,0);
-      const weekStart = startOfWeek(now);
-      const weekEnd = endOfWeek(now);
+    function computeStats(list){
+      const now = new Date(); now.setHours(0,0,0,0);
+      const weekStart = startOfWeekMonday(now);
+      const weekEnd = endOfWeekSunday(now);
 
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth()+1, 0);
-      monthEnd.setHours(23,59,59,999);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth()+1, 0, 23,59,59,999);
 
-      // normalization for "Hadir"
-      const isHadir = (v)=> (v || "").toLowerCase().includes("hadir") && !(v || "").toLowerCase().includes("tidak");
+      const isHadir = (r)=> String(r.Status||"").toUpperCase().includes("HADIR") && !String(r.Status||"").toUpperCase().includes("TIDAK");
 
-      let todayH=0, todayT=0, weekH=0, weekT=0, monthH=0, monthT=0;
+      const todayList = list.filter(r => r.__tarikh && r.__tarikh.getTime()===now.getTime());
+      const weekList  = list.filter(r => r.__tarikh && r.__tarikh>=weekStart && r.__tarikh<=weekEnd);
+      const monthList = list.filter(r => r.__tarikh && r.__tarikh>=monthStart && r.__tarikh<=monthEnd);
 
-      const monthlyHadir = new Map(); // key YYYY-MM => count hadir
+      const todayHadir = todayList.filter(isHadir).length;
+      const todayTotal = todayList.length;
 
-      for (const r of rows){
-        const d = parseDateSmart(r[cols.tarikh]);
-        if (!d) continue;
-        d.setHours(0,0,0,0);
+      const weekHadir = weekList.filter(isHadir).length;
+      const weekTotal = weekList.length;
 
-        const status = r[cols.status] || "";
-        const hadir = isHadir(status);
+      const monthHadir = monthList.filter(isHadir).length;
+      const monthTotal = monthList.length;
 
-        // month grouping (hadir only)
-        const mk = monthKey(d);
-        if (hadir) monthlyHadir.set(mk, (monthlyHadir.get(mk)||0)+1);
-
-        // today
-        if (isSameDay(d, now)){
-          if (hadir) todayH++; else todayT++;
-        }
-
-        // week
-        if (d >= weekStart && d <= weekEnd){
-          if (hadir) weekH++; else weekT++;
-        }
-
-        // month
-        if (d >= monthStart && d <= monthEnd){
-          if (hadir) monthH++; else monthT++;
-        }
-      }
-
-      const monthTotal = monthH + monthT;
-      const pct = monthTotal ? Math.round((monthH / monthTotal) * 1000) / 10 : 0; // 1 decimal
+      const pct = monthTotal ? (monthHadir/monthTotal*100) : 0;
 
       return {
-        today: { hadir: todayH, total: todayH+todayT },
-        week:  { hadir: weekH, total: weekH+weekT },
-        month: { hadir: monthH, total: monthH+monthT },
-        pct,
-        monthlyHadir
+        now, weekStart, weekEnd, monthStart, monthEnd,
+        todayHadir, todayTotal,
+        weekHadir, weekTotal,
+        monthHadir, monthTotal,
+        pct
       };
     }
 
-    function setStatUI(prefix, label, stat){
-      const vEl = document.getElementById(prefix);
-      const sEl = document.getElementById(label);
-      if (!vEl || !sEl) return;
-      vEl.textContent = stat.hadir ?? "-";
-      sEl.textContent = `Jumlah rekod: ${stat.total ?? 0}`;
+    function setStatUI(stats){
+      // Home
+      vToday.textContent = stats.todayHadir;
+      sToday.textContent = `${stats.todayHadir} / ${stats.todayTotal}`;
+      vWeek.textContent = stats.weekHadir;
+      sWeek.textContent = `${stats.weekHadir} / ${stats.weekTotal}`;
+      vMonth.textContent = stats.monthHadir;
+      sMonth.textContent = `${stats.monthHadir} / ${stats.monthTotal}`;
+      vPct.textContent = `${stats.pct.toFixed(1)}%`;
+
+      // Attendance page
+      vToday2.textContent = stats.todayHadir;
+      sToday2.textContent = `${stats.todayHadir} / ${stats.todayTotal}`;
+      vWeek2.textContent = stats.weekHadir;
+      sWeek2.textContent = `${stats.weekHadir} / ${stats.weekTotal}`;
+      vMonth2.textContent = stats.monthHadir;
+      sMonth2.textContent = `${stats.monthHadir} / ${stats.monthTotal}`;
+      vPct2.textContent = `${stats.pct.toFixed(1)}%`;
     }
 
-    function setPctUI(prefix, label, pct){
-      const vEl = document.getElementById(prefix);
-      const sEl = document.getElementById(label);
-      if (!vEl || !sEl) return;
-      vEl.textContent = (pct ?? 0) + "%";
-      sEl.textContent = "Berdasarkan rekod bulan semasa";
-    }
+    /***********************
+     * LINE CHART SVG (WITH AXIS)
+     ***********************/
+    function renderLineChartSVG(opts){
+      const {
+        width=780, height=260,
+        data=[], // array of {xLabel, xValue(1..31), y}
+        yMax=null,
+        yMin=0,
+        yLabel="",
+        xLabel="Hari",
+        mode="hadir"
+      } = opts;
 
-    function buildAttendanceChart(monthlyHadir){
-      // sort keys
-      const keys = Array.from(monthlyHadir.keys()).sort();
-      const labels = keys.map(k=>{
-        const [y,m] = k.split("-");
-        const d = new Date(Number(y), Number(m)-1, 1);
-        return d.toLocaleDateString("ms-MY", { month:"short", year:"numeric" });
-      });
-      const data = keys.map(k=> monthlyHadir.get(k) || 0);
+      const padL = 44, padR = 16, padT = 14, padB = 34;
+      const W = width, H = height;
+      const innerW = W - padL - padR;
+      const innerH = H - padT - padB;
 
-      const ctx = document.getElementById("attChart");
-      if (!ctx) return;
+      const ys = data.map(d=>d.y);
+      const maxY = (yMax!==null) ? yMax : Math.max(1, ...ys, 1);
+      const minY = (yMin!==null) ? yMin : 0;
 
-      if (state.chart){
-        state.chart.data.labels = labels;
-        state.chart.data.datasets[0].data = data;
-        state.chart.update();
-        return;
+      // If all values are same, give a bit of range
+      const range = (maxY - minY) || 1;
+
+      function xScale(x){
+        // x from 1..N
+        const minX = data.length ? Math.min(...data.map(d=>d.xValue)) : 1;
+        const maxX = data.length ? Math.max(...data.map(d=>d.xValue)) : 31;
+        const rx = (maxX - minX) || 1;
+        return padL + ((x - minX)/rx) * innerW;
+      }
+      function yScale(y){
+        const t = (y - minY)/range;
+        return padT + (1 - t) * innerH;
       }
 
-      state.chart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            label: "Bilangan Hadir",
-            data,
-            tension: 0.25,
-            pointRadius: 3,
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: true }
-          },
-          scales: {
-            x: {
-              title: { display: true, text: "Bulan" }
-            },
-            y: {
-              beginAtZero: true,
-              title: { display: true, text: "Bilangan (Hadir)" },
-              ticks: { precision: 0 }
-            }
-          }
-        }
+      // gridlines + y ticks
+      const yTicks = (mode==="pct") ? [0,25,50,75,100] : (()=>{
+        const t = 4;
+        const step = Math.max(1, Math.round(maxY / t));
+        const arr = [];
+        for(let v=0; v<=maxY; v+=step) arr.push(v);
+        if(arr[arr.length-1] !== maxY) arr.push(maxY);
+        return arr.slice(0,6);
+      })();
+
+      // x ticks - show 1, 5, 10, 15, 20, 25, 30 (if exists)
+      const xTicks = [1,5,10,15,20,25,30,31];
+
+      // polyline points
+      const pts = data
+        .sort((a,b)=>a.xValue-b.xValue)
+        .map(d=> `${xScale(d.xValue).toFixed(1)},${yScale(d.y).toFixed(1)}`)
+        .join(" ");
+
+      // determine stroke colors by mode (use current text color style-friendly)
+      const stroke = "currentColor";
+
+      const gridColor = "rgba(255,255,255,.12)";
+      const axisColor = "rgba(255,255,255,.32)";
+      const textColor = "rgba(255,255,255,.75)";
+      const fillColor = "rgba(42,161,152,.12)";
+
+      // Light mode overrides via CSS variables not easy inside svg; use currentColor + opacity.
+      // We'll use 'currentColor' and rely on parent color.
+      const svg = `
+        <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="color: var(--text);">
+          <!-- Y gridlines -->
+          ${yTicks.map(v=>{
+            const y = yScale(v);
+            return `
+              <line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="1" />
+              <text x="${padL-8}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-weight="800">${v}${mode==="pct" ? "%" : ""}</text>
+            `;
+          }).join("")}
+
+          <!-- X axis -->
+          <line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--border)" stroke-width="1" />
+          <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="var(--border)" stroke-width="1" />
+
+          ${xTicks.map(v=>{
+            // only show ticks that exist in data range
+            if(!data.length) return "";
+            const minX = Math.min(...data.map(d=>d.xValue));
+            const maxX = Math.max(...data.map(d=>d.xValue));
+            if(v<minX || v>maxX) return "";
+            const x = xScale(v);
+            return `
+              <line x1="${x}" y1="${H-padB}" x2="${x}" y2="${H-padB+5}" stroke="var(--border)" stroke-width="1" />
+              <text x="${x}" y="${H-12}" text-anchor="middle" font-size="11" fill="var(--muted)" font-weight="800">${v}</text>
+            `;
+          }).join("")}
+
+          <!-- Area fill (optional) -->
+          ${data.length ? `
+            <path d="M ${padL} ${H-padB} L ${pts.replaceAll(" ", " L ")} L ${W-padR} ${H-padB} Z"
+              fill="rgba(42,161,152,.10)" stroke="none" />
+          ` : ""}
+
+          <!-- Line -->
+          ${data.length ? `
+            <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="3.2"
+              stroke-linecap="round" stroke-linejoin="round" />
+          ` : `
+            <text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="13" fill="var(--muted)" font-weight="900">
+              Tiada data untuk pilihan ini
+            </text>
+          `}
+
+          <!-- End dot -->
+          ${data.length ? (()=> {
+            const last = data.slice().sort((a,b)=>a.xValue-b.xValue).at(-1);
+            const cx = xScale(last.xValue);
+            const cy = yScale(last.y);
+            return `<circle cx="${cx}" cy="${cy}" r="5.4" fill="currentColor" />`;
+          })() : ""}
+
+          <!-- Axis labels -->
+          <text x="${W/2}" y="${H-2}" text-anchor="middle" font-size="11" fill="var(--muted)" font-weight="900">${xLabel}</text>
+          <text x="12" y="${H/2}" text-anchor="middle" font-size="11" fill="var(--muted)" font-weight="900" transform="rotate(-90 12 ${H/2})">${yLabel}</text>
+        </svg>
+      `;
+      return svg;
+    }
+
+    /***********************
+     * TREND CHART (MONTH SELECT)
+     ***********************/
+    function setupTrendSelectors(){
+      const now = new Date();
+      const monthNames = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"];
+
+      trendMonth.innerHTML = "";
+      monthNames.forEach((m,idx)=>{
+        const opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = m;
+        trendMonth.appendChild(opt);
+      });
+      trendMonth.value = String(now.getMonth());
+
+      trendYear.innerHTML = "";
+      const y = now.getFullYear();
+      for(let i=y-2; i<=y+1; i++){
+        const opt = document.createElement("option");
+        opt.value = String(i);
+        opt.textContent = String(i);
+        trendYear.appendChild(opt);
+      }
+      trendYear.value = String(y);
+
+      trendMonth.addEventListener("change", renderTrend);
+      trendYear.addEventListener("change", renderTrend);
+      trendClass.addEventListener("change", renderTrend);
+
+      trendMode.addEventListener("click",(e)=>{
+        const chip = e.target.closest(".chip");
+        if(!chip) return;
+        trendMode.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+        chip.classList.add("active");
+        renderTrend();
       });
     }
 
-    function getHiddenColsNonAdmin(){
-      const s = state.settings.hideColsNonAdmin || "";
-      return s.split(",").map(x=>x.trim()).filter(Boolean);
-    }
-
-    function renderKehadiranTable(){
-      const { headers, rows } = state.kehadiran;
-      const thead = document.getElementById("kehadiranThead");
-      const tbody = document.getElementById("kehadiranTbody");
-      thead.innerHTML = "";
-      tbody.innerHTML = "";
-
-      if (!headers.length){
-        thead.innerHTML = "<tr><th>Tiada data</th></tr>";
+    function renderTrend(){
+      if(!attendanceRaw.length){
+        trendChart.innerHTML = renderLineChartSVG({ data:[], mode:"hadir" });
         return;
       }
+      const mode = trendMode.querySelector(".chip.active")?.dataset.mode || "hadir";
+      const month = Number(trendMonth.value);
+      const year = Number(trendYear.value);
+      const kelas = trendClass.value;
 
-      const cols = getKehadiranColumns(headers);
-
-      // filters
-      const search = document.getElementById("fSearch").value.trim().toLowerCase();
-      const dateFrom = document.getElementById("fDateFrom").value ? new Date(document.getElementById("fDateFrom").value + "T00:00:00") : null;
-      const dateTo = document.getElementById("fDateTo").value ? new Date(document.getElementById("fDateTo").value + "T23:59:59") : null;
-      const fKelas = document.getElementById("fKelas").value.trim().toLowerCase();
-      const fNama  = document.getElementById("fNama").value.trim().toLowerCase();
-      const fStatus= document.getElementById("fStatus").value.trim().toLowerCase();
-
-      const hidden = (!state.adminUnlocked && !state.showAdminCols) ? getHiddenColsNonAdmin() : [];
-      const showHeaders = headers.filter(h => !hidden.includes(h));
-
-      // header row
-      const trh = document.createElement("tr");
-      showHeaders.forEach(h=>{
-        const th = document.createElement("th");
-        th.textContent = h;
-        trh.appendChild(th);
+      // filter by class + month + year
+      const filtered = attendanceRaw.filter(r=>{
+        if(!r.__tarikh) return false;
+        if(r.__tarikh.getFullYear() !== year) return false;
+        if(r.__tarikh.getMonth() !== month) return false;
+        if(kelas && String(r.Kelas||"") !== kelas) return false;
+        return true;
       });
-      thead.appendChild(trh);
 
-      // body rows (filtered)
-      const filtered = rows.filter(r=>{
-        // date range filter
-        const d = parseDateSmart(r[cols.tarikh]);
-        if (dateFrom || dateTo){
-          if (!d) return false;
-          const t = d.getTime();
-          if (dateFrom && t < dateFrom.getTime()) return false;
-          if (dateTo && t > dateTo.getTime()) return false;
+      const isHadir = (r)=> String(r.Status||"").toUpperCase()==="HADIR";
+      const isTidak = (r)=> String(r.Status||"").toUpperCase().includes("TIDAK");
+
+      // group by day
+      const map = new Map(); // day -> {hadir, tidak, total}
+      filtered.forEach(r=>{
+        const day = r.__tarikh.getDate();
+        if(!map.has(day)) map.set(day, {hadir:0, tidak:0, total:0});
+        const o = map.get(day);
+        o.total++;
+        if(isHadir(r)) o.hadir++;
+        if(isTidak(r)) o.tidak++;
+      });
+
+      // Build series from 1..last day of month
+      const lastDay = new Date(year, month+1, 0).getDate();
+      const series = [];
+      for(let d=1; d<=lastDay; d++){
+        const o = map.get(d) || {hadir:0, tidak:0, total:0};
+        let yVal = 0;
+        if(mode==="hadir") yVal = o.hadir;
+        if(mode==="tidak") yVal = o.tidak;
+        if(mode==="pct"){
+          yVal = o.total ? (o.hadir/o.total*100) : 0;
+          yVal = Number(yVal.toFixed(1));
         }
+        series.push({ xValue:d, xLabel:String(d), y: yVal });
+      }
 
-        // column filters
-        if (fKelas && !(r[cols.kelas]||"").toLowerCase().includes(fKelas)) return false;
-        if (fNama  && !(r[cols.nama]||"").toLowerCase().includes(fNama)) return false;
-        if (fStatus&& !(r[cols.status]||"").toLowerCase().includes(fStatus)) return false;
+      const yLabel = (mode==="pct") ? "Peratus (%)" : "Bilangan";
+      const svg = renderLineChartSVG({
+        width: 860,
+        height: 260,
+        data: series,
+        yMax: (mode==="pct") ? 100 : null,
+        yMin: 0,
+        yLabel,
+        xLabel: "Hari",
+        mode
+      });
 
-        // global search
-        if (search){
-          const s = showHeaders.map(h=> (r[h]||"")).join(" ").toLowerCase();
-          if (!s.includes(search)) return false;
+      trendChart.innerHTML = svg;
+    }
+
+    /***********************
+     * ATTENDANCE TABLE + FILTER
+     ***********************/
+    function populateClassOptions(){
+      const classes = Array.from(new Set(attendanceRaw.map(r=>String(r.Kelas||"").trim()).filter(Boolean))).sort();
+      filterClass.innerHTML = `<option value="">Kelas: Semua</option>` + classes.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+      trendClass.innerHTML = `<option value="">Semua Kelas</option>` + classes.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+    }
+
+    function renderAttendanceTable(list){
+      const cols = ["Tarikh","Kelas","Nama Murid","Status","Jantina"];
+      attendanceHead.innerHTML = cols.map(c=>`<th>${escapeHtml(c)}</th>`).join("");
+
+      attendanceBody.innerHTML = list.map(r=>{
+        const s = String(r.Status||"").toUpperCase();
+        let badge = `<span class="badge">${escapeHtml(r.Status||"")}</span>`;
+        if(s==="HADIR") badge = `<span class="badge b-ok">✅ HADIR</span>`;
+        if(s.includes("TIDAK")) badge = `<span class="badge b-no">⛔ TIDAK HADIR</span>`;
+        return `
+          <tr>
+            <td>${escapeHtml(r.Tarikh||"")}</td>
+            <td>${escapeHtml(r.Kelas||"")}</td>
+            <td>${escapeHtml(r["Nama Murid"]||"")}</td>
+            <td>${badge}</td>
+            <td>${escapeHtml(r.Jantina||"")}</td>
+          </tr>
+        `;
+      }).join("");
+
+      attendanceMeta.textContent = `Paparan: ${list.length} rekod`;
+    }
+
+    function applyAttendanceFilter(){
+      const q = (searchAttendance.value||"").trim().toLowerCase();
+      const kelas = filterClass.value;
+      const statusSel = filterStatus.value;
+
+      // date range from inputs (yyyy-mm-dd)
+      const df = dateFrom.value ? new Date(dateFrom.value+"T00:00:00") : null;
+      const dt = dateTo.value ? new Date(dateTo.value+"T23:59:59") : null;
+
+      const filtered = attendanceRaw.filter(r=>{
+        if(kelas && String(r.Kelas||"") !== kelas) return false;
+        if(statusSel){
+          if(statusSel==="HADIR" && String(r.Status||"").toUpperCase()!=="HADIR") return false;
+          if(statusSel==="TIDAK HADIR" && !String(r.Status||"").toUpperCase().includes("TIDAK")) return false;
+        }
+        if(df && r.__tarikh < df) return false;
+        if(dt && r.__tarikh > dt) return false;
+
+        if(q){
+          const hay = `${r.Tarikh} ${r.Kelas} ${r["Nama Murid"]} ${r.Status} ${r.Jantina}`.toLowerCase();
+          if(!hay.includes(q)) return false;
         }
         return true;
       });
 
-      if (!filtered.length){
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = showHeaders.length;
-        td.textContent = "Tiada rekod sepadan dengan filter.";
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-        return;
-      }
-
-      filtered.forEach(r=>{
-        const tr = document.createElement("tr");
-        showHeaders.forEach(h=>{
-          const td = document.createElement("td");
-          td.textContent = r[h] ?? "";
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-      });
+      renderAttendanceTable(filtered);
     }
 
-    function wireKehadiranFilters(){
-      ["fSearch","fDateFrom","fDateTo","fKelas","fNama","fStatus"].forEach(id=>{
-        document.getElementById(id).addEventListener("input", renderKehadiranTable);
-        document.getElementById(id).addEventListener("change", renderKehadiranTable);
-      });
-    }
-    wireKehadiranFilters();
+    btnApplyFilter.addEventListener("click", applyAttendanceFilter);
+    btnResetFilter.addEventListener("click", ()=>{
+      searchAttendance.value = "";
+      filterClass.value = "";
+      filterStatus.value = "";
+      dateFrom.value = "";
+      dateTo.value = "";
+      renderAttendanceTable(attendanceRaw);
+    });
+    searchAttendance.addEventListener("input", ()=>{
+      // live filter
+      applyAttendanceFilter();
+    });
+    filterClass.addEventListener("change", applyAttendanceFilter);
+    filterStatus.addEventListener("change", applyAttendanceFilter);
+    dateFrom.addEventListener("change", applyAttendanceFilter);
+    dateTo.addEventListener("change", applyAttendanceFilter);
+
+    btnReloadAttendance.addEventListener("click", loadAttendance);
 
     /***********************
-     *  PENGUMUMAN
-     *  Columns: TARIKH MULA, TARIKH TAMAT, TAJUK, ISI KANDUNGAN, URL, KEUTAMAAN, AKTIF
+     * ANNOUNCEMENTS UI
      ***********************/
-    function getAnnCols(headers){
-      const map = {
-        mula: findAny(headers, ["TARIKH MULA","Tarikh Mula","Tarikh_Mula"]),
-        tamat: findAny(headers, ["TARIKH TAMAT","Tarikh Tamat","Tarikh_Tamat"]),
-        tajuk: findAny(headers, ["TAJUK","Tajuk"]),
-        isi:   findAny(headers, ["ISI KANDUNGAN","Isi Kandungan","Isi_Kandungan","Isi"]),
-        url:   findAny(headers, ["URL","Pautan","Link"]),
-        prio:  findAny(headers, ["KEUTAMAAN","Keutamaan","Priority"]),
-        aktif: findAny(headers, ["AKTIF","Aktif"])
-      };
-      return map;
-    }
-    function findAny(headers, candidates){
-      for (const c of candidates){
-        if (headers.includes(c)) return c;
-      }
-      return "";
-    }
-    function isYA(v){
-      const t = (v||"").trim().toLowerCase();
-      return t === "ya" || t === "yes" || t === "y" || t === "true" || t === "1";
-    }
-
-    function getActiveAnnouncements(){
-      const { headers, rows } = state.pengumuman;
-      const c = getAnnCols(headers);
-      const now = new Date();
-      now.setHours(0,0,0,0);
-
-      let list = rows.map(r=>{
-        const dm = parseDateSmart(r[c.mula]);
-        const dt = parseDateSmart(r[c.tamat]);
-        const pr = Number((r[c.prio]||"").trim()) || 0;
-
-        const okDate =
-          (!dm || dm <= now) &&
-          (!dt || dt >= now);
-
-        const okAktif = c.aktif ? isYA(r[c.aktif]) : okDate; // fallback jika tiada kolum aktif
-
-        return {
-          mula: dm,
-          tamat: dt,
-          tajuk: r[c.tajuk] || "(Tanpa Tajuk)",
-          isi: r[c.isi] || "",
-          url: r[c.url] || "",
-          prio: pr,
-          ok: okDate && okAktif
-        };
-      }).filter(x=>x.ok);
-
-      // sort: keutamaan desc, mula desc
-      list.sort((a,b)=>{
-        if (b.prio !== a.prio) return b.prio - a.prio;
-        return (b.mula?.getTime()||0) - (a.mula?.getTime()||0);
-      });
-
-      return list;
-    }
-
     function renderAnnouncements(){
-      const box = document.getElementById("annContainer");
-      box.innerHTML = "";
+      const active = announcementsRaw.filter(a=>a.active);
 
-      const list = getActiveAnnouncements();
+      annCount.textContent = `${active.length} aktif`;
+      annListHome.innerHTML = "";
 
-      // badges
-      document.getElementById("annBadgeTop").textContent = String(list.length);
-      const side = document.getElementById("annBadgeSide");
-      side.textContent = String(list.length);
-      side.style.display = list.length ? "" : "none";
+      if(!active.length){
+        annListHome.innerHTML = `<div class="sub">Tiada pengumuman aktif.</div>`;
+      }else{
+        active.slice(0,10).forEach((a,idx)=>{
+          const pri = String(a.pri||"").toUpperCase();
+          const badge = pri.includes("TINGGI")
+            ? `<span class="badge b-hi">🔥 TINGGI</span>`
+            : `<span class="badge">${escapeHtml(pri)}</span>`;
 
-      document.getElementById("vAnnCount").textContent = String(list.length);
+          const card = document.createElement("div");
+          card.className = "stat";
+          card.style.cursor = "pointer";
+          card.innerHTML = `
+            <div class="k">#${idx+1} ${badge}</div>
+            <div class="v" style="font-size:15px; margin-top:8px;">${escapeHtml(a.title)}</div>
+            <div class="s">${escapeHtml(a.startText || (a.start?formatDMY(a.start):""))}</div>
+          `;
+          card.addEventListener("click", ()=>{
+            showPage("announcements");
+            // open detail as popout too
+            openAnnouncementModal(a);
+          });
+          annListHome.appendChild(card);
+        });
+      }
 
-      if (!list.length){
-        document.getElementById("annListShort").textContent = "Tiada pengumuman aktif.";
-        box.innerHTML = `<div class="card"><div class="muted">Tiada pengumuman aktif buat masa ini.</div></div>`;
+      // Full page cards
+      annGrid.innerHTML = "";
+      const list = announcementsRaw.filter(a=>a.active);
+      if(!list.length){
+        annGrid.innerHTML = `<div class="sub">Tiada pengumuman aktif.</div>`;
         return;
       }
+      list.forEach(a=>{
+        const pri = String(a.pri||"").toUpperCase();
+        const badge = pri.includes("TINGGI")
+          ? `<span class="badge b-hi">🔥 TINGGI</span>`
+          : `<span class="badge">${escapeHtml(pri)}</span>`;
 
-      // short list on home
-      const topTitles = list.slice(0,5).map((x,idx)=> `${idx+1}. ${x.tajuk}`).join(" • ");
-      document.getElementById("annListShort").textContent = topTitles;
-
-      // cards
-      list.forEach((x, idx)=>{
-        const card = document.createElement("div");
-        card.className = "card statCard";
-        card.innerHTML = `
-          <div class="statTop">
-            <div class="k">#${idx+1} • Keutamaan: ${x.prio}</div>
-            <div class="i">📢</div>
+        const el = document.createElement("div");
+        el.className = "card";
+        el.style.cursor="pointer";
+        el.innerHTML = `
+          <div class="cardTitle">
+            <h2 style="font-size:15px; margin:0;">${escapeHtml(a.title)}</h2>
+            <div>${badge}</div>
           </div>
-          <div style="margin-top:8px; font-weight:1100; font-size:15px;">${escapeHTML(x.tajuk)}</div>
-          <div class="muted" style="margin-top:6px; font-size:12px;">
-            ${x.mula ? "Mula: " + fmtDateMY(x.mula) : ""} ${x.tamat ? " • Tamat: " + fmtDateMY(x.tamat) : ""}
-          </div>
-          <div class="muted" style="margin-top:10px; font-size:12px; line-height:1.4;">
-            ${escapeHTML((x.isi||"").slice(0,140))}${(x.isi||"").length>140 ? "..." : ""}
+          <p class="sub" style="margin:0 0 10px;">
+            ${escapeHtml(a.startText || (a.start?formatDMY(a.start):""))}
+          </p>
+          <div class="sub" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+            ${escapeHtml(a.body || "")}
           </div>
         `;
-        card.onclick = ()=>{
-          openDetail({
-            title: x.tajuk,
-            meta: `${x.mula ? "Mula: "+fmtDateMY(x.mula) : ""}${x.tamat ? " • Tamat: "+fmtDateMY(x.tamat) : ""} • Keutamaan: ${x.prio}`,
-            body: x.isi,
-            url: x.url
-          });
-        };
-        box.appendChild(card);
+        el.addEventListener("click", ()=> openAnnouncementModal(a));
+        annGrid.appendChild(el);
       });
     }
 
-    function escapeHTML(s){
-      return String(s || "")
+    function openAnnouncementModal(a){
+      annModalTitle.textContent = a.title || "Butiran Pengumuman";
+      const body = `
+        <div class="card" style="margin:0;">
+          <div class="row" style="justify-content:space-between;">
+            <div class="sub" style="font-weight:900;">
+              Tarikh Mula: ${escapeHtml(a.startText || (a.start?formatDMY(a.start):"-"))}
+            </div>
+            <div class="sub" style="font-weight:900;">
+              Keutamaan: ${escapeHtml(a.pri || "-")}
+            </div>
+          </div>
+
+          <div style="margin-top:10px; white-space:pre-wrap; line-height:1.6;">
+            ${escapeHtml(a.body || "-")}
+          </div>
+
+          ${a.url ? `
+            <div style="margin-top:12px;">
+              <a class="btn btnPrimary" href="${escapeAttr(a.url)}" target="_blank" rel="noopener">Buka Pautan</a>
+            </div>
+          `: ``}
+        </div>
+      `;
+      annModalBody.innerHTML = body;
+      overlayAnn.classList.add("show");
+    }
+
+    btnCloseAnn.addEventListener("click", ()=> overlayAnn.classList.remove("show"));
+    overlayAnn.addEventListener("click", (e)=>{
+      if(e.target === overlayAnn) overlayAnn.classList.remove("show");
+    });
+    btnReloadAnnouncements.addEventListener("click", loadAnnouncements);
+
+    /***********************
+     * PARENTS UI
+     ***********************/
+    function renderParents(){
+      parentsGrid.innerHTML = "";
+      if(!parentsRaw.length){
+        parentsGrid.innerHTML = `<div class="sub">Tiada data.</div>`;
+        return;
+      }
+      parentsRaw.forEach(item=>{
+        const el = document.createElement("div");
+        el.className = "card";
+        el.style.cursor="pointer";
+
+        const hasUrl = !!item.url;
+        const actionText = !hasUrl ? "Pop out" : (item.mode==="TAB" ? "Buka Tab Baru" : "Pop out");
+        el.innerHTML = `
+          <div class="cardTitle">
+            <h2 style="font-size:15px; margin:0;">${escapeHtml(item.title)}</h2>
+            <span class="badge">${escapeHtml(actionText)}</span>
+          </div>
+          <div class="sub" style="white-space:pre-wrap; line-height:1.6;">
+            ${escapeHtml(item.body || "")}
+          </div>
+        `;
+
+        el.addEventListener("click", ()=>{
+          if(hasUrl && item.mode==="TAB"){
+            window.open(item.url, "_blank", "noopener");
+            return;
+          }
+          // popup
+          annModalTitle.textContent = item.title;
+          annModalBody.innerHTML = `
+            <div class="card" style="margin:0;">
+              <div style="white-space:pre-wrap; line-height:1.6;">
+                ${escapeHtml(item.body || "-")}
+              </div>
+              ${hasUrl ? `
+                <div style="margin-top:12px;">
+                  <a class="btn btnPrimary" href="${escapeAttr(item.url)}" target="_blank" rel="noopener">Buka Pautan</a>
+                </div>
+              `:``}
+            </div>
+          `;
+          overlayAnn.classList.add("show");
+        });
+
+        parentsGrid.appendChild(el);
+      });
+    }
+
+    btnReloadParents.addEventListener("click", loadParents);
+
+    /***********************
+     * CALENDAR UI (simple)
+     ***********************/
+    function renderCalendar(){
+      if(!SETTINGS.urls.calendar){
+        calendarArea.textContent = "Belum disambungkan.";
+        return;
+      }
+      if(!calendarRaw.length){
+        calendarArea.textContent = "Tiada data.";
+        return;
+      }
+      // Just show first few lines
+      calendarArea.innerHTML = `
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>${Object.keys(calendarRaw[0]).map(h=>`<th>${escapeHtml(h)}</th>`).join("")}</tr>
+            </thead>
+            <tbody>
+              ${calendarRaw.slice(0,50).map(r=>`
+                <tr>${Object.keys(calendarRaw[0]).map(h=>`<td>${escapeHtml(r[h]||"")}</td>`).join("")}</tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+        <p class="help">Paparan ringkas (maks 50 rekod). Jika cikgu nak versi takwim cantik (grid bulan), saya boleh upgrade.</p>
+      `;
+    }
+
+    /***********************
+     * ESCAPE
+     ***********************/
+    function escapeHtml(s){
+      return String(s??"")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;")
         .replaceAll("'","&#039;");
     }
+    function escapeAttr(s){ return escapeHtml(s); }
 
     /***********************
-     *  IBU BAPA
+     * LOADERS
      ***********************/
-    function renderParents(){
-      const box = document.getElementById("parentsContainer");
-      box.innerHTML = "";
+    async function loadAttendance(){
+      try{
+        const parsed = await fetchCSV(SETTINGS.urls.attendance);
+        attendanceRaw = normalizeAttendance(parsed);
 
-      const { headers, rows } = state.parents;
-      if (!headers.length){
-        box.innerHTML = `<div class="card"><div class="muted">Tiada data ibu bapa.</div></div>`;
-        return;
+        populateClassOptions();
+        renderAttendanceTable(attendanceRaw);
+
+        // Stats
+        const stats = computeStats(attendanceRaw);
+        setStatUI(stats);
+
+        // Trend
+        renderTrend();
+      }catch(err){
+        console.error(err);
+        attendanceRaw = [];
+        attendanceHead.innerHTML = "";
+        attendanceBody.innerHTML = `<tr><td colspan="5">Gagal load data kehadiran. Sila semak URL CSV.</td></tr>`;
+        attendanceMeta.textContent = "—";
+        trendChart.innerHTML = renderLineChartSVG({ data:[], mode:"hadir" });
       }
-
-      const cTajuk = findAny(headers, ["TAJUK","Tajuk","Title"]);
-      const cIsi   = findAny(headers, ["ISI KANDUNGAN","Isi Kandungan","Isi_Kandungan","Isi","Kandungan","Catatan"]);
-      const cUrl   = findAny(headers, ["URL","Pautan","Link"]);
-      const cMod   = findAny(headers, ["MOD","Mod","Mode","TINDAKAN","Tindakan","Action"]);
-
-      rows.forEach((r)=>{
-        const tajuk = r[cTajuk] || "Makluman";
-        const isi = r[cIsi] || "";
-        const url = r[cUrl] || "";
-        const mod = (r[cMod] || "").trim().toUpperCase(); // POPUP / TAB
-
-        const card = document.createElement("div");
-        card.className = "card statCard";
-        card.innerHTML = `
-          <div class="statTop">
-            <div class="k">Ibu Bapa</div>
-            <div class="i">👨‍👩‍👧‍👦</div>
-          </div>
-          <div style="margin-top:8px; font-weight:1100; font-size:15px;">${escapeHTML(tajuk)}</div>
-          <div class="muted" style="margin-top:10px; font-size:12px; line-height:1.4;">
-            ${escapeHTML(isi.slice(0,160))}${isi.length>160 ? "..." : ""}
-          </div>
-          ${url ? `<div class="muted" style="margin-top:10px; font-size:12px;">Pautan tersedia</div>` : ""}
-        `;
-
-        card.onclick = ()=>{
-          if (url && mod === "TAB"){
-            window.open(url, "_blank", "noopener");
-            return;
-          }
-          openDetail({
-            title: tajuk,
-            meta: url ? "Ada pautan (klik butang di bawah jika perlu)" : "",
-            body: isi,
-            url
-          });
-        };
-
-        box.appendChild(card);
-      });
     }
 
-    /***********************
-     *  TAKWIM
-     ***********************/
-    function renderTakwim(){
-      const { headers, rows } = state.takwim;
-      const thead = document.getElementById("takwimThead");
-      const tbody = document.getElementById("takwimTbody");
-      thead.innerHTML = "";
-      tbody.innerHTML = "";
+    async function loadAnnouncements(){
+      try{
+        const parsed = await fetchCSV(SETTINGS.urls.announcements);
+        announcementsRaw = normalizeAnnouncements(parsed);
+        renderAnnouncements();
+      }catch(err){
+        console.error(err);
+        announcementsRaw = [];
+        annCount.textContent = "Gagal load";
+        annListHome.innerHTML = `<div class="sub">Gagal load pengumuman. Sila semak URL CSV.</div>`;
+        annGrid.innerHTML = `<div class="sub">Gagal load pengumuman.</div>`;
+      }
+    }
 
-      if (!headers.length){
-        thead.innerHTML = "<tr><th>Tiada data</th></tr>";
+    async function loadParents(){
+      try{
+        const parsed = await fetchCSV(SETTINGS.urls.parents);
+        parentsRaw = normalizeParents(parsed);
+        renderParents();
+      }catch(err){
+        console.error(err);
+        parentsRaw = [];
+        parentsGrid.innerHTML = `<div class="sub">Gagal load data Ibu Bapa. Sila semak URL CSV.</div>`;
+      }
+    }
+
+    async function loadCalendar(){
+      if(!SETTINGS.urls.calendar){
+        calendarRaw = [];
+        renderCalendar();
         return;
       }
-      const trh = document.createElement("tr");
-      headers.forEach(h=>{
-        const th = document.createElement("th");
-        th.textContent = h;
-        trh.appendChild(th);
-      });
-      thead.appendChild(trh);
-
-      if (!rows.length){
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = headers.length;
-        td.textContent = "Tiada rekod.";
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-        return;
+      try{
+        const parsed = await fetchCSV(SETTINGS.urls.calendar);
+        calendarRaw = normalizeCalendar(parsed);
+        renderCalendar();
+      }catch(err){
+        console.error(err);
+        calendarRaw = [];
+        renderCalendar();
       }
+    }
 
-      rows.forEach(r=>{
-        const tr = document.createElement("tr");
-        headers.forEach(h=>{
-          const td = document.createElement("td");
-          td.textContent = r[h] ?? "";
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-      });
+    async function loadAll(){
+      await Promise.all([
+        loadAttendance(),
+        loadAnnouncements(),
+        loadParents(),
+        loadCalendar()
+      ]);
     }
 
     /***********************
-     *  LOAD ALL DATA
+     * HOME STAT CARDS NAV
      ***********************/
-    async function loadAllData(){
-      // Kehadiran
-      try{
-        state.kehadiran = await fetchCSV(state.settings.urlKehadiran);
-      }catch(err){
-        console.warn(err);
-        state.kehadiran = { headers: [], rows: [] };
-      }
+    document.getElementById("statToday").addEventListener("click", ()=>{ showPage("attendance"); filterStatus.value="HADIR"; applyAttendanceFilter(); });
+    document.getElementById("statWeek").addEventListener("click", ()=>{ showPage("attendance"); });
+    document.getElementById("statMonth").addEventListener("click", ()=>{ showPage("attendance"); });
+    document.getElementById("statPct").addEventListener("click", ()=>{ showPage("attendance"); });
 
-      // Pengumuman
-      try{
-        state.pengumuman = await fetchCSV(state.settings.urlAnn);
-      }catch(err){
-        console.warn(err);
-        state.pengumuman = { headers: [], rows: [] };
-      }
+    // Same on attendance stats (optional)
+    document.querySelectorAll('[data-jump]').forEach(el=>{
+      el.addEventListener("click", ()=>{
+        showPage("attendance");
+      });
+    });
 
-      // Parents
-      try{
-        state.parents = await fetchCSV(state.settings.urlParents);
-      }catch(err){
-        console.warn(err);
-        state.parents = { headers: [], rows: [] };
-      }
+    /***********************
+     * INIT
+     ***********************/
+    function init(){
+      applyTheme();
+      applyIdentity();
+      syncSidebarDefault();
+      tickClock();
+      setupTrendSelectors();
 
-      // Takwim
-      if (state.settings.urlTakwim){
-        try{
-          state.takwim = await fetchCSV(state.settings.urlTakwim);
-        }catch(err){
-          console.warn(err);
-          state.takwim = { headers: [], rows: [] };
-        }
-      } else {
-        state.takwim = { headers: [], rows: [] };
-      }
+      // Default: home
+      showPage("home");
 
-      // Render everything
-      renderEverything();
+      // Load data
+      loadAll();
     }
-
-    function renderEverything(){
-      // stats kehadiran
-      if (state.kehadiran.headers.length){
-        const cols = getKehadiranColumns(state.kehadiran.headers);
-        const st = calcAttendanceStats(state.kehadiran.rows, cols);
-
-        // Home
-        setStatUI("vToday","sToday", st.today);
-        setStatUI("vWeek","sWeek", st.week);
-        setStatUI("vMonth","sMonth", st.month);
-        setPctUI("vPct","sPct", st.pct);
-
-        // Kehadiran page
-        setStatUI("vToday2","sToday2", st.today);
-        setStatUI("vWeek2","sWeek2", st.week);
-        setStatUI("vMonth2","sMonth2", st.month);
-        setPctUI("vPct2","sPct2", st.pct);
-
-        // chart
-        buildAttendanceChart(st.monthlyHadir);
-      } else {
-        document.getElementById("sToday").textContent = "Gagal memuat data.";
-        document.getElementById("sWeek").textContent = "Gagal memuat data.";
-        document.getElementById("sMonth").textContent = "Gagal memuat data.";
-        document.getElementById("sPct").textContent = "Gagal memuat data.";
-      }
-
-      // Table kehadiran
-      renderKehadiranTable();
-
-      // Ann
-      renderAnnouncements();
-
-      // Parents
-      renderParents();
-
-      // Takwim
-      renderTakwim();
-    }
-
-    // Buttons reload
-    document.getElementById("btnReloadKehadiran").onclick = loadAllData;
-    document.getElementById("btnReloadAnn").onclick = loadAllData;
-    document.getElementById("btnReloadParents").onclick = loadAllData;
-    document.getElementById("btnReloadTakwim").onclick = loadAllData;
-
-    // Admin columns toggle
-    document.getElementById("btnAdminCols").onclick = ()=>{
-      state.showAdminCols = !state.showAdminCols;
-      document.getElementById("btnAdminCols").textContent = state.showAdminCols ? "🙈 Sembunyi Kolum Admin" : "👁️ Kolum Admin";
-      renderKehadiranTable();
-    };
-
-    // First load
-    loadAllData();
-
-    // Default page
-    setActivePage("home");
+    init();
   </script>
 </body>
 </html>
