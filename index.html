@@ -114,7 +114,7 @@
     .stat-sub { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
     .stat-sub.red { color: #D92D20; font-weight: 600; }
 
-    /* Clickable Card Effect (For Stats & Links) */
+    /* Clickable Card Effect */
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
 
@@ -142,7 +142,6 @@
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
 
-    /* Filter Panel */
     .filter-panel {
       display: none; padding: 20px; background: var(--bg-element); 
       border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color);
@@ -155,8 +154,8 @@
     .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
     table { width: 100%; border-collapse: collapse; min-width: 800px; font-size: 13px; }
     th { text-align: left; padding: 14px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
-    td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); }
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); vertical-align: top;}
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
     .b-blue { background: #EFF8FF; color: #175CD3; }
@@ -540,18 +539,17 @@ function getVal(row, keyPart) {
   return key ? row[key] : "";
 }
 
-// Fixed Date Parser (Handles DD/MM/YYYY)
+// FORMAT TARIKH MALAYSIA DD/MM/YYYY
 function parseDateStr(dStr) {
   if(!dStr) return null;
-  // If Excel/Google Sheet format DD/MM/YYYY
+  // If format DD/MM/YYYY
   if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
     const p = dStr.split('/');
-    // pad to 2 digits for ISO comparison (YYYY-MM-DD)
     const day = p[0].padStart(2, '0');
     const month = p[1].padStart(2, '0');
-    return `${p[2]}-${month}-${day}`;
+    return `${p[2]}-${month}-${day}`; // ISO Format for Comparison
   }
-  return dStr; // Assume already YYYY-MM-DD or invalid
+  return dStr;
 }
 
 async function loadAllData() {
@@ -591,7 +589,7 @@ function processAttendance() {
 
   DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
 
-  // Global Stats (Today)
+  // Global Stats
   const todayStr = new Date().toISOString().split('T')[0];
   const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
   const present = todayRecs.filter(r => r.status === 'HADIR').length;
@@ -600,7 +598,7 @@ function processAttendance() {
   document.getElementById('dToday').innerText = present;
   document.getElementById('dAbsent').innerText = `${absent} Tidak Hadir`;
   document.getElementById('dWeek').innerText = DATA_ATT_CLEAN.length;
-  document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(present+absent||1))*100) + "%" : "0%";
+  document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(todayRecs.length||1))*100) + "%" : "0%";
 
   populateAttSelectors();
   renderAttTable(DATA_ATT_CLEAN);
@@ -669,6 +667,10 @@ function populateAttSelectors() {
 
 /* ================= PAJSK ================= */
 function initPajsk() {
+  // Check empty rows
+  const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
+  DATA.pajsk = cleanPajsk;
+
   const pop = (id, key) => {
     const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
     document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
@@ -691,10 +693,13 @@ function renderPajskTable() {
   const fCapai = document.getElementById('fPajskCapai').value;
 
   const filtered = DATA.pajsk.filter(r => {
-    const name = getVal(r, 'NAMA').toLowerCase();
-    const acara = getVal(r, 'ACARA').toLowerCase();
+    const name = (getVal(r, 'NAMA')||"").toLowerCase();
+    const acara = (getVal(r, 'ACARA')||"").toLowerCase();
     const searchMatch = !q || name.includes(q) || acara.includes(q);
-    const iso = parseDateStr(getVal(r, 'TARIKH'));
+    
+    // Parse CSV Date DD/MM/YYYY
+    const dStr = getVal(r, 'TARIKH');
+    const iso = parseDateStr(dStr); // becomes YYYY-MM-DD
     
     return searchMatch &&
            (!fDate || iso === fDate) &&
@@ -726,15 +731,14 @@ function resetPajskFilters() {
 
 /* ================= ANNOUNCEMENT & DASHBOARD ================= */
 function renderAnn() {
-  // Logic: Show if today is within Start & End (if exists)
   const today = new Date().toISOString().split('T')[0];
-  
   const list = DATA.ann.filter(a => {
     const start = parseDateStr(getVal(a, 'MULA'));
     const end = parseDateStr(getVal(a, 'TAMAT'));
-    // If start exist & today < start -> hide
+    const title = getVal(a, 'TAJUK');
+    if(!title) return false;
+    // Show if today >= start AND (today <= end OR no end date)
     if(start && today < start) return false;
-    // If end exist & today > end -> hide
     if(end && today > end) return false;
     return true;
   });
@@ -742,24 +746,22 @@ function renderAnn() {
   document.getElementById('dAnn').innerText = list.length;
 
   document.getElementById('annGrid').innerHTML = list.map(a => {
-    // Fuzzy matching for columns
-    const title = getVal(a, 'TAJUK') || getVal(a, 'TITLE') || 'Info';
-    const content = getVal(a, 'KANDUNGAN') || getVal(a, 'CONTENT') || '';
+    const t = getVal(a, 'TAJUK') || 'Info';
+    const c = getVal(a, 'KANDUNGAN') || '-';
     const date = getVal(a, 'TARIKH') || getVal(a, 'MULA') || '';
     
-    // Card Click Logic
-    return `<div class="card clickable" onclick="openInfoModal('${escapeHtml(title)}', '${escapeHtml(content)}')">
+    return `<div class="card clickable" onclick="openInfoModal('${escapeHtml(t)}', '${escapeHtml(c)}')">
       <div style="display:flex; justify-content:space-between; margin-bottom:10px">
         <span class="badge b-blue">INFO</span>
         <span style="font-size:11px; color:var(--text-muted)">${date}</span>
       </div>
-      <h4 style="margin:0 0 10px;">${title}</h4>
-      <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${content}</p>
+      <h4 style="margin:0 0 10px;">${t}</h4>
+      <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${c}</p>
     </div>`;
   }).join('');
 }
 
-/* ================= PARENTS & CHART & CALENDAR ================= */
+/* ================= PARENTS & OTHERS ================= */
 function renderParents() {
   document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
     const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
