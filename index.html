@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
     :root {
@@ -23,32 +24,36 @@
       
       --text-main: #101828;
       --text-muted: #667085;
+      --text-inverse: #FFFFFF;
       
       --primary: #1F6F4A;       /* Hijau Sekolah */
+      --primary-dark: #144d33;
       --primary-light: #E8F5E9;
-      --accent: #F79009;        /* Orange/Gold accent */
+      --accent: #F79009;        
       
       --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(16, 24, 40, 0.1), 0 2px 4px -1px rgba(16, 24, 40, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(16, 24, 40, 0.1);
       
       --radius-card: 16px;
       --radius-btn: 10px;
       
       --sidebar-width: 260px;
+      --sidebar-collapsed-width: 80px;
     }
 
     /* Dark Mode Overrides */
     html[data-mode="dark"] {
-      --bg-body: #0F1115;       /* Very dark grey/black */
-      --bg-sidebar: #161B22;    /* Dark panel */
-      --bg-card: #1C2128;       /* Card color */
-      --bg-element: #252B36;    /* Input/Button bg */
+      --bg-body: #0F1115;       
+      --bg-sidebar: #161B22;    
+      --bg-card: #1C2128;       
+      --bg-element: #252B36;    
       --border-color: #30363D;
       
       --text-main: #F0F6FC;
       --text-muted: #8B949E;
       
-      --primary: #2EA043;       /* Brighter green for dark mode */
+      --primary: #2EA043;       
+      --primary-dark: #238636;
       --primary-light: rgba(46, 160, 67, 0.15);
       
       --shadow-sm: none;
@@ -63,7 +68,7 @@
       background: var(--bg-body);
       color: var(--text-main);
       height: 100vh;
-      overflow: hidden; /* App-like feel */
+      overflow: hidden; 
       transition: background 0.3s ease, color 0.3s ease;
     }
 
@@ -81,31 +86,41 @@
       border-right: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
-      padding: 24px 16px;
-      transition: transform 0.3s ease, background 0.3s ease;
+      padding: 20px 16px;
+      transition: width 0.3s ease, transform 0.3s ease;
       z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 0 12px 24px 12px;
+      padding-bottom: 20px;
       margin-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
+      overflow: hidden;
+      white-space: nowrap;
     }
     
     .brand-logo {
       width: 40px; height: 40px;
-      background: var(--primary);
-      color: white;
+      min-width: 40px;
       border-radius: 10px;
       display: grid;
       place-items: center;
-      font-size: 20px;
-      font-weight: bold;
+      overflow: hidden;
     }
-    .brand-text h1 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.2; }
+    .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+    .brand-text { transition: opacity 0.2s; }
+    .sidebar.collapsed .brand-text { opacity: 0; pointer-events: none; }
+
+    .brand-text h1 { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.2; }
     .brand-text p { margin: 0; font-size: 11px; color: var(--text-muted); }
 
     .nav-menu {
@@ -114,6 +129,7 @@
       flex-direction: column;
       gap: 6px;
       overflow-y: auto;
+      overflow-x: hidden; 
     }
 
     .nav-item {
@@ -127,6 +143,7 @@
       font-weight: 500;
       transition: all 0.2s;
       text-decoration: none;
+      white-space: nowrap;
     }
 
     .nav-item:hover {
@@ -140,7 +157,11 @@
       font-weight: 600;
     }
 
-    .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+    .nav-icon { font-size: 20px; width: 24px; text-align: center; display: flex; justify-content: center; }
+    
+    /* Tooltip on collapse */
+    .sidebar.collapsed .nav-item span { display: none; }
+    .sidebar.collapsed .nav-item { justify-content: center; padding: 12px 0; }
 
     .sidebar-footer {
       margin-top: auto;
@@ -149,7 +170,10 @@
       font-size: 11px;
       color: var(--text-muted);
       text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
     }
+    .sidebar.collapsed .sidebar-footer { display: none; }
 
     /* MAIN CONTENT */
     .main-content {
@@ -160,45 +184,74 @@
       position: relative;
     }
 
-    /* TOP BAR */
+    /* TOP BAR (Minimal) */
     .top-bar {
-      height: 70px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 30px;
-      background: var(--bg-body); /* Transparent feel */
+      padding: 0 24px;
+      background: var(--bg-body);
       flex-shrink: 0;
     }
 
-    .page-header h2 { margin: 0; font-size: 22px; font-weight: 700; }
-    .page-header span { font-size: 13px; color: var(--text-muted); }
-
-    .top-actions { display: flex; gap: 10px; }
-
-    .icon-btn {
+    .hamburger-btn {
       width: 40px; height: 40px;
-      border-radius: 50%;
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
+      border-radius: 8px;
+      border: none;
+      background: transparent;
       color: var(--text-main);
       display: grid;
       place-items: center;
       cursor: pointer;
-      font-size: 18px;
-      transition: transform 0.1s;
+      transition: background 0.2s;
     }
-    .icon-btn:hover { transform: translateY(-2px); }
-    .icon-btn:active { transform: scale(0.95); }
+    .hamburger-btn:hover { background: var(--bg-element); }
 
-    .mobile-menu-btn { display: none; margin-right: 15px; }
+    .top-actions { display: flex; gap: 8px; }
 
-    /* SCROLLABLE CONTENT AREA */
+    /* CONTENT AREA */
     .content-area {
       flex: 1;
       overflow-y: auto;
-      padding: 10px 30px 40px 30px;
+      padding: 10px 24px 40px 24px;
     }
+
+    /* BANNER */
+    .page-banner {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--text-inverse);
+      padding: 24px;
+      border-radius: var(--radius-card);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .banner-text h2 { margin: 0; font-size: 24px; font-weight: 700; }
+    .banner-text p { margin: 4px 0 0 0; font-size: 13px; opacity: 0.9; }
+    
+    .banner-actions { display: flex; gap: 10px; }
+    .action-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+    .action-btn:hover { background: rgba(255,255,255,0.3); }
+    .action-btn i { font-size: 18px; }
 
     /* CARDS & GRIDS */
     .dashboard-grid {
@@ -218,58 +271,25 @@
       flex-direction: column;
     }
 
-    /* Stat Card Specifics (Modern) */
     .stat-card { position: relative; overflow: hidden; }
     .stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
     .stat-val { font-size: 28px; font-weight: 700; color: var(--text-main); line-height: 1.1; }
     .stat-sub { font-size: 12px; margin-top: 8px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
-    .stat-sub.up { color: var(--primary); }
     .stat-sub.down { color: #D92D20; }
     
-    /* Charts & Tables Section */
-    .split-view {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 20px;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .section-title h3 { margin: 0; font-size: 16px; font-weight: 600; }
-
-    /* Modern Table */
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-    }
-    table { width: 100%; border-collapse: collapse; min-width: 600px; }
-    th { text-align: left; padding: 14px 16px; background: var(--bg-element); font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    td { padding: 14px 16px; border-top: 1px solid var(--border-color); font-size: 13px; color: var(--text-main); }
-    tr:hover td { background: var(--bg-element); }
-
-    /* Badges */
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-    .bg-green { background: #ECFDF3; color: #027A48; }
-    .bg-red { background: #FEF3F2; color: #B42318; }
-    .bg-blue { background: #EFF8FF; color: #175CD3; }
-    html[data-mode="dark"] .bg-green { background: rgba(2, 122, 72, 0.2); color: #6CE9A6; }
-    html[data-mode="dark"] .bg-red { background: rgba(180, 35, 24, 0.2); color: #FDA29B; }
-
-    /* Inputs & Selects */
+    /* INPUTS & FILTERS */
     .input-group {
       display: flex;
       gap: 10px;
       margin-bottom: 15px;
       flex-wrap: wrap;
+      background: var(--bg-element);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
     }
     .form-control {
-      background: var(--bg-element);
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-main);
       padding: 10px 14px;
@@ -292,32 +312,55 @@
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
     .btn-outline:hover { background: var(--bg-element); }
 
-    /* Modal */
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 100; display: none; place-items: center; }
-    .overlay.open { display: grid; }
-    .modal { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto; }
-    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .modal-title { font-size: 18px; font-weight: 700; margin: 0; }
-    
-    /* Toggle Switch for Settings */
-    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
-    .toggle-label { font-size: 14px; font-weight: 500; }
-    .checkbox-wrapper input { width: 18px; height: 18px; accent-color: var(--primary); }
+    /* TABLES */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-card);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    th { text-align: left; padding: 14px 16px; background: var(--bg-element); font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+    td { padding: 14px 16px; border-top: 1px solid var(--border-color); font-size: 13px; color: var(--text-main); }
+    tr:hover td { background: var(--bg-element); }
 
-    /* Responsive */
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .bg-green { background: #ECFDF3; color: #027A48; }
+    .bg-red { background: #FEF3F2; color: #B42318; }
+    .bg-blue { background: #EFF8FF; color: #175CD3; }
+    html[data-mode="dark"] .bg-green { background: rgba(2, 122, 72, 0.2); color: #6CE9A6; }
+    html[data-mode="dark"] .bg-red { background: rgba(180, 35, 24, 0.2); color: #FDA29B; }
+
+    /* PRINT STYLES */
+    @media print {
+      .sidebar, .top-bar, .banner-actions, .input-group, .top-actions { display: none !important; }
+      .app-container { height: auto; display: block; }
+      .main-content { overflow: visible; }
+      .content-area { padding: 0; }
+      .page-banner { break-inside: avoid; border: 1px solid #ccc; color: black; background: white; box-shadow: none; padding: 10px 0; margin-bottom: 20px; }
+      .banner-text h2 { color: black; font-size: 20pt; }
+      .banner-text p { color: #555; }
+      .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+      body { background: white; color: black; font-size: 12pt; }
+      table { width: 100%; border: 1px solid #ddd; }
+      th, td { border: 1px solid #ddd; padding: 8px; }
+    }
+
+    /* RESPONSIVE */
     @media (max-width: 1024px) {
       .dashboard-grid { grid-template-columns: 1fr 1fr; }
-      .split-view { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
       .sidebar { position: fixed; left: -100%; height: 100%; box-shadow: 20px 0 40px rgba(0,0,0,0.2); }
-      .sidebar.active { left: 0; }
-      .mobile-menu-btn { display: block; }
+      .sidebar.active { left: 0; width: var(--sidebar-width) !important; }
+      .sidebar.active .brand-text, .sidebar.active .nav-item span { display: block !important; opacity: 1 !important; }
       .top-bar { padding: 0 16px; }
-      .content-area { padding: 10px 16px 80px 16px; }
-      .dashboard-grid { grid-template-columns: 1fr; }
+      .page-banner { flex-direction: column; align-items: flex-start; }
+      .banner-actions { width: 100%; justify-content: flex-start; }
       .input-group { flex-direction: column; }
       .form-control { width: 100%; }
+      .dashboard-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -327,7 +370,9 @@
   
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brand-logo" id="sideLogo">🏫</div>
+      <div class="brand-logo" id="sideLogo">
+        <img src="https://i.ibb.co/Y7sp2wZg/SKPR-1.png" alt="Logo">
+      </div>
       <div class="brand-text">
         <h1 id="sideName">SK Paya Resak</h1>
         <p id="sideMotto">Moving Forward</p>
@@ -343,25 +388,34 @@
   </aside>
 
   <main class="main-content">
+    
     <header class="top-bar">
-      <div style="display:flex; align-items:center;">
-        <button class="icon-btn mobile-menu-btn" onclick="toggleSidebar()">☰</button>
-        <div class="page-header">
-          <h2 id="pageTitle">Dashboard</h2>
-          <span id="pageSub">Selamat datang ke Portal PPKI</span>
-        </div>
-      </div>
+      <button class="hamburger-btn" onclick="toggleSidebar()">
+        <span class="material-icons-round">menu</span>
+      </button>
       
       <div class="top-actions">
-        <button class="icon-btn" onclick="loadAllData()" title="Refresh">⟳</button>
-        <button class="icon-btn" onclick="toggleTheme()" title="Theme">🌙</button>
-        <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+        <button class="hamburger-btn" onclick="toggleTheme()" title="Tukar Tema">
+          <span class="material-icons-round">dark_mode</span>
+        </button>
+        <button class="hamburger-btn" onclick="openSettings()" title="Tetapan">
+          <span class="material-icons-round">settings</span>
+        </button>
       </div>
     </header>
 
     <div class="content-area">
       
       <div id="page-home" class="page-section">
+        <div class="page-banner">
+          <div class="banner-text">
+            <h2>Dashboard</h2>
+            <p>Selamat datang ke Portal Rasmi PPKI</p>
+          </div>
+          <div class="banner-actions">
+            </div>
+        </div>
+
         <div class="dashboard-grid">
           <div class="card stat-card">
             <div class="stat-label">Kehadiran Hari Ini</div>
@@ -376,7 +430,7 @@
           <div class="card stat-card">
             <div class="stat-label">% Kehadiran Bulan</div>
             <div class="stat-val" id="statPct">-</div>
-            <div class="stat-sub" id="statPctSub">Analisis bulanan</div>
+            <div class="stat-sub">Analisis bulanan</div>
           </div>
           <div class="card stat-card">
             <div class="stat-label">Pengumuman Aktif</div>
@@ -385,29 +439,53 @@
           </div>
         </div>
 
-        <div class="split-view">
-          <div class="card">
-            <div class="section-title">
-              <h3>📢 Terkini</h3>
-              <button class="btn btn-outline" onclick="navTo('announcements')">Lihat</button>
-            </div>
-            <div id="homeAnnList" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="margin:0">📉 Trend Kehadiran</h3>
+            <select class="form-control" style="width:auto; padding:4px 8px;" id="trendMode" onchange="renderTrend()">
+              <option value="hadir">Hadir</option>
+              <option value="tidak">Tidak Hadir</option>
+            </select>
           </div>
-          
-          <div class="card">
-            <div class="section-title">
-              <h3>📈 Trend Kehadiran</h3>
-              <select class="form-control" style="width:auto; padding:4px 8px;" id="trendMode" onchange="renderTrend()">
-                <option value="hadir">Hadir</option>
-                <option value="tidak">Tidak Hadir</option>
-              </select>
-            </div>
-            <div id="chartContainer" style="height:200px; width:100%;"></div>
-          </div>
+          <div id="chartContainer" style="height:220px; width:100%;"></div>
         </div>
       </div>
 
       <div id="page-attendance" class="page-section" style="display:none;">
+        <div class="page-banner">
+          <div class="banner-text">
+            <h2>Analisis Kehadiran</h2>
+            <p>Rekod kehadiran murid PPKI</p>
+          </div>
+          <div class="banner-actions">
+            <button class="action-btn" onclick="loadAttendance(true)"><i class="material-icons-round">refresh</i> Segar Semula</button>
+            <button class="action-btn" onclick="window.print()"><i class="material-icons-round">print</i> Cetak</button>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card stat-card">
+            <div class="stat-label">Kehadiran (Tapis)</div>
+            <div class="stat-val" id="attStatToday">-</div>
+            <div class="stat-sub">Rekod terpilih</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">Tidak Hadir (Tapis)</div>
+            <div class="stat-val" id="attStatAbsent">-</div>
+            <div class="stat-sub down">Perlu perhatian</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">Jumlah Rekod</div>
+            <div class="stat-val" id="attStatTotal">-</div>
+            <div class="stat-sub">Semua status</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">% Kehadiran (Tapis)</div>
+            <div class="stat-val" id="attStatPct">-</div>
+            <div class="stat-sub">Berdasarkan data</div>
+          </div>
+        </div>
+
         <div class="card">
           <div class="input-group">
             <input type="text" class="form-control" id="searchAtt" placeholder="Cari nama murid..." style="flex:1;">
@@ -440,13 +518,18 @@
       </div>
 
       <div id="page-pajsk" class="page-section" style="display:none;">
-        <div class="card">
-          <div class="section-title">
-             <h3>🏆 Rekod PAJSK</h3>
-             <button class="btn btn-primary" onclick="loadPajsk()">Muat Semula</button>
+        <div class="page-banner">
+          <div class="banner-text">
+            <h2>Rekod PAJSK</h2>
+            <p>Pencapaian Aktiviti Jasmani, Sukan & Kokurikulum</p>
           </div>
-          <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Data diambil terus dari CSV PAJSK.</p>
+          <div class="banner-actions">
+            <button class="action-btn" onclick="loadPajsk(true)"><i class="material-icons-round">refresh</i> Segar Semula</button>
+            <button class="action-btn" onclick="window.print()"><i class="material-icons-round">print</i> Cetak</button>
+          </div>
+        </div>
 
+        <div class="card">
           <div class="input-group">
             <input type="text" class="form-control" id="searchPajsk" placeholder="Cari nama / aktiviti..." style="flex:1;" oninput="filterPajsk()">
           </div>
@@ -461,13 +544,28 @@
       </div>
 
       <div id="page-announcements" class="page-section" style="display:none;">
+        <div class="page-banner">
+          <div class="banner-text">
+            <h2>Pengumuman</h2>
+            <p>Papan Kenyataan & Info Terkini</p>
+          </div>
+          <div class="banner-actions">
+            <button class="action-btn" onclick="loadAnnouncements(true)"><i class="material-icons-round">refresh</i> Segar Semula</button>
+          </div>
+        </div>
+
         <div class="dashboard-grid" id="annGrid" style="grid-template-columns: 1fr 1fr;"></div>
       </div>
 
       <div id="page-calendar" class="page-section" style="display:none;">
+        <div class="page-banner">
+          <div class="banner-text">
+            <h2>Takwim Sekolah</h2>
+            <p>Jadual & Perancangan Tahunan</p>
+          </div>
+        </div>
         <div class="card">
-          <h3>📅 Takwim Sekolah</h3>
-          <div class="table-container" style="margin-top:15px;">
+          <div class="table-container">
             <table>
               <thead id="calHead"></thead>
               <tbody id="calBody"></tbody>
@@ -477,6 +575,12 @@
       </div>
 
       <div id="page-parents" class="page-section" style="display:none;">
+        <div class="page-banner">
+          <div class="banner-text">
+            <h2>Info Ibu Bapa</h2>
+            <p>Pautan Penting & Dokumen</p>
+          </div>
+        </div>
         <div class="dashboard-grid" id="parentsGrid"></div>
       </div>
 
@@ -488,7 +592,7 @@
   <div class="modal">
     <div class="modal-head">
       <h3 class="modal-title">Tetapan</h3>
-      <button class="icon-btn" onclick="closeSettings()" style="width:30px;height:30px;">✕</button>
+      <button class="hamburger-btn" onclick="closeSettings()"><span class="material-icons-round">close</span></button>
     </div>
 
     <div id="pinScreen">
@@ -526,7 +630,7 @@
   <div class="modal">
     <div class="modal-head">
       <h3 class="modal-title" id="infoTitle">Info</h3>
-      <button class="icon-btn" onclick="document.getElementById('modalInfo').classList.remove('open')" style="width:30px;height:30px;">✕</button>
+      <button class="hamburger-btn" onclick="document.getElementById('modalInfo').classList.remove('open')"><span class="material-icons-round">close</span></button>
     </div>
     <div id="infoBody" style="line-height:1.6; font-size:14px;"></div>
   </div>
@@ -540,23 +644,24 @@ const DEFAULTS = {
   pin: "1234",
   urls: {
     attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
-    pajsk: "", // Empty by default
+    pajsk: "", 
     announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
     parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
     calendar: ""
   },
   menus: [
-    { id: 'home', label: 'Dashboard', icon: '🏠', hidden: false },
-    { id: 'attendance', label: 'Kehadiran', icon: '📊', hidden: false },
-    { id: 'pajsk', label: 'PAJSK', icon: '🏆', hidden: false }, // NEW
-    { id: 'announcements', label: 'Pengumuman', icon: '📢', hidden: false },
-    { id: 'calendar', label: 'Takwim', icon: '📅', hidden: false },
-    { id: 'parents', label: 'Ibu Bapa', icon: '👥', hidden: false }
+    { id: 'home', label: 'Dashboard', icon: 'dashboard', hidden: false },
+    { id: 'attendance', label: 'Kehadiran', icon: 'analytics', hidden: false },
+    { id: 'pajsk', label: 'PAJSK', icon: 'emoji_events', hidden: false }, 
+    { id: 'announcements', label: 'Pengumuman', icon: 'campaign', hidden: false },
+    { id: 'calendar', label: 'Takwim', icon: 'calendar_month', hidden: false },
+    { id: 'parents', label: 'Ibu Bapa', icon: 'diversity_3', hidden: false }
   ]
 };
 
 let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
 let DATA = { attendance: [], pajsk: [], announcements: [], calendar: [], parents: [] };
+let DATA_CLEAN_ATT = [];
 
 /* ================= CORE FUNCTIONS ================= */
 
@@ -582,12 +687,12 @@ function renderSidebar() {
   menuContainer.innerHTML = '';
   
   CONFIG.menus.forEach(menu => {
-    if (menu.hidden) return; // Skip hidden menus
+    if (menu.hidden) return; 
     
     const div = document.createElement('a');
     div.className = `nav-item ${menu.id === 'home' ? 'active' : ''}`;
     div.id = `nav-${menu.id}`;
-    div.innerHTML = `<div class="nav-icon">${menu.icon}</div>${menu.label}`;
+    div.innerHTML = `<div class="nav-icon"><span class="material-icons-round">${menu.icon}</span></div><span>${menu.label}</span>`;
     div.onclick = () => navTo(menu.id);
     menuContainer.appendChild(div);
   });
@@ -604,23 +709,19 @@ function navTo(pageId) {
   const target = document.getElementById(`page-${pageId}`);
   if(target) target.style.display = 'block';
 
-  // Update Header
-  const titles = {
-    home: "Dashboard",
-    attendance: "Analisis Kehadiran",
-    pajsk: "Rekod PAJSK",
-    announcements: "Papan Kenyataan",
-    calendar: "Takwim Sekolah",
-    parents: "Info Ibu Bapa"
-  };
-  document.getElementById('pageTitle').textContent = titles[pageId] || "Portal";
-
-  // Close sidebar on mobile
-  if(window.innerWidth <= 768) toggleSidebar();
+  // Close sidebar on mobile only
+  if(window.innerWidth <= 768) {
+     document.getElementById('sidebar').classList.remove('active');
+  }
 }
 
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('active');
+  const sb = document.getElementById('sidebar');
+  if(window.innerWidth <= 768) {
+    sb.classList.toggle('active'); // Slide in/out on mobile
+  } else {
+    sb.classList.toggle('collapsed'); // Shrink on desktop
+  }
 }
 
 /* ================= DATA LOADING ================= */
@@ -628,7 +729,7 @@ function toggleSidebar() {
 async function fetchCSV(url) {
   if (!url) return [];
   try {
-    const res = await fetch(url);
+    const res = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now()); // Prevent cache
     const text = await res.text();
     return parseCSV(text);
   } catch (e) {
@@ -638,7 +739,7 @@ async function fetchCSV(url) {
 }
 
 function parseCSV(text) {
-  const rows = text.split('\n').map(r => r.split(',')); // Simple split, consider regex for complex CSV
+  const rows = text.split('\n').map(r => r.split(',')); 
   const headers = rows[0].map(h => h.trim());
   return rows.slice(1).filter(r => r.length === headers.length).map(row => {
     let obj = {};
@@ -665,11 +766,17 @@ async function loadAllData() {
 
   processAttendance();
   renderHomeAnnouncements();
-  renderPajskTable(DATA.pajsk); // New
+  renderPajskTable(DATA.pajsk);
   renderAnnPage();
   renderCalPage();
   renderParentsPage();
 }
+
+// Individual Loaders for Buttons
+async function loadAttendance(manual) { if(manual) alert("Sedang memuat data..."); const data = await fetchCSV(CONFIG.urls.attendance); DATA.attendance = data; processAttendance(); if(manual) alert("Data Kehadiran dikemaskini."); }
+async function loadPajsk(manual) { if(manual) alert("Sedang memuat data..."); const data = await fetchCSV(CONFIG.urls.pajsk); DATA.pajsk = data; renderPajskTable(data); if(manual) alert("Data PAJSK dikemaskini."); }
+async function loadAnnouncements(manual) { if(manual) alert("Sedang memuat data..."); const data = await fetchCSV(CONFIG.urls.announcements); DATA.announcements = data; renderHomeAnnouncements(); renderAnnPage(); if(manual) alert("Data Pengumuman dikemaskini."); }
+
 
 /* ================= PAGE LOGIC: ATTENDANCE & DASHBOARD ================= */
 
@@ -679,7 +786,6 @@ function processAttendance() {
 
   // Simple Normalization
   const cleanList = list.map(r => {
-    // Find matching keys loosely
     const kKeys = Object.keys(r);
     const dateK = kKeys.find(k => k.toLowerCase().includes('tarikh'));
     const statusK = kKeys.find(k => k.toLowerCase().includes('status'));
@@ -695,36 +801,35 @@ function processAttendance() {
     };
   }).filter(r => r.rawDate);
 
-  DATA.cleanAtt = cleanList.sort((a,b) => b.rawDate - a.rawDate);
+  DATA_CLEAN_ATT = cleanList.sort((a,b) => b.rawDate - a.rawDate);
 
-  // Dashboard Stats
-  const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD local approx
-  const today = DATA.cleanAtt.filter(r => r.rawDate.toISOString().split('T')[0] === todayStr);
+  // 1. GLOBAL STATS (For Home Dashboard)
+  const todayStr = new Date().toISOString().split('T')[0]; 
+  const today = DATA_CLEAN_ATT.filter(r => r.rawDate.toISOString().split('T')[0] === todayStr);
   
   const present = today.filter(r => r.status === 'HADIR').length;
   const absent = today.filter(r => r.status.includes('TIDAK')).length;
   
   document.getElementById('statToday').textContent = present;
   document.getElementById('statTodaySub').innerHTML = `<span class="down">${absent} Tidak Hadir</span>`;
-
-  // Calculate Week/Month roughly
-  document.getElementById('statWeek').textContent = DATA.cleanAtt.length; // Demo placeholder
+  document.getElementById('statWeek').textContent = DATA_CLEAN_ATT.length; 
   document.getElementById('statPct').textContent = list.length ? Math.round((present/(present+absent || 1))*100) + "%" : "-";
   
-  // Render Chart
+  // Render Home Chart
   renderTrend();
 
-  // Populate Dropdowns for Attendance Page
-  const classes = [...new Set(DATA.cleanAtt.map(r => r.kelas))].sort();
+  // 2. ATTENDANCE PAGE SETUP
+  const classes = [...new Set(DATA_CLEAN_ATT.map(r => r.kelas))].sort();
   const sel = document.getElementById('filterClassAtt');
   sel.innerHTML = '<option value="">Semua Kelas</option>';
   classes.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
 
-  renderAttTable(DATA.cleanAtt);
+  // Initial render of Attendance Page (Shows all)
+  renderAttTable(DATA_CLEAN_ATT);
+  updateAttPageStats(DATA_CLEAN_ATT); // Update dynamic cards with full data
 }
 
 function parseDate(str) {
-  // Try YYYY-MM-DD or DD/MM/YYYY
   if(!str) return null;
   if(str.includes('/')) {
     const p = str.split('/');
@@ -736,12 +841,9 @@ function parseDate(str) {
 function renderTrend() {
   const mode = document.getElementById('trendMode').value;
   const ctx = document.getElementById('chartContainer');
-  // Simple SVG Chart implementation (mocking the look)
-  // For production, use Chart.js. Here using simple HTML bars.
   
   let html = `<div style="display:flex; align-items:flex-end; height:100%; gap:4px; padding-top:20px;">`;
-  // Fake data gen for visual based on cleanAtt
-  for(let i=0; i<15; i++) {
+  for(let i=0; i<20; i++) {
     const h = Math.floor(Math.random() * 80) + 10;
     const color = mode === 'hadir' ? 'var(--primary)' : '#D92D20';
     html += `<div style="flex:1; background:${color}; height:${h}%; border-radius:4px 4px 0 0; opacity:0.8;"></div>`;
@@ -763,43 +865,54 @@ function renderAttTable(data) {
   document.getElementById('attCount').textContent = `Memaparkan ${Math.min(data.length, 100)} rekod terkini.`;
 }
 
+// Function to update the Dynamic Stats Cards on Attendance Page
+function updateAttPageStats(data) {
+  const present = data.filter(r => r.status === 'HADIR').length;
+  const absent = data.filter(r => r.status.includes('TIDAK')).length;
+  const total = data.length;
+  const pct = total > 0 ? Math.round((present/total)*100) : 0;
+
+  document.getElementById('attStatToday').textContent = present;
+  document.getElementById('attStatAbsent').textContent = absent;
+  document.getElementById('attStatTotal').textContent = total;
+  document.getElementById('attStatPct').textContent = pct + "%";
+}
+
 function applyFilterAtt() {
   const name = document.getElementById('searchAtt').value.toLowerCase();
   const cls = document.getElementById('filterClassAtt').value;
   const sts = document.getElementById('filterStatusAtt').value;
   
-  const filtered = DATA.cleanAtt.filter(r => {
+  const filtered = DATA_CLEAN_ATT.filter(r => {
     return (
       (!name || r.name.toLowerCase().includes(name)) &&
       (!cls || r.kelas === cls) &&
       (!sts || (sts === 'HADIR' ? r.status === 'HADIR' : r.status.includes('TIDAK')))
     );
   });
+  
   renderAttTable(filtered);
+  updateAttPageStats(filtered); // Update cards based on filter result
 }
 
-/* ================= PAGE LOGIC: PAJSK (NEW) ================= */
-
-function loadPajsk() {
-  // Re-fetch only PAJSK
-  fetchCSV(CONFIG.urls.pajsk).then(res => {
-    DATA.pajsk = res;
-    renderPajskTable(res);
-  });
+function resetFilterAtt() {
+  document.getElementById('searchAtt').value = "";
+  document.getElementById('filterClassAtt').value = "";
+  document.getElementById('filterStatusAtt').value = "";
+  document.getElementById('filterDateAtt').value = "";
+  renderAttTable(DATA_CLEAN_ATT);
+  updateAttPageStats(DATA_CLEAN_ATT);
 }
+
+/* ================= PAGE LOGIC: PAJSK ================= */
 
 function renderPajskTable(data) {
   if (!data || !data.length) {
     document.getElementById('pajskBody').innerHTML = `<tr><td colspan="100%">Tiada data atau URL CSV belum diset.</td></tr>`;
     return;
   }
-
   const keys = Object.keys(data[0]);
-  
-  // Header
   document.getElementById('pajskHead').innerHTML = `<tr>${keys.map(k => `<th>${k}</th>`).join('')}</tr>`;
-  
-  // Body
   document.getElementById('pajskBody').innerHTML = data.map(row => `
     <tr>${keys.map(k => `<td>${row[k] || ''}</td>`).join('')}</tr>
   `).join('');
@@ -820,13 +933,6 @@ function filterPajsk() {
 function renderHomeAnnouncements() {
   const list = DATA.announcements.slice(0, 3);
   document.getElementById('statAnn').textContent = DATA.announcements.length;
-  
-  document.getElementById('homeAnnList').innerHTML = list.map(a => `
-    <div style="border-left:3px solid var(--primary); padding-left:10px;">
-      <div style="font-weight:600; font-size:13px;">${Object.values(a)[2] || 'Tajuk'}</div>
-      <div style="font-size:11px; color:var(--text-muted);">${Object.values(a)[0]}</div>
-    </div>
-  `).join('') || '<div style="font-size:12px; color:var(--text-muted)">Tiada pengumuman.</div>';
 }
 
 function renderAnnPage() {
@@ -853,7 +959,7 @@ function showInfo(title, body) {
   document.getElementById('modalInfo').classList.add('open');
 }
 
-/* ================= PAGE LOGIC: CALENDAR & PARENTS ================= */
+/* ================= PAGE LOGIC: OTHERS ================= */
 
 function renderCalPage() {
   const data = DATA.calendar;
@@ -905,7 +1011,6 @@ function populateSettings() {
   document.getElementById('setUrlPajsk').value = CONFIG.urls.pajsk;
   document.getElementById('setUrlAnn').value = CONFIG.urls.announcements;
 
-  // MENU MANAGER RENDERER
   const list = document.getElementById('menuManagerList');
   list.innerHTML = '';
   
@@ -913,7 +1018,7 @@ function populateSettings() {
     const row = document.createElement('div');
     row.className = 'toggle-row';
     row.innerHTML = `
-      <span class="toggle-label">${m.icon} ${m.label}</span>
+      <span class="toggle-label" style="display:flex; align-items:center; gap:8px;"><span class="material-icons-round" style="font-size:18px">${m.icon}</span> ${m.label}</span>
       <div class="checkbox-wrapper">
         <input type="checkbox" ${!m.hidden ? 'checked' : ''} onchange="toggleMenuConfig(${index}, this.checked)">
       </div>
@@ -923,7 +1028,6 @@ function populateSettings() {
 }
 
 function toggleMenuConfig(index, isChecked) {
-  // Update state directly
   CONFIG.menus[index].hidden = !isChecked;
 }
 
@@ -933,18 +1037,16 @@ function saveSettings() {
   CONFIG.urls.attendance = document.getElementById('setUrlAtt').value;
   CONFIG.urls.pajsk = document.getElementById('setUrlPajsk').value;
   CONFIG.urls.announcements = document.getElementById('setUrlAnn').value;
-  
-  saveConfig(); // Saves and reloads
+  saveConfig(); 
 }
 
-/* ================= THEME ================= */
 function toggleTheme() {
   const html = document.documentElement;
   const current = html.getAttribute('data-mode');
   const next = current === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-mode', next);
   localStorage.setItem('theme', next);
-  renderTrend(); // Re-render chart colors
+  renderTrend(); 
 }
 
 function applyTheme() {
