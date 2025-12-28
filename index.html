@@ -1,29 +1,20 @@
 <!doctype html>
-<html lang="ms" class="h-full">
+<html lang="ms">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Sekolah</title>
-
-  <!-- Tailwind (CDN) -->
+  <title>Portal PPKI SK Paya Resak</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif; }
-
-    .sidebar-transition { transition: width .25s ease, transform .25s ease; }
-    .menu-item-hover { transition: transform .15s ease, background-color .15s ease; }
-    .menu-item-hover:hover { transform: translateX(4px); }
-
+    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .sidebar-transition { transition: all .25s ease-in-out; }
     .card-hover { transition: transform .2s ease, box-shadow .2s ease; cursor: pointer; }
-    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,.12); }
-
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,.10); }
+    .modal-backdrop { background: rgba(0,0,0,.65); backdrop-filter: blur(8px); }
     .line-clamp-2 {
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -39,455 +30,430 @@
   </style>
 </head>
 
-<body class="h-screen w-screen overflow-hidden">
+<body class="h-screen overflow-hidden bg-slate-100">
   <div id="app" class="h-full w-full"></div>
 
   <script>
     /***********************
-     * 1) CONFIG (EDIT SINI)
+     * 1) CONFIG
      ***********************/
     const CONFIG = {
-      schoolName: "SMK Contoh",
-      schoolMotto: "Cemerlang, Gemilang, Terbilang",
-      copyright: "© 2025 NK. Hak Cipta Terpelihara.",
-
-      // ✅ CSV cikgu:
-      CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
-
-      // Tema (boleh ubah)
-      theme: {
-        header: "#3b82f6",
-        bg: "#f3f4f6",
-        sidebar: "#1f2937",
-        card: "#ffffff",
-        text: "#111827"
-      }
+      schoolName: "SK Paya Resak",
+      schoolMotto: "Moving Forward",
+      copyrightTop: "© 2025 NK.",
+      copyrightBottom: "Hak Cipta Terpelihara.",
+      headerColor: "#2563eb",     // blue-600
+      sidebarColor: "#111827",    // gray-900
+      bgColor: "#f1f5f9",         // slate-100
+      cardColor: "#ffffff",
+      textColor: "#0f172a",
+      accentColor: "#10b981"      // emerald-500
     };
+
+    // ✅ Your Pengumuman CSV URL (embedded)
+    const PENGUMUMAN_CSV_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv";
+
+    // (Optional) You can later add Takwim CSV URL here
+    const TAKWIM_CSV_URL = ""; // letak nanti
 
     /***********************
      * 2) STATE
      ***********************/
-    let state = {
+    const state = {
+      currentPage: "home",
       sidebarCollapsed: false,
-      darkMode: false,
-      page: location.hash.replace("#", "") || "home",
-      rows: [],
-      columns: [],
-      loading: true,
-      error: null,
-
-      // filter table
-      search: "",
-      filterColumn: "__all__",
-      filterValue: "",
-      sortColumn: "",
-      sortDir: "asc",
-      pageSize: 25,
-      pageIndex: 0
+      nowText: "",
+      announcements: [],
+      announcementsLoading: false,
+      announcementsError: "",
+      viewingAnnouncement: null,
+      // placeholders for attendance stats (you can wire later)
+      attendanceStats: {
+        today: 0,
+        week: 0,
+        month: 0,
+        monthPercent: 0
+      }
     };
+
+    const MENU_ITEMS = [
+      { id: "home", label: "Laman Utama", icon: "🏠" },
+      { id: "kehadiran", label: "Kehadiran", icon: "📊" },
+      { id: "pengumuman", label: "Pengumuman", icon: "📢" },
+      { id: "takwim", label: "Takwim", icon: "🗓️" },
+      { id: "ibubapa", label: "Ibu Bapa", icon: "👨‍👩‍👧‍👦" }
+    ];
 
     /***********************
      * 3) UTIL
      ***********************/
-    const DAYS_MS = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
-    const MONTHS_MS = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+    const DAYS_MS = ["Ahad","Isnin","Selasa","Rabu","Khamis","Jumaat","Sabtu"];
+    const MONTHS_MS = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
 
-    function formatDateTime() {
+    function formatNow() {
       const now = new Date();
       const day = DAYS_MS[now.getDay()];
       const date = now.getDate();
       const month = MONTHS_MS[now.getMonth()];
       const year = now.getFullYear();
-      const hh = String(now.getHours()).padStart(2,'0');
-      const mm = String(now.getMinutes()).padStart(2,'0');
-      const ss = String(now.getSeconds()).padStart(2,'0');
-      return `${day}, ${date} ${month} ${year}, ${hh}:${mm}:${ss}`;
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      const ss = String(now.getSeconds()).padStart(2, "0");
+      return `${day}, ${date} ${month} ${year} • ${hh}:${mm}:${ss}`;
     }
 
-    function escHtml(s) {
+    function safeText(s) {
       return String(s ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
     }
 
-    // CSV parser simple (support quoted commas)
-    function parseCSV(text) {
+    // Robust-ish CSV parser (handles commas + quotes)
+    function parseCSV(csvText) {
       const rows = [];
-      let cur = "", inQ = false, row = [];
-      for (let i=0; i<text.length; i++) {
-        const ch = text[i];
-        const next = text[i+1];
-        if (ch === '"' && inQ && next === '"') { cur += '"'; i++; continue; }
-        if (ch === '"') { inQ = !inQ; continue; }
-        if (ch === "," && !inQ) { row.push(cur); cur=""; continue; }
-        if ((ch === "\n" || ch === "\r") && !inQ) {
+      let row = [];
+      let cur = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < csvText.length; i++) {
+        const ch = csvText[i];
+        const next = csvText[i + 1];
+
+        if (ch === '"' && inQuotes && next === '"') {
+          cur += '"';
+          i++;
+          continue;
+        }
+
+        if (ch === '"') {
+          inQuotes = !inQuotes;
+          continue;
+        }
+
+        if (ch === "," && !inQuotes) {
+          row.push(cur);
+          cur = "";
+          continue;
+        }
+
+        if ((ch === "\n" || ch === "\r") && !inQuotes) {
           if (ch === "\r" && next === "\n") i++;
-          row.push(cur); cur="";
+          row.push(cur);
+          cur = "";
+          // only push non-empty (or if has any column)
           if (row.some(v => String(v).trim() !== "")) rows.push(row);
           row = [];
           continue;
         }
+
         cur += ch;
       }
-      row.push(cur);
-      if (row.some(v => String(v).trim() !== "")) rows.push(row);
-      return rows;
+
+      // last cell
+      if (cur.length || row.length) {
+        row.push(cur);
+        if (row.some(v => String(v).trim() !== "")) rows.push(row);
+      }
+
+      return rows.map(r => r.map(c => String(c ?? "").trim()));
     }
 
-    function toLowerSafe(v){ return String(v ?? "").toLowerCase(); }
-
-    function setHash(page) {
-      location.hash = page;
+    function normalizePriority(p) {
+      const x = String(p || "").toUpperCase().trim();
+      if (x === "TINGGI") return 0;
+      if (x === "SEDERHANA") return 1;
+      if (x === "RENDAH") return 2;
+      return 3;
     }
 
-    function applyThemeVars() {
-      const root = document.documentElement;
-      root.style.setProperty("--c-header", CONFIG.theme.header);
-      root.style.setProperty("--c-bg", state.darkMode ? "#0f172a" : CONFIG.theme.bg);
-      root.style.setProperty("--c-sidebar", state.darkMode ? "#0b1220" : CONFIG.theme.sidebar);
-      root.style.setProperty("--c-card", state.darkMode ? "#111827" : CONFIG.theme.card);
-      root.style.setProperty("--c-text", state.darkMode ? "#e5e7eb" : CONFIG.theme.text);
+    function parseDate(d) {
+      // expects Google Sheet date in yyyy-mm-dd or dd/mm/yyyy (best effort)
+      if (!d) return null;
+      const s = String(d).trim();
+      if (!s) return null;
+
+      // yyyy-mm-dd
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+        const dt = new Date(s + "T00:00:00");
+        return isNaN(dt.getTime()) ? null : dt;
+      }
+
+      // dd/mm/yyyy
+      const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (m) {
+        const dd = Number(m[1]);
+        const mm = Number(m[2]) - 1;
+        const yy = Number(m[3]);
+        const dt = new Date(yy, mm, dd);
+        return isNaN(dt.getTime()) ? null : dt;
+      }
+
+      const dt = new Date(s);
+      return isNaN(dt.getTime()) ? null : dt;
+    }
+
+    function formatDateShort(d) {
+      const dt = parseDate(d);
+      if (!dt) return "";
+      const day = dt.getDate();
+      const month = MONTHS_MS[dt.getMonth()];
+      const year = dt.getFullYear();
+      return `${day} ${month} ${year}`;
     }
 
     /***********************
-     * 4) DATA LOAD
+     * 4) DATA: Fetch Pengumuman CSV
+     * Columns expected:
+     * A: ID
+     * B: TARIKH MULA
+     * C: TARIKH TAMAT
+     * D: TAJUK
+     * E: ISI KANDUNGAN
+     * F: URL
+     * G: KEUTAMAAN
+     * H: AKTIF
      ***********************/
-    async function loadCSV() {
-      state.loading = true;
-      state.error = null;
-      render();
+    async function loadAnnouncements() {
+      if (!PENGUMUMAN_CSV_URL) return;
+
+      state.announcementsLoading = true;
+      state.announcementsError = "";
+      renderApp();
 
       try {
-        const res = await fetch(CONFIG.CSV_URL, { cache: "no-store" });
-        if (!res.ok) throw new Error("Gagal fetch CSV. Semak link publish & permission.");
-        const txt = await res.text();
-        const raw = parseCSV(txt);
+        const res = await fetch(PENGUMUMAN_CSV_URL, { cache: "no-store" });
+        if (!res.ok) throw new Error("Gagal fetch CSV: " + res.status);
+        const text = await res.text();
 
-        if (!raw || raw.length < 2) throw new Error("CSV kosong / header tiada.");
+        const rows = parseCSV(text);
+        if (rows.length < 2) {
+          state.announcements = [];
+          state.announcementsLoading = false;
+          renderApp();
+          return;
+        }
 
-        const header = raw[0].map(h => String(h).trim());
-        const dataRows = raw.slice(1);
+        const header = rows[0].map(h => h.toUpperCase());
+        const idx = (name) => header.indexOf(name);
 
-        const objects = dataRows.map(r => {
-          const obj = {};
-          header.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
+        const iID = idx("ID");
+        const iMula = idx("TARIKH MULA");
+        const iTamat = idx("TARIKH TAMAT");
+        const iTajuk = idx("TAJUK");
+        const iIsi = idx("ISI KANDUNGAN");
+        const iUrl = idx("URL");
+        const iKeut = idx("KEUTAMAAN");
+        const iAktif = idx("AKTIF");
+
+        const data = rows.slice(1).map((r) => {
+          const obj = {
+            id: r[iID] ?? "",
+            tarikhMula: r[iMula] ?? "",
+            tarikhTamat: r[iTamat] ?? "",
+            tajuk: r[iTajuk] ?? "",
+            isi: r[iIsi] ?? "",
+            url: r[iUrl] ?? "",
+            keutamaan: r[iKeut] ?? "",
+            aktif: r[iAktif] ?? ""
+          };
           return obj;
+        })
+        .filter(a => (a.tajuk || a.isi).trim() !== "")
+        .filter(a => String(a.aktif).toUpperCase().trim() === "YA")
+        .sort((a, b) => {
+          const pa = normalizePriority(a.keutamaan);
+          const pb = normalizePriority(b.keutamaan);
+          if (pa !== pb) return pa - pb;
+          // latest start date first
+          const da = parseDate(a.tarikhMula)?.getTime() ?? 0;
+          const db = parseDate(b.tarikhMula)?.getTime() ?? 0;
+          return db - da;
         });
 
-        state.columns = header;
-        state.rows = objects;
-        state.loading = false;
-
-        // default sort: first column
-        state.sortColumn = state.columns[0] || "";
-        state.sortDir = "asc";
-        state.pageIndex = 0;
-
-        render();
-      } catch (e) {
-        state.loading = false;
-        state.error = e.message || "Ralat semasa load CSV";
-        render();
+        state.announcements = data;
+      } catch (err) {
+        state.announcementsError = (err && err.message) ? err.message : "Ralat memuat pengumuman";
+        state.announcements = [];
+      } finally {
+        state.announcementsLoading = false;
+        renderApp();
       }
     }
 
     /***********************
-     * 5) FILTER/SORT/PAGINATION
+     * 5) NAV / UI ACTIONS
      ***********************/
-    function getFilteredRows() {
-      let rows = [...state.rows];
-
-      // search
-      const q = toLowerSafe(state.search).trim();
-      if (q) {
-        rows = rows.filter(r => {
-          if (state.filterColumn && state.filterColumn !== "__all__") {
-            return toLowerSafe(r[state.filterColumn]).includes(q);
-          }
-          // all columns
-          return state.columns.some(c => toLowerSafe(r[c]).includes(q));
-        });
+    function navigateTo(pageId) {
+      state.currentPage = pageId;
+      // auto close sidebar on mobile after click
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        state.sidebarCollapsed = true;
       }
-
-      // filterValue exact-ish (dropdown) - optional
-      const fv = toLowerSafe(state.filterValue).trim();
-      if (fv && state.filterColumn && state.filterColumn !== "__all__") {
-        rows = rows.filter(r => toLowerSafe(r[state.filterColumn]).includes(fv));
-      }
-
-      // sort
-      const sc = state.sortColumn;
-      if (sc) {
-        rows.sort((a,b) => {
-          const va = a[sc] ?? "";
-          const vb = b[sc] ?? "";
-          // try numeric
-          const na = Number(String(va).replace(/[^\d.-]/g,""));
-          const nb = Number(String(vb).replace(/[^\d.-]/g,""));
-          let cmp;
-          if (!Number.isNaN(na) && !Number.isNaN(nb) && String(va).match(/\d/) && String(vb).match(/\d/)) {
-            cmp = na - nb;
-          } else {
-            cmp = String(va).localeCompare(String(vb), "ms");
-          }
-          return state.sortDir === "asc" ? cmp : -cmp;
-        });
-      }
-
-      return rows;
+      renderApp();
     }
 
-    function getPageRows(rows) {
-      const start = state.pageIndex * state.pageSize;
-      return rows.slice(start, start + state.pageSize);
+    function toggleSidebar() {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+      renderApp();
     }
 
-    function uniqueValuesForColumn(col) {
-      const set = new Set();
-      state.rows.forEach(r => set.add(String(r[col] ?? "").trim()));
-      return [...set].filter(v => v !== "").sort((a,b)=>a.localeCompare(b,"ms"));
+    function openAnnouncementModal(item) {
+      state.viewingAnnouncement = item;
+      renderApp();
+    }
+
+    function closeAnnouncementModal() {
+      state.viewingAnnouncement = null;
+      renderApp();
     }
 
     /***********************
-     * 6) DASHBOARD CARDS (contoh ringkasan)
-     *    - Cikgu boleh ubah logik ikut nama kolum sebenar
+     * 6) RENDERERS
      ***********************/
-    function computeSummary() {
-      // cuba cari kolum status kehadiran
-      const statusCol =
-        state.columns.find(c => /status/i.test(c)) ||
-        state.columns.find(c => /kehadiran/i.test(c)) ||
-        "";
-
-      const dateCol =
-        state.columns.find(c => /tarikh/i.test(c)) ||
-        state.columns.find(c => /date/i.test(c)) ||
-        "";
-
-      const todayISO = new Date().toISOString().slice(0,10);
-
-      const rows = state.rows;
-      const total = rows.length;
-
-      let hadir = 0, tidak = 0, hariIni = 0;
-
-      if (statusCol) {
-        rows.forEach(r => {
-          const v = toLowerSafe(r[statusCol]);
-          if (v.includes("hadir")) hadir++;
-          if (v.includes("tidak") || v.includes("x hadir") || v.includes("absen")) tidak++;
-        });
-      }
-
-      if (dateCol) {
-        rows.forEach(r => {
-          const dv = String(r[dateCol] ?? "").trim();
-          // cuba match yyyy-mm-dd (publish google sheet kadang ikut format)
-          if (dv.includes(todayISO)) hariIni++;
-        });
-      }
-
-      return {
-        total,
-        hadir,
-        tidak,
-        hariIni,
-        statusCol,
-        dateCol
-      };
+    function renderHeaderTitle() {
+      const m = MENU_ITEMS.find(x => x.id === state.currentPage);
+      if (state.currentPage === "kehadiran") return "Dashboard Kehadiran";
+      return m ? m.label : "Portal";
     }
 
-    /***********************
-     * 7) UI RENDER
-     ***********************/
-    function Sidebar() {
-      const collapsed = state.sidebarCollapsed;
-      const bg = "var(--c-sidebar)";
-      const text = state.darkMode ? "text-gray-100" : "text-white";
-
-      const menu = [
-        { id: "home", icon: "🏠", label: "Laman Utama" },
-        { id: "dashboard", icon: "📊", label: "Dashboard Data" },
-        { id: "pengumuman", icon: "📢", label: "Pengumuman" },
-        { id: "takwim", icon: "🗓️", label: "Takwim" },
-        { id: "tentang", icon: "ℹ️", label: "Tentang" }
-      ];
-
+    function renderSidebar() {
       return `
         <aside class="sidebar-transition flex-shrink-0 h-full"
-          style="background:${bg}; width:${collapsed ? "84px" : "280px"};">
-          <div class="h-full flex flex-col">
-            <div class="p-5 border-b border-white/10">
-              <div class="flex items-center ${collapsed ? "justify-center" : "justify-start"} gap-3">
-                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-2xl">
+          style="width: 280px; background-color: ${CONFIG.sidebarColor};">
+          <div class="flex flex-col h-full">
+            <div class="p-6 border-b border-white/10">
+              <div class="flex items-center justify-center mb-4">
+                <div class="w-20 h-20 rounded-full bg-white flex items-center justify-center text-4xl overflow-hidden">
                   🏫
                 </div>
-                ${collapsed ? "" : `
-                  <div class="min-w-0">
-                    <div class="font-bold ${text} truncate">${escHtml(CONFIG.schoolName)}</div>
-                    <div class="text-xs text-white/70 truncate">${escHtml(CONFIG.schoolMotto)}</div>
-                  </div>
-                `}
               </div>
+              <h2 class="text-white text-center font-bold text-xl mb-1">${safeText(CONFIG.schoolName)}</h2>
+              <p class="text-white/60 text-center text-sm">${safeText(CONFIG.schoolMotto)}</p>
             </div>
 
-            <nav class="flex-1 overflow-y-auto py-3">
-              ${menu.map(m => {
-                const active = state.page === m.id;
-                return `
-                  <div class="menu-item-hover px-4 ${collapsed ? "py-3" : "py-3"} cursor-pointer ${active ? "bg-white/15" : "hover:bg-white/10"}"
-                       onclick="setHash('${m.id}')">
-                    <div class="flex items-center ${collapsed ? "justify-center" : ""} gap-3 ${text}">
-                      <div class="text-2xl">${m.icon}</div>
-                      ${collapsed ? "" : `<div class="font-medium">${m.label}</div>`}
-                    </div>
-                  </div>
-                `;
-              }).join("")}
+            <nav class="flex-1 overflow-y-auto py-4">
+              ${MENU_ITEMS.map(item => `
+                <div
+                  onclick="navigateTo('${item.id}')"
+                  class="flex items-center px-6 py-3 text-white cursor-pointer hover:bg-white/10 ${state.currentPage===item.id ? 'bg-white/10' : ''}">
+                  <span class="text-2xl">${item.icon}</span>
+                  <span class="ml-4 font-medium">${safeText(item.label)}</span>
+                </div>
+              `).join("")}
             </nav>
 
             <div class="p-4 border-t border-white/10">
-              ${collapsed ? `
-                <div class="text-center text-white/60 text-xs">©</div>
-              ` : `
-                <div class="text-center text-white/60 text-xs">${escHtml(CONFIG.copyright)}</div>
-              `}
+              <p class="text-white/60 text-xs text-center">${safeText(CONFIG.copyrightTop)}</p>
+              <p class="text-white/60 text-xs text-center">${safeText(CONFIG.copyrightBottom)}</p>
             </div>
           </div>
         </aside>
       `;
     }
 
-    function Header() {
-      const bg = "var(--c-header)";
-      return `
-        <header class="flex-shrink-0 shadow-lg" style="background:${bg};">
-          <div class="px-4 md:px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3 min-w-0">
-              <button class="text-white/90 hover:text-white hover:bg-white/10 rounded-lg p-2"
-                onclick="state.sidebarCollapsed=!state.sidebarCollapsed; render();">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-              </button>
+    function renderHome() {
+      const a = state.attendanceStats;
+      const activeCount = state.announcements.length;
 
-              <div class="min-w-0">
-                <div class="text-white font-bold text-lg truncate">
-                  ${state.page === "home" ? "Laman Utama" :
-                    state.page === "dashboard" ? "Dashboard Data" :
-                    state.page === "pengumuman" ? "Pengumuman" :
-                    state.page === "takwim" ? "Takwim" :
-                    state.page === "tentang" ? "Tentang" : "Portal Sekolah"}
+      return `
+        <div class="p-6 md:p-8 overflow-auto h-full">
+          <div class="max-w-7xl mx-auto">
+
+            <!-- Banner -->
+            <div class="rounded-2xl shadow-lg p-6 md:p-8 mb-8"
+              style="background: linear-gradient(135deg, ${CONFIG.headerColor}, ${CONFIG.accentColor});">
+              <div class="bg-white/90 rounded-2xl p-6 md:p-8">
+                <h1 class="text-2xl md:text-3xl font-bold mb-3" style="color:${CONFIG.textColor}">
+                  Selamat Datang ke Portal Rasmi PPKI SK Paya Resak
+                </h1>
+                <div class="mt-4 rounded-xl px-4 py-4 text-center text-white font-semibold"
+                  style="background: rgba(15,23,42,.92);">
+                  <div id="live-clock" class="text-lg md:text-2xl">${safeText(state.nowText)}</div>
                 </div>
-                <div class="text-white/75 text-xs live-clock">${formatDateTime()}</div>
               </div>
             </div>
 
-            <div class="flex items-center gap-2">
-              <button class="px-3 py-2 text-white/90 hover:text-white hover:bg-white/10 rounded-lg text-sm"
-                onclick="state.darkMode=!state.darkMode; applyThemeVars(); render();">
-                ${state.darkMode ? "🌙 Dark" : "☀️ Light"}
-              </button>
-              <button class="px-3 py-2 text-white/90 hover:text-white hover:bg-white/10 rounded-lg text-sm"
-                onclick="loadCSV()">
-                ⟳ Refresh
-              </button>
+            <!-- Statistik Kehadiran -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              ${renderStatCard("Kehadiran Hari Ini", a.today, "📅", "kehadiran")}
+              ${renderStatCard("Kehadiran Minggu Ini", a.week, "🗓️", "kehadiran")}
+              ${renderStatCard("Kehadiran Bulan Ini", a.month, "📊", "kehadiran")}
+              ${renderStatCard("Peratus Kehadiran Bulanan", (a.monthPercent || 0) + "%", "✅", "kehadiran")}
             </div>
-          </div>
-        </header>
-      `;
-    }
 
-    function Banner() {
-      const cardBg = "var(--c-card)";
-      const text = "var(--c-text)";
-      return `
-        <div class="rounded-2xl shadow-lg p-6 md:p-8"
-             style="background:${cardBg};">
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 class="text-2xl md:text-3xl font-bold" style="color:${text};">
-                Selamat Datang ke Portal Sekolah
-              </h1>
-              <p class="mt-2 text-sm md:text-base text-gray-500">
-                Paparan maklumat & data (CSV) yang kemas, smooth dan mudah dibaca.
-              </p>
-            </div>
-            <div class="rounded-xl px-5 py-4 text-white shadow"
-                 style="background: linear-gradient(135deg, rgba(99,102,241,1), rgba(59,130,246,1));">
-              <div class="text-xs opacity-90">Masa Semasa</div>
-              <div class="text-lg font-semibold live-clock">${formatDateTime()}</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function HomePage() {
-      const cardBg = "var(--c-card)";
-      const text = "var(--c-text)";
-      const s = computeSummary();
-
-      return `
-        <div class="space-y-6">
-          ${Banner()}
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            ${StatCard("📄", "Jumlah Rekod", s.total)}
-            ${StatCard("✅", "Hadir", s.hadir)}
-            ${StatCard("❌", "Tidak Hadir", s.tidak)}
-            ${StatCard("📅", "Rekod Hari Ini", s.hariIni)}
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <div class="lg:col-span-2 rounded-2xl shadow-lg p-6" style="background:${cardBg};">
-              <h2 class="text-xl font-bold mb-2" style="color:${text};">Menu Pantas</h2>
-              <p class="text-sm text-gray-500 mb-5">Klik untuk buka modul.</p>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                ${QuickCard("📊", "Dashboard Data", "Papar jadual CSV, filter, carian, sort.", "dashboard")}
-                ${QuickCard("📢", "Pengumuman", "Letak pengumuman / makluman semasa.", "pengumuman")}
-                ${QuickCard("🗓️", "Takwim", "Paparkan jadual & takwim ringkas.", "takwim")}
-                ${QuickCard("ℹ️", "Tentang", "Info portal & cara guna.", "tentang")}
+            <!-- Kad Pengumuman ringkas -->
+            <div class="rounded-2xl shadow-lg p-6"
+              style="background-color: ${CONFIG.cardColor};">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl md:text-2xl font-bold" style="color:${CONFIG.textColor}">
+                  📢 Pengumuman Aktif
+                </h2>
+                <button onclick="navigateTo('pengumuman')" class="px-4 py-2 rounded-xl text-white font-semibold hover:opacity-90"
+                  style="background-color:${CONFIG.headerColor}">
+                  Lihat Semua
+                </button>
               </div>
-            </div>
 
-            <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
-              <h2 class="text-xl font-bold mb-3" style="color:${text};">Status Data</h2>
-              ${state.loading ? `
-                <div class="text-sm text-gray-500">Sedang memuatkan CSV...</div>
-              ` : state.error ? `
-                <div class="text-sm text-red-600 font-semibold">Ralat: ${escHtml(state.error)}</div>
-                <div class="mt-3 text-xs text-gray-500">
-                  Pastikan Google Sheet sudah <b>Publish to web</b> dan output=csv.
-                </div>
+              ${state.announcementsLoading ? `
+                <div class="py-8 text-center text-slate-500">Memuat pengumuman...</div>
+              ` : state.announcementsError ? `
+                <div class="py-8 text-center text-red-600">Ralat: ${safeText(state.announcementsError)}</div>
+              ` : activeCount === 0 ? `
+                <div class="py-8 text-center text-slate-500">Tiada pengumuman aktif buat masa ini.</div>
               ` : `
-                <div class="text-sm text-gray-600">
-                  <div><b>Kolum dikesan:</b> ${state.columns.length}</div>
-                  <div><b>Rekod dikesan:</b> ${state.rows.length}</div>
-                  <div class="mt-3 text-xs text-gray-500 line-clamp-3">
-                    <b>CSV:</b> ${escHtml(CONFIG.CSV_URL)}
-                  </div>
+                <div class="text-sm text-slate-600 mb-3">
+                  Jumlah pengumuman aktif: <b>${activeCount}</b>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  ${state.announcements.slice(0, 6).map((x, idx) => `
+                    <div class="card-hover rounded-2xl p-5 border border-slate-100"
+                      onclick="navigateTo('pengumuman')"
+                      style="background:${CONFIG.bgColor}">
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full text-white"
+                          style="background:${badgeColor(x.keutamaan)}">
+                          ${safeText((x.keutamaan || "SEDERHANA").toUpperCase())}
+                        </span>
+                        <span class="text-xs text-slate-500">#${idx+1}</span>
+                      </div>
+                      <div class="font-bold text-slate-900 line-clamp-2">${safeText(x.tajuk)}</div>
+                      <div class="text-sm text-slate-600 mt-2 line-clamp-3">${safeText(x.isi)}</div>
+                      <div class="text-xs text-slate-500 mt-3">
+                        ${x.tarikhMula ? "Mula: " + safeText(formatDateShort(x.tarikhMula)) : ""}
+                      </div>
+                    </div>
+                  `).join("")}
                 </div>
               `}
             </div>
+
           </div>
         </div>
       `;
     }
 
-    function StatCard(icon, title, value) {
-      const cardBg = "var(--c-card)";
-      const text = "var(--c-text)";
+    function badgeColor(p) {
+      const x = String(p || "").toUpperCase().trim();
+      if (x === "TINGGI") return "#ef4444";     // red-500
+      if (x === "SEDERHANA") return "#f59e0b";  // amber-500
+      if (x === "RENDAH") return "#10b981";     // emerald-500
+      return "#3b82f6";                         // blue-500
+    }
+
+    function renderStatCard(title, value, icon, pageId) {
       return `
-        <div class="rounded-2xl shadow-lg p-5 card-hover" style="background:${cardBg};">
+        <div class="card-hover rounded-2xl p-5"
+          style="background-color:${CONFIG.cardColor}"
+          onclick="navigateTo('${pageId}')">
           <div class="flex items-center justify-between">
             <div>
-              <div class="text-sm text-gray-500">${escHtml(title)}</div>
-              <div class="mt-1 text-3xl font-extrabold" style="color:${text};">${escHtml(value)}</div>
+              <div class="text-sm text-slate-500 font-medium">${safeText(title)}</div>
+              <div class="text-2xl font-bold mt-1" style="color:${CONFIG.textColor}">
+                ${safeText(value)}
+              </div>
             </div>
             <div class="text-3xl">${icon}</div>
           </div>
@@ -495,177 +461,83 @@
       `;
     }
 
-    function QuickCard(icon, title, desc, page) {
-      const cardBg = "var(--c-card)";
-      const text = "var(--c-text)";
+    function renderKehadiran() {
+      // Placeholder layout: you can later wire CSV attendance & filters
+      const a = state.attendanceStats;
       return `
-        <div class="rounded-2xl shadow-lg p-5 card-hover"
-             style="background:${cardBg};"
-             onclick="setHash('${page}')">
-          <div class="flex gap-3 items-start">
-            <div class="text-3xl">${icon}</div>
-            <div class="min-w-0">
-              <div class="font-bold" style="color:${text};">${escHtml(title)}</div>
-              <div class="text-sm text-gray-500 mt-1 line-clamp-2">${escHtml(desc)}</div>
+        <div class="p-6 md:p-8 overflow-auto h-full">
+          <div class="max-w-7xl mx-auto">
+            <h1 class="text-2xl md:text-3xl font-bold mb-6" style="color:${CONFIG.textColor}">
+              Dashboard Kehadiran
+            </h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              ${renderStatCard("Kehadiran Hari Ini", a.today, "📅", "kehadiran")}
+              ${renderStatCard("Kehadiran Minggu Ini", a.week, "🗓️", "kehadiran")}
+              ${renderStatCard("Kehadiran Bulan Ini", a.month, "📊", "kehadiran")}
+              ${renderStatCard("Peratus Kehadiran Bulanan", (a.monthPercent || 0) + "%", "✅", "kehadiran")}
+            </div>
+
+            <div class="rounded-2xl shadow-lg p-6" style="background-color:${CONFIG.cardColor}">
+              <div class="text-slate-700">
+                (Sedia untuk sambung data kehadiran CSV + filter kolum + carian + date range.)
+              </div>
             </div>
           </div>
         </div>
       `;
     }
 
-    function DashboardPage() {
-      const cardBg = "var(--c-card)";
-      const text = "var(--c-text)";
-      const filtered = getFilteredRows();
-      const pageRows = getPageRows(filtered);
-      const totalPages = Math.max(1, Math.ceil(filtered.length / state.pageSize));
-
-      const canPrev = state.pageIndex > 0;
-      const canNext = state.pageIndex < totalPages - 1;
-
-      const filterColOptions = [
-        `<option value="__all__"${state.filterColumn==="__all__"?" selected":""}>Semua Kolum</option>`,
-        ...state.columns.map(c => `<option value="${escHtml(c)}"${state.filterColumn===c?" selected":""}>${escHtml(c)}</option>`)
-      ].join("");
-
-      const sortOptions = state.columns.map(c => `<option value="${escHtml(c)}"${state.sortColumn===c?" selected":""}>${escHtml(c)}</option>`).join("");
-
-      const filterValueOptions = (state.filterColumn && state.filterColumn !== "__all__")
-        ? uniqueValuesForColumn(state.filterColumn).slice(0,200).map(v => `<option value="${escHtml(v)}">${escHtml(v)}</option>`).join("")
-        : "";
+    function renderPengumuman() {
+      const list = state.announcements;
 
       return `
-        <div class="space-y-5">
-          <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
-            <div class="flex flex-col lg:flex-row lg:items-end gap-4">
-              <div class="flex-1">
-                <h2 class="text-2xl font-bold" style="color:${text};">📊 Dashboard Data (CSV)</h2>
-                <p class="text-sm text-gray-500 mt-1">
-                  Carian + filter + sort + pagination. (Semua data dibaca dari link CSV.)
-                </p>
-              </div>
-              <div class="text-sm text-gray-500">
-                Rekod: <b class="text-blue-600">${filtered.length}</b> / ${state.rows.length}
-              </div>
+        <div class="p-6 md:p-8 overflow-auto h-full">
+          <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-6">
+              <h1 class="text-2xl md:text-3xl font-bold" style="color:${CONFIG.textColor}">
+                📢 Pengumuman
+              </h1>
+              <button onclick="loadAnnouncements()" class="px-4 py-2 rounded-xl text-white font-semibold hover:opacity-90"
+                style="background-color:${CONFIG.headerColor}">
+                Segarkan
+              </button>
             </div>
 
-            <div class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <label class="text-xs text-gray-500 font-semibold">Carian</label>
-                <input value="${escHtml(state.search)}"
-                  oninput="state.search=this.value; state.pageIndex=0; render();"
-                  placeholder="Taip untuk cari..."
-                  class="mt-1 w-full px-4 py-3 border rounded-xl bg-white/70" />
-              </div>
-
-              <div>
-                <label class="text-xs text-gray-500 font-semibold">Kolum</label>
-                <select class="mt-1 w-full px-4 py-3 border rounded-xl bg-white/70"
-                  onchange="state.filterColumn=this.value; state.filterValue=''; state.pageIndex=0; render();">
-                  ${filterColOptions}
-                </select>
-              </div>
-
-              <div>
-                <label class="text-xs text-gray-500 font-semibold">Nilai (optional)</label>
-                <input value="${escHtml(state.filterValue)}"
-                  oninput="state.filterValue=this.value; state.pageIndex=0; render();"
-                  ${state.filterColumn==="__all__" ? "disabled" : ""}
-                  placeholder="${state.filterColumn==="__all__" ? "Pilih kolum dahulu" : "Contoh: 1 AL-FARABI"}"
-                  class="mt-1 w-full px-4 py-3 border rounded-xl bg-white/70 disabled:opacity-60" />
-                ${state.filterColumn!=="__all__" && filterValueOptions ? `
-                  <div class="mt-2">
-                    <select class="w-full px-3 py-2 border rounded-xl bg-white/70"
-                      onchange="state.filterValue=this.value; state.pageIndex=0; render();">
-                      <option value="">— Pilih nilai cepat —</option>
-                      ${filterValueOptions}
-                    </select>
-                  </div>
-                ` : ""}
-              </div>
-
-              <div>
-                <label class="text-xs text-gray-500 font-semibold">Sort</label>
-                <div class="mt-1 flex gap-2">
-                  <select class="flex-1 px-4 py-3 border rounded-xl bg-white/70"
-                    onchange="state.sortColumn=this.value; render();">
-                    ${sortOptions}
-                  </select>
-                  <button class="px-4 py-3 border rounded-xl bg-white/70"
-                    onclick="state.sortDir = (state.sortDir==='asc'?'desc':'asc'); render();">
-                    ${state.sortDir === "asc" ? "⬆️" : "⬇️"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="rounded-2xl shadow-lg overflow-hidden" style="background:${cardBg};">
-            ${state.loading ? `
-              <div class="p-8 text-center text-gray-500">Sedang memuatkan CSV...</div>
-            ` : state.error ? `
-              <div class="p-8">
-                <div class="text-red-600 font-bold">Ralat: ${escHtml(state.error)}</div>
-                <div class="mt-2 text-sm text-gray-500">
-                  Semak: publish CSV, link betul, dan sheet boleh diakses umum.
-                </div>
-              </div>
+            ${state.announcementsLoading ? `
+              <div class="py-16 text-center text-slate-500">Memuat pengumuman...</div>
+            ` : state.announcementsError ? `
+              <div class="py-16 text-center text-red-600">Ralat: ${safeText(state.announcementsError)}</div>
+            ` : list.length === 0 ? `
+              <div class="py-16 text-center text-slate-500">Tiada pengumuman aktif buat masa ini.</div>
             ` : `
-              <div class="overflow-auto">
-                <table class="min-w-full text-sm">
-                  <thead class="${state.darkMode ? "bg-white/5" : "bg-gray-50"} sticky top-0">
-                    <tr>
-                      ${state.columns.map(c => `
-                        <th class="text-left px-4 py-3 font-semibold whitespace-nowrap"
-                            style="color:var(--c-text);">
-                          ${escHtml(c)}
-                        </th>
-                      `).join("")}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${pageRows.length === 0 ? `
-                      <tr><td class="px-4 py-10 text-center text-gray-500" colspan="${state.columns.length}">
-                        Tiada rekod padanan filter/carian.
-                      </td></tr>
-                    ` : pageRows.map(r => `
-                      <tr class="${state.darkMode ? "border-white/10" : "border-gray-100"} border-t hover:bg-black/5">
-                        ${state.columns.map(c => `
-                          <td class="px-4 py-3 whitespace-nowrap ${state.darkMode ? "text-gray-200" : "text-gray-700"}">
-                            ${escHtml(r[c])}
-                          </td>
-                        `).join("")}
-                      </tr>
-                    `).join("")}
-                  </tbody>
-                </table>
-              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${list.map(x => `
+                  <div class="card-hover rounded-2xl p-5 border border-slate-100"
+                    style="background-color:${CONFIG.cardColor}"
+                    onclick='openAnnouncementModal(${JSON.stringify(x).replaceAll("'", "&apos;")})'>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-semibold px-2 py-1 rounded-full text-white"
+                        style="background:${badgeColor(x.keutamaan)}">
+                        ${safeText((x.keutamaan || "SEDERHANA").toUpperCase())}
+                      </span>
+                      <span class="text-xs text-slate-500">${safeText(formatDateShort(x.tarikhMula))}</span>
+                    </div>
 
-              <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-t ${state.darkMode ? "border-white/10" : "border-gray-100"}">
-                <div class="flex items-center gap-2 text-sm text-gray-500">
-                  <span>Papar</span>
-                  <select class="px-3 py-2 border rounded-xl bg-white/70"
-                    onchange="state.pageSize=Number(this.value); state.pageIndex=0; render();">
-                    ${[10,25,50,100].map(n => `<option value="${n}"${state.pageSize===n?" selected":""}>${n}</option>`).join("")}
-                  </select>
-                  <span>per halaman</span>
-                </div>
+                    <div class="text-lg font-bold" style="color:${CONFIG.textColor}">
+                      ${safeText(x.tajuk)}
+                    </div>
+                    <div class="text-sm text-slate-600 mt-2 line-clamp-3">
+                      ${safeText(x.isi)}
+                    </div>
 
-                <div class="flex items-center gap-2">
-                  <button class="px-4 py-2 rounded-xl border bg-white/70 disabled:opacity-50"
-                    onclick="state.pageIndex=Math.max(0,state.pageIndex-1); render();"
-                    ${canPrev ? "" : "disabled"}>
-                    ◀ Prev
-                  </button>
-                  <div class="text-sm text-gray-500">
-                    Halaman <b>${state.pageIndex+1}</b> / ${totalPages}
+                    ${x.url ? `
+                      <div class="mt-4 text-sm font-semibold" style="color:${CONFIG.headerColor}">
+                        🔗 Pautan tersedia
+                      </div>
+                    ` : ""}
                   </div>
-                  <button class="px-4 py-2 rounded-xl border bg-white/70 disabled:opacity-50"
-                    onclick="state.pageIndex=Math.min(${totalPages-1},state.pageIndex+1); render();"
-                    ${canNext ? "" : "disabled"}>
-                    Next ▶
-                  </button>
-                </div>
+                `).join("")}
               </div>
             `}
           </div>
@@ -673,167 +545,209 @@
       `;
     }
 
-    function PengumumanPage() {
-      const cardBg = "var(--c-card)";
-      const text = "var(--c-text)";
-
-      // Demo: pengumuman statik (boleh tukar jadi dari sheet lain kemudian)
-      const list = [
-        { tajuk: "Program Membaca", ringkas: "Sila hadir mengikut jadual. Bawa bahan bacaan sendiri.", tarikh: "2025-12-28" },
-        { tajuk: "Mesyuarat Guru", ringkas: "Makluman: Mesyuarat ringkas di bilik mesyuarat.", tarikh: "2025-12-30" }
-      ];
-
+    function renderTakwim() {
       return `
-        <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
-          <h2 class="text-2xl font-bold" style="color:${text};">📢 Pengumuman</h2>
-          <p class="text-sm text-gray-500 mt-1">
-            Versi ini tanpa login. (Jika cikgu nak pengumuman automatik dari Google Sheet, beritahu—saya boleh sambungkan.)
-          </p>
-
-          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            ${list.map(p => `
-              <div class="rounded-2xl shadow p-5 card-hover" style="background:${state.darkMode?"rgba(255,255,255,0.03)":"#fff"};">
-                <div class="text-xs text-gray-500">📅 ${escHtml(p.tarikh)}</div>
-                <div class="mt-2 font-bold" style="color:${text};">${escHtml(p.tajuk)}</div>
-                <div class="mt-2 text-sm text-gray-500 line-clamp-3">${escHtml(p.ringkas)}</div>
+        <div class="p-6 md:p-8 overflow-auto h-full">
+          <div class="max-w-7xl mx-auto">
+            <h1 class="text-2xl md:text-3xl font-bold mb-6" style="color:${CONFIG.textColor}">
+              🗓️ Takwim
+            </h1>
+            <div class="rounded-2xl shadow-lg p-6" style="background-color:${CONFIG.cardColor}">
+              <div class="text-slate-700">
+                (Sedia untuk sambung Google Sheet Takwim. Bila cikgu bagi URL CSV takwim, saya boleh masukkan terus.)
               </div>
-            `).join("")}
+            </div>
           </div>
         </div>
       `;
     }
 
-    function TakwimPage() {
-      const cardBg = "var(--c-card)";
-      const text = "var(--c-text)";
+    function renderIbuBapa() {
+      return `
+        <div class="p-6 md:p-8 overflow-auto h-full">
+          <div class="max-w-7xl mx-auto">
+            <h1 class="text-2xl md:text-3xl font-bold mb-6" style="color:${CONFIG.textColor}">
+              👨‍👩‍👧‍👦 Ibu Bapa
+            </h1>
+            <div class="rounded-2xl shadow-lg p-6" style="background-color:${CONFIG.cardColor}">
+              <div class="text-slate-700">
+                (Modul kad: tajuk + isi + URL, pilihan buka popup atau buka tab baru — boleh tambah bila cikgu sedia.)
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPage() {
+      if (state.currentPage === "home") return renderHome();
+      if (state.currentPage === "kehadiran") return renderKehadiran();
+      if (state.currentPage === "pengumuman") return renderPengumuman();
+      if (state.currentPage === "takwim") return renderTakwim();
+      if (state.currentPage === "ibubapa") return renderIbuBapa();
+      return renderHome();
+    }
+
+    function renderModal() {
+      const x = state.viewingAnnouncement;
+      if (!x) return "";
 
       return `
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div class="lg:col-span-2 rounded-2xl shadow-lg p-6" style="background:${cardBg};">
-            <h2 class="text-2xl font-bold" style="color:${text};">🗓️ Takwim / Jadual</h2>
-            <p class="text-sm text-gray-500 mt-1">
-              Letak jadual, takwim, atau pautan Google Calendar (embed) di sini.
-            </p>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop"
+          onclick="if(event.target===this) closeAnnouncementModal()">
+          <div class="w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden"
+            style="background:${CONFIG.cardColor}"
+            onclick="event.stopPropagation()">
 
-            <div class="mt-6 space-y-3">
-              ${[
-                ["Isnin", "Perhimpunan / Aktiviti Mingguan"],
-                ["Rabu", "Kokurikulum"],
-                ["Jumaat", "Program Kerohanian / Bacaan Yasin"]
-              ].map(x => `
-                <div class="flex items-start justify-between p-4 rounded-2xl border ${state.darkMode?"border-white/10":"border-gray-100"}">
-                  <div>
-                    <div class="font-bold" style="color:${text};">${escHtml(x[0])}</div>
-                    <div class="text-sm text-gray-500">${escHtml(x[1])}</div>
+            <div class="p-6 border-b border-slate-100">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-3">
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full text-white"
+                      style="background:${badgeColor(x.keutamaan)}">
+                      ${safeText((x.keutamaan || "SEDERHANA").toUpperCase())}
+                    </span>
+                    <span class="text-xs text-slate-500">
+                      ${safeText(formatDateShort(x.tarikhMula))}
+                      ${x.tarikhTamat ? " • Tamat: " + safeText(formatDateShort(x.tarikhTamat)) : ""}
+                    </span>
                   </div>
-                  <div class="text-2xl">📌</div>
+                  <div class="text-2xl font-bold" style="color:${CONFIG.textColor}">
+                    ${safeText(x.tajuk)}
+                  </div>
                 </div>
-              `).join("")}
-            </div>
-          </div>
 
-          <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
-            <h3 class="text-xl font-bold" style="color:${text};">Tip</h3>
-            <ul class="mt-3 text-sm text-gray-500 space-y-2 list-disc list-inside">
-              <li>Jika cikgu ada Google Calendar, boleh embed dalam iframe.</li>
-              <li>Atau buat satu lagi sheet “Takwim” → publish CSV → paparkan seperti Dashboard Data.</li>
-            </ul>
+                <button class="text-slate-500 hover:text-slate-900 text-3xl leading-none"
+                  onclick="closeAnnouncementModal()">×</button>
+              </div>
+            </div>
+
+            <div class="p-6">
+              <div class="text-slate-700 whitespace-pre-wrap leading-relaxed">
+                ${safeText(x.isi)}
+              </div>
+
+              ${x.url ? `
+                <div class="mt-6">
+                  <a href="${safeText(x.url)}" target="_blank" rel="noopener"
+                    class="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-white font-semibold hover:opacity-90"
+                    style="background:${CONFIG.headerColor}">
+                    🔗 Buka Pautan
+                  </a>
+                </div>
+              ` : ""}
+
+              <div class="mt-6 flex justify-end">
+                <button onclick="closeAnnouncementModal()"
+                  class="px-5 py-3 rounded-xl font-semibold text-white hover:opacity-90"
+                  style="background:${CONFIG.headerColor}">
+                  Tutup
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       `;
     }
 
-    function TentangPage() {
-      const cardBg = "var(--c-card)";
-      const text = "var(--c-text)";
-      return `
-        <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
-          <h2 class="text-2xl font-bold" style="color:${text};">ℹ️ Tentang Portal</h2>
-          <p class="text-sm text-gray-500 mt-2">
-            Portal ini dibina untuk paparkan maklumat dan data Google Sheets (CSV) secara moden & smooth.
-            Tanpa login — semua berjalan di browser (client-side).
-          </p>
-
-          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-5 rounded-2xl border ${state.darkMode?"border-white/10":"border-gray-100"}">
-              <div class="font-bold" style="color:${text};">Apa yang boleh dibuat</div>
-              <ul class="mt-2 text-sm text-gray-500 space-y-1 list-disc list-inside">
-                <li>Dashboard jadual CSV + filter/carian/sort</li>
-                <li>Home dengan kad ringkasan</li>
-                <li>Sidebar boleh collapse</li>
-                <li>Light/Dark mode</li>
-              </ul>
-            </div>
-            <div class="p-5 rounded-2xl border ${state.darkMode?"border-white/10":"border-gray-100"}">
-              <div class="font-bold" style="color:${text};">Nota penting</div>
-              <ul class="mt-2 text-sm text-gray-500 space-y-1 list-disc list-inside">
-                <li>CSV mesti “Publish to web” supaya boleh fetch.</li>
-                <li>Jika format tarikh/kolum berbeza, logik ringkasan boleh ubah.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function MainContent() {
-      const bg = "var(--c-bg)";
-      const page = state.page;
-
-      let content = "";
-      if (page === "home") content = HomePage();
-      else if (page === "dashboard") content = DashboardPage();
-      else if (page === "pengumuman") content = PengumumanPage();
-      else if (page === "takwim") content = TakwimPage();
-      else if (page === "tentang") content = TentangPage();
-      else content = HomePage();
-
-      return `
-        <main class="flex-1 overflow-auto" style="background:${bg};">
-          <div class="p-4 md:p-8 max-w-7xl mx-auto">
-            ${content}
-          </div>
-        </main>
-      `;
-    }
-
-    function App() {
-      applyThemeVars();
-      return `
-        <div class="flex h-full w-full">
-          ${Sidebar()}
-          <div class="flex-1 flex flex-col h-full overflow-hidden">
-            ${Header()}
-            ${MainContent()}
-          </div>
-        </div>
-      `;
-    }
-
-    function render() {
+    function renderApp() {
       const app = document.getElementById("app");
-      app.innerHTML = App();
-      // update live clock text
-      document.querySelectorAll(".live-clock").forEach(el => el.textContent = formatDateTime());
+      app.innerHTML = `
+        <div class="flex h-full" style="background-color:${CONFIG.bgColor}">
+          ${state.sidebarCollapsed ? "" : renderSidebar()}
+
+          <div class="flex-1 flex flex-col h-full overflow-hidden">
+            <!-- Header -->
+            <header class="flex-shrink-0 shadow-lg" style="background-color:${CONFIG.headerColor}">
+              <div class="px-4 md:px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <button onclick="toggleSidebar()"
+                    class="text-white p-2 rounded-xl hover:bg-white/10">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                  </button>
+
+                  ${state.sidebarCollapsed ? `
+                    <button onclick="navigateTo('home')"
+                      class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-2xl hover:scale-105 transition">
+                      🏫
+                    </button>
+                  ` : ""}
+
+                  <div class="text-white font-bold text-lg md:text-xl">
+                    ${safeText(renderHeaderTitle())}
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 md:gap-3">
+                  <button onclick="navigateTo('pengumuman')"
+                    class="text-white px-3 py-2 rounded-xl hover:bg-white/10 flex items-center gap-2">
+                    <span class="text-lg">📢</span>
+                    <span class="hidden md:inline font-semibold">Pengumuman</span>
+                    ${state.announcements.length ? `
+                      <span class="ml-1 bg-red-500 text-white text-xs rounded-full w-6 h-6 inline-flex items-center justify-center">
+                        ${state.announcements.length}
+                      </span>
+                    ` : ""}
+                  </button>
+                </div>
+              </div>
+            </header>
+
+            <!-- Main -->
+            <main class="flex-1 overflow-hidden">
+              ${renderPage()}
+            </main>
+          </div>
+        </div>
+
+        ${renderModal()}
+      `;
+
+      // Update clock live on DOM
+      const clk = document.getElementById("live-clock");
+      if (clk) clk.textContent = state.nowText;
     }
 
     /***********************
-     * 8) ROUTER + CLOCK
+     * 7) INIT
      ***********************/
-    window.addEventListener("hashchange", () => {
-      state.page = location.hash.replace("#", "") || "home";
-      render();
+    function initMobileSidebarDefault() {
+      // ✅ sidebar default closed on mobile
+      state.sidebarCollapsed = window.matchMedia("(max-width: 768px)").matches;
+    }
+
+    function startClock() {
+      state.nowText = formatNow();
+      renderApp();
+      setInterval(() => {
+        state.nowText = formatNow();
+        const clk = document.getElementById("live-clock");
+        if (clk) clk.textContent = state.nowText;
+      }, 1000);
+    }
+
+    window.navigateTo = navigateTo;
+    window.toggleSidebar = toggleSidebar;
+    window.loadAnnouncements = loadAnnouncements;
+    window.openAnnouncementModal = openAnnouncementModal;
+    window.closeAnnouncementModal = closeAnnouncementModal;
+
+    initMobileSidebarDefault();
+    startClock();
+    renderApp();
+    loadAnnouncements();
+
+    window.addEventListener("resize", () => {
+      // keep mobile behavior nice
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        // do not force close if user opened manually; but safe default:
+        // state.sidebarCollapsed = true;
+      }
     });
-
-    setInterval(() => {
-      document.querySelectorAll(".live-clock").forEach(el => el.textContent = formatDateTime());
-    }, 1000);
-
-    /***********************
-     * 9) INIT
-     ***********************/
-    render();
-    loadCSV();
   </script>
 </body>
 </html>
