@@ -1,4 +1,4 @@
-const $ = q => document.querySelector(q);
+const $ = (q) => document.querySelector(q);
 
 const state = {
   raw: [],
@@ -6,29 +6,37 @@ const state = {
   charts: { gender: null, genderByClass: null, trend: null }
 };
 
-// ---- THEME
-function updateThemeIcon() {
-  const isDark = document.documentElement.classList.contains("dark");
-  $("#btnTheme").innerHTML = isDark
-    ? '<i data-lucide="sun" class="h-5 w-5"></i>'
-    : '<i data-lucide="moon" class="h-5 w-5"></i>';
-  lucide.createIcons();
-}
-function toggleTheme() {
-  const isDark = document.documentElement.classList.contains("dark");
-  document.documentElement.classList.toggle("dark", !isDark);
-  updateThemeIcon();
+// ---------- DEBUG BOX ----------
+function showDebug(msg) {
+  let el = document.getElementById("debugBox");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "debugBox";
+    el.style.cssText =
+      "position:fixed;bottom:12px;right:12px;max-width:520px;z-index:9999;" +
+      "background:#0b1220;color:#e5e7eb;border:1px solid #334155;border-radius:14px;" +
+      "padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);font:12px/1.4 system-ui;" +
+      "white-space:pre-wrap";
+    el.innerHTML = "DEBUG:\n";
+    document.body.appendChild(el);
+  }
+  el.textContent = "DEBUG:\n" + msg;
 }
 
-// ---- DATE PARSER: support 02/03/2025 AND 2025-03-02
+// ---------- HELPERS ----------
 function parseDateSmart(s) {
   if (!s) return null;
   const str = String(s).trim();
 
   // DD/MM/YYYY
   if (str.includes("/")) {
-    const [dd, mm, yyyy] = str.split("/").map(n => parseInt(n, 10));
-    if (yyyy && mm && dd) return new Date(yyyy, mm - 1, dd);
+    const parts = str.split("/");
+    if (parts.length === 3) {
+      const dd = parseInt(parts[0], 10);
+      const mm = parseInt(parts[1], 10);
+      const yyyy = parseInt(parts[2], 10);
+      if (yyyy && mm && dd) return new Date(yyyy, mm - 1, dd);
+    }
   }
 
   // YYYY-MM-DD
@@ -44,27 +52,29 @@ function normJantina(x) {
   const s = String(x || "").trim().toLowerCase();
   if (s === "l" || s === "lelaki" || s === "male") return "Lelaki";
   if (s === "p" || s === "perempuan" || s === "female") return "Perempuan";
-  return ""; // unknown
+  return "";
 }
 
 function normStatus(x) {
   const s = String(x || "").trim().toLowerCase();
   if (s === "hadir" || s === "present") return "Hadir";
   if (s === "tidak hadir" || s === "tidakhadir" || s === "absent" || s === "x hadir") return "Tidak Hadir";
-  return s ? x : "";
+  return String(x || "").trim();
 }
 
 function normalizeRow(r) {
-  const Tarikh = r.Tarikh ?? r.tarikh ?? r.TARIKH;
-  const Kelas = r.Kelas ?? r.kelas ?? r.KELAS;
-  const Nama = r["Nama Murid"] ?? r["Nama_Murid"] ?? r.Nama ?? r.nama ?? r["NAMA MURID"];
-  const Status = r.Status ?? r.status ?? r.STATUS;
-  const Jantina = r.Jantina ?? r.jantina ?? r.JANTINA;
+  // try multiple header variants
+  const Tarikh = r.Tarikh ?? r.tarikh ?? r.TARIKH ?? r["Tarikh "] ?? r[" tarikh"];
+  const Kelas = r.Kelas ?? r.kelas ?? r.KELAS ?? r["Kelas "] ?? r[" kelas"];
+  const Nama =
+    r["Nama Murid"] ?? r["Nama_Murid"] ?? r["NAMA MURID"] ?? r.Nama ?? r.nama ?? r["Nama "] ?? r[" Nama Murid"];
+  const Status = r.Status ?? r.status ?? r.STATUS ?? r["Status "] ?? r[" status"];
+  const Jantina = r.Jantina ?? r.jantina ?? r.JANTINA ?? r["Jantina "] ?? r[" jantina"];
 
   const dateObj = parseDateSmart(Tarikh);
   const statusNorm = normStatus(Status);
   const isHadir = String(statusNorm).toLowerCase() === "hadir";
-  const isTidak = !isHadir && !!statusNorm;
+  const isTidak = String(statusNorm).toLowerCase().includes("tidak") || String(statusNorm).toLowerCase().includes("absent");
 
   return {
     tarikhRaw: Tarikh ? String(Tarikh).trim() : "",
@@ -78,50 +88,22 @@ function normalizeRow(r) {
   };
 }
 
-async function loadCSV() {
-  const url = (window.PORTAL_CONFIG?.CSV_URL && String(window.PORTAL_CONFIG.CSV_URL).trim())
-    ? String(window.PORTAL_CONFIG.CSV_URL).trim()
-    : "./data/kehadiran.csv";
-
-  $("#csvSourceText").textContent = url;
-
-  return new Promise((resolve, reject) => {
-    Papa.parse(url, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: (res) => {
-        const rows = (res.data || [])
-          .map(normalizeRow)
-          .filter(x => x.nama && x.kelas && x.dateObj);
-
-        state.raw = rows;
-        resolve(rows);
-      },
-      error: reject
-    });
-  });
-}
-
 function ymFromDate(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  return `${y}-${m}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
 function getMonthRange(ym) {
   const [y, m] = ym.split("-").map(Number);
   const start = new Date(y, m - 1, 1);
-  start.setHours(0,0,0,0);
+  start.setHours(0, 0, 0, 0);
   const end = new Date(y, m, 0);
-  end.setHours(23,59,59,999);
+  end.setHours(23, 59, 59, 999);
   return { start, end };
 }
 
 function getDaysInMonth(range) {
   const days = [];
   const d = new Date(range.start);
-  d.setHours(0,0,0,0);
   while (d <= range.end) {
     days.push(new Date(d));
     d.setDate(d.getDate() + 1);
@@ -130,29 +112,74 @@ function getDaysInMonth(range) {
 }
 
 function uniqueMurid(rows) {
-  // Unique by Nama + Kelas (lebih selamat)
-  const set = new Set(rows.map(r => `${r.nama}|||${r.kelas}`));
-  return set.size;
+  return new Set(rows.map(r => `${r.nama}|||${r.kelas}`)).size;
 }
 
 function setWarn(show) {
-  $("#warnBox").classList.toggle("hidden", !show);
+  const w = $("#warnBox");
+  if (w) w.classList.toggle("hidden", !show);
 }
 
+// ---------- LOAD CSV via fetch (debuggable) ----------
+async function loadCSV() {
+  const url =
+    (window.PORTAL_CONFIG?.CSV_URL && String(window.PORTAL_CONFIG.CSV_URL).trim())
+      ? String(window.PORTAL_CONFIG.CSV_URL).trim()
+      : "./data/kehadiran.csv";
+
+  const sourceEl = $("#csvSourceText");
+  if (sourceEl) sourceEl.textContent = url;
+
+  let status = "—";
+  let ctype = "—";
+  let text = "";
+
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    status = `${res.status} ${res.statusText}`;
+    ctype = res.headers.get("content-type") || "—";
+    text = await res.text();
+  } catch (e) {
+    showDebug(
+      `URL digunakan: ${url}\nFETCH ERROR: ${String(e)}\n\nPunca biasa:\n- URL tak boleh akses (403/redirect)\n- Internet block / permission`
+    );
+    throw e;
+  }
+
+  // show first lines
+  const lines = text.split(/\r?\n/).slice(0, 3).join("\n");
+  showDebug(
+    `URL digunakan: ${url}\nFetch status: ${status}\nContent-Type: ${ctype}\n\n3 baris pertama:\n${lines}\n\nNota: Jika baris pertama bukan header CSV, portal memang jadi kosong.`
+  );
+
+  const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+  const raw = (parsed.data || []).map(normalizeRow);
+
+  // filter valid rows
+  state.raw = raw.filter(x => x.nama && x.kelas && x.dateObj);
+
+  // extra debug summary
+  showDebug(
+    `URL digunakan: ${url}\nFetch status: ${status}\nContent-Type: ${ctype}\n\n3 baris pertama:\n${lines}\n\nParsed rows: ${raw.length}\nValid rows (nama+kelas+tarikh): ${state.raw.length}\n\nKalau Valid rows = 0:\n- Header mungkin lain (contoh 'NamaMurid' bukan 'Nama Murid')\n- Tarikh format pelik\n- Data sebenarnya HTML (bukan CSV)`
+  );
+
+  return state.raw;
+}
+
+// ---------- RENDER ----------
 function populateClassDropdown(rows) {
+  const sel = $("#classPick");
+  if (!sel) return;
   const classes = Array.from(new Set(rows.map(r => r.kelas))).sort();
-  $("#classPick").innerHTML = `<option value="">Semua Kelas</option>` +
-    classes.map(c => `<option value="${c}">${c}</option>`).join("");
+  sel.innerHTML = `<option value="">Semua Kelas</option>` + classes.map(c => `<option value="${c}">${c}</option>`).join("");
 }
 
 function autoSetMonthToLatest(rows) {
-  // Ambil tarikh paling baru dalam data
+  const pick = $("#monthPick");
+  if (!pick) return;
   let max = null;
-  for (const r of rows) {
-    if (!max || r.dateObj > max) max = r.dateObj;
-  }
-  const latestYM = max ? ymFromDate(max) : ymFromDate(new Date());
-  $("#monthPick").value = latestYM;
+  for (const r of rows) if (!max || r.dateObj > max) max = r.dateObj;
+  pick.value = max ? ymFromDate(max) : ymFromDate(new Date());
 }
 
 function filterByMonthClass(rows) {
@@ -161,67 +188,23 @@ function filterByMonthClass(rows) {
   const range = getMonthRange(ym);
 
   const filtered = rows.filter(r =>
-    r.dateObj >= range.start &&
-    r.dateObj <= range.end &&
-    (!cls || r.kelas === cls)
+    r.dateObj >= range.start && r.dateObj <= range.end && (!cls || r.kelas === cls)
   );
-
-  return { filtered, range, cls };
+  return { filtered, range };
 }
 
 function renderKPI(rows) {
-  const totalRekod = rows.length;
-  const totalMurid = uniqueMurid(rows);
+  $("#kpiMurid").textContent = uniqueMurid(rows) || "0";
+  $("#kpiRekod").textContent = rows.length || "0";
 
   const L = rows.filter(r => r.jantina === "Lelaki").length;
   const P = rows.filter(r => r.jantina === "Perempuan").length;
-
-  const hadir = rows.filter(r => r.isHadir).length;
-  const pct = totalRekod ? (hadir / totalRekod * 100) : 0;
-
-  $("#kpiMurid").textContent = String(totalMurid);
-  $("#kpiRekod").textContent = String(totalRekod);
   $("#kpiL").textContent = String(L);
   $("#kpiP").textContent = String(P);
-  $("#kpiPct").textContent = totalRekod ? `${pct.toFixed(1)}%` : "—";
-}
 
-function renderGenderChart(rows) {
-  const L = rows.filter(r => r.jantina === "Lelaki").length;
-  const P = rows.filter(r => r.jantina === "Perempuan").length;
-
-  if (state.charts.gender) state.charts.gender.destroy();
-  state.charts.gender = new Chart($("#chartGender"), {
-    type: "bar",
-    data: { labels: ["Lelaki", "Perempuan"], datasets: [{ label: "Bilangan Rekod", data: [L, P] }] },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-  });
-}
-
-function renderGenderByClass(rows) {
-  const map = {};
-  rows.forEach(r => {
-    if (!map[r.kelas]) map[r.kelas] = { L: 0, P: 0 };
-    if (r.jantina === "Lelaki") map[r.kelas].L++;
-    if (r.jantina === "Perempuan") map[r.kelas].P++;
-  });
-
-  const labels = Object.keys(map).sort();
-  const dataL = labels.map(k => map[k].L);
-  const dataP = labels.map(k => map[k].P);
-
-  if (state.charts.genderByClass) state.charts.genderByClass.destroy();
-  state.charts.genderByClass = new Chart($("#chartGenderByClass"), {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        { label: "Lelaki", data: dataL },
-        { label: "Perempuan", data: dataP }
-      ]
-    },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-  });
+  const hadir = rows.filter(r => r.isHadir).length;
+  const pct = rows.length ? (hadir / rows.length * 100).toFixed(1) + "%" : "—";
+  $("#kpiPct").textContent = pct;
 }
 
 function renderTrend(rows, range) {
@@ -230,39 +213,33 @@ function renderTrend(rows, range) {
   days.forEach(d => dayMap.set(d.toISOString().slice(0,10), { hadir: 0, total: 0 }));
 
   rows.forEach(r => {
-    const key = r.dateObj.toISOString().slice(0,10);
-    if (!dayMap.has(key)) return;
-    const v = dayMap.get(key);
+    const k = r.dateObj.toISOString().slice(0,10);
+    if (!dayMap.has(k)) return;
+    const v = dayMap.get(k);
     v.total++;
     if (r.isHadir) v.hadir++;
   });
 
-  const labels = days.map(d => String(d.getDate())); // 1..31
-
-  let data;
-  let yMax = 100;
-  let label = "% Kehadiran";
+  const labels = days.map(d => String(d.getDate()));
+  let data, label, yMax;
 
   if (state.trendMode === "hadir") {
-    label = "Hadir";
-    yMax = undefined;
+    label = "Hadir"; yMax = undefined;
     data = days.map(d => {
       const v = dayMap.get(d.toISOString().slice(0,10));
       return v.total ? v.hadir : 0;
     });
   } else if (state.trendMode === "tidak") {
-    label = "Tidak Hadir";
-    yMax = undefined;
+    label = "Tidak Hadir"; yMax = undefined;
     data = days.map(d => {
       const v = dayMap.get(d.toISOString().slice(0,10));
       return v.total ? (v.total - v.hadir) : 0;
     });
   } else {
-    label = "% Kehadiran";
-    yMax = 100;
+    label = "% Kehadiran"; yMax = 100;
     data = days.map(d => {
       const v = dayMap.get(d.toISOString().slice(0,10));
-      return v.total ? +(v.hadir / v.total * 100).toFixed(1) : null; // gap if no data
+      return v.total ? +(v.hadir / v.total * 100).toFixed(1) : null;
     });
   }
 
@@ -270,12 +247,7 @@ function renderTrend(rows, range) {
   state.charts.trend = new Chart($("#chartTrend"), {
     type: "line",
     data: { labels, datasets: [{ label, data, tension: 0.25, spanGaps: false }] },
-    options: {
-      responsive: true,
-      scales: {
-        y: yMax ? { beginAtZero: true, max: yMax } : { beginAtZero: true }
-      }
-    }
+    options: { responsive: true, scales: { y: yMax ? { beginAtZero: true, max: yMax } : { beginAtZero: true } } }
   });
 }
 
@@ -289,19 +261,11 @@ function renderTopAbsent(rows) {
 
   const top = Object.values(map).sort((a,b) => b.cnt - a.cnt).slice(0,5);
   const body = $("#topAbsentBody");
+  if (!body) return;
 
-  if (!top.length) {
-    body.innerHTML = `<tr><td colspan="3" class="py-2 text-slate-500 dark:text-slate-400">Tiada data</td></tr>`;
-    return;
-  }
-
-  body.innerHTML = top.map(x => `
-    <tr class="hover:bg-white/60 dark:hover:bg-slate-900/40">
-      <td class="py-2">${x.nama}</td>
-      <td class="py-2">${x.kelas}</td>
-      <td class="py-2 font-semibold">${x.cnt}</td>
-    </tr>
-  `).join("");
+  body.innerHTML = top.length
+    ? top.map(x => `<tr><td class="py-2">${x.nama}</td><td class="py-2">${x.kelas}</td><td class="py-2 font-semibold">${x.cnt}</td></tr>`).join("")
+    : `<tr><td colspan="3" class="py-2 text-slate-500 dark:text-slate-400">Tiada data</td></tr>`;
 }
 
 function renderRanking(rows) {
@@ -314,126 +278,90 @@ function renderRanking(rows) {
   });
 
   const list = Object.values(map)
-    .map(x => ({ ...x, pct: x.total ? (x.hadir / x.total * 100) : 0 }))
+    .map(x => ({ ...x, pct: x.total ? (x.hadir/x.total*100) : 0 }))
     .sort((a,b) => b.pct - a.pct)
     .slice(0,10);
 
   const body = $("#rankBody");
-  if (!list.length) {
-    body.innerHTML = `<tr><td colspan="4" class="py-2 text-slate-500 dark:text-slate-400">Tiada data</td></tr>`;
-    return;
-  }
+  if (!body) return;
 
-  body.innerHTML = list.map((x,i) => `
-    <tr class="hover:bg-white/60 dark:hover:bg-slate-900/40">
-      <td class="py-2">${i+1}</td>
-      <td class="py-2">${x.nama}</td>
-      <td class="py-2">${x.kelas}</td>
-      <td class="py-2 font-semibold">${x.pct.toFixed(1)}%</td>
-    </tr>
-  `).join("");
+  body.innerHTML = list.length
+    ? list.map((x,i)=>`<tr><td class="py-2">${i+1}</td><td class="py-2">${x.nama}</td><td class="py-2">${x.kelas}</td><td class="py-2 font-semibold">${x.pct.toFixed(1)}%</td></tr>`).join("")
+    : `<tr><td colspan="4" class="py-2 text-slate-500 dark:text-slate-400">Tiada data</td></tr>`;
 }
 
-function exportPDF(summary) {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
-
-  const school = window.PORTAL_CONFIG?.SCHOOL_NAME || "PPKI";
-  const ym = $("#monthPick").value;
-  const cls = $("#classPick").value || "Semua Kelas";
-
-  pdf.setFontSize(14);
-  pdf.text(`Laporan Bulanan Kehadiran`, 10, 12);
-  pdf.setFontSize(11);
-  pdf.text(`${school}`, 10, 20);
-  pdf.text(`Bulan: ${ym} | Kelas: ${cls}`, 10, 28);
-
-  pdf.text(`Jumlah Murid (unik): ${summary.murid}`, 10, 40);
-  pdf.text(`Jumlah Rekod: ${summary.rekod}`, 10, 48);
-  pdf.text(`Lelaki: ${summary.L} | Perempuan: ${summary.P}`, 10, 56);
-  pdf.text(`% Kehadiran: ${summary.pct}`, 10, 64);
-
-  pdf.text(`Ranking Top 10 (% Kehadiran):`, 10, 76);
-  let y = 84;
-  const rows = Array.from(document.querySelectorAll("#rankBody tr"));
-  rows.forEach(tr => {
-    const t = tr.innerText.replace(/\s+/g, " | ");
-    if (y > 280) return;
-    pdf.text(t, 10, y);
-    y += 7;
+function renderGender(rows) {
+  const L = rows.filter(r => r.jantina === "Lelaki").length;
+  const P = rows.filter(r => r.jantina === "Perempuan").length;
+  if (state.charts.gender) state.charts.gender.destroy();
+  state.charts.gender = new Chart($("#chartGender"), {
+    type: "bar",
+    data: { labels: ["Lelaki","Perempuan"], datasets: [{ label: "Bilangan Rekod", data: [L,P] }] },
+    options: { scales: { y: { beginAtZero: true } } }
   });
+}
 
-  pdf.save(`Laporan_${ym}_${cls.replace(/\s+/g,"_")}.pdf`);
+function renderGenderByClass(rows) {
+  const map = {};
+  rows.forEach(r => {
+    if (!map[r.kelas]) map[r.kelas] = { L: 0, P: 0 };
+    if (r.jantina === "Lelaki") map[r.kelas].L++;
+    if (r.jantina === "Perempuan") map[r.kelas].P++;
+  });
+  const labels = Object.keys(map).sort();
+  const dataL = labels.map(k => map[k].L);
+  const dataP = labels.map(k => map[k].P);
+
+  if (state.charts.genderByClass) state.charts.genderByClass.destroy();
+  state.charts.genderByClass = new Chart($("#chartGenderByClass"), {
+    type: "bar",
+    data: { labels, datasets: [{ label: "Lelaki", data: dataL }, { label: "Perempuan", data: dataP }] },
+    options: { scales: { y: { beginAtZero: true } } }
+  });
 }
 
 function renderAll() {
   const { filtered, range } = filterByMonthClass(state.raw);
-
   setWarn(filtered.length === 0);
 
   renderKPI(filtered);
-  renderGenderChart(filtered);
+  renderGender(filtered);
   renderGenderByClass(filtered);
   renderTrend(filtered, range);
   renderTopAbsent(filtered);
   renderRanking(filtered);
-
-  // return summary for PDF
-  const murid = uniqueMurid(filtered);
-  const rekod = filtered.length;
-  const L = filtered.filter(r => r.jantina === "Lelaki").length;
-  const P = filtered.filter(r => r.jantina === "Perempuan").length;
-  const hadir = filtered.filter(r => r.isHadir).length;
-  const pct = rekod ? `${(hadir/rekod*100).toFixed(1)}%` : "—";
-
-  return { murid, rekod, L, P, pct };
 }
 
+// ---------- INIT ----------
 async function init() {
-  $("#btnTheme").addEventListener("click", toggleTheme);
-  updateThemeIcon();
-
-  document.querySelectorAll(".navBtn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const v = btn.getAttribute("data-view");
-      $("#view-dashboard").classList.toggle("hidden", v !== "dashboard");
-      $("#view-data").classList.toggle("hidden", v !== "data");
-      $("#pageTitle").textContent = v === "dashboard" ? "Dashboard Kehadiran" : "Data (CSV)";
-      $("#pageSub").textContent = v === "dashboard" ? "Ringkasan Bulanan, Ranking, Jantina" : "Paparan ringkas";
-    });
-  });
-
+  // trend toggle
   document.addEventListener("click", (e) => {
-    const t = e.target.closest(".trendBtn");
-    if (!t) return;
-    state.trendMode = t.dataset.mode;
+    const btn = e.target.closest(".trendBtn");
+    if (!btn) return;
+    state.trendMode = btn.dataset.mode;
     document.querySelectorAll(".trendBtn").forEach(b => b.classList.remove("bg-emerald-600","text-white"));
-    t.classList.add("bg-emerald-600","text-white");
+    btn.classList.add("bg-emerald-600","text-white");
     renderAll();
   });
 
-  const rows = await loadCSV();
+  // load
+  const data = await loadCSV();
+  if (!data.length) {
+    // still render, warn will show
+    renderAll();
+    return;
+  }
 
-  $("#schoolNameSide").textContent = window.PORTAL_CONFIG?.SCHOOL_NAME || "PPKI";
+  populateClassDropdown(data);
+  autoSetMonthToLatest(data);
 
-  populateClassDropdown(rows);
-  autoSetMonthToLatest(rows); // ✅ ini yang elak “kosong” bila data bukan bulan semasa
+  $("#monthPick")?.addEventListener("change", renderAll);
+  $("#classPick")?.addEventListener("change", renderAll);
 
-  $("#monthPick").addEventListener("change", renderAll);
-  $("#classPick").addEventListener("change", renderAll);
-
-  // set default active toggle %
+  // default active %
   document.querySelectorAll(".trendBtn")[0]?.classList.add("bg-emerald-600","text-white");
-
-  $("#btnPDF").addEventListener("click", () => {
-    const summary = renderAll();
-    exportPDF(summary);
-  });
 
   renderAll();
 }
 
-init().catch(err => {
-  console.error(err);
-  setWarn(true);
-});
+init().catch(console.error);
