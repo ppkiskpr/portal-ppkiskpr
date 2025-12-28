@@ -20,14 +20,19 @@
       --border-color: #EAECF0;
       --text-main: #101828;
       --text-muted: #667085;
+      
       --primary: #1F6F4A; 
       --primary-light: #E8F5E9;
       --accent: #F79009;
-      --shadow-md: 0 4px 6px -1px rgba(16, 24, 40, 0.1);
+      
+      --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+      --radius-card: 16px;
+      
       --sidebar-w-full: 260px;
-      --sidebar-w-mini: 80px;
+      --sidebar-w-mini: 74px;
     }
 
+    /* Dark Mode */
     html[data-mode="dark"] {
       --bg-body: #0F1115;
       --bg-sidebar: #161B22;
@@ -42,70 +47,70 @@
 
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; font-family: var(--font-main); background: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; }
-
     .app-container { display: flex; height: 100%; width: 100%; }
 
-    /* ===== SIDEBAR ===== */
+    /* ===== SIDEBAR (FIXED LOGIC) ===== */
     .sidebar {
       background: var(--bg-sidebar);
       border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      padding: 20px 14px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 50;
-      flex-shrink: 0;
-      white-space: nowrap;
-      overflow: hidden;
+      display: flex; flex-direction: column;
+      padding: 20px 12px;
+      transition: width 0.3s ease, transform 0.3s ease;
+      z-index: 50; flex-shrink: 0;
+      overflow-x: hidden; /* Hide text overflow */
     }
 
-    /* Desktop */
+    /* Desktop Logic */
     @media (min-width: 769px) {
       .sidebar { width: var(--sidebar-w-full); }
-      body.desktop-collapsed .sidebar { width: var(--sidebar-w-mini); }
-      body.desktop-collapsed .brand-text, 
-      body.desktop-collapsed .nav-text,
-      body.desktop-collapsed .sidebar-footer { opacity: 0; pointer-events: none; display: none; }
-      body.desktop-collapsed .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
-      body.desktop-collapsed .brand { justify-content: center; padding-left: 0; }
+      
+      /* Mini Mode */
+      body.desktop-mini .sidebar { width: var(--sidebar-w-mini); }
+      body.desktop-mini .brand-text, 
+      body.desktop-mini .nav-text,
+      body.desktop-mini .sidebar-footer { 
+        opacity: 0; pointer-events: none; display: none; 
+      }
+      body.desktop-mini .brand { justify-content: center; padding-left: 0; }
+      body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; }
+      body.desktop-mini .nav-icon { margin-right: 0; }
     }
 
-    /* Mobile */
+    /* Mobile Logic */
     @media (max-width: 768px) {
       .sidebar {
         position: fixed; left: -100%; top: 0; height: 100%; width: 260px;
-        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+        box-shadow: 5px 0 25px rgba(0,0,0,0.2);
       }
-      body.mobile-open .sidebar { left: 0; }
-      /* Mobile Backdrop */
+      body.mobile-active .sidebar { left: 0; }
       .backdrop {
         position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40;
-        display: none; opacity: 0; transition: opacity 0.3s;
+        display: none; backdrop-filter: blur(2px);
       }
-      body.mobile-open .backdrop { display: block; opacity: 1; }
+      body.mobile-active .backdrop { display: block; }
     }
 
-    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; min-height: 45px; }
-    .brand-logo { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+    /* Sidebar Content */
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-height: 45px; overflow: hidden; white-space: nowrap; }
+    .brand-logo { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
     .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
     .brand-text h1 { margin: 0; font-size: 15px; font-weight: 700; }
     .brand-text p { margin: 0; font-size: 11px; color: var(--text-muted); }
 
-    .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+    .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; overflow-x: hidden; }
     .nav-item {
-      display: flex; align-items: center; gap: 12px; padding: 12px;
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
       border-radius: 10px; cursor: pointer; color: var(--text-muted);
-      text-decoration: none; transition: background 0.2s;
+      text-decoration: none; transition: all 0.2s; white-space: nowrap;
     }
     .nav-item:hover { background: var(--bg-element); color: var(--text-main); }
     .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
     .nav-icon { font-size: 22px; display: flex; align-items: center; justify-content: center; }
 
-    .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); padding-top: 20px; }
+    .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; }
 
-    /* ===== MAIN CONTENT ===== */
+    /* ===== MAIN ===== */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    
     .top-bar {
       height: 64px; display: flex; align-items: center; justify-content: space-between;
       padding: 0 24px; background: var(--bg-body); flex-shrink: 0;
@@ -118,46 +123,61 @@
 
     .content-area { flex: 1; overflow-y: auto; padding: 10px 24px 40px 24px; }
 
+    /* Cards & Grid */
     .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; }
-    .card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md); }
+    .card { background: var(--bg-card); padding: 20px; border-radius: var(--radius-card); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
     
     .stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
     .stat-val { font-size: 28px; font-weight: 700; margin: 5px 0; color: var(--text-main); }
     .stat-sub { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
     .stat-sub.red { color: #D92D20; font-weight: 600; }
 
+    /* Banner */
     .page-banner {
       background: linear-gradient(135deg, var(--primary), #144d33); color: white;
       padding: 24px; border-radius: 16px; margin-bottom: 24px;
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
     }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
+    .banner-actions { display: flex; gap: 12px; } /* Added GAP */
     .btn-action {
       background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);
-      padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px;
+      display: flex; align-items: center; gap: 8px; transition: background 0.2s;
     }
     .btn-action:hover { background: rgba(255,255,255,0.3); }
 
+    /* Forms */
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .form-select, .form-input {
       background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
-      padding: 8px 12px; border-radius: 8px; font-family: inherit; font-size: 13px;
+      padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 13px;
     }
-    .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; font-size: 13px; }
+    .btn { padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; }
     .btn-primary { background: var(--primary); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
 
+    /* Tables */
     .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
-    table { width: 100%; border-collapse: collapse; min-width: 600px; font-size: 13px; }
-    th { text-align: left; padding: 12px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; }
-    td { padding: 12px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); }
-    .badge { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; min-width: 800px; font-size: 13px; }
+    th { text-align: left; padding: 14px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+    td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
 
-    .link-card { cursor: pointer; transition: transform 0.2s; }
-    .link-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+    /* PAJSK Collapsible Filter */
+    .filter-panel {
+      display: none; padding: 15px; background: var(--bg-element); 
+      border-radius: 12px; margin-top: 10px; border: 1px solid var(--border-color);
+    }
+    .filter-panel.open { display: block; }
 
-    /* Modal Styling */
+    /* Link Card (Parents) */
+    .link-card { cursor: pointer; transition: transform 0.2s; height: 100%; }
+    .link-card:hover { transform: translateY(-4px); border-color: var(--primary); }
+
+    /* Settings Modal */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100;
       display: none; place-items: center; backdrop-filter: blur(2px);
@@ -168,21 +188,12 @@
       border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
       max-height: 85vh; overflow-y: auto;
     }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .modal-header h3 { margin: 0; font-size: 18px; }
-
-    /* Settings Menu Toggles */
-    .menu-toggle-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px;
-    }
-    .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
 
     @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 768px) { 
       .dashboard-grid { grid-template-columns: 1fr; }
       .page-banner { flex-direction: column; align-items: flex-start; }
-      .filter-row { width: 100%; } .form-select { flex: 1; }
+      .filter-row { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -208,7 +219,6 @@
 
     <div class="sidebar-footer">
       © 2025 NK.
-      Hak Cipta Terpelihara.
     </div>
   </aside>
 
@@ -218,7 +228,7 @@
         <span class="material-icons-round">menu</span>
       </button>
       
-      <div style="display:flex; gap:10px;">
+      <div style="display:flex; gap:8px;">
         <button class="icon-btn" onclick="toggleTheme()" title="Tema">
           <span class="material-icons-round">dark_mode</span>
         </button>
@@ -285,49 +295,42 @@
         <div class="page-banner">
           <div class="banner-text">
             <h2>Analisis Kehadiran</h2>
-            <p>Rekod kehadiran murid PPKI</p>
+            <p>Rekod kehadiran & statistik</p>
           </div>
           <div class="banner-actions">
-            <button class="btn-action" onclick="loadAttendance(true)"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
-            <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+            <button class="btn-action" onclick="loadAttendance(true)"><span class="material-icons-round">refresh</span> Reload</button>
+            <button class="btn-action" onclick="window.print()"><span class="material-icons-round">print</span> Cetak</button>
           </div>
         </div>
 
         <div class="dashboard-grid">
-          <div class="card">
-            <div class="stat-label">Hadir (Tapis)</div>
-            <div class="stat-val" id="attStatHadir">-</div>
-          </div>
-          <div class="card">
-            <div class="stat-label">Tidak Hadir (Tapis)</div>
-            <div class="stat-val" id="attStatTidak">-</div>
-          </div>
-          <div class="card">
-            <div class="stat-label">Peratus (Tapis)</div>
-            <div class="stat-val" id="attStatPct">-</div>
-          </div>
-          <div class="card">
-            <div class="stat-label">Jumlah Rekod</div>
-            <div class="stat-val" id="attStatTotal">-</div>
-          </div>
+          <div class="card"><div class="stat-label">Hadir (Tapis)</div><div class="stat-val" id="attStatHadir">-</div></div>
+          <div class="card"><div class="stat-label">Tidak Hadir (Tapis)</div><div class="stat-val" id="attStatTidak">-</div></div>
+          <div class="card"><div class="stat-label">Peratus (Tapis)</div><div class="stat-val" id="attStatPct">-</div></div>
+          <div class="card"><div class="stat-label">Jumlah Rekod</div><div class="stat-val" id="attStatTotal">-</div></div>
         </div>
 
         <div class="card">
-          <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:10px; border-radius:12px;">
-            <input class="form-input" id="searchAtt" placeholder="Cari Nama..." style="flex:1;">
+          <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:12px;">
+            <input class="form-input" id="searchAtt" placeholder="Cari Nama..." style="flex:1; min-width:200px;">
             <select class="form-select" id="filterClassAtt"><option value="">Semua Kelas</option></select>
-            <select class="form-select" id="filterStatusAtt">
-              <option value="">Semua Status</option>
-              <option value="HADIR">Hadir</option>
-              <option value="TIDAK">Tidak Hadir</option>
+            <select class="form-select" id="filterGenderAtt">
+              <option value="">Semua Jantina</option>
+              <option value="LELAKI">Lelaki</option>
+              <option value="PEREMPUAN">Perempuan</option>
             </select>
-            <input type="date" class="form-input" id="filterDateAtt">
+            <div style="display:flex; align-items:center; gap:5px;">
+              <input type="date" class="form-input" id="filterDateStart" title="Mula">
+              <span>-</span>
+              <input type="date" class="form-input" id="filterDateEnd" title="Akhir">
+            </div>
             <button class="btn btn-primary" onclick="applyFilterAtt()">Tapis</button>
-            <button class="btn" style="background:transparent; border:1px solid var(--border-color)" onclick="resetFilterAtt()">Reset</button>
+            <button class="btn btn-outline" onclick="resetFilterAtt()">Reset</button>
           </div>
+
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Status</th></tr></thead>
+              <thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Status</th></tr></thead>
               <tbody id="attBody"></tbody>
             </table>
           </div>
@@ -342,28 +345,47 @@
             <p>Pencapaian Kokurikulum</p>
           </div>
           <div class="banner-actions">
-            <button class="btn-action" onclick="loadPajsk(true)"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
-            <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+            <button class="btn-action" onclick="loadPajsk(true)"><span class="material-icons-round">refresh</span> Reload</button>
+            <button class="btn-action" onclick="window.print()"><span class="material-icons-round">print</span> Cetak</button>
           </div>
         </div>
+
         <div class="card">
-          <div class="filter-row" style="margin-bottom:15px;">
-            <input class="form-input" id="searchPajsk" placeholder="Cari..." style="flex:1;" oninput="filterPajsk()">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+            <input class="form-input" id="searchPajsk" placeholder="Cari Nama / Acara..." style="flex:1; min-width:200px;">
+            <button class="btn btn-outline" onclick="togglePajskFilters()">
+              <span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan
+            </button>
           </div>
+
+          <div id="pajskFilters" class="filter-panel">
+            <div class="filter-row">
+              <select class="form-select" id="filterPajskUnit"><option value="">Semua Unit</option></select>
+              <select class="form-select" id="filterPajskKelas"><option value="">Semua Kelas</option></select>
+              <select class="form-select" id="filterPajskLevel"><option value="">Semua Peringkat</option></select>
+              <button class="btn btn-primary" onclick="renderPajskTable()">Terapkan</button>
+            </div>
+          </div>
+
           <div class="table-wrap">
-            <table><thead id="pajskHead"></thead><tbody id="pajskBody"></tbody></table>
+            <table>
+              <thead>
+                <tr>
+                  <th>Tarikh</th><th>Unit</th><th>Kelas</th><th>Nama Murid</th>
+                  <th>Acara</th><th>Penglibatan</th><th>Pencapaian</th>
+                </tr>
+              </thead>
+              <tbody id="pajskBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
 
       <div id="page-announcements" class="page-section" style="display:none;">
         <div class="page-banner">
-          <div class="banner-text">
-            <h2>Pengumuman</h2>
-            <p>Info Terkini</p>
-          </div>
+          <div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div>
           <div class="banner-actions">
-            <button class="btn-action" onclick="loadAnnouncements(true)"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+            <button class="btn-action" onclick="loadAnnouncements(true)"><span class="material-icons-round">refresh</span> Reload</button>
           </div>
         </div>
         <div class="dashboard-grid" id="annGrid" style="grid-template-columns: 1fr 1fr;"></div>
@@ -391,42 +413,38 @@
 
 <div class="modal-overlay" id="settingsModal">
   <div class="modal-content">
-    <div class="modal-header">
-      <h3>Tetapan Portal</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3 style="margin:0">Tetapan Portal</h3>
       <button class="icon-btn" onclick="closeSettings()"><span class="material-icons-round">close</span></button>
     </div>
 
     <div id="pinStep">
-      <p style="font-size:13px; color:var(--text-muted); margin-bottom:10px;">Masukkan PIN keselamatan:</p>
-      <input type="password" id="pinInput" class="form-input" placeholder="PIN" style="width:100%; margin-bottom:15px; text-align:center; letter-spacing:4px; font-size:18px;">
-      <button class="btn btn-primary" onclick="checkPin()" style="width:100%">Log Masuk</button>
+      <input type="password" id="pinInput" class="form-input" placeholder="PIN Keselamatan" style="width:100%; text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:15px;">
+      <button class="btn btn-primary" onclick="checkPin()" style="width:100%">Sahkan</button>
     </div>
 
     <div id="settingStep" style="display:none;">
-      <label style="font-size:12px; font-weight:600; margin-top:10px; display:block;">Nama Sekolah</label>
-      <input id="setName" class="form-input" style="width:100%;">
-      
-      <div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); padding-bottom:5px; font-weight:700;">Paparan Menu (Hide/Unhide)</div>
+      <label style="font-weight:600; font-size:12px; display:block; margin-top:10px;">Nama Sekolah</label>
+      <input id="setName" class="form-input" style="width:100%">
+
+      <div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); font-weight:700; font-size:13px;">Paparan Menu</div>
       <div id="menuManagerList"></div>
 
-      <div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); padding-bottom:5px; font-weight:700;">Pautan CSV</div>
+      <div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); font-weight:700; font-size:13px;">Pautan CSV</div>
       <input id="setUrlAtt" class="form-input" style="width:100%; margin-bottom:8px;" placeholder="URL Kehadiran">
       <input id="setUrlPajsk" class="form-input" style="width:100%; margin-bottom:8px;" placeholder="URL PAJSK">
       <input id="setUrlAnn" class="form-input" style="width:100%; margin-bottom:8px;" placeholder="URL Pengumuman">
 
-      <div style="display:flex; gap:10px; margin-top:20px;">
-        <button class="btn btn-primary" onclick="saveSettings()" style="flex:1">Simpan</button>
-        <button class="btn" style="border:1px solid var(--border-color); flex:1" onclick="closeSettings()">Batal</button>
-      </div>
+      <button class="btn btn-primary" onclick="saveSettings()" style="width:100%; margin-top:20px;">Simpan Perubahan</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ================= STATE & CONFIG ================= */
+/* ================= CONFIG ================= */
 const DEFAULTS = {
   schoolName: "SK Paya Resak",
-  pin: "5235", // Changed to your PIN
+  pin: "5235", 
   urls: {
     attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
     pajsk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGcqw1v5SRbEL_2LMhX9I_X8uIo5CTQRzOpY5nTlbSc8_6Q4cx56LWtTI3-I5D9pJYeS20nEgADikT/pub?gid=0&single=true&output=csv",
@@ -457,72 +475,11 @@ function init() {
   document.querySelector('.brand-text h1').textContent = CONFIG.schoolName;
 }
 
-/* ================= SETTINGS LOGIC ================= */
-function openSettings() {
-  document.getElementById('settingsModal').classList.add('active');
-  document.getElementById('pinInput').value = '';
-  document.getElementById('pinStep').style.display = 'block';
-  document.getElementById('settingStep').style.display = 'none';
-}
-
-function closeSettings() {
-  document.getElementById('settingsModal').classList.remove('active');
-}
-
-function checkPin() {
-  if(document.getElementById('pinInput').value === CONFIG.pin) {
-    document.getElementById('pinStep').style.display = 'none';
-    document.getElementById('settingStep').style.display = 'block';
-    renderMenuSettings(); // Populate toggles
-    // Populate Inputs
-    document.getElementById('setName').value = CONFIG.schoolName;
-    document.getElementById('setUrlAtt').value = CONFIG.urls.attendance;
-    document.getElementById('setUrlPajsk').value = CONFIG.urls.pajsk;
-    document.getElementById('setUrlAnn').value = CONFIG.urls.announcements;
-  } else {
-    alert('PIN salah!');
-  }
-}
-
-function renderMenuSettings() {
-  const c = document.getElementById('menuManagerList');
-  c.innerHTML = CONFIG.menus.map((m,i) => `
-    <div class="menu-toggle-item">
-      <span style="display:flex; align-items:center; gap:10px">
-        <span class="material-icons-round" style="font-size:18px; color:var(--text-muted)">${m.icon}</span> 
-        ${m.label}
-      </span>
-      <input type="checkbox" ${!m.hidden?'checked':''} id="menuToggle_${i}">
-    </div>
-  `).join('');
-}
-
-function saveSettings() {
-  // Update Config
-  CONFIG.schoolName = document.getElementById('setName').value;
-  CONFIG.urls.attendance = document.getElementById('setUrlAtt').value;
-  CONFIG.urls.pajsk = document.getElementById('setUrlPajsk').value;
-  CONFIG.urls.announcements = document.getElementById('setUrlAnn').value;
-
-  // Save Menus status
-  CONFIG.menus.forEach((m, i) => {
-    const cb = document.getElementById(`menuToggle_${i}`);
-    m.hidden = !cb.checked;
-  });
-
-  localStorage.setItem('portalConfig', JSON.stringify(CONFIG));
-  alert('Tetapan disimpan.');
-  location.reload(); // Reload to reflect changes
-}
-
-/* ================= SIDEBAR LOGIC ================= */
+/* ================= UI LOGIC ================= */
 function toggleSidebar() {
   const body = document.body;
-  if (window.innerWidth > 768) {
-    body.classList.toggle('desktop-collapsed');
-  } else {
-    body.classList.toggle('mobile-open');
-  }
+  if (window.innerWidth > 768) body.classList.toggle('desktop-mini');
+  else body.classList.toggle('mobile-active');
 }
 
 function renderSidebar() {
@@ -541,16 +498,13 @@ function renderSidebar() {
 
 function navTo(id) {
   document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-  const el = document.getElementById(`nav-${id}`);
-  if(el) el.classList.add('active');
-  
+  document.getElementById(`nav-${id}`).classList.add('active');
   document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
   document.getElementById(`page-${id}`).style.display='block';
-  
-  if(window.innerWidth <= 768) document.body.classList.remove('mobile-open');
+  if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
 }
 
-/* ================= DATA HANDLING ================= */
+/* ================= DATA PARSING ================= */
 async function fetchCSV(url) {
   if(!url) return [];
   try {
@@ -584,18 +538,16 @@ async function loadAllData() {
     fetchCSV(CONFIG.urls.parents)
   ]);
   DATA = { att, pajsk, ann, cal, par };
-  
   processAttendance();
   renderAnn();
-  renderPajskTable();
+  renderPajskTable(); // Initial
   renderParents();
   renderCalendar();
 }
 
-/* ================= ATTENDANCE & CHART ================= */
+/* ================= ATTENDANCE ================= */
 function processAttendance() {
   if(!DATA.att.length) return;
-  
   DATA_ATT_CLEAN = DATA.att.map(r => {
     const dStr = getVal(r, 'TARIKH');
     let dObj = null;
@@ -609,6 +561,7 @@ function processAttendance() {
       rawDate: dObj,
       name: getVal(r, 'NAMA'),
       kelas: getVal(r, 'KELAS'),
+      gender: getVal(r, 'JANTINA') || '-',
       status: getVal(r, 'STATUS').toUpperCase()
     };
   }).filter(r => r.rawDate && !isNaN(r.rawDate));
@@ -619,12 +572,11 @@ function processAttendance() {
   const todayStr = new Date().toISOString().split('T')[0];
   const todayRecs = DATA_ATT_CLEAN.filter(r => r.rawDate.toISOString().startsWith(todayStr));
   const present = todayRecs.filter(r => r.status === 'HADIR').length;
-  const absent = todayRecs.filter(r => r.status.includes('TIDAK')).length;
   
   document.getElementById('dToday').innerText = present;
-  document.getElementById('dAbsent').innerText = `${absent} Tidak Hadir`;
+  document.getElementById('dAbsent').innerText = `${todayRecs.filter(r => r.status.includes('TIDAK')).length} Tidak Hadir`;
   document.getElementById('dWeek').innerText = DATA_ATT_CLEAN.length;
-  document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(present+absent||1))*100) + "%" : "0%";
+  document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(todayRecs.length||1))*100) + "%" : "0%";
 
   populateAttSelectors();
   renderAttTable(DATA_ATT_CLEAN);
@@ -636,13 +588,10 @@ function renderAttTable(data) {
   const tb = document.getElementById('attBody');
   tb.innerHTML = data.slice(0,100).map(r => `
     <tr>
-      <td>${r.date}</td>
-      <td><strong>${r.name}</strong></td>
-      <td>${r.kelas}</td>
+      <td>${r.date}</td><td><strong>${r.name}</strong></td><td>${r.kelas}</td><td>${r.gender}</td>
       <td><span class="badge ${r.status==='HADIR'?'b-green':'b-red'}">${r.status}</span></td>
-    </tr>
-  `).join('');
-  document.getElementById('attCount').innerText = `Menunjukkan ${Math.min(data.length,100)} daripada ${data.length} rekod.`;
+    </tr>`).join('');
+  document.getElementById('attCount').innerText = `Papar: ${Math.min(data.length,100)} / ${data.length} rekod.`;
 }
 
 function updateAttStats(data) {
@@ -659,15 +608,19 @@ function applyFilterAtt() {
   const q = document.getElementById('searchAtt').value.toLowerCase();
   const c = document.getElementById('filterClassAtt').value;
   const s = document.getElementById('filterStatusAtt').value;
-  const d = document.getElementById('filterDateAtt').value;
+  const g = document.getElementById('filterGenderAtt').value;
+  const start = document.getElementById('filterDateStart').value;
+  const end = document.getElementById('filterDateEnd').value;
 
   const filtered = DATA_ATT_CLEAN.filter(r => {
-    let dateMatch = true;
-    if(d) dateMatch = r.rawDate.toISOString().startsWith(d);
-    return (!q || r.name.toLowerCase().includes(q)) &&
-           (!c || r.kelas === c) &&
-           (!s || (s==='HADIR'?r.status==='HADIR':r.status.includes('TIDAK'))) &&
-           dateMatch;
+    let dOk = true;
+    if(start && end) {
+      const rd = r.rawDate.toISOString().split('T')[0];
+      dOk = rd >= start && rd <= end;
+    }
+    return dOk && (!q || r.name.toLowerCase().includes(q)) &&
+           (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) &&
+           (!s || (s==='HADIR'?r.status==='HADIR':r.status.includes('TIDAK')));
   });
   renderAttTable(filtered);
   updateAttStats(filtered);
@@ -679,6 +632,49 @@ function populateAttSelectors() {
   document.getElementById('filterClassAtt').innerHTML = opts;
   document.getElementById('trendClass').innerHTML = opts;
 }
+
+/* ================= PAJSK ================= */
+function togglePajskFilters() {
+  document.getElementById('pajskFilters').classList.toggle('open');
+}
+
+function renderPajskTable() {
+  if(!DATA.pajsk.length) { document.getElementById('pajskBody').innerHTML='<tr><td colspan="7">Tiada Data</td></tr>'; return; }
+  
+  // Create dropdown options dynamically if empty
+  if(document.getElementById('filterPajskUnit').children.length === 1) {
+    const units = [...new Set(DATA.pajsk.map(r => getVal(r,'UNIT')))].filter(Boolean).sort();
+    document.getElementById('filterPajskUnit').innerHTML += units.map(u=>`<option>${u}</option>`).join('');
+    
+    const classes = [...new Set(DATA.pajsk.map(r => getVal(r,'KELAS')))].filter(Boolean).sort();
+    document.getElementById('filterPajskKelas').innerHTML += classes.map(c=>`<option>${c}</option>`).join('');
+  }
+
+  const q = document.getElementById('searchPajsk').value.toLowerCase();
+  const fUnit = document.getElementById('filterPajskUnit').value;
+  const fKelas = document.getElementById('filterPajskKelas').value;
+
+  const filtered = DATA.pajsk.filter(r => {
+    const txt = Object.values(r).join(' ').toLowerCase();
+    return (!q || txt.includes(q)) &&
+           (!fUnit || getVal(r,'UNIT') === fUnit) &&
+           (!fKelas || getVal(r,'KELAS') === fKelas);
+  });
+
+  const body = document.getElementById('pajskBody');
+  body.innerHTML = filtered.map(r => `
+    <tr>
+      <td>${getVal(r,'TARIKH')}</td>
+      <td>${getVal(r,'UNIT')}</td>
+      <td>${getVal(r,'KELAS')}</td>
+      <td><strong>${getVal(r,'NAMA')}</strong></td>
+      <td>${getVal(r,'ACARA')}</td>
+      <td>${getVal(r,'PENGLIBATAN')}</td>
+      <td><span class="badge b-green">${getVal(r,'PENCAPAIAN')}</span></td>
+    </tr>
+  `).join('');
+}
+function filterPajsk() { renderPajskTable(); } // Search trigger
 
 /* ================= CHART (SVG) ================= */
 function setupTrendSelectors() {
@@ -727,16 +723,18 @@ function renderTrend() {
     <svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="background:var(--bg-card); border-radius:12px;">
       <polyline points="${path}" fill="none" stroke="var(--primary)" stroke-width="3" />
       <text x="${Pad}" y="20" fill="var(--text-muted)" font-size="12">Max: ${Math.round(maxVal)}</text>
-    </svg>
-  `;
+    </svg>`;
 }
 
-/* ================= OTHER DATA ================= */
+/* ================= OTHERS ================= */
 function renderParents() {
   document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
     const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
-    const click = url ? `onclick="window.open('${url}', '_blank')"` : '';
-    return `<div class="card link-card" ${click}><h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4><p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Buka Pautan &nearr;</div>':''}</div>`;
+    return `<div class="card link-card" onclick="window.open('${url||'#'}', '_blank')">
+      <h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4>
+      <p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>
+      ${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}
+    </div>`;
   }).join('');
 }
 
@@ -745,21 +743,48 @@ function renderAnn() {
   document.getElementById('annGrid').innerHTML = DATA.ann.map(a => `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:10px"><span class="badge b-green">INFO</span><span style="font-size:11px; color:var(--text-muted)">${getVal(a,'TARIKH')}</span></div><h4 style="margin:0 0 10px;">${getVal(a,'TAJUK')}</h4><p style="font-size:13px; color:var(--text-muted);">${getVal(a,'KANDUNGAN')}</p></div>`).join('');
 }
 
-function renderPajskTable() {
-  const h = document.getElementById('pajskHead');
-  const b = document.getElementById('pajskBody');
-  if(!DATA.pajsk.length) { b.innerHTML = '<tr><td>Tiada Data</td></tr>'; return; }
-  const keys = Object.keys(DATA.pajsk[0]);
-  h.innerHTML = `<tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr>`;
-  const q = document.getElementById('searchPajsk').value.toLowerCase();
-  b.innerHTML = DATA.pajsk.filter(r => !q || Object.values(r).some(v=>v.toLowerCase().includes(q))).map(r => `<tr>${keys.map(k=>`<td>${r[k]}</td>`).join('')}</tr>`).join('');
-}
-function filterPajsk() { renderPajskTable(); }
 function renderCalendar() {
   if(!DATA.cal.length) return;
   const k=Object.keys(DATA.cal[0]);
   document.getElementById('calHead').innerHTML=`<tr>${k.map(x=>`<th>${x}</th>`).join('')}</tr>`;
   document.getElementById('calBody').innerHTML=DATA.cal.map(r=>`<tr>${k.map(x=>`<td>${r[x]}</td>`).join('')}</tr>`).join('');
+}
+
+/* ================= SETTINGS ================= */
+function openSettings() {
+  document.getElementById('settingsModal').classList.add('active');
+  document.getElementById('pinInput').value = '';
+  document.getElementById('pinStep').style.display = 'block';
+  document.getElementById('settingStep').style.display = 'none';
+}
+function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
+function checkPin() {
+  if(document.getElementById('pinInput').value === CONFIG.pin) {
+    document.getElementById('pinStep').style.display = 'none';
+    document.getElementById('settingStep').style.display = 'block';
+    populateSettings();
+  } else alert('Salah PIN');
+}
+function populateSettings() {
+  document.getElementById('setName').value = CONFIG.schoolName;
+  document.getElementById('setUrlAtt').value = CONFIG.urls.attendance;
+  document.getElementById('setUrlPajsk').value = CONFIG.urls.pajsk;
+  document.getElementById('setUrlAnn').value = CONFIG.urls.announcements;
+  document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `
+    <div style="display:flex; justify-content:space-between; margin-bottom:8px; align-items:center;">
+      <span>${m.label}</span>
+      <input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}">
+    </div>
+  `).join('');
+}
+function saveSettings() {
+  CONFIG.schoolName = document.getElementById('setName').value;
+  CONFIG.urls.attendance = document.getElementById('setUrlAtt').value;
+  CONFIG.urls.pajsk = document.getElementById('setUrlPajsk').value;
+  CONFIG.urls.announcements = document.getElementById('setUrlAnn').value;
+  CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked);
+  localStorage.setItem('portalConfig', JSON.stringify(CONFIG));
+  location.reload();
 }
 
 function loadAttendance(m){ if(m)alert('Loading...'); fetchCSV(CONFIG.urls.attendance).then(d=>{DATA.att=d;processAttendance();}); }
