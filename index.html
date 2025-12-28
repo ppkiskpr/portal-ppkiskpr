@@ -5,592 +5,835 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal Sekolah</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+  <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
-    body, * { box-sizing: border-box; }
-    .sidebar-transition { transition: all .25s ease-in-out; }
-    .menu-item-hover { transition: all .18s ease; }
+    * { box-sizing: border-box; }
+    body { font-family: Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif; }
+
+    .sidebar-transition { transition: width .25s ease, transform .25s ease; }
+    .menu-item-hover { transition: transform .15s ease, background-color .15s ease; }
     .menu-item-hover:hover { transform: translateX(4px); }
-    .toast-enter { animation: slideInRight .25s ease-out; }
-    .toast-exit { animation: slideOutRight .25s ease-in; }
-    @keyframes slideInRight { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
-    @keyframes slideOutRight { from{transform:translateX(0);opacity:1} to{transform:translateX(100%);opacity:0} }
-    .modal-backdrop { background: rgba(0,0,0,.55); backdrop-filter: blur(6px); }
-    .gradient-clock { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .line-clamp-3 { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-    .card-hover { transition: all .25s ease; cursor:pointer; }
-    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.15); }
+
+    .card-hover { transition: transform .2s ease, box-shadow .2s ease; cursor: pointer; }
+    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,.12); }
+
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
   </style>
 </head>
 
-<body class="h-full overflow-hidden">
-  <div id="app" class="h-full w-full flex flex-col"></div>
+<body class="h-screen w-screen overflow-hidden">
+  <div id="app" class="h-full w-full"></div>
 
-<script>
-/* =========================
-   1) CONFIG & STORAGE
-========================= */
-const STORAGE_KEY = "PORTAL_NK_STATE_V1";
+  <script>
+    /***********************
+     * 1) CONFIG (EDIT SINI)
+     ***********************/
+    const CONFIG = {
+      schoolName: "SMK Contoh",
+      schoolMotto: "Cemerlang, Gemilang, Terbilang",
+      copyright: "© 2025 NK. Hak Cipta Terpelihara.",
 
-const defaultState = {
-  config: {
-    school_name: "PPKI SK Paya Resak",
-    school_motto: "Cemerlang, Gemilang, Terbilang",
-    copyright_text: "© 2026 NK. Hak Cipta Terpelihara.",
-    header_color: "#2563eb",
-    bg_color: "#f3f4f6",
-    sidebar_color: "#1f2937",
-    card_color: "#ffffff",
-    text_color: "#111827",
-    font_family: "Poppins",
-    banner_title: "Selamat Datang ke Portal Sekolah",
-    banner_description: "Sistem pengurusan sekolah moden untuk maklumat & kemas kini.",
-    banner_show_clock: true
-  },
-  ui: {
-    sidebarCollapsed: false,
-    currentPage: "home",
-    settingsOpen: false
-  },
-  menus: [
-    { id: "dashboard", icon: "🏠", label: "Dashboard", page: "home" },
-    { id: "data", icon: "📊", label: "Data", page: "data" }
-  ],
-  cards: [
-    {
-      id: crypto.randomUUID(),
-      type: "announcement",
-      title: "Pengumuman Contoh",
-      content: "Ini contoh kad pengumuman. Cikgu boleh edit/padam di Panel Ringkas.",
-      date: new Date().toISOString().slice(0,10),
-      priority: "medium",
-      visible: true,
-      author: "Portal"
-    }
-  ]
-};
+      // ✅ CSV cikgu:
+      CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
 
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return structuredClone(defaultState);
-    const s = JSON.parse(raw);
-    // fallback merge simple
-    return {
-      ...structuredClone(defaultState),
-      ...s,
-      config: {...defaultState.config, ...(s.config||{})},
-      ui: {...defaultState.ui, ...(s.ui||{})},
-      menus: Array.isArray(s.menus) ? s.menus : defaultState.menus,
-      cards: Array.isArray(s.cards) ? s.cards : defaultState.cards,
+      // Tema (boleh ubah)
+      theme: {
+        header: "#3b82f6",
+        bg: "#f3f4f6",
+        sidebar: "#1f2937",
+        card: "#ffffff",
+        text: "#111827"
+      }
     };
-  }catch(e){
-    return structuredClone(defaultState);
-  }
-}
-function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
 
-let state = loadState();
+    /***********************
+     * 2) STATE
+     ***********************/
+    let state = {
+      sidebarCollapsed: false,
+      darkMode: false,
+      page: location.hash.replace("#", "") || "home",
+      rows: [],
+      columns: [],
+      loading: true,
+      error: null,
 
-/* =========================
-   2) UTIL
-========================= */
-const DAYS_MS = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
-const MONTHS_MS = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+      // filter table
+      search: "",
+      filterColumn: "__all__",
+      filterValue: "",
+      sortColumn: "",
+      sortDir: "asc",
+      pageSize: 25,
+      pageIndex: 0
+    };
 
-function nowText(){
-  const now = new Date();
-  const day = DAYS_MS[now.getDay()];
-  const date = now.getDate();
-  const month = MONTHS_MS[now.getMonth()];
-  const year = now.getFullYear();
-  const hh = String(now.getHours()).padStart(2,'0');
-  const mm = String(now.getMinutes()).padStart(2,'0');
-  const ss = String(now.getSeconds()).padStart(2,'0');
-  return `${day}, ${date} ${month} ${year}, ${hh}:${mm}:${ss}`;
-}
-function formatDateShort(d){
-  const date = new Date(d);
-  const day = date.getDate();
-  const month = MONTHS_MS[date.getMonth()];
-  const year = date.getFullYear();
-  return `${day} ${month} ${year}`;
-}
-function toast(msg, type="info"){
-  const c = document.getElementById("toast-container");
-  if(!c) return;
-  const el = document.createElement("div");
-  const bg = type==="success" ? "bg-emerald-600" : type==="error" ? "bg-red-600" : "bg-sky-600";
-  el.className = `toast-enter px-5 py-3 rounded-xl shadow-lg text-white ${bg} max-w-sm`;
-  el.textContent = msg;
-  c.appendChild(el);
-  setTimeout(()=>{
-    el.classList.remove("toast-enter");
-    el.classList.add("toast-exit");
-    setTimeout(()=>el.remove(), 250);
-  }, 2500);
-}
+    /***********************
+     * 3) UTIL
+     ***********************/
+    const DAYS_MS = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+    const MONTHS_MS = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
 
-/* =========================
-   3) ACTIONS
-========================= */
-function toggleSidebar(){
-  state.ui.sidebarCollapsed = !state.ui.sidebarCollapsed;
-  saveState(); render();
-}
-function navigate(page){
-  state.ui.currentPage = page;
-  state.ui.settingsOpen = false;
-  saveState(); render();
-}
-function toggleSettings(){
-  state.ui.settingsOpen = !state.ui.settingsOpen;
-  saveState(); render();
-}
-function closeSettings(){
-  state.ui.settingsOpen = false;
-  saveState(); render();
-}
-function updateConfig(patch){
-  state.config = {...state.config, ...patch};
-  saveState(); render();
-}
-function addCard(){
-  const title = prompt("Tajuk kad?");
-  if(!title) return;
-  const content = prompt("Kandungan ringkas?");
-  if(!content) return;
-  state.cards.unshift({
-    id: crypto.randomUUID(),
-    type: "announcement",
-    title, content,
-    date: new Date().toISOString().slice(0,10),
-    priority: "medium",
-    visible: true,
-    author: "Admin"
-  });
-  saveState(); render();
-  toast("Kad ditambah", "success");
-}
-function deleteCard(id){
-  if(!confirm("Padam kad ini?")) return;
-  state.cards = state.cards.filter(c=>c.id!==id);
-  saveState(); render();
-  toast("Kad dipadam", "success");
-}
+    function formatDateTime() {
+      const now = new Date();
+      const day = DAYS_MS[now.getDay()];
+      const date = now.getDate();
+      const month = MONTHS_MS[now.getMonth()];
+      const year = now.getFullYear();
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      const ss = String(now.getSeconds()).padStart(2,'0');
+      return `${day}, ${date} ${month} ${year}, ${hh}:${mm}:${ss}`;
+    }
 
-/* =========================
-   4) RENDER PARTS
-========================= */
-function renderHeaderTitle(){
-  const p = state.ui.currentPage;
-  if(p==="home") return "Laman Utama";
-  if(p==="data") return "Data";
-  if(p==="settings") return "Tetapan";
-  return "Portal Sekolah";
-}
+    function escHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
 
-function renderCards(){
-  const cfg = state.config;
-  const cards = (state.cards||[])
-    .filter(c=>c.visible)
-    .sort((a,b)=> new Date(b.date) - new Date(a.date))
-    .slice(0,6);
+    // CSV parser simple (support quoted commas)
+    function parseCSV(text) {
+      const rows = [];
+      let cur = "", inQ = false, row = [];
+      for (let i=0; i<text.length; i++) {
+        const ch = text[i];
+        const next = text[i+1];
+        if (ch === '"' && inQ && next === '"') { cur += '"'; i++; continue; }
+        if (ch === '"') { inQ = !inQ; continue; }
+        if (ch === "," && !inQ) { row.push(cur); cur=""; continue; }
+        if ((ch === "\n" || ch === "\r") && !inQ) {
+          if (ch === "\r" && next === "\n") i++;
+          row.push(cur); cur="";
+          if (row.some(v => String(v).trim() !== "")) rows.push(row);
+          row = [];
+          continue;
+        }
+        cur += ch;
+      }
+      row.push(cur);
+      if (row.some(v => String(v).trim() !== "")) rows.push(row);
+      return rows;
+    }
 
-  if(!cards.length){
-    return `
-      <div class="text-center py-10 text-slate-500">
-        <div class="text-5xl mb-3">📭</div>
-        Tiada kad lagi. Tambah melalui Panel Ringkas.
-      </div>`;
-  }
+    function toLowerSafe(v){ return String(v ?? "").toLowerCase(); }
 
-  return `
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      ${cards.map(c=>`
-        <div class="card-hover rounded-lg shadow-lg overflow-hidden"
-             style="background-color:${cfg.card_color}; border-radius:14px;">
-          <div class="p-6">
-            <div class="flex items-center justify-between mb-3">
-              <span class="px-3 py-1 rounded-full text-white text-sm font-semibold"
-                    style="background-color:#2563eb;">📢 Pengumuman</span>
-              <span class="text-xs text-slate-500">📅 ${formatDateShort(c.date)}</span>
-            </div>
-            <h3 class="text-xl font-bold mb-2" style="color:${cfg.text_color};">${c.title}</h3>
-            <p class="text-sm text-slate-600 line-clamp-3 whitespace-pre-wrap">${c.content}</p>
+    function setHash(page) {
+      location.hash = page;
+    }
 
-            <div class="mt-4 flex gap-2">
-              <button onclick="alert(${JSON.stringify(c.content).replace(/"/g,'&quot;')})"
-                      class="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:opacity-90">
-                Buka
-              </button>
-              <button onclick="deleteCard('${c.id}')"
-                      class="px-4 py-2 bg-red-600 text-white rounded-lg hover:opacity-90">
-                Padam
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
+    function applyThemeVars() {
+      const root = document.documentElement;
+      root.style.setProperty("--c-header", CONFIG.theme.header);
+      root.style.setProperty("--c-bg", state.darkMode ? "#0f172a" : CONFIG.theme.bg);
+      root.style.setProperty("--c-sidebar", state.darkMode ? "#0b1220" : CONFIG.theme.sidebar);
+      root.style.setProperty("--c-card", state.darkMode ? "#111827" : CONFIG.theme.card);
+      root.style.setProperty("--c-text", state.darkMode ? "#e5e7eb" : CONFIG.theme.text);
+    }
 
-function renderHome(){
-  const cfg = state.config;
-  const clock = cfg.banner_show_clock ? `
-    <div class="gradient-clock text-white text-center py-5 rounded-xl mb-4">
-      <div class="live-clock text-xl font-semibold">${nowText()}</div>
-    </div>` : "";
+    /***********************
+     * 4) DATA LOAD
+     ***********************/
+    async function loadCSV() {
+      state.loading = true;
+      state.error = null;
+      render();
 
-  return `
-    <div class="p-8 overflow-auto h-full" style="font-family:${cfg.font_family}, sans-serif;">
-      <div class="max-w-7xl mx-auto">
+      try {
+        const res = await fetch(CONFIG.CSV_URL, { cache: "no-store" });
+        if (!res.ok) throw new Error("Gagal fetch CSV. Semak link publish & permission.");
+        const txt = await res.text();
+        const raw = parseCSV(txt);
 
-        <div class="rounded-2xl shadow-lg p-8 mb-8" style="background-color:${cfg.card_color};">
-          <h1 class="text-3xl font-bold mb-3" style="color:${cfg.text_color};">${cfg.banner_title}</h1>
-          <p class="mb-6 text-slate-600">${cfg.banner_description}</p>
-          ${clock}
-          <div class="flex flex-wrap gap-3">
-            <button onclick="addCard()" class="px-5 py-3 text-white rounded-xl hover:opacity-90"
-                    style="background-color:${cfg.header_color};">
-              ➕ Tambah Kad
-            </button>
-            <button onclick="navigate('data')" class="px-5 py-3 bg-slate-900 text-white rounded-xl hover:opacity-90">
-              📊 Pergi ke Data
-            </button>
-          </div>
-        </div>
+        if (!raw || raw.length < 2) throw new Error("CSV kosong / header tiada.");
 
-        <div class="flex items-center justify-between mb-5">
-          <h2 class="text-2xl font-bold" style="color:${cfg.text_color};">📌 Kemas Kini Terkini</h2>
-          <button onclick="navigate('settings')" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300">
-            ⚙️ Tetapan
-          </button>
-        </div>
+        const header = raw[0].map(h => String(h).trim());
+        const dataRows = raw.slice(1);
 
-        ${renderCards()}
-      </div>
-    </div>
-  `;
-}
+        const objects = dataRows.map(r => {
+          const obj = {};
+          header.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
+          return obj;
+        });
 
-function renderData(){
-  const cfg = state.config;
-  return `
-    <div class="p-8 overflow-auto h-full" style="font-family:${cfg.font_family}, sans-serif;">
-      <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold mb-4" style="color:${cfg.text_color};">📊 Data</h1>
-        <div class="rounded-2xl shadow-lg p-6" style="background-color:${cfg.card_color};">
-          <p class="text-slate-600 mb-3">
-            Ini placeholder untuk modul Data (CSV/Google Sheet). Bila cikgu dah set link CSV,
-            kita sambung modul table + filter + dashboard kehadiran.
-          </p>
-          <div class="text-sm text-slate-500">
-            Tip: GitHub Pages sesuai untuk “dashboard view”. Data boleh tarik dari CSV (public).
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
+        state.columns = header;
+        state.rows = objects;
+        state.loading = false;
 
-function renderSettingsPanel(){
-  const cfg = state.config;
-  return `
-    <div class="p-8 overflow-auto h-full" style="font-family:${cfg.font_family}, sans-serif;">
-      <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6" style="color:${cfg.text_color};">⚙️ Tetapan</h1>
+        // default sort: first column
+        state.sortColumn = state.columns[0] || "";
+        state.sortDir = "asc";
+        state.pageIndex = 0;
 
-        <div class="rounded-2xl shadow-lg p-6 mb-6" style="background-color:${cfg.card_color};">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Nama Sekolah</label>
-              <input id="sname" class="w-full px-4 py-3 rounded-xl border" value="${cfg.school_name}">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Moto</label>
-              <input id="smotto" class="w-full px-4 py-3 rounded-xl border" value="${cfg.school_motto}">
-            </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Tajuk Banner</label>
-              <input id="btitle" class="w-full px-4 py-3 rounded-xl border" value="${cfg.banner_title}">
-            </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Deskripsi Banner</label>
-              <textarea id="bdesc" class="w-full px-4 py-3 rounded-xl border" rows="3">${cfg.banner_description}</textarea>
-            </div>
+        render();
+      } catch (e) {
+        state.loading = false;
+        state.error = e.message || "Ralat semasa load CSV";
+        render();
+      }
+    }
 
-            <div class="flex items-center gap-3">
-              <input id="bclock" type="checkbox" ${cfg.banner_show_clock ? "checked":""} class="w-5 h-5">
-              <label class="text-sm font-semibold" style="color:${cfg.text_color};">Papar Jam</label>
-            </div>
+    /***********************
+     * 5) FILTER/SORT/PAGINATION
+     ***********************/
+    function getFilteredRows() {
+      let rows = [...state.rows];
 
-            <div>
-              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Font</label>
-              <select id="ffont" class="w-full px-4 py-3 rounded-xl border">
-                ${["Poppins","Roboto","Open Sans","Verdana"].map(f=>`<option ${cfg.font_family===f?"selected":""}>${f}</option>`).join("")}
-              </select>
-            </div>
+      // search
+      const q = toLowerSafe(state.search).trim();
+      if (q) {
+        rows = rows.filter(r => {
+          if (state.filterColumn && state.filterColumn !== "__all__") {
+            return toLowerSafe(r[state.filterColumn]).includes(q);
+          }
+          // all columns
+          return state.columns.some(c => toLowerSafe(r[c]).includes(q));
+        });
+      }
 
-            <div>
-              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Warna Header</label>
-              <input id="cheader" type="color" value="${cfg.header_color}" class="w-16 h-12 rounded-lg border">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Warna Sidebar</label>
-              <input id="cside" type="color" value="${cfg.sidebar_color}" class="w-16 h-12 rounded-lg border">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Warna Latar</label>
-              <input id="cbg" type="color" value="${cfg.bg_color}" class="w-16 h-12 rounded-lg border">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Warna Teks</label>
-              <input id="ctext" type="color" value="${cfg.text_color}" class="w-16 h-12 rounded-lg border">
-            </div>
-          </div>
+      // filterValue exact-ish (dropdown) - optional
+      const fv = toLowerSafe(state.filterValue).trim();
+      if (fv && state.filterColumn && state.filterColumn !== "__all__") {
+        rows = rows.filter(r => toLowerSafe(r[state.filterColumn]).includes(fv));
+      }
 
-          <div class="mt-6 flex gap-3">
-            <button onclick="saveSettingsFromUI()" class="px-6 py-3 rounded-xl text-white hover:opacity-90"
-                    style="background-color:${cfg.header_color};">
-              💾 Simpan
-            </button>
-            <button onclick="resetAll()" class="px-6 py-3 rounded-xl bg-slate-200 hover:bg-slate-300">
-              🔄 Reset
-            </button>
-          </div>
-        </div>
+      // sort
+      const sc = state.sortColumn;
+      if (sc) {
+        rows.sort((a,b) => {
+          const va = a[sc] ?? "";
+          const vb = b[sc] ?? "";
+          // try numeric
+          const na = Number(String(va).replace(/[^\d.-]/g,""));
+          const nb = Number(String(vb).replace(/[^\d.-]/g,""));
+          let cmp;
+          if (!Number.isNaN(na) && !Number.isNaN(nb) && String(va).match(/\d/) && String(vb).match(/\d/)) {
+            cmp = na - nb;
+          } else {
+            cmp = String(va).localeCompare(String(vb), "ms");
+          }
+          return state.sortDir === "asc" ? cmp : -cmp;
+        });
+      }
 
-        <div class="rounded-2xl shadow-lg p-6" style="background-color:${cfg.card_color};">
-          <h2 class="text-xl font-bold mb-3" style="color:${cfg.text_color};">🧩 Panel Ringkas</h2>
-          <p class="text-slate-600 mb-4">Tambah kad & urus data ringkas (localStorage).</p>
-          <div class="flex flex-wrap gap-3">
-            <button onclick="addCard()" class="px-5 py-3 bg-sky-600 text-white rounded-xl hover:opacity-90">➕ Tambah Kad</button>
-            <button onclick="exportJSON()" class="px-5 py-3 bg-slate-900 text-white rounded-xl hover:opacity-90">⬇️ Export JSON</button>
-            <button onclick="importJSON()" class="px-5 py-3 bg-slate-200 rounded-xl hover:bg-slate-300">⬆️ Import JSON</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
+      return rows;
+    }
 
-/* =========================
-   5) MAIN RENDER
-========================= */
-function render(){
-  const cfg = state.config;
-  const app = document.getElementById("app");
+    function getPageRows(rows) {
+      const start = state.pageIndex * state.pageSize;
+      return rows.slice(start, start + state.pageSize);
+    }
 
-  const sidebarCollapsed = state.ui.sidebarCollapsed;
-  const current = state.ui.currentPage;
+    function uniqueValuesForColumn(col) {
+      const set = new Set();
+      state.rows.forEach(r => set.add(String(r[col] ?? "").trim()));
+      return [...set].filter(v => v !== "").sort((a,b)=>a.localeCompare(b,"ms"));
+    }
 
-  const mainContent =
-    current==="home" ? renderHome()
-    : current==="data" ? renderData()
-    : current==="settings" ? renderSettingsPanel()
-    : renderHome();
+    /***********************
+     * 6) DASHBOARD CARDS (contoh ringkasan)
+     *    - Cikgu boleh ubah logik ikut nama kolum sebenar
+     ***********************/
+    function computeSummary() {
+      // cuba cari kolum status kehadiran
+      const statusCol =
+        state.columns.find(c => /status/i.test(c)) ||
+        state.columns.find(c => /kehadiran/i.test(c)) ||
+        "";
 
-  app.innerHTML = `
-    <div class="flex h-full" style="font-family:${cfg.font_family},sans-serif;">
-      ${!sidebarCollapsed ? `
-      <aside class="sidebar-transition flex-shrink-0" style="width:280px; background-color:${cfg.sidebar_color};">
-        <div class="flex flex-col h-full">
-          <div class="p-6 border-b border-white/10">
-            <div onclick="navigate('home')" class="flex justify-center mb-4 cursor-pointer hover:scale-110 transition-transform">
-              <div class="w-20 h-20 rounded-full bg-white flex items-center justify-center text-4xl">🏫</div>
-            </div>
-            <h2 class="text-white text-center font-bold text-xl mb-1">${cfg.school_name}</h2>
-            <p class="text-white/60 text-center text-sm">${cfg.school_motto}</p>
-          </div>
+      const dateCol =
+        state.columns.find(c => /tarikh/i.test(c)) ||
+        state.columns.find(c => /date/i.test(c)) ||
+        "";
 
-          <nav class="flex-1 overflow-y-auto py-4">
-            ${state.menus.map(m=>`
-              <div onclick="navigate('${m.page}')" class="menu-item-hover flex items-center px-6 py-3 text-white cursor-pointer ${current===m.page ? 'bg-white/15' : 'hover:bg-white/10'}">
-                <span class="text-2xl">${m.icon}</span>
-                <span class="ml-4 font-medium">${m.label}</span>
+      const todayISO = new Date().toISOString().slice(0,10);
+
+      const rows = state.rows;
+      const total = rows.length;
+
+      let hadir = 0, tidak = 0, hariIni = 0;
+
+      if (statusCol) {
+        rows.forEach(r => {
+          const v = toLowerSafe(r[statusCol]);
+          if (v.includes("hadir")) hadir++;
+          if (v.includes("tidak") || v.includes("x hadir") || v.includes("absen")) tidak++;
+        });
+      }
+
+      if (dateCol) {
+        rows.forEach(r => {
+          const dv = String(r[dateCol] ?? "").trim();
+          // cuba match yyyy-mm-dd (publish google sheet kadang ikut format)
+          if (dv.includes(todayISO)) hariIni++;
+        });
+      }
+
+      return {
+        total,
+        hadir,
+        tidak,
+        hariIni,
+        statusCol,
+        dateCol
+      };
+    }
+
+    /***********************
+     * 7) UI RENDER
+     ***********************/
+    function Sidebar() {
+      const collapsed = state.sidebarCollapsed;
+      const bg = "var(--c-sidebar)";
+      const text = state.darkMode ? "text-gray-100" : "text-white";
+
+      const menu = [
+        { id: "home", icon: "🏠", label: "Laman Utama" },
+        { id: "dashboard", icon: "📊", label: "Dashboard Data" },
+        { id: "pengumuman", icon: "📢", label: "Pengumuman" },
+        { id: "takwim", icon: "🗓️", label: "Takwim" },
+        { id: "tentang", icon: "ℹ️", label: "Tentang" }
+      ];
+
+      return `
+        <aside class="sidebar-transition flex-shrink-0 h-full"
+          style="background:${bg}; width:${collapsed ? "84px" : "280px"};">
+          <div class="h-full flex flex-col">
+            <div class="p-5 border-b border-white/10">
+              <div class="flex items-center ${collapsed ? "justify-center" : "justify-start"} gap-3">
+                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-2xl">
+                  🏫
+                </div>
+                ${collapsed ? "" : `
+                  <div class="min-w-0">
+                    <div class="font-bold ${text} truncate">${escHtml(CONFIG.schoolName)}</div>
+                    <div class="text-xs text-white/70 truncate">${escHtml(CONFIG.schoolMotto)}</div>
+                  </div>
+                `}
               </div>
-            `).join("")}
-
-            <div onclick="navigate('settings')" class="menu-item-hover flex items-center px-6 py-3 text-white cursor-pointer ${current==='settings' ? 'bg-white/15' : 'hover:bg-white/10'}">
-              <span class="text-2xl">⚙️</span>
-              <span class="ml-4 font-medium">Tetapan</span>
             </div>
-          </nav>
 
-          <div class="p-4 border-t border-white/10">
-            <p class="text-white/60 text-xs text-center">${cfg.copyright_text}</p>
+            <nav class="flex-1 overflow-y-auto py-3">
+              ${menu.map(m => {
+                const active = state.page === m.id;
+                return `
+                  <div class="menu-item-hover px-4 ${collapsed ? "py-3" : "py-3"} cursor-pointer ${active ? "bg-white/15" : "hover:bg-white/10"}"
+                       onclick="setHash('${m.id}')">
+                    <div class="flex items-center ${collapsed ? "justify-center" : ""} gap-3 ${text}">
+                      <div class="text-2xl">${m.icon}</div>
+                      ${collapsed ? "" : `<div class="font-medium">${m.label}</div>`}
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </nav>
+
+            <div class="p-4 border-t border-white/10">
+              ${collapsed ? `
+                <div class="text-center text-white/60 text-xs">©</div>
+              ` : `
+                <div class="text-center text-white/60 text-xs">${escHtml(CONFIG.copyright)}</div>
+              `}
+            </div>
           </div>
-        </div>
-      </aside>
-      ` : ''}
+        </aside>
+      `;
+    }
 
-      <div class="flex-1 flex flex-col h-full overflow-hidden">
-        <header class="flex-shrink-0 shadow-lg" style="background-color:${cfg.header_color};">
-          <div class="px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center">
-              <button onclick="toggleSidebar()" class="text-white p-2 hover:bg-white/15 rounded-lg mr-4">
+    function Header() {
+      const bg = "var(--c-header)";
+      return `
+        <header class="flex-shrink-0 shadow-lg" style="background:${bg};">
+          <div class="px-4 md:px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3 min-w-0">
+              <button class="text-white/90 hover:text-white hover:bg-white/10 rounded-lg p-2"
+                onclick="state.sidebarCollapsed=!state.sidebarCollapsed; render();">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
               </button>
 
-              ${sidebarCollapsed ? `
-                <div onclick="navigate('home')" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-2xl mr-3 cursor-pointer hover:scale-110 transition-transform">
-                  🏫
+              <div class="min-w-0">
+                <div class="text-white font-bold text-lg truncate">
+                  ${state.page === "home" ? "Laman Utama" :
+                    state.page === "dashboard" ? "Dashboard Data" :
+                    state.page === "pengumuman" ? "Pengumuman" :
+                    state.page === "takwim" ? "Takwim" :
+                    state.page === "tentang" ? "Tentang" : "Portal Sekolah"}
                 </div>
-              ` : ''}
-
-              <h1 class="text-white text-xl font-bold">${renderHeaderTitle()}</h1>
+                <div class="text-white/75 text-xs live-clock">${formatDateTime()}</div>
+              </div>
             </div>
 
-            <div class="flex items-center gap-3">
-              <button onclick="navigate('home')" class="text-white px-3 py-2 rounded-lg hover:bg-white/15">🏠</button>
-
-              <div class="relative">
-                <button onclick="toggleSettings()" class="text-white p-2 hover:bg-white/15 rounded-lg">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  </svg>
-                </button>
-
-                ${state.ui.settingsOpen ? `
-                  <div class="absolute right-0 mt-2 w-56 rounded-xl shadow-lg py-2 z-50"
-                       style="background-color:${cfg.card_color};">
-                    <a onclick="navigate('settings')" class="block px-4 py-2 hover:bg-slate-100 cursor-pointer"
-                       style="color:${cfg.text_color};">⚙️ Tetapan Portal</a>
-                    <a onclick="addCard(); closeSettings()" class="block px-4 py-2 hover:bg-slate-100 cursor-pointer"
-                       style="color:${cfg.text_color};">➕ Tambah Kad</a>
-                  </div>
-                ` : ''}
-              </div>
-
-              <div class="w-9 h-9 rounded-full bg-white flex items-center justify-center font-bold"
-                   style="color:${cfg.header_color};">NK</div>
+            <div class="flex items-center gap-2">
+              <button class="px-3 py-2 text-white/90 hover:text-white hover:bg-white/10 rounded-lg text-sm"
+                onclick="state.darkMode=!state.darkMode; applyThemeVars(); render();">
+                ${state.darkMode ? "🌙 Dark" : "☀️ Light"}
+              </button>
+              <button class="px-3 py-2 text-white/90 hover:text-white hover:bg-white/10 rounded-lg text-sm"
+                onclick="loadCSV()">
+                ⟳ Refresh
+              </button>
             </div>
           </div>
         </header>
+      `;
+    }
 
-        <main class="flex-1 overflow-hidden" style="background-color:${cfg.bg_color};">
-          ${mainContent}
+    function Banner() {
+      const cardBg = "var(--c-card)";
+      const text = "var(--c-text)";
+      return `
+        <div class="rounded-2xl shadow-lg p-6 md:p-8"
+             style="background:${cardBg};">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 class="text-2xl md:text-3xl font-bold" style="color:${text};">
+                Selamat Datang ke Portal Sekolah
+              </h1>
+              <p class="mt-2 text-sm md:text-base text-gray-500">
+                Paparan maklumat & data (CSV) yang kemas, smooth dan mudah dibaca.
+              </p>
+            </div>
+            <div class="rounded-xl px-5 py-4 text-white shadow"
+                 style="background: linear-gradient(135deg, rgba(99,102,241,1), rgba(59,130,246,1));">
+              <div class="text-xs opacity-90">Masa Semasa</div>
+              <div class="text-lg font-semibold live-clock">${formatDateTime()}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function HomePage() {
+      const cardBg = "var(--c-card)";
+      const text = "var(--c-text)";
+      const s = computeSummary();
+
+      return `
+        <div class="space-y-6">
+          ${Banner()}
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            ${StatCard("📄", "Jumlah Rekod", s.total)}
+            ${StatCard("✅", "Hadir", s.hadir)}
+            ${StatCard("❌", "Tidak Hadir", s.tidak)}
+            ${StatCard("📅", "Rekod Hari Ini", s.hariIni)}
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <div class="lg:col-span-2 rounded-2xl shadow-lg p-6" style="background:${cardBg};">
+              <h2 class="text-xl font-bold mb-2" style="color:${text};">Menu Pantas</h2>
+              <p class="text-sm text-gray-500 mb-5">Klik untuk buka modul.</p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${QuickCard("📊", "Dashboard Data", "Papar jadual CSV, filter, carian, sort.", "dashboard")}
+                ${QuickCard("📢", "Pengumuman", "Letak pengumuman / makluman semasa.", "pengumuman")}
+                ${QuickCard("🗓️", "Takwim", "Paparkan jadual & takwim ringkas.", "takwim")}
+                ${QuickCard("ℹ️", "Tentang", "Info portal & cara guna.", "tentang")}
+              </div>
+            </div>
+
+            <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
+              <h2 class="text-xl font-bold mb-3" style="color:${text};">Status Data</h2>
+              ${state.loading ? `
+                <div class="text-sm text-gray-500">Sedang memuatkan CSV...</div>
+              ` : state.error ? `
+                <div class="text-sm text-red-600 font-semibold">Ralat: ${escHtml(state.error)}</div>
+                <div class="mt-3 text-xs text-gray-500">
+                  Pastikan Google Sheet sudah <b>Publish to web</b> dan output=csv.
+                </div>
+              ` : `
+                <div class="text-sm text-gray-600">
+                  <div><b>Kolum dikesan:</b> ${state.columns.length}</div>
+                  <div><b>Rekod dikesan:</b> ${state.rows.length}</div>
+                  <div class="mt-3 text-xs text-gray-500 line-clamp-3">
+                    <b>CSV:</b> ${escHtml(CONFIG.CSV_URL)}
+                  </div>
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function StatCard(icon, title, value) {
+      const cardBg = "var(--c-card)";
+      const text = "var(--c-text)";
+      return `
+        <div class="rounded-2xl shadow-lg p-5 card-hover" style="background:${cardBg};">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-500">${escHtml(title)}</div>
+              <div class="mt-1 text-3xl font-extrabold" style="color:${text};">${escHtml(value)}</div>
+            </div>
+            <div class="text-3xl">${icon}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function QuickCard(icon, title, desc, page) {
+      const cardBg = "var(--c-card)";
+      const text = "var(--c-text)";
+      return `
+        <div class="rounded-2xl shadow-lg p-5 card-hover"
+             style="background:${cardBg};"
+             onclick="setHash('${page}')">
+          <div class="flex gap-3 items-start">
+            <div class="text-3xl">${icon}</div>
+            <div class="min-w-0">
+              <div class="font-bold" style="color:${text};">${escHtml(title)}</div>
+              <div class="text-sm text-gray-500 mt-1 line-clamp-2">${escHtml(desc)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function DashboardPage() {
+      const cardBg = "var(--c-card)";
+      const text = "var(--c-text)";
+      const filtered = getFilteredRows();
+      const pageRows = getPageRows(filtered);
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.pageSize));
+
+      const canPrev = state.pageIndex > 0;
+      const canNext = state.pageIndex < totalPages - 1;
+
+      const filterColOptions = [
+        `<option value="__all__"${state.filterColumn==="__all__"?" selected":""}>Semua Kolum</option>`,
+        ...state.columns.map(c => `<option value="${escHtml(c)}"${state.filterColumn===c?" selected":""}>${escHtml(c)}</option>`)
+      ].join("");
+
+      const sortOptions = state.columns.map(c => `<option value="${escHtml(c)}"${state.sortColumn===c?" selected":""}>${escHtml(c)}</option>`).join("");
+
+      const filterValueOptions = (state.filterColumn && state.filterColumn !== "__all__")
+        ? uniqueValuesForColumn(state.filterColumn).slice(0,200).map(v => `<option value="${escHtml(v)}">${escHtml(v)}</option>`).join("")
+        : "";
+
+      return `
+        <div class="space-y-5">
+          <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
+            <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+              <div class="flex-1">
+                <h2 class="text-2xl font-bold" style="color:${text};">📊 Dashboard Data (CSV)</h2>
+                <p class="text-sm text-gray-500 mt-1">
+                  Carian + filter + sort + pagination. (Semua data dibaca dari link CSV.)
+                </p>
+              </div>
+              <div class="text-sm text-gray-500">
+                Rekod: <b class="text-blue-600">${filtered.length}</b> / ${state.rows.length}
+              </div>
+            </div>
+
+            <div class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label class="text-xs text-gray-500 font-semibold">Carian</label>
+                <input value="${escHtml(state.search)}"
+                  oninput="state.search=this.value; state.pageIndex=0; render();"
+                  placeholder="Taip untuk cari..."
+                  class="mt-1 w-full px-4 py-3 border rounded-xl bg-white/70" />
+              </div>
+
+              <div>
+                <label class="text-xs text-gray-500 font-semibold">Kolum</label>
+                <select class="mt-1 w-full px-4 py-3 border rounded-xl bg-white/70"
+                  onchange="state.filterColumn=this.value; state.filterValue=''; state.pageIndex=0; render();">
+                  ${filterColOptions}
+                </select>
+              </div>
+
+              <div>
+                <label class="text-xs text-gray-500 font-semibold">Nilai (optional)</label>
+                <input value="${escHtml(state.filterValue)}"
+                  oninput="state.filterValue=this.value; state.pageIndex=0; render();"
+                  ${state.filterColumn==="__all__" ? "disabled" : ""}
+                  placeholder="${state.filterColumn==="__all__" ? "Pilih kolum dahulu" : "Contoh: 1 AL-FARABI"}"
+                  class="mt-1 w-full px-4 py-3 border rounded-xl bg-white/70 disabled:opacity-60" />
+                ${state.filterColumn!=="__all__" && filterValueOptions ? `
+                  <div class="mt-2">
+                    <select class="w-full px-3 py-2 border rounded-xl bg-white/70"
+                      onchange="state.filterValue=this.value; state.pageIndex=0; render();">
+                      <option value="">— Pilih nilai cepat —</option>
+                      ${filterValueOptions}
+                    </select>
+                  </div>
+                ` : ""}
+              </div>
+
+              <div>
+                <label class="text-xs text-gray-500 font-semibold">Sort</label>
+                <div class="mt-1 flex gap-2">
+                  <select class="flex-1 px-4 py-3 border rounded-xl bg-white/70"
+                    onchange="state.sortColumn=this.value; render();">
+                    ${sortOptions}
+                  </select>
+                  <button class="px-4 py-3 border rounded-xl bg-white/70"
+                    onclick="state.sortDir = (state.sortDir==='asc'?'desc':'asc'); render();">
+                    ${state.sortDir === "asc" ? "⬆️" : "⬇️"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl shadow-lg overflow-hidden" style="background:${cardBg};">
+            ${state.loading ? `
+              <div class="p-8 text-center text-gray-500">Sedang memuatkan CSV...</div>
+            ` : state.error ? `
+              <div class="p-8">
+                <div class="text-red-600 font-bold">Ralat: ${escHtml(state.error)}</div>
+                <div class="mt-2 text-sm text-gray-500">
+                  Semak: publish CSV, link betul, dan sheet boleh diakses umum.
+                </div>
+              </div>
+            ` : `
+              <div class="overflow-auto">
+                <table class="min-w-full text-sm">
+                  <thead class="${state.darkMode ? "bg-white/5" : "bg-gray-50"} sticky top-0">
+                    <tr>
+                      ${state.columns.map(c => `
+                        <th class="text-left px-4 py-3 font-semibold whitespace-nowrap"
+                            style="color:var(--c-text);">
+                          ${escHtml(c)}
+                        </th>
+                      `).join("")}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${pageRows.length === 0 ? `
+                      <tr><td class="px-4 py-10 text-center text-gray-500" colspan="${state.columns.length}">
+                        Tiada rekod padanan filter/carian.
+                      </td></tr>
+                    ` : pageRows.map(r => `
+                      <tr class="${state.darkMode ? "border-white/10" : "border-gray-100"} border-t hover:bg-black/5">
+                        ${state.columns.map(c => `
+                          <td class="px-4 py-3 whitespace-nowrap ${state.darkMode ? "text-gray-200" : "text-gray-700"}">
+                            ${escHtml(r[c])}
+                          </td>
+                        `).join("")}
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-t ${state.darkMode ? "border-white/10" : "border-gray-100"}">
+                <div class="flex items-center gap-2 text-sm text-gray-500">
+                  <span>Papar</span>
+                  <select class="px-3 py-2 border rounded-xl bg-white/70"
+                    onchange="state.pageSize=Number(this.value); state.pageIndex=0; render();">
+                    ${[10,25,50,100].map(n => `<option value="${n}"${state.pageSize===n?" selected":""}>${n}</option>`).join("")}
+                  </select>
+                  <span>per halaman</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button class="px-4 py-2 rounded-xl border bg-white/70 disabled:opacity-50"
+                    onclick="state.pageIndex=Math.max(0,state.pageIndex-1); render();"
+                    ${canPrev ? "" : "disabled"}>
+                    ◀ Prev
+                  </button>
+                  <div class="text-sm text-gray-500">
+                    Halaman <b>${state.pageIndex+1}</b> / ${totalPages}
+                  </div>
+                  <button class="px-4 py-2 rounded-xl border bg-white/70 disabled:opacity-50"
+                    onclick="state.pageIndex=Math.min(${totalPages-1},state.pageIndex+1); render();"
+                    ${canNext ? "" : "disabled"}>
+                    Next ▶
+                  </button>
+                </div>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function PengumumanPage() {
+      const cardBg = "var(--c-card)";
+      const text = "var(--c-text)";
+
+      // Demo: pengumuman statik (boleh tukar jadi dari sheet lain kemudian)
+      const list = [
+        { tajuk: "Program Membaca", ringkas: "Sila hadir mengikut jadual. Bawa bahan bacaan sendiri.", tarikh: "2025-12-28" },
+        { tajuk: "Mesyuarat Guru", ringkas: "Makluman: Mesyuarat ringkas di bilik mesyuarat.", tarikh: "2025-12-30" }
+      ];
+
+      return `
+        <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
+          <h2 class="text-2xl font-bold" style="color:${text};">📢 Pengumuman</h2>
+          <p class="text-sm text-gray-500 mt-1">
+            Versi ini tanpa login. (Jika cikgu nak pengumuman automatik dari Google Sheet, beritahu—saya boleh sambungkan.)
+          </p>
+
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${list.map(p => `
+              <div class="rounded-2xl shadow p-5 card-hover" style="background:${state.darkMode?"rgba(255,255,255,0.03)":"#fff"};">
+                <div class="text-xs text-gray-500">📅 ${escHtml(p.tarikh)}</div>
+                <div class="mt-2 font-bold" style="color:${text};">${escHtml(p.tajuk)}</div>
+                <div class="mt-2 text-sm text-gray-500 line-clamp-3">${escHtml(p.ringkas)}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function TakwimPage() {
+      const cardBg = "var(--c-card)";
+      const text = "var(--c-text)";
+
+      return `
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div class="lg:col-span-2 rounded-2xl shadow-lg p-6" style="background:${cardBg};">
+            <h2 class="text-2xl font-bold" style="color:${text};">🗓️ Takwim / Jadual</h2>
+            <p class="text-sm text-gray-500 mt-1">
+              Letak jadual, takwim, atau pautan Google Calendar (embed) di sini.
+            </p>
+
+            <div class="mt-6 space-y-3">
+              ${[
+                ["Isnin", "Perhimpunan / Aktiviti Mingguan"],
+                ["Rabu", "Kokurikulum"],
+                ["Jumaat", "Program Kerohanian / Bacaan Yasin"]
+              ].map(x => `
+                <div class="flex items-start justify-between p-4 rounded-2xl border ${state.darkMode?"border-white/10":"border-gray-100"}">
+                  <div>
+                    <div class="font-bold" style="color:${text};">${escHtml(x[0])}</div>
+                    <div class="text-sm text-gray-500">${escHtml(x[1])}</div>
+                  </div>
+                  <div class="text-2xl">📌</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
+            <h3 class="text-xl font-bold" style="color:${text};">Tip</h3>
+            <ul class="mt-3 text-sm text-gray-500 space-y-2 list-disc list-inside">
+              <li>Jika cikgu ada Google Calendar, boleh embed dalam iframe.</li>
+              <li>Atau buat satu lagi sheet “Takwim” → publish CSV → paparkan seperti Dashboard Data.</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function TentangPage() {
+      const cardBg = "var(--c-card)";
+      const text = "var(--c-text)";
+      return `
+        <div class="rounded-2xl shadow-lg p-6" style="background:${cardBg};">
+          <h2 class="text-2xl font-bold" style="color:${text};">ℹ️ Tentang Portal</h2>
+          <p class="text-sm text-gray-500 mt-2">
+            Portal ini dibina untuk paparkan maklumat dan data Google Sheets (CSV) secara moden & smooth.
+            Tanpa login — semua berjalan di browser (client-side).
+          </p>
+
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-5 rounded-2xl border ${state.darkMode?"border-white/10":"border-gray-100"}">
+              <div class="font-bold" style="color:${text};">Apa yang boleh dibuat</div>
+              <ul class="mt-2 text-sm text-gray-500 space-y-1 list-disc list-inside">
+                <li>Dashboard jadual CSV + filter/carian/sort</li>
+                <li>Home dengan kad ringkasan</li>
+                <li>Sidebar boleh collapse</li>
+                <li>Light/Dark mode</li>
+              </ul>
+            </div>
+            <div class="p-5 rounded-2xl border ${state.darkMode?"border-white/10":"border-gray-100"}">
+              <div class="font-bold" style="color:${text};">Nota penting</div>
+              <ul class="mt-2 text-sm text-gray-500 space-y-1 list-disc list-inside">
+                <li>CSV mesti “Publish to web” supaya boleh fetch.</li>
+                <li>Jika format tarikh/kolum berbeza, logik ringkasan boleh ubah.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function MainContent() {
+      const bg = "var(--c-bg)";
+      const page = state.page;
+
+      let content = "";
+      if (page === "home") content = HomePage();
+      else if (page === "dashboard") content = DashboardPage();
+      else if (page === "pengumuman") content = PengumumanPage();
+      else if (page === "takwim") content = TakwimPage();
+      else if (page === "tentang") content = TentangPage();
+      else content = HomePage();
+
+      return `
+        <main class="flex-1 overflow-auto" style="background:${bg};">
+          <div class="p-4 md:p-8 max-w-7xl mx-auto">
+            ${content}
+          </div>
         </main>
-      </div>
-    </div>
+      `;
+    }
 
-    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
-  `;
+    function App() {
+      applyThemeVars();
+      return `
+        <div class="flex h-full w-full">
+          ${Sidebar()}
+          <div class="flex-1 flex flex-col h-full overflow-hidden">
+            ${Header()}
+            ${MainContent()}
+          </div>
+        </div>
+      `;
+    }
 
-  // update live clock
-  updateClock();
-}
+    function render() {
+      const app = document.getElementById("app");
+      app.innerHTML = App();
+      // update live clock text
+      document.querySelectorAll(".live-clock").forEach(el => el.textContent = formatDateTime());
+    }
 
-function updateClock(){
-  const els = document.querySelectorAll(".live-clock");
-  els.forEach(el=> el.textContent = nowText());
-}
-setInterval(updateClock, 1000);
+    /***********************
+     * 8) ROUTER + CLOCK
+     ***********************/
+    window.addEventListener("hashchange", () => {
+      state.page = location.hash.replace("#", "") || "home";
+      render();
+    });
 
-/* =========================
-   6) SETTINGS HELPERS
-========================= */
-function saveSettingsFromUI(){
-  const sname = document.getElementById("sname")?.value ?? state.config.school_name;
-  const smotto= document.getElementById("smotto")?.value ?? state.config.school_motto;
-  const btitle= document.getElementById("btitle")?.value ?? state.config.banner_title;
-  const bdesc = document.getElementById("bdesc")?.value ?? state.config.banner_description;
-  const bclock= document.getElementById("bclock")?.checked ?? state.config.banner_show_clock;
-  const ffont = document.getElementById("ffont")?.value ?? state.config.font_family;
+    setInterval(() => {
+      document.querySelectorAll(".live-clock").forEach(el => el.textContent = formatDateTime());
+    }, 1000);
 
-  const cheader = document.getElementById("cheader")?.value ?? state.config.header_color;
-  const cside   = document.getElementById("cside")?.value ?? state.config.sidebar_color;
-  const cbg     = document.getElementById("cbg")?.value ?? state.config.bg_color;
-  const ctext   = document.getElementById("ctext")?.value ?? state.config.text_color;
-
-  updateConfig({
-    school_name: sname,
-    school_motto: smotto,
-    banner_title: btitle,
-    banner_description: bdesc,
-    banner_show_clock: bclock,
-    font_family: ffont,
-    header_color: cheader,
-    sidebar_color: cside,
-    bg_color: cbg,
-    text_color: ctext
-  });
-  toast("Tetapan disimpan", "success");
-}
-
-function resetAll(){
-  if(!confirm("Reset portal ke default?")) return;
-  state = structuredClone(defaultState);
-  saveState(); render();
-  toast("Reset berjaya", "success");
-}
-
-function exportJSON(){
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "portal_state.json";
-  a.click();
-  URL.revokeObjectURL(url);
-  toast("Export siap", "success");
-}
-
-function importJSON(){
-  const input = document.createElement("input");
-  input.type="file";
-  input.accept="application/json";
-  input.onchange = () => {
-    const file = input.files?.[0];
-    if(!file) return;
-    const r = new FileReader();
-    r.onload = () => {
-      try{
-        const imported = JSON.parse(r.result);
-        state = {
-          ...structuredClone(defaultState),
-          ...imported,
-          config:{...defaultState.config, ...(imported.config||{})},
-          ui:{...defaultState.ui, ...(imported.ui||{})}
-        };
-        saveState(); render();
-        toast("Import berjaya", "success");
-      }catch(e){
-        toast("Fail JSON tidak sah", "error");
-      }
-    };
-    r.readAsText(file);
-  };
-  input.click();
-}
-
-/* =========================
-   7) CLICK OUTSIDE (close dropdown)
-========================= */
-document.addEventListener("click", (e)=>{
-  // close settings dropdown if click outside
-  const isBtn = e.target.closest("button[onclick*='toggleSettings']");
-  const isDrop= e.target.closest("div.absolute.right-0");
-  if(!isBtn && !isDrop && state.ui.settingsOpen){
-    state.ui.settingsOpen = false;
-    saveState(); render();
-  }
-});
-
-/* INIT */
-render();
-</script>
+    /***********************
+     * 9) INIT
+     ***********************/
+    render();
+    loadCSV();
+  </script>
 </body>
 </html>
