@@ -1,753 +1,1450 @@
 <!doctype html>
-<html lang="ms">
+<html lang="ms" class="h-full">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal PPKI SK Paya Resak</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    body { font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    .sidebar-transition { transition: all .25s ease-in-out; }
-    .card-hover { transition: transform .2s ease, box-shadow .2s ease; cursor: pointer; }
-    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,.10); }
-    .modal-backdrop { background: rgba(0,0,0,.65); backdrop-filter: blur(8px); }
-    .line-clamp-2 {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    body { font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .line-clamp-2{
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden
     }
-    .line-clamp-3 {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    .line-clamp-3{
+      display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden
     }
+    .soft-shadow{ box-shadow: 0 10px 25px rgba(0,0,0,.08); }
+    .soft-shadow-sm{ box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+    .ring-soft{ box-shadow: 0 0 0 1px rgba(15,23,42,.06) inset; }
   </style>
 </head>
 
-<body class="h-screen overflow-hidden bg-slate-100">
-  <div id="app" class="h-full w-full"></div>
+<body class="h-full bg-slate-50">
+  <div id="app" class="h-full"></div>
 
-  <script>
-    /***********************
-     * 1) CONFIG
-     ***********************/
-    const CONFIG = {
-      schoolName: "SK Paya Resak",
-      schoolMotto: "Moving Forward",
-      copyrightTop: "© 2025 NK.",
-      copyrightBottom: "Hak Cipta Terpelihara.",
-      headerColor: "#2563eb",     // blue-600
-      sidebarColor: "#111827",    // gray-900
-      bgColor: "#f1f5f9",         // slate-100
-      cardColor: "#ffffff",
-      textColor: "#0f172a",
-      accentColor: "#10b981"      // emerald-500
-    };
+<script>
+/* =========================
+   1) CONFIG (URL CSV cikgu)
+   ========================= */
+const KEHADIRAN_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv";
 
-    // ✅ Your Pengumuman CSV URL (embedded)
-    const PENGUMUMAN_CSV_URL =
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv";
+const PENGUMUMAN_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv";
 
-    // (Optional) You can later add Takwim CSV URL here
-    const TAKWIM_CSV_URL = ""; // letak nanti
+// OPTIONAL: jika cikgu ada Google Sheet takwim (publish csv)
+const TAKWIM_CSV_URL = ""; // isi jika ada, contoh "...output=csv"
 
-    /***********************
-     * 2) STATE
-     ***********************/
-    const state = {
-      currentPage: "home",
-      sidebarCollapsed: false,
-      nowText: "",
-      announcements: [],
-      announcementsLoading: false,
-      announcementsError: "",
-      viewingAnnouncement: null,
-      // placeholders for attendance stats (you can wire later)
-      attendanceStats: {
-        today: 0,
-        week: 0,
-        month: 0,
-        monthPercent: 0
+// OPTIONAL: “Ibu Bapa” – boleh guna data statik (edit di bawah) atau sambung Google Sheet kemudian
+const IBU_BAPA_ITEMS = [
+  {
+    tajuk: "Info Umum PPKI",
+    isi: "Maklumat ringkas berkaitan PPKI & urusan ibu bapa.",
+    url: "https://example.com",
+    mode: "tab" // "modal" atau "tab"
+  },
+  {
+    tajuk: "Borang Kebenaran Aktiviti",
+    isi: "Sila isi borang kebenaran (jika berkaitan).",
+    url: "",
+    mode: "modal"
+  }
+];
+
+/* =========================
+   2) STATE + STORAGE
+   ========================= */
+const LS_KEY = "ppki_portal_settings_v1";
+const defaultSettings = {
+  schoolName: "SK Paya Resak",
+  schoolMotto: "Moving Forward",
+  copyrightLine1: "© 2025 NK.",
+  copyrightLine2: "Hak Cipta Terpelihara.",
+  logoDataUrl: "" // base64
+};
+
+let settings = loadSettings();
+let currentPage = "home";
+let sidebarCollapsed = false;
+
+let kehadiranRows = [];   // parsed objects
+let pengumumanRows = [];  // parsed objects
+let takwimRows = [];      // parsed objects (optional)
+
+/* Kehadiran UI filters */
+let kFilter = {
+  q: "",
+  kelas: "",
+  status: "",
+  jantina: "",
+  from: "",
+  to: ""
+};
+let kHiddenCols = {
+  Tarikh: false,
+  Kelas: false,
+  "Nama Murid": false,
+  Status: false,
+  Jantina: false
+};
+let kPage = 1;
+let kPerPage = 20;
+
+/* Home month selection */
+let selectedMonth = (new Date().getMonth() + 1); // 1-12
+let selectedYear  = (new Date().getFullYear());
+let trendMode = "HADIR"; // HADIR | TIDAK | PERCENT
+let trendKelas = "";     // kelas dropdown for trend chart
+
+/* =========================
+   3) UTIL: CSV parse (robust)
+   ========================= */
+function parseCSV(text) {
+  const rows = [];
+  let i = 0, field = "", row = [];
+  let inQuotes = false;
+
+  while (i < text.length) {
+    const c = text[i];
+
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i+1] === '"') { field += '"'; i += 2; continue; }
+        inQuotes = false; i++; continue;
+      } else {
+        field += c; i++; continue;
       }
-    };
-
-    const MENU_ITEMS = [
-      { id: "home", label: "Laman Utama", icon: "🏠" },
-      { id: "kehadiran", label: "Kehadiran", icon: "📊" },
-      { id: "pengumuman", label: "Pengumuman", icon: "📢" },
-      { id: "takwim", label: "Takwim", icon: "🗓️" },
-      { id: "ibubapa", label: "Ibu Bapa", icon: "👨‍👩‍👧‍👦" }
-    ];
-
-    /***********************
-     * 3) UTIL
-     ***********************/
-    const DAYS_MS = ["Ahad","Isnin","Selasa","Rabu","Khamis","Jumaat","Sabtu"];
-    const MONTHS_MS = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
-
-    function formatNow() {
-      const now = new Date();
-      const day = DAYS_MS[now.getDay()];
-      const date = now.getDate();
-      const month = MONTHS_MS[now.getMonth()];
-      const year = now.getFullYear();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      const ss = String(now.getSeconds()).padStart(2, "0");
-      return `${day}, ${date} ${month} ${year} • ${hh}:${mm}:${ss}`;
+    } else {
+      if (c === '"') { inQuotes = true; i++; continue; }
+      if (c === ",") { row.push(field); field = ""; i++; continue; }
+      if (c === "\r") { i++; continue; }
+      if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+      field += c; i++; continue;
     }
+  }
+  // last field
+  if (field.length || row.length) { row.push(field); rows.push(row); }
 
-    function safeText(s) {
-      return String(s ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;");
+  // trim
+  return rows.map(r => r.map(x => (x ?? "").trim()));
+}
+
+function rowsToObjects(rows) {
+  if (!rows || rows.length < 2) return [];
+  const header = rows[0].map(h => h.trim());
+  return rows.slice(1)
+    .filter(r => r.some(x => (x ?? "").trim() !== ""))
+    .map(r => {
+      const o = {};
+      header.forEach((h, idx) => o[h] = (r[idx] ?? "").trim());
+      return o;
+    });
+}
+
+/* =========================
+   4) UTIL: Date parsing dd/mm/yyyy
+   ========================= */
+function parseDMY(s) {
+  // accept "02/03/2025" or "2/3/2025"
+  if (!s) return null;
+  const parts = String(s).trim().split(/[\/\-\.]/).map(x => x.trim());
+  if (parts.length < 3) return null;
+  const d = Number(parts[0]), m = Number(parts[1]), y = Number(parts[2]);
+  if (!d || !m || !y) return null;
+  const dt = new Date(y, m - 1, d, 0, 0, 0, 0);
+  if (Number.isNaN(dt.getTime())) return null;
+  return dt;
+}
+function sameDay(a,b){
+  return a && b &&
+    a.getFullYear()===b.getFullYear() &&
+    a.getMonth()===b.getMonth() &&
+    a.getDate()===b.getDate();
+}
+function startOfWeek(d){
+  // minggu bermula Isnin
+  const x = new Date(d);
+  const day = x.getDay(); // 0 Ahad..6 Sabtu
+  const diff = (day === 0 ? -6 : 1 - day);
+  x.setDate(x.getDate() + diff);
+  x.setHours(0,0,0,0);
+  return x;
+}
+function endOfWeek(d){
+  const s = startOfWeek(d);
+  const e = new Date(s);
+  e.setDate(e.getDate() + 6);
+  e.setHours(23,59,59,999);
+  return e;
+}
+function startOfMonth(y,m1to12){
+  return new Date(y, m1to12-1, 1, 0,0,0,0);
+}
+function endOfMonth(y,m1to12){
+  return new Date(y, m1to12, 0, 23,59,59,999);
+}
+function fmtDMY(dt){
+  if(!dt) return "";
+  const d = String(dt.getDate()).padStart(2,"0");
+  const m = String(dt.getMonth()+1).padStart(2,"0");
+  const y = dt.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+function fmtDateLong(dt){
+  const DAYS = ["Ahad","Isnin","Selasa","Rabu","Khamis","Jumaat","Sabtu"];
+  const MONTHS = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
+  return `${DAYS[dt.getDay()]}, ${dt.getDate()} ${MONTHS[dt.getMonth()]} ${dt.getFullYear()}`;
+}
+function nowClock(){
+  const dt = new Date();
+  const hh = String(dt.getHours()).padStart(2,"0");
+  const mm = String(dt.getMinutes()).padStart(2,"0");
+  const ss = String(dt.getSeconds()).padStart(2,"0");
+  return `${fmtDateLong(dt)} · ${hh}:${mm}:${ss}`;
+}
+
+/* =========================
+   5) LOAD SETTINGS
+   ========================= */
+function loadSettings(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return {...defaultSettings};
+    const parsed = JSON.parse(raw);
+    return { ...defaultSettings, ...parsed };
+  }catch(e){
+    return {...defaultSettings};
+  }
+}
+function saveSettings(){
+  localStorage.setItem(LS_KEY, JSON.stringify(settings));
+}
+
+/* =========================
+   6) FETCH CSV
+   ========================= */
+async function fetchCSV(url){
+  const res = await fetch(url, { cache: "no-store" });
+  if(!res.ok) throw new Error("Gagal fetch CSV");
+  return await res.text();
+}
+
+async function loadAllData(){
+  // Kehadiran
+  try{
+    const csvText = await fetchCSV(KEHADIRAN_CSV_URL);
+    const rows = parseCSV(csvText);
+    const objs = rowsToObjects(rows);
+
+    // Expected headers: Tarikh, Kelas, Nama Murid, Status, Jantina
+    kehadiranRows = objs.map(o => ({
+      Tarikh: o["Tarikh"] || o["tarikh"] || "",
+      Kelas: o["Kelas"] || o["kelas"] || "",
+      "Nama Murid": o["Nama Murid"] || o["Nama"] || o["nama murid"] || "",
+      Status: (o["Status"] || "").toUpperCase(),
+      Jantina: (o["Jantina"] || "").toUpperCase()
+    }));
+  }catch(e){
+    kehadiranRows = [];
+  }
+
+  // Pengumuman
+  try{
+    const csvText = await fetchCSV(PENGUMUMAN_CSV_URL);
+    const rows = parseCSV(csvText);
+    const objs = rowsToObjects(rows);
+
+    // Expected headers:
+    // TARIKH MULA, TARIKH TAMAT, TAJUK, ISI KANDUNGAN, URL, KEUTAMAAN, AKTIF
+    pengumumanRows = objs.map(o => ({
+      mula: o["TARIKH MULA"] || o["Tarikh Mula"] || o["MULA"] || "",
+      tamat: o["TARIKH TAMAT"] || o["Tarikh Tamat"] || o["TAMAT"] || "",
+      tajuk: o["TAJUK"] || o["Tajuk"] || "",
+      isi: o["ISI KANDUNGAN"] || o["Isi Kandungan"] || o["ISI"] || "",
+      url: o["URL"] || "",
+      keutamaan: (o["KEUTAMAAN"] || o["Keutamaan"] || "").trim(),
+      aktif: (o["AKTIF"] || o["Aktif"] || "").trim().toUpperCase()
+    }));
+  }catch(e){
+    pengumumanRows = [];
+  }
+
+  // Takwim (optional)
+  if (TAKWIM_CSV_URL) {
+    try{
+      const csvText = await fetchCSV(TAKWIM_CSV_URL);
+      const rows = parseCSV(csvText);
+      takwimRows = rowsToObjects(rows);
+    }catch(e){
+      takwimRows = [];
     }
+  } else {
+    takwimRows = [];
+  }
+}
 
-    // Robust-ish CSV parser (handles commas + quotes)
-    function parseCSV(csvText) {
-      const rows = [];
-      let row = [];
-      let cur = "";
-      let inQuotes = false;
+/* =========================
+   7) KEHADIRAN: CALC
+   ========================= */
+function isHadir(status){
+  // flexible: HADIR / TIDAK HADIR / SAKIT / CUTI etc
+  const s = (status||"").toUpperCase();
+  return s === "HADIR" || s === "H";
+}
+function isTidakHadir(status){
+  const s = (status||"").toUpperCase();
+  return s === "TIDAK HADIR" || s === "TIDAK" || s === "TH" || s === "ABSENT";
+}
+function rowDate(r){
+  return parseDMY(r.Tarikh);
+}
+function filterKehadiran(rows){
+  const q = (kFilter.q||"").toLowerCase().trim();
+  const kelas = (kFilter.kelas||"").toLowerCase().trim();
+  const status = (kFilter.status||"").toUpperCase().trim();
+  const jantina = (kFilter.jantina||"").toUpperCase().trim();
+  const from = kFilter.from ? new Date(kFilter.from+"T00:00:00") : null;
+  const to   = kFilter.to   ? new Date(kFilter.to+"T23:59:59") : null;
 
-      for (let i = 0; i < csvText.length; i++) {
-        const ch = csvText[i];
-        const next = csvText[i + 1];
+  return rows.filter(r=>{
+    const d = rowDate(r);
 
-        if (ch === '"' && inQuotes && next === '"') {
-          cur += '"';
-          i++;
-          continue;
-        }
+    if (q) {
+      const hay = `${r.Tarikh} ${r.Kelas} ${r["Nama Murid"]} ${r.Status} ${r.Jantina}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (kelas && (r.Kelas||"").toLowerCase() !== kelas) return false;
+    if (status && (r.Status||"").toUpperCase() !== status) return false;
+    if (jantina && (r.Jantina||"").toUpperCase() !== jantina) return false;
 
-        if (ch === '"') {
-          inQuotes = !inQuotes;
-          continue;
-        }
+    if (from && (!d || d < from)) return false;
+    if (to && (!d || d > to)) return false;
 
-        if (ch === "," && !inQuotes) {
-          row.push(cur);
-          cur = "";
-          continue;
-        }
+    return true;
+  });
+}
 
-        if ((ch === "\n" || ch === "\r") && !inQuotes) {
-          if (ch === "\r" && next === "\n") i++;
-          row.push(cur);
-          cur = "";
-          // only push non-empty (or if has any column)
-          if (row.some(v => String(v).trim() !== "")) rows.push(row);
-          row = [];
-          continue;
-        }
+function calcKehadiranStats(rows){
+  const now = new Date();
+  const sWeek = startOfWeek(now);
+  const eWeek = endOfWeek(now);
 
-        cur += ch;
+  const sMonth = startOfMonth(selectedYear, selectedMonth);
+  const eMonth = endOfMonth(selectedYear, selectedMonth);
+
+  const todayRows = rows.filter(r=>{
+    const d = rowDate(r);
+    return d && sameDay(d, now);
+  });
+  const weekRows = rows.filter(r=>{
+    const d = rowDate(r);
+    return d && d >= sWeek && d <= eWeek;
+  });
+  const monthRows = rows.filter(r=>{
+    const d = rowDate(r);
+    return d && d >= sMonth && d <= eMonth;
+  });
+
+  const countH = (arr)=>arr.filter(r=>isHadir(r.Status)).length;
+  const countTH = (arr)=>arr.filter(r=>isTidakHadir(r.Status)).length;
+
+  const monthH = countH(monthRows);
+  const monthTH = countTH(monthRows);
+  const monthTotalKnown = monthH + monthTH; // fokus hadir/tidak hadir
+  const monthPercent = monthTotalKnown ? Math.round((monthH / monthTotalKnown) * 1000)/10 : 0;
+
+  return {
+    todayH: countH(todayRows),
+    todayTH: countTH(todayRows),
+    weekH: countH(weekRows),
+    weekTH: countTH(weekRows),
+    monthH, monthTH, monthPercent,
+    monthRows
+  };
+}
+
+function uniqueValues(rows, key){
+  const set = new Set();
+  rows.forEach(r=>{
+    const v = (r[key]||"").trim();
+    if(v) set.add(v);
+  });
+  return Array.from(set).sort((a,b)=>a.localeCompare(b, "ms"));
+}
+
+/* =========================
+   8) PENGUMUMAN: FILTER ACTIVE + SORT
+   ========================= */
+function priorityRank(p){
+  const x = (p||"").toLowerCase();
+  if (["tinggi","high","1"].includes(x)) return 0;
+  if (["sederhana","medium","2"].includes(x)) return 1;
+  if (["rendah","low","3"].includes(x)) return 2;
+  return 3;
+}
+function activeAnnouncements(){
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  return (pengumumanRows||[])
+    .filter(a=>{
+      // guna kolum AKTIF jika ada, kalau kosong gunakan tarikh mula/tamat
+      const mula = parseDMY(a.mula);
+      const tamat = parseDMY(a.tamat);
+      const aktif = (a.aktif||"").toUpperCase();
+
+      let ok = true;
+
+      if (aktif === "YA") ok = true;
+      else if (aktif === "TIDAK") ok = false;
+      else {
+        // fallback by dates
+        if (mula && mula > today) ok = false;
+        if (tamat && tamat < today) ok = false;
       }
 
-      // last cell
-      if (cur.length || row.length) {
-        row.push(cur);
-        if (row.some(v => String(v).trim() !== "")) rows.push(row);
-      }
+      // juga tolong jaga bila mula kosong: anggap boleh
+      if (mula && mula > today) ok = false;
+      if (tamat && tamat < today) ok = false;
 
-      return rows.map(r => r.map(c => String(c ?? "").trim()));
+      return ok && (a.tajuk || a.isi);
+    })
+    .sort((a,b)=>{
+      const pr = priorityRank(a.keutamaan) - priorityRank(b.keutamaan);
+      if (pr !== 0) return pr;
+      const da = parseDMY(a.mula) || new Date(0);
+      const db = parseDMY(b.mula) || new Date(0);
+      return db - da; // terbaru mula
+    });
+}
+
+/* =========================
+   9) TREND CHART (simple SVG)
+   ========================= */
+function buildDailyTrend(rows, y, m1to12, kelas, mode){
+  const s = startOfMonth(y, m1to12);
+  const e = endOfMonth(y, m1to12);
+
+  // bucket per day
+  const buckets = new Map(); // dayNumber -> {h,th}
+  for(let d=1; d<=e.getDate(); d++){
+    buckets.set(d, {h:0, th:0});
+  }
+
+  rows.forEach(r=>{
+    if (kelas && (r.Kelas||"") !== kelas) return;
+    const dt = rowDate(r);
+    if(!dt) return;
+    if(dt < s || dt > e) return;
+
+    const day = dt.getDate();
+    const b = buckets.get(day);
+    if(!b) return;
+
+    if (isHadir(r.Status)) b.h++;
+    if (isTidakHadir(r.Status)) b.th++;
+  });
+
+  // to arrays
+  const days = [];
+  const values = [];
+  for(let d=1; d<=e.getDate(); d++){
+    days.push(d);
+    const b = buckets.get(d);
+    if (mode === "HADIR") values.push(b.h);
+    else if (mode === "TIDAK") values.push(b.th);
+    else {
+      const total = b.h + b.th;
+      values.push(total ? Math.round((b.h/total)*1000)/10 : 0); // percent
     }
+  }
+  return { days, values };
+}
 
-    function normalizePriority(p) {
-      const x = String(p || "").toUpperCase().trim();
-      if (x === "TINGGI") return 0;
-      if (x === "SEDERHANA") return 1;
-      if (x === "RENDAH") return 2;
-      return 3;
-    }
+function renderSparkLineSVG(values){
+  const w = 520, h = 120, pad = 10;
 
-    function parseDate(d) {
-      // expects Google Sheet date in yyyy-mm-dd or dd/mm/yyyy (best effort)
-      if (!d) return null;
-      const s = String(d).trim();
-      if (!s) return null;
+  const max = Math.max(1, ...values);
+  const min = Math.min(0, ...values);
 
-      // yyyy-mm-dd
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-        const dt = new Date(s + "T00:00:00");
-        return isNaN(dt.getTime()) ? null : dt;
-      }
+  const xStep = (w - pad*2) / Math.max(1, values.length - 1);
+  const yScale = (h - pad*2) / (max - min || 1);
 
-      // dd/mm/yyyy
-      const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (m) {
-        const dd = Number(m[1]);
-        const mm = Number(m[2]) - 1;
-        const yy = Number(m[3]);
-        const dt = new Date(yy, mm, dd);
-        return isNaN(dt.getTime()) ? null : dt;
-      }
+  const points = values.map((v,i)=>{
+    const x = pad + i * xStep;
+    const y = (h - pad) - (v - min) * yScale;
+    return `${x.toFixed(2)},${y.toFixed(2)}`;
+  }).join(" ");
 
-      const dt = new Date(s);
-      return isNaN(dt.getTime()) ? null : dt;
-    }
+  return `
+    <svg viewBox="0 0 ${w} ${h}" class="w-full h-28">
+      <polyline
+        fill="none"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        points="${points}"
+        opacity="0.9"
+      />
+      <circle cx="${pad}" cy="${(h-pad) - (values[0]-min)*yScale}" r="4" fill="currentColor" opacity="0.9"></circle>
+      <circle cx="${(w-pad)}" cy="${(h-pad) - (values[values.length-1]-min)*yScale}" r="4" fill="currentColor" opacity="0.9"></circle>
+    </svg>
+  `;
+}
 
-    function formatDateShort(d) {
-      const dt = parseDate(d);
-      if (!dt) return "";
-      const day = dt.getDate();
-      const month = MONTHS_MS[dt.getMonth()];
-      const year = dt.getFullYear();
-      return `${day} ${month} ${year}`;
-    }
+/* =========================
+   10) UI: Toast + Modal helpers
+   ========================= */
+function toast(msg, type="info"){
+  const cont = document.getElementById("toast-cont");
+  if(!cont) return;
+  const div = document.createElement("div");
+  const cls = type==="error"
+    ? "bg-rose-600"
+    : type==="success"
+    ? "bg-emerald-600"
+    : "bg-slate-900";
+  div.className = `${cls} text-white px-4 py-3 rounded-xl soft-shadow-sm text-sm`;
+  div.textContent = msg;
+  cont.appendChild(div);
+  setTimeout(()=>{ div.style.opacity="0"; div.style.transform="translateY(-6px)"; }, 2400);
+  setTimeout(()=>div.remove(), 2800);
+}
 
-    /***********************
-     * 4) DATA: Fetch Pengumuman CSV
-     * Columns expected:
-     * A: ID
-     * B: TARIKH MULA
-     * C: TARIKH TAMAT
-     * D: TAJUK
-     * E: ISI KANDUNGAN
-     * F: URL
-     * G: KEUTAMAAN
-     * H: AKTIF
-     ***********************/
-    async function loadAnnouncements() {
-      if (!PENGUMUMAN_CSV_URL) return;
+/* =========================
+   11) RENDER
+   ========================= */
+function pageTitle(){
+  if(currentPage==="home") return "Laman Utama";
+  if(currentPage==="kehadiran") return "Dashboard Kehadiran";
+  if(currentPage==="pengumuman") return "Pengumuman";
+  if(currentPage==="takwim") return "Takwim";
+  if(currentPage==="ibubapa") return "Ibu Bapa";
+  return "Portal";
+}
 
-      state.announcementsLoading = true;
-      state.announcementsError = "";
-      renderApp();
+function setPage(p){
+  currentPage = p;
+  // reset pagination
+  if(p==="kehadiran") kPage = 1;
+  render();
+}
 
-      try {
-        const res = await fetch(PENGUMUMAN_CSV_URL, { cache: "no-store" });
-        if (!res.ok) throw new Error("Gagal fetch CSV: " + res.status);
-        const text = await res.text();
+function initSidebarDefault(){
+  // default: mobile sidebar tertutup
+  sidebarCollapsed = window.innerWidth < 768;
+}
+window.addEventListener("resize", ()=>{
+  // jangan paksa toggle bila user dah buka, tapi untuk pertama kali sahaja kita set.
+  // (ringkas) — kalau nak, boleh buang.
+});
 
-        const rows = parseCSV(text);
-        if (rows.length < 2) {
-          state.announcements = [];
-          state.announcementsLoading = false;
-          renderApp();
-          return;
-        }
+function toggleSidebar(){
+  sidebarCollapsed = !sidebarCollapsed;
+  render();
+}
 
-        const header = rows[0].map(h => h.toUpperCase());
-        const idx = (name) => header.indexOf(name);
+function render(){
+  const app = document.getElementById("app");
+  const stats = calcKehadiranStats(kehadiranRows);
+  const ann = activeAnnouncements();
 
-        const iID = idx("ID");
-        const iMula = idx("TARIKH MULA");
-        const iTamat = idx("TARIKH TAMAT");
-        const iTajuk = idx("TAJUK");
-        const iIsi = idx("ISI KANDUNGAN");
-        const iUrl = idx("URL");
-        const iKeut = idx("KEUTAMAAN");
-        const iAktif = idx("AKTIF");
+  const kelasList = uniqueValues(kehadiranRows, "Kelas");
+  const statusList = uniqueValues(kehadiranRows, "Status");
+  const jantinaList = uniqueValues(kehadiranRows, "Jantina");
 
-        const data = rows.slice(1).map((r) => {
-          const obj = {
-            id: r[iID] ?? "",
-            tarikhMula: r[iMula] ?? "",
-            tarikhTamat: r[iTamat] ?? "",
-            tajuk: r[iTajuk] ?? "",
-            isi: r[iIsi] ?? "",
-            url: r[iUrl] ?? "",
-            keutamaan: r[iKeut] ?? "",
-            aktif: r[iAktif] ?? ""
-          };
-          return obj;
-        })
-        .filter(a => (a.tajuk || a.isi).trim() !== "")
-        .filter(a => String(a.aktif).toUpperCase().trim() === "YA")
-        .sort((a, b) => {
-          const pa = normalizePriority(a.keutamaan);
-          const pb = normalizePriority(b.keutamaan);
-          if (pa !== pb) return pa - pb;
-          // latest start date first
-          const da = parseDate(a.tarikhMula)?.getTime() ?? 0;
-          const db = parseDate(b.tarikhMula)?.getTime() ?? 0;
-          return db - da;
-        });
+  const trend = buildDailyTrend(kehadiranRows, selectedYear, selectedMonth, trendKelas, trendMode);
 
-        state.announcements = data;
-      } catch (err) {
-        state.announcementsError = (err && err.message) ? err.message : "Ralat memuat pengumuman";
-        state.announcements = [];
-      } finally {
-        state.announcementsLoading = false;
-        renderApp();
-      }
-    }
+  const brandLogo = settings.logoDataUrl
+    ? `<img src="${settings.logoDataUrl}" class="w-12 h-12 rounded-2xl object-cover ring-1 ring-white/30" alt="Logo">`
+    : `<div class="w-12 h-12 rounded-2xl bg-white/10 ring-1 ring-white/20 flex items-center justify-center text-2xl">🏫</div>`;
 
-    /***********************
-     * 5) NAV / UI ACTIONS
-     ***********************/
-    function navigateTo(pageId) {
-      state.currentPage = pageId;
-      // auto close sidebar on mobile after click
-      if (window.matchMedia("(max-width: 768px)").matches) {
-        state.sidebarCollapsed = true;
-      }
-      renderApp();
-    }
+  const sideW = sidebarCollapsed ? "w-[88px]" : "w-[280px]";
+  const sideText = sidebarCollapsed ? "hidden" : "";
+  const sideCenter = sidebarCollapsed ? "items-center text-center" : "";
 
-    function toggleSidebar() {
-      state.sidebarCollapsed = !state.sidebarCollapsed;
-      renderApp();
-    }
+  app.innerHTML = `
+    <div class="h-full flex">
 
-    function openAnnouncementModal(item) {
-      state.viewingAnnouncement = item;
-      renderApp();
-    }
-
-    function closeAnnouncementModal() {
-      state.viewingAnnouncement = null;
-      renderApp();
-    }
-
-    /***********************
-     * 6) RENDERERS
-     ***********************/
-    function renderHeaderTitle() {
-      const m = MENU_ITEMS.find(x => x.id === state.currentPage);
-      if (state.currentPage === "kehadiran") return "Dashboard Kehadiran";
-      return m ? m.label : "Portal";
-    }
-
-    function renderSidebar() {
-      return `
-        <aside class="sidebar-transition flex-shrink-0 h-full"
-          style="width: 280px; background-color: ${CONFIG.sidebarColor};">
-          <div class="flex flex-col h-full">
-            <div class="p-6 border-b border-white/10">
-              <div class="flex items-center justify-center mb-4">
-                <div class="w-20 h-20 rounded-full bg-white flex items-center justify-center text-4xl overflow-hidden">
-                  🏫
-                </div>
+      <!-- SIDEBAR -->
+      <aside class="${sideW} transition-all duration-300 bg-slate-900 text-white flex-shrink-0">
+        <div class="h-full flex flex-col">
+          <div class="p-5 border-b border-white/10">
+            <div class="flex ${sideCenter} gap-3">
+              <div class="cursor-pointer" onclick="setPage('home')">${brandLogo}</div>
+              <div class="${sideText}">
+                <div class="font-bold text-lg leading-tight">${escapeHtml(settings.schoolName)}</div>
+                <div class="text-white/70 text-sm">${escapeHtml(settings.schoolMotto)}</div>
               </div>
-              <h2 class="text-white text-center font-bold text-xl mb-1">${safeText(CONFIG.schoolName)}</h2>
-              <p class="text-white/60 text-center text-sm">${safeText(CONFIG.schoolMotto)}</p>
-            </div>
-
-            <nav class="flex-1 overflow-y-auto py-4">
-              ${MENU_ITEMS.map(item => `
-                <div
-                  onclick="navigateTo('${item.id}')"
-                  class="flex items-center px-6 py-3 text-white cursor-pointer hover:bg-white/10 ${state.currentPage===item.id ? 'bg-white/10' : ''}">
-                  <span class="text-2xl">${item.icon}</span>
-                  <span class="ml-4 font-medium">${safeText(item.label)}</span>
-                </div>
-              `).join("")}
-            </nav>
-
-            <div class="p-4 border-t border-white/10">
-              <p class="text-white/60 text-xs text-center">${safeText(CONFIG.copyrightTop)}</p>
-              <p class="text-white/60 text-xs text-center">${safeText(CONFIG.copyrightBottom)}</p>
             </div>
           </div>
-        </aside>
-      `;
-    }
 
-    function renderHome() {
-      const a = state.attendanceStats;
-      const activeCount = state.announcements.length;
+          <nav class="flex-1 p-3 space-y-1">
+            ${sideItem("home","Laman Utama","🏠")}
+            ${sideItem("kehadiran","Kehadiran","📊")}
+            ${sideItem("pengumuman","Pengumuman","📢", ann.length)}
+            ${sideItem("takwim","Takwim","📅")}
+            ${sideItem("ibubapa","Ibu Bapa","👨‍👩‍👧‍👦")}
+          </nav>
 
-      return `
-        <div class="p-6 md:p-8 overflow-auto h-full">
-          <div class="max-w-7xl mx-auto">
+          <div class="p-4 border-t border-white/10 space-y-3">
+            <button class="w-full flex items-center ${sidebarCollapsed ? "justify-center" : "justify-between"} gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 transition"
+              onclick="openSettingsModal()">
+              <span class="text-lg">⚙️</span>
+              <span class="${sideText} text-sm">Tetapan Portal</span>
+            </button>
 
-            <!-- Banner -->
-            <div class="rounded-2xl shadow-lg p-6 md:p-8 mb-8"
-              style="background: linear-gradient(135deg, ${CONFIG.headerColor}, ${CONFIG.accentColor});">
-              <div class="bg-white/90 rounded-2xl p-6 md:p-8">
-                <h1 class="text-2xl md:text-3xl font-bold mb-3" style="color:${CONFIG.textColor}">
-                  Selamat Datang ke Portal Rasmi PPKI SK Paya Resak
-                </h1>
-                <div class="mt-4 rounded-xl px-4 py-4 text-center text-white font-semibold"
-                  style="background: rgba(15,23,42,.92);">
-                  <div id="live-clock" class="text-lg md:text-2xl">${safeText(state.nowText)}</div>
-                </div>
-              </div>
+            <div class="text-xs text-white/70 ${sidebarCollapsed ? "text-center" : ""}">
+              <div>${escapeHtml(settings.copyrightLine1)}</div>
+              <div>${escapeHtml(settings.copyrightLine2)}</div>
             </div>
-
-            <!-- Statistik Kehadiran -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              ${renderStatCard("Kehadiran Hari Ini", a.today, "📅", "kehadiran")}
-              ${renderStatCard("Kehadiran Minggu Ini", a.week, "🗓️", "kehadiran")}
-              ${renderStatCard("Kehadiran Bulan Ini", a.month, "📊", "kehadiran")}
-              ${renderStatCard("Peratus Kehadiran Bulanan", (a.monthPercent || 0) + "%", "✅", "kehadiran")}
-            </div>
-
-            <!-- Kad Pengumuman ringkas -->
-            <div class="rounded-2xl shadow-lg p-6"
-              style="background-color: ${CONFIG.cardColor};">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl md:text-2xl font-bold" style="color:${CONFIG.textColor}">
-                  📢 Pengumuman Aktif
-                </h2>
-                <button onclick="navigateTo('pengumuman')" class="px-4 py-2 rounded-xl text-white font-semibold hover:opacity-90"
-                  style="background-color:${CONFIG.headerColor}">
-                  Lihat Semua
-                </button>
-              </div>
-
-              ${state.announcementsLoading ? `
-                <div class="py-8 text-center text-slate-500">Memuat pengumuman...</div>
-              ` : state.announcementsError ? `
-                <div class="py-8 text-center text-red-600">Ralat: ${safeText(state.announcementsError)}</div>
-              ` : activeCount === 0 ? `
-                <div class="py-8 text-center text-slate-500">Tiada pengumuman aktif buat masa ini.</div>
-              ` : `
-                <div class="text-sm text-slate-600 mb-3">
-                  Jumlah pengumuman aktif: <b>${activeCount}</b>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  ${state.announcements.slice(0, 6).map((x, idx) => `
-                    <div class="card-hover rounded-2xl p-5 border border-slate-100"
-                      onclick="navigateTo('pengumuman')"
-                      style="background:${CONFIG.bgColor}">
-                      <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-semibold px-2 py-1 rounded-full text-white"
-                          style="background:${badgeColor(x.keutamaan)}">
-                          ${safeText((x.keutamaan || "SEDERHANA").toUpperCase())}
-                        </span>
-                        <span class="text-xs text-slate-500">#${idx+1}</span>
-                      </div>
-                      <div class="font-bold text-slate-900 line-clamp-2">${safeText(x.tajuk)}</div>
-                      <div class="text-sm text-slate-600 mt-2 line-clamp-3">${safeText(x.isi)}</div>
-                      <div class="text-xs text-slate-500 mt-3">
-                        ${x.tarikhMula ? "Mula: " + safeText(formatDateShort(x.tarikhMula)) : ""}
-                      </div>
-                    </div>
-                  `).join("")}
-                </div>
-              `}
-            </div>
-
           </div>
         </div>
-      `;
-    }
+      </aside>
 
-    function badgeColor(p) {
-      const x = String(p || "").toUpperCase().trim();
-      if (x === "TINGGI") return "#ef4444";     // red-500
-      if (x === "SEDERHANA") return "#f59e0b";  // amber-500
-      if (x === "RENDAH") return "#10b981";     // emerald-500
-      return "#3b82f6";                         // blue-500
-    }
-
-    function renderStatCard(title, value, icon, pageId) {
-      return `
-        <div class="card-hover rounded-2xl p-5"
-          style="background-color:${CONFIG.cardColor}"
-          onclick="navigateTo('${pageId}')">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-sm text-slate-500 font-medium">${safeText(title)}</div>
-              <div class="text-2xl font-bold mt-1" style="color:${CONFIG.textColor}">
-                ${safeText(value)}
+      <!-- MAIN -->
+      <div class="flex-1 flex flex-col min-w-0">
+        <!-- HEADER -->
+        <header class="bg-white border-b border-slate-200">
+          <div class="px-4 md:px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3 min-w-0">
+              <button class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center"
+                onclick="toggleSidebar()"
+                aria-label="Toggle sidebar">
+                ☰
+              </button>
+              <div class="min-w-0">
+                <div class="font-bold text-slate-900 text-lg truncate">${pageTitle()}</div>
+                <div class="text-slate-500 text-sm truncate">Portal Rasmi PPKI</div>
               </div>
             </div>
-            <div class="text-3xl">${icon}</div>
-          </div>
-        </div>
-      `;
-    }
 
-    function renderKehadiran() {
-      // Placeholder layout: you can later wire CSV attendance & filters
-      const a = state.attendanceStats;
-      return `
-        <div class="p-6 md:p-8 overflow-auto h-full">
-          <div class="max-w-7xl mx-auto">
-            <h1 class="text-2xl md:text-3xl font-bold mb-6" style="color:${CONFIG.textColor}">
-              Dashboard Kehadiran
-            </h1>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              ${renderStatCard("Kehadiran Hari Ini", a.today, "📅", "kehadiran")}
-              ${renderStatCard("Kehadiran Minggu Ini", a.week, "🗓️", "kehadiran")}
-              ${renderStatCard("Kehadiran Bulan Ini", a.month, "📊", "kehadiran")}
-              ${renderStatCard("Peratus Kehadiran Bulanan", (a.monthPercent || 0) + "%", "✅", "kehadiran")}
-            </div>
-
-            <div class="rounded-2xl shadow-lg p-6" style="background-color:${CONFIG.cardColor}">
-              <div class="text-slate-700">
-                (Sedia untuk sambung data kehadiran CSV + filter kolum + carian + date range.)
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderPengumuman() {
-      const list = state.announcements;
-
-      return `
-        <div class="p-6 md:p-8 overflow-auto h-full">
-          <div class="max-w-7xl mx-auto">
-            <div class="flex items-center justify-between mb-6">
-              <h1 class="text-2xl md:text-3xl font-bold" style="color:${CONFIG.textColor}">
-                📢 Pengumuman
-              </h1>
-              <button onclick="loadAnnouncements()" class="px-4 py-2 rounded-xl text-white font-semibold hover:opacity-90"
-                style="background-color:${CONFIG.headerColor}">
-                Segarkan
+            <div class="flex items-center gap-2">
+              <button class="px-3 py-2 rounded-xl bg-slate-900 text-white hover:opacity-90 transition text-sm"
+                onclick="refreshData()">
+                ⟳ Muat Semula
               </button>
             </div>
+          </div>
+        </header>
 
-            ${state.announcementsLoading ? `
-              <div class="py-16 text-center text-slate-500">Memuat pengumuman...</div>
-            ` : state.announcementsError ? `
-              <div class="py-16 text-center text-red-600">Ralat: ${safeText(state.announcementsError)}</div>
-            ` : list.length === 0 ? `
-              <div class="py-16 text-center text-slate-500">Tiada pengumuman aktif buat masa ini.</div>
-            ` : `
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                ${list.map(x => `
-                  <div class="card-hover rounded-2xl p-5 border border-slate-100"
-                    style="background-color:${CONFIG.cardColor}"
-                    onclick='openAnnouncementModal(${JSON.stringify(x).replaceAll("'", "&apos;")})'>
-                    <div class="flex items-center justify-between mb-2">
-                      <span class="text-xs font-semibold px-2 py-1 rounded-full text-white"
-                        style="background:${badgeColor(x.keutamaan)}">
-                        ${safeText((x.keutamaan || "SEDERHANA").toUpperCase())}
-                      </span>
-                      <span class="text-xs text-slate-500">${safeText(formatDateShort(x.tarikhMula))}</span>
-                    </div>
+        <!-- CONTENT -->
+        <main class="flex-1 overflow-auto">
+          ${renderPage(stats, ann, kelasList, statusList, jantinaList, trend)}
+        </main>
 
-                    <div class="text-lg font-bold" style="color:${CONFIG.textColor}">
-                      ${safeText(x.tajuk)}
-                    </div>
-                    <div class="text-sm text-slate-600 mt-2 line-clamp-3">
-                      ${safeText(x.isi)}
-                    </div>
+        <!-- FOOTER tiny -->
+        <div class="px-4 md:px-6 py-3 text-xs text-slate-500 bg-white border-t border-slate-200">
+          Dibina untuk PPKI — paparan responsif (mobile sidebar tertutup secara default).
+        </div>
+      </div>
 
-                    ${x.url ? `
-                      <div class="mt-4 text-sm font-semibold" style="color:${CONFIG.headerColor}">
-                        🔗 Pautan tersedia
-                      </div>
-                    ` : ""}
-                  </div>
+      <!-- TOAST -->
+      <div id="toast-cont" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+      <!-- MODALS -->
+      ${renderAnnouncementModal()}
+      ${renderSettingsModal()}
+
+    </div>
+  `;
+
+  // live clock
+  startClock();
+
+  // set inputs state
+  hydrateInputs();
+}
+
+function sideItem(key,label,icon,badge=0){
+  const active = currentPage===key ? "bg-white/15" : "hover:bg-white/10";
+  const justify = sidebarCollapsed ? "justify-center" : "justify-between";
+  const left = sidebarCollapsed ? "justify-center" : "justify-start";
+  const textCls = sidebarCollapsed ? "hidden" : "";
+  return `
+    <button onclick="setPage('${key}')" class="w-full ${active} transition px-3 py-3 rounded-2xl flex items-center ${justify} gap-3">
+      <div class="flex items-center ${left} gap-3">
+        <span class="text-xl">${icon}</span>
+        <span class="${textCls} text-sm font-medium">${label}</span>
+      </div>
+      ${(!sidebarCollapsed && badge) ? `<span class="text-xs bg-rose-500 px-2 py-0.5 rounded-full">${badge}</span>` : ""}
+    </button>
+  `;
+}
+
+/* =========================
+   12) PAGES
+   ========================= */
+function renderPage(stats, ann, kelasList, statusList, jantinaList, trend){
+  if(currentPage==="home") return renderHome(stats, ann, kelasList, trend);
+  if(currentPage==="kehadiran") return renderKehadiran(stats, kelasList, statusList, jantinaList);
+  if(currentPage==="pengumuman") return renderPengumuman(ann);
+  if(currentPage==="takwim") return renderTakwim();
+  if(currentPage==="ibubapa") return renderIbuBapa();
+  return `<div class="p-6">Halaman tidak dijumpai.</div>`;
+}
+
+function renderHome(stats, ann, kelasList, trend){
+  const months = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"];
+  const monthOptions = months.map((m,i)=>`<option value="${i+1}" ${selectedMonth===i+1?"selected":""}>${m}</option>`).join("");
+  const yearOptions = [selectedYear-1, selectedYear, selectedYear+1].map(y=>`<option value="${y}" ${selectedYear===y?"selected":""}>${y}</option>`).join("");
+  const kelasOptions = [`<option value="" ${trendKelas===""?"selected":""}>Semua Kelas</option>`]
+    .concat(kelasList.map(k=>`<option value="${escapeAttr(k)}" ${trendKelas===k?"selected":""}>${escapeHtml(k)}</option>`))
+    .join("");
+
+  const modeBtn = (label,val)=>`
+    <button onclick="setTrendMode('${val}')" class="px-3 py-2 rounded-xl text-sm font-semibold transition ${trendMode===val ? "bg-slate-900 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-800"}">
+      ${label}
+    </button>
+  `;
+
+  const statsCard = (title, value, sub, onclick) => `
+    <button onclick="${onclick}" class="text-left p-5 rounded-2xl bg-white ring-soft soft-shadow-sm hover:translate-y-[-2px] transition">
+      <div class="text-slate-500 text-sm font-semibold">${title}</div>
+      <div class="mt-2 text-3xl font-bold text-slate-900">${value}</div>
+      <div class="mt-2 text-slate-500 text-sm">${sub}</div>
+    </button>
+  `;
+
+  const annCard = `
+    <button onclick="setPage('pengumuman')" class="p-5 rounded-2xl bg-white ring-soft soft-shadow-sm hover:translate-y-[-2px] transition text-left">
+      <div class="flex items-center justify-between">
+        <div class="text-slate-500 text-sm font-semibold">Status Pengumuman Aktif</div>
+        <div class="text-rose-600 font-bold">${ann.length}</div>
+      </div>
+      <div class="mt-3 space-y-2">
+        ${ann.length ? ann.slice(0,5).map((a,idx)=>`
+          <div class="flex items-start gap-3">
+            <div class="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center text-xs font-bold">${idx+1}</div>
+            <div class="min-w-0">
+              <div class="font-semibold text-slate-900 truncate">${escapeHtml(a.tajuk || "Tanpa tajuk")}</div>
+              <div class="text-xs text-slate-500 line-clamp-2">${escapeHtml(a.isi || "")}</div>
+            </div>
+          </div>
+        `).join("") : `
+          <div class="text-slate-500 text-sm">Tiada pengumuman aktif.</div>
+        `}
+      </div>
+    </button>
+  `;
+
+  const trendSvg = renderSparkLineSVG(trend.values);
+
+  return `
+    <div class="p-4 md:p-6">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- Banner -->
+        <section class="rounded-3xl bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-600 text-white soft-shadow p-6 md:p-8">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+            <div>
+              <div class="text-sm text-white/80 font-semibold">Portal Rasmi</div>
+              <div class="text-2xl md:text-3xl font-bold mt-1">Selamat Datang ke Portal Rasmi PPKI SK Paya Resak</div>
+            </div>
+            <div class="bg-white/10 rounded-2xl px-5 py-4 backdrop-blur ring-1 ring-white/20">
+              <div id="clock" class="font-semibold"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          ${statsCard("Kehadiran Hari Ini", `${stats.todayH} Hadir`, `${stats.todayTH} Tidak Hadir`, "setPage('kehadiran')")}
+          ${statsCard("Kehadiran Minggu Ini", `${stats.weekH} Hadir`, `${stats.weekTH} Tidak Hadir`, "setPage('kehadiran')")}
+          ${statsCard("Kehadiran Bulan Ini", `${stats.monthH} Hadir`, `${stats.monthTH} Tidak Hadir`, "setPage('kehadiran')")}
+          ${statsCard("% Kehadiran Bulanan", `${stats.monthPercent}%`, `Bulan ${selectedMonth}/${selectedYear}`, "setPage('kehadiran')")}
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <!-- Ann card -->
+          <div class="lg:col-span-1">
+            ${annCard}
+          </div>
+
+          <!-- Trend -->
+          <div class="lg:col-span-2 p-5 rounded-2xl bg-white ring-soft soft-shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div>
+                <div class="text-slate-900 font-bold text-lg">Trend Harian (Bulan Dipilih)</div>
+                <div class="text-slate-500 text-sm">Pilih Bulan + Kelas dan mod paparan.</div>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="monthSel" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition text-sm font-semibold"
+                  onchange="setMonth(this.value)">
+                  ${monthOptions}
+                </select>
+                <select id="yearSel" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition text-sm font-semibold"
+                  onchange="setYear(this.value)">
+                  ${yearOptions}
+                </select>
+                <select id="kelasTrend" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition text-sm font-semibold"
+                  onchange="setTrendKelas(this.value)">
+                  ${kelasOptions}
+                </select>
+              </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              ${modeBtn("Hadir","HADIR")}
+              ${modeBtn("Tidak Hadir","TIDAK")}
+              ${modeBtn("%","PERCENT")}
+            </div>
+
+            <div class="mt-4 text-slate-900">
+              ${trendSvg}
+            </div>
+
+            <div class="mt-2 text-xs text-slate-500">
+              *Graf ringkas berdasarkan data kehadiran (Tarikh dd/mm/yyyy).
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  `;
+}
+
+function renderKehadiran(stats, kelasList, statusList, jantinaList){
+  const filtered = filterKehadiran(kehadiranRows);
+
+  // sort by date desc then name
+  const sorted = filtered.slice().sort((a,b)=>{
+    const da = rowDate(a) || new Date(0);
+    const db = rowDate(b) || new Date(0);
+    if (db - da !== 0) return db - da;
+    return (a["Nama Murid"]||"").localeCompare(b["Nama Murid"]||"", "ms");
+  });
+
+  const total = sorted.length;
+  const totalPages = Math.max(1, Math.ceil(total / kPerPage));
+  kPage = Math.min(kPage, totalPages);
+
+  const startIdx = (kPage-1)*kPerPage;
+  const pageRows = sorted.slice(startIdx, startIdx + kPerPage);
+
+  const colHead = (name)=> kHiddenCols[name] ? "" : `<th class="text-left py-3 px-3 text-xs font-bold text-slate-600">${name}</th>`;
+  const td = (val)=>`<td class="py-3 px-3 text-sm text-slate-800">${escapeHtml(val||"")}</td>`;
+  const tdBadgeStatus = (s)=>{
+    const up = (s||"").toUpperCase();
+    let cls = "bg-slate-100 text-slate-800";
+    if (isHadir(up)) cls = "bg-emerald-100 text-emerald-800";
+    else if (isTidakHadir(up)) cls = "bg-rose-100 text-rose-800";
+    return `<td class="py-3 px-3 text-sm"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${cls}">${escapeHtml(s||"")}</span></td>`;
+  };
+
+  const kelasOpts = [`<option value="">Semua Kelas</option>`]
+    .concat(kelasList.map(k=>`<option value="${escapeAttr(k)}" ${kFilter.kelas===k?"selected":""}>${escapeHtml(k)}</option>`))
+    .join("");
+  const statusOpts = [`<option value="">Semua Status</option>`]
+    .concat(statusList.map(s=>`<option value="${escapeAttr(s)}" ${kFilter.status===s?"selected":""}>${escapeHtml(s)}</option>`))
+    .join("");
+  const jantinaOpts = [`<option value="">Semua Jantina</option>`]
+    .concat(jantinaList.map(s=>`<option value="${escapeAttr(s)}" ${kFilter.jantina===s?"selected":""}>${escapeHtml(s)}</option>`))
+    .join("");
+
+  const statsMini = `
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      ${miniCard("Hari Ini","Hadir",stats.todayH,"Tidak Hadir",stats.todayTH)}
+      ${miniCard("Minggu Ini","Hadir",stats.weekH,"Tidak Hadir",stats.weekTH)}
+      ${miniCard("Bulan Ini","Hadir",stats.monthH,"Tidak Hadir",stats.monthTH)}
+      ${miniCard("% Bulanan","% Hadir",stats.monthPercent+"%","Bulan",`${selectedMonth}/${selectedYear}`)}
+    </div>
+  `;
+
+  return `
+    <div class="p-4 md:p-6">
+      <div class="max-w-7xl mx-auto space-y-6">
+        ${statsMini}
+
+        <!-- Filters -->
+        <div class="p-5 rounded-2xl bg-white ring-soft soft-shadow-sm">
+          <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+            <div class="flex-1">
+              <label class="text-xs font-bold text-slate-600">Carian</label>
+              <input id="kSearch" value="${escapeAttr(kFilter.q)}" oninput="setKSearch(this.value)" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 focus:bg-white ring-1 ring-slate-200 outline-none" placeholder="Cari nama, kelas, status...">
+            </div>
+
+            <div>
+              <label class="text-xs font-bold text-slate-600">Kelas</label>
+              <select id="kKelas" onchange="setKKelas(this.value)" class="mt-1 px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200">
+                ${kelasOpts}
+              </select>
+            </div>
+
+            <div>
+              <label class="text-xs font-bold text-slate-600">Status</label>
+              <select id="kStatus" onchange="setKStatus(this.value)" class="mt-1 px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200">
+                ${statusOpts}
+              </select>
+            </div>
+
+            <div>
+              <label class="text-xs font-bold text-slate-600">Jantina</label>
+              <select id="kJantina" onchange="setKJantina(this.value)" class="mt-1 px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200">
+                ${jantinaOpts}
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+            <div>
+              <label class="text-xs font-bold text-slate-600">Tarikh Dari</label>
+              <input id="kFrom" type="date" value="${escapeAttr(kFilter.from)}" onchange="setKFrom(this.value)" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600">Tarikh Hingga</label>
+              <input id="kTo" type="date" value="${escapeAttr(kFilter.to)}" onchange="setKTo(this.value)" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200">
+            </div>
+
+            <div>
+              <label class="text-xs font-bold text-slate-600">Papar per halaman</label>
+              <select id="kPerPage" onchange="setKPerPage(this.value)" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200">
+                ${[10,20,50,100].map(n=>`<option value="${n}" ${kPerPage===n?"selected":""}>${n}</option>`).join("")}
+              </select>
+            </div>
+
+            <div class="flex gap-2">
+              <button class="flex-1 px-4 py-3 rounded-xl bg-slate-900 text-white font-semibold hover:opacity-90 transition"
+                onclick="resetKFilters()">Reset</button>
+              <button class="px-4 py-3 rounded-xl bg-slate-100 font-semibold hover:bg-slate-200 transition"
+                onclick="toggleColumnsPanel()">Kolum</button>
+            </div>
+          </div>
+
+          <!-- Columns panel -->
+          <div id="colsPanel" class="hidden mt-4 p-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200">
+            <div class="text-sm font-bold text-slate-800 mb-3">Hide / Show Kolum</div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+              ${Object.keys(kHiddenCols).map(col=>`
+                <label class="flex items-center gap-2 text-sm">
+                  <input type="checkbox" ${kHiddenCols[col] ? "checked":""} onchange="setHiddenCol('${escapeAttr(col)}', this.checked)">
+                  <span>${escapeHtml(col)}</span>
+                </label>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="rounded-2xl bg-white ring-soft soft-shadow-sm overflow-hidden">
+          <div class="px-5 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-slate-200">
+            <div class="font-bold text-slate-900">Rekod Kehadiran</div>
+            <div class="text-sm text-slate-500">
+              Jumlah rekod: <span class="font-bold text-slate-900">${total}</span>
+            </div>
+          </div>
+
+          <div class="overflow-auto">
+            <table class="min-w-full">
+              <thead class="bg-slate-50">
+                <tr>
+                  ${colHead("Tarikh")}
+                  ${colHead("Kelas")}
+                  ${colHead("Nama Murid")}
+                  ${kHiddenCols["Status"] ? "" : `<th class="text-left py-3 px-3 text-xs font-bold text-slate-600">Status</th>`}
+                  ${colHead("Jantina")}
+                </tr>
+              </thead>
+              <tbody>
+                ${pageRows.length ? pageRows.map(r=>`
+                  <tr class="border-t border-slate-100 hover:bg-slate-50">
+                    ${kHiddenCols["Tarikh"] ? "" : td(r.Tarikh)}
+                    ${kHiddenCols["Kelas"] ? "" : td(r.Kelas)}
+                    ${kHiddenCols["Nama Murid"] ? "" : td(r["Nama Murid"])}
+                    ${kHiddenCols["Status"] ? "" : tdBadgeStatus(r.Status)}
+                    ${kHiddenCols["Jantina"] ? "" : td(r.Jantina)}
+                  </tr>
+                `).join("") : `
+                  <tr><td class="p-6 text-slate-500" colspan="10">Tiada data untuk filter semasa.</td></tr>
+                `}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="px-5 py-4 flex items-center justify-between border-t border-slate-200 bg-white">
+            <div class="text-sm text-slate-500">
+              Halaman <span class="font-bold text-slate-900">${kPage}</span> / ${totalPages}
+            </div>
+            <div class="flex gap-2">
+              <button class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition font-semibold"
+                onclick="setKPage(${Math.max(1,kPage-1)})" ${kPage<=1?"disabled":""}>
+                ‹
+              </button>
+              <button class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition font-semibold"
+                onclick="setKPage(${Math.min(totalPages,kPage+1)})" ${kPage>=totalPages?"disabled":""}>
+                ›
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function miniCard(title, aLabel, aVal, bLabel, bVal){
+  return `
+    <div class="p-5 rounded-2xl bg-white ring-soft soft-shadow-sm">
+      <div class="text-slate-500 text-sm font-semibold">${title}</div>
+      <div class="mt-3 grid grid-cols-2 gap-3">
+        <div class="p-3 rounded-xl bg-slate-50 ring-1 ring-slate-200">
+          <div class="text-xs text-slate-500 font-bold">${aLabel}</div>
+          <div class="text-xl font-bold text-slate-900 mt-1">${aVal}</div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 ring-1 ring-slate-200">
+          <div class="text-xs text-slate-500 font-bold">${bLabel}</div>
+          <div class="text-xl font-bold text-slate-900 mt-1">${bVal}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPengumuman(ann){
+  const list = ann.length ? ann : [];
+  return `
+    <div class="p-4 md:p-6">
+      <div class="max-w-5xl mx-auto space-y-4">
+
+        <div class="p-5 rounded-2xl bg-white ring-soft soft-shadow-sm flex items-center justify-between">
+          <div>
+            <div class="font-bold text-slate-900 text-lg">Senarai Pengumuman Aktif</div>
+            <div class="text-slate-500 text-sm">Auto tapis ikut tarikh mula/tamat & AKTIF=YA.</div>
+          </div>
+          <div class="text-rose-600 font-bold text-xl">${list.length}</div>
+        </div>
+
+        ${list.length ? `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${list.map((a,idx)=>`
+              <button onclick="openAnnModal(${idx})"
+                class="text-left p-5 rounded-2xl bg-white ring-soft soft-shadow-sm hover:translate-y-[-2px] transition">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="font-bold text-slate-900 line-clamp-2">${escapeHtml(a.tajuk || "Tanpa Tajuk")}</div>
+                  <span class="text-xs font-bold px-2 py-1 rounded-full ${badgePriorityClass(a.keutamaan)}">
+                    ${escapeHtml(a.keutamaan || "—")}
+                  </span>
+                </div>
+                <div class="mt-2 text-sm text-slate-600 line-clamp-3">${escapeHtml(a.isi || "")}</div>
+                <div class="mt-3 text-xs text-slate-500 font-semibold">
+                  ${escapeHtml(a.mula || "")}${a.tamat ? " → " + escapeHtml(a.tamat) : ""}
+                </div>
+              </button>
+            `).join("")}
+          </div>
+        ` : `
+          <div class="p-10 text-center text-slate-500 bg-white ring-soft rounded-2xl soft-shadow-sm">
+            Tiada pengumuman aktif buat masa ini.
+          </div>
+        `}
+
+      </div>
+    </div>
+  `;
+}
+
+function badgePriorityClass(p){
+  const r = priorityRank(p);
+  if (r===0) return "bg-rose-100 text-rose-800";
+  if (r===1) return "bg-amber-100 text-amber-800";
+  if (r===2) return "bg-emerald-100 text-emerald-800";
+  return "bg-slate-100 text-slate-800";
+}
+
+function renderTakwim(){
+  if (!TAKWIM_CSV_URL) {
+    return `
+      <div class="p-4 md:p-6">
+        <div class="max-w-5xl mx-auto">
+          <div class="p-8 rounded-2xl bg-white ring-soft soft-shadow-sm">
+            <div class="font-bold text-slate-900 text-lg">Takwim</div>
+            <div class="text-slate-500 text-sm mt-2">
+              Takwim belum disambungkan. Jika cikgu ada URL CSV “publish” untuk takwim, masukkan pada <b>TAKWIM_CSV_URL</b> dalam code.
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // contoh paparan ringkas table (ikut header sheet)
+  const rows = takwimRows || [];
+  if (!rows.length) {
+    return `
+      <div class="p-4 md:p-6">
+        <div class="max-w-5xl mx-auto">
+          <div class="p-8 rounded-2xl bg-white ring-soft soft-shadow-sm text-slate-500">
+            Tiada data takwim / gagal load.
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  const headers = Object.keys(rows[0] || {});
+  return `
+    <div class="p-4 md:p-6">
+      <div class="max-w-6xl mx-auto space-y-4">
+        <div class="p-5 rounded-2xl bg-white ring-soft soft-shadow-sm">
+          <div class="font-bold text-slate-900 text-lg">Takwim</div>
+          <div class="text-slate-500 text-sm">Data dipaparkan dari Google Sheet (CSV).</div>
+        </div>
+
+        <div class="rounded-2xl bg-white ring-soft soft-shadow-sm overflow-hidden">
+          <div class="overflow-auto">
+            <table class="min-w-full">
+              <thead class="bg-slate-50">
+                <tr>
+                  ${headers.map(h=>`<th class="text-left py-3 px-3 text-xs font-bold text-slate-600">${escapeHtml(h)}</th>`).join("")}
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.slice(0,300).map(r=>`
+                  <tr class="border-t border-slate-100 hover:bg-slate-50">
+                    ${headers.map(h=>`<td class="py-3 px-3 text-sm text-slate-800">${escapeHtml(r[h]||"")}</td>`).join("")}
+                  </tr>
                 `).join("")}
-              </div>
-            `}
+              </tbody>
+            </table>
           </div>
         </div>
-      `;
-    }
+      </div>
+    </div>
+  `;
+}
 
-    function renderTakwim() {
-      return `
-        <div class="p-6 md:p-8 overflow-auto h-full">
-          <div class="max-w-7xl mx-auto">
-            <h1 class="text-2xl md:text-3xl font-bold mb-6" style="color:${CONFIG.textColor}">
-              🗓️ Takwim
-            </h1>
-            <div class="rounded-2xl shadow-lg p-6" style="background-color:${CONFIG.cardColor}">
-              <div class="text-slate-700">
-                (Sedia untuk sambung Google Sheet Takwim. Bila cikgu bagi URL CSV takwim, saya boleh masukkan terus.)
+function renderIbuBapa(){
+  return `
+    <div class="p-4 md:p-6">
+      <div class="max-w-5xl mx-auto space-y-4">
+        <div class="p-5 rounded-2xl bg-white ring-soft soft-shadow-sm">
+          <div class="font-bold text-slate-900 text-lg">Ibu Bapa</div>
+          <div class="text-slate-500 text-sm">Kad maklumat & pautan berkaitan ibu bapa.</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${IBU_BAPA_ITEMS.map((it,idx)=>`
+            <button class="text-left p-5 rounded-2xl bg-white ring-soft soft-shadow-sm hover:translate-y-[-2px] transition"
+              onclick="openIbuBapa(${idx})">
+              <div class="font-bold text-slate-900">${escapeHtml(it.tajuk)}</div>
+              <div class="mt-2 text-sm text-slate-600 line-clamp-3">${escapeHtml(it.isi)}</div>
+              <div class="mt-4 text-xs font-bold text-slate-500">
+                ${it.mode==="tab" ? "Buka tab baru" : "Paparan pop-out"}
               </div>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================
+   13) Announcement Modal
+   ========================= */
+let currentAnnIndex = -1;
+function openAnnModal(idx){
+  currentAnnIndex = idx;
+  const modal = document.getElementById("annModal");
+  if(!modal) return;
+  modal.classList.remove("hidden");
+  renderAnnModalContent();
+}
+function closeAnnModal(){
+  const modal = document.getElementById("annModal");
+  if(!modal) return;
+  modal.classList.add("hidden");
+  currentAnnIndex = -1;
+}
+function renderAnnModalContent(){
+  const ann = activeAnnouncements();
+  const a = ann[currentAnnIndex];
+  const box = document.getElementById("annModalContent");
+  if(!box) return;
+
+  if(!a){
+    box.innerHTML = `<div class="text-slate-500">Pengumuman tidak dijumpai.</div>`;
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <div class="text-2xl font-bold text-slate-900">${escapeHtml(a.tajuk || "Tanpa Tajuk")}</div>
+        <div class="mt-2 text-xs text-slate-500 font-semibold">
+          ${escapeHtml(a.mula || "")}${a.tamat ? " → " + escapeHtml(a.tamat) : ""}
+        </div>
+      </div>
+      <span class="text-xs font-bold px-2 py-1 rounded-full ${badgePriorityClass(a.keutamaan)}">
+        ${escapeHtml(a.keutamaan || "—")}
+      </span>
+    </div>
+
+    <div class="mt-4 text-slate-700 whitespace-pre-wrap leading-relaxed">
+      ${escapeHtml(a.isi || "")}
+    </div>
+
+    ${a.url ? `
+      <div class="mt-5">
+        <a href="${escapeAttr(a.url)}" target="_blank" rel="noopener"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold hover:opacity-90 transition">
+          Buka Pautan ↗
+        </a>
+      </div>
+    ` : ``}
+  `;
+}
+
+function renderAnnouncementModal(){
+  return `
+    <div id="annModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm p-4"
+      onclick="if(event.target===this) closeAnnModal()">
+      <div class="max-w-2xl mx-auto mt-10 bg-white rounded-3xl soft-shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+          <div class="font-bold text-slate-900">📢 Pengumuman</div>
+          <button class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 transition"
+            onclick="closeAnnModal()">✕</button>
+        </div>
+        <div id="annModalContent" class="p-6"></div>
+        <div class="px-6 py-4 border-t border-slate-200 flex justify-end">
+          <button class="px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold hover:opacity-90 transition"
+            onclick="closeAnnModal()">Tutup</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================
+   14) Settings Modal (logo, name, motto)
+   ========================= */
+function openSettingsModal(){
+  const modal = document.getElementById("setModal");
+  if(!modal) return;
+  modal.classList.remove("hidden");
+  // set values
+  document.getElementById("setName").value = settings.schoolName;
+  document.getElementById("setMotto").value = settings.schoolMotto;
+  document.getElementById("setC1").value = settings.copyrightLine1;
+  document.getElementById("setC2").value = settings.copyrightLine2;
+}
+function closeSettingsModal(){
+  const modal = document.getElementById("setModal");
+  if(!modal) return;
+  modal.classList.add("hidden");
+}
+function onLogoPick(input){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  if(!f.type.startsWith("image/")){
+    toast("Sila pilih fail gambar.", "error");
+    input.value = "";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    settings.logoDataUrl = e.target.result;
+    saveSettings();
+    toast("Logo dikemaskini.", "success");
+    render();
+  };
+  reader.readAsDataURL(f);
+}
+function saveSettingsFromModal(){
+  settings.schoolName = document.getElementById("setName").value.trim() || defaultSettings.schoolName;
+  settings.schoolMotto = document.getElementById("setMotto").value.trim() || defaultSettings.schoolMotto;
+  settings.copyrightLine1 = document.getElementById("setC1").value.trim() || defaultSettings.copyrightLine1;
+  settings.copyrightLine2 = document.getElementById("setC2").value.trim() || defaultSettings.copyrightLine2;
+  saveSettings();
+  toast("Tetapan disimpan.", "success");
+  closeSettingsModal();
+  render();
+}
+function resetLogo(){
+  settings.logoDataUrl = "";
+  saveSettings();
+  toast("Logo dibuang.", "info");
+  render();
+}
+function renderSettingsModal(){
+  return `
+    <div id="setModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm p-4"
+      onclick="if(event.target===this) closeSettingsModal()">
+      <div class="max-w-xl mx-auto mt-10 bg-white rounded-3xl soft-shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+          <div class="font-bold text-slate-900">⚙️ Tetapan Portal</div>
+          <button class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 transition"
+            onclick="closeSettingsModal()">✕</button>
+        </div>
+
+        <div class="p-6 space-y-5">
+          <div>
+            <label class="text-xs font-bold text-slate-600">Logo Sekolah (Upload)</label>
+            <div class="mt-2 flex items-center gap-3">
+              <input type="file" accept="image/*" onchange="onLogoPick(this)"
+                class="flex-1 px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200">
+              <button onclick="resetLogo()" class="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition font-semibold">
+                Buang
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-600">Nama Sekolah</label>
+              <input id="setName" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600">Moto</label>
+              <input id="setMotto" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600">Footer Line 1</label>
+              <input id="setC1" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600">Footer Line 2</label>
+              <input id="setC2" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 ring-1 ring-slate-200" />
             </div>
           </div>
         </div>
-      `;
-    }
 
-    function renderIbuBapa() {
-      return `
-        <div class="p-6 md:p-8 overflow-auto h-full">
-          <div class="max-w-7xl mx-auto">
-            <h1 class="text-2xl md:text-3xl font-bold mb-6" style="color:${CONFIG.textColor}">
-              👨‍👩‍👧‍👦 Ibu Bapa
-            </h1>
-            <div class="rounded-2xl shadow-lg p-6" style="background-color:${CONFIG.cardColor}">
-              <div class="text-slate-700">
-                (Modul kad: tajuk + isi + URL, pilihan buka popup atau buka tab baru — boleh tambah bila cikgu sedia.)
-              </div>
-            </div>
-          </div>
+        <div class="px-6 py-4 border-t border-slate-200 flex justify-end gap-2">
+          <button class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition font-semibold"
+            onclick="closeSettingsModal()">Batal</button>
+          <button class="px-4 py-2 rounded-xl bg-slate-900 text-white hover:opacity-90 transition font-semibold"
+            onclick="saveSettingsFromModal()">Simpan</button>
         </div>
-      `;
-    }
+      </div>
+    </div>
+  `;
+}
 
-    function renderPage() {
-      if (state.currentPage === "home") return renderHome();
-      if (state.currentPage === "kehadiran") return renderKehadiran();
-      if (state.currentPage === "pengumuman") return renderPengumuman();
-      if (state.currentPage === "takwim") return renderTakwim();
-      if (state.currentPage === "ibubapa") return renderIbuBapa();
-      return renderHome();
-    }
+/* =========================
+   15) Handlers (Kehadiran)
+   ========================= */
+function setKSearch(v){ kFilter.q = v; kPage=1; render(); }
+function setKKelas(v){ kFilter.kelas = v; kPage=1; render(); }
+function setKStatus(v){ kFilter.status = v; kPage=1; render(); }
+function setKJantina(v){ kFilter.jantina = v; kPage=1; render(); }
+function setKFrom(v){ kFilter.from = v; kPage=1; render(); }
+function setKTo(v){ kFilter.to = v; kPage=1; render(); }
+function setKPerPage(v){ kPerPage = Number(v)||20; kPage=1; render(); }
+function setKPage(n){ kPage = Number(n)||1; render(); }
 
-    function renderModal() {
-      const x = state.viewingAnnouncement;
-      if (!x) return "";
+function resetKFilters(){
+  kFilter = { q:"", kelas:"", status:"", jantina:"", from:"", to:"" };
+  kPage = 1;
+  render();
+}
 
-      return `
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop"
-          onclick="if(event.target===this) closeAnnouncementModal()">
-          <div class="w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden"
-            style="background:${CONFIG.cardColor}"
-            onclick="event.stopPropagation()">
+function toggleColumnsPanel(){
+  const el = document.getElementById("colsPanel");
+  if(el) el.classList.toggle("hidden");
+}
+function setHiddenCol(col, checked){
+  kHiddenCols[col] = !!checked;
+  render();
+}
 
-            <div class="p-6 border-b border-slate-100">
-              <div class="flex items-start justify-between gap-4">
-                <div class="flex-1">
-                  <div class="flex items-center gap-2 mb-3">
-                    <span class="text-xs font-semibold px-2 py-1 rounded-full text-white"
-                      style="background:${badgeColor(x.keutamaan)}">
-                      ${safeText((x.keutamaan || "SEDERHANA").toUpperCase())}
-                    </span>
-                    <span class="text-xs text-slate-500">
-                      ${safeText(formatDateShort(x.tarikhMula))}
-                      ${x.tarikhTamat ? " • Tamat: " + safeText(formatDateShort(x.tarikhTamat)) : ""}
-                    </span>
-                  </div>
-                  <div class="text-2xl font-bold" style="color:${CONFIG.textColor}">
-                    ${safeText(x.tajuk)}
-                  </div>
-                </div>
+/* =========================
+   16) Handlers (Trend)
+   ========================= */
+function setMonth(v){ selectedMonth = Number(v)||selectedMonth; render(); }
+function setYear(v){ selectedYear = Number(v)||selectedYear; render(); }
+function setTrendMode(m){ trendMode = m; render(); }
+function setTrendKelas(k){ trendKelas = k; render(); }
 
-                <button class="text-slate-500 hover:text-slate-900 text-3xl leading-none"
-                  onclick="closeAnnouncementModal()">×</button>
-              </div>
-            </div>
+/* =========================
+   17) Ibu Bapa handler
+   ========================= */
+function openIbuBapa(idx){
+  const it = IBU_BAPA_ITEMS[idx];
+  if(!it) return;
+  if(it.mode === "tab"){
+    if(it.url) window.open(it.url, "_blank", "noopener");
+    else toast("Tiada URL untuk dibuka.", "info");
+    return;
+  }
+  // modal style simple (reuse announcement modal)
+  currentAnnIndex = -1;
+  const modal = document.getElementById("annModal");
+  const box = document.getElementById("annModalContent");
+  if(!modal || !box) return;
 
-            <div class="p-6">
-              <div class="text-slate-700 whitespace-pre-wrap leading-relaxed">
-                ${safeText(x.isi)}
-              </div>
+  modal.classList.remove("hidden");
+  box.innerHTML = `
+    <div class="text-2xl font-bold text-slate-900">${escapeHtml(it.tajuk||"")}</div>
+    <div class="mt-4 text-slate-700 whitespace-pre-wrap leading-relaxed">${escapeHtml(it.isi||"")}</div>
+    ${it.url ? `
+      <div class="mt-5">
+        <a href="${escapeAttr(it.url)}" target="_blank" rel="noopener"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold hover:opacity-90 transition">
+          Buka Pautan ↗
+        </a>
+      </div>
+    `:``}
+  `;
+}
 
-              ${x.url ? `
-                <div class="mt-6">
-                  <a href="${safeText(x.url)}" target="_blank" rel="noopener"
-                    class="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-white font-semibold hover:opacity-90"
-                    style="background:${CONFIG.headerColor}">
-                    🔗 Buka Pautan
-                  </a>
-                </div>
-              ` : ""}
+/* =========================
+   18) Clock
+   ========================= */
+let clockTimer = null;
+function startClock(){
+  const el = document.getElementById("clock");
+  if(!el) return;
+  if(clockTimer) clearInterval(clockTimer);
+  const tick = ()=>{ const e = document.getElementById("clock"); if(e) e.textContent = nowClock(); };
+  tick();
+  clockTimer = setInterval(tick, 1000);
+}
 
-              <div class="mt-6 flex justify-end">
-                <button onclick="closeAnnouncementModal()"
-                  class="px-5 py-3 rounded-xl font-semibold text-white hover:opacity-90"
-                  style="background:${CONFIG.headerColor}">
-                  Tutup
-                </button>
-              </div>
-            </div>
+/* =========================
+   19) Refresh + Init
+   ========================= */
+async function refreshData(){
+  toast("Memuat semula data…", "info");
+  await loadAllData();
+  toast("Data dikemaskini.", "success");
+  render();
+}
 
-          </div>
-        </div>
-      `;
-    }
+function hydrateInputs(){
+  // (optional) place-holder to keep future expansions tidy
+}
 
-    function renderApp() {
-      const app = document.getElementById("app");
-      app.innerHTML = `
-        <div class="flex h-full" style="background-color:${CONFIG.bgColor}">
-          ${state.sidebarCollapsed ? "" : renderSidebar()}
+/* =========================
+   20) Escape helpers
+   ========================= */
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function escapeAttr(s){ return escapeHtml(s).replaceAll("\n"," ").replaceAll("\r"," "); }
 
-          <div class="flex-1 flex flex-col h-full overflow-hidden">
-            <!-- Header -->
-            <header class="flex-shrink-0 shadow-lg" style="background-color:${CONFIG.headerColor}">
-              <div class="px-4 md:px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <button onclick="toggleSidebar()"
-                    class="text-white p-2 rounded-xl hover:bg-white/10">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                  </button>
-
-                  ${state.sidebarCollapsed ? `
-                    <button onclick="navigateTo('home')"
-                      class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-2xl hover:scale-105 transition">
-                      🏫
-                    </button>
-                  ` : ""}
-
-                  <div class="text-white font-bold text-lg md:text-xl">
-                    ${safeText(renderHeaderTitle())}
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2 md:gap-3">
-                  <button onclick="navigateTo('pengumuman')"
-                    class="text-white px-3 py-2 rounded-xl hover:bg-white/10 flex items-center gap-2">
-                    <span class="text-lg">📢</span>
-                    <span class="hidden md:inline font-semibold">Pengumuman</span>
-                    ${state.announcements.length ? `
-                      <span class="ml-1 bg-red-500 text-white text-xs rounded-full w-6 h-6 inline-flex items-center justify-center">
-                        ${state.announcements.length}
-                      </span>
-                    ` : ""}
-                  </button>
-                </div>
-              </div>
-            </header>
-
-            <!-- Main -->
-            <main class="flex-1 overflow-hidden">
-              ${renderPage()}
-            </main>
-          </div>
-        </div>
-
-        ${renderModal()}
-      `;
-
-      // Update clock live on DOM
-      const clk = document.getElementById("live-clock");
-      if (clk) clk.textContent = state.nowText;
-    }
-
-    /***********************
-     * 7) INIT
-     ***********************/
-    function initMobileSidebarDefault() {
-      // ✅ sidebar default closed on mobile
-      state.sidebarCollapsed = window.matchMedia("(max-width: 768px)").matches;
-    }
-
-    function startClock() {
-      state.nowText = formatNow();
-      renderApp();
-      setInterval(() => {
-        state.nowText = formatNow();
-        const clk = document.getElementById("live-clock");
-        if (clk) clk.textContent = state.nowText;
-      }, 1000);
-    }
-
-    window.navigateTo = navigateTo;
-    window.toggleSidebar = toggleSidebar;
-    window.loadAnnouncements = loadAnnouncements;
-    window.openAnnouncementModal = openAnnouncementModal;
-    window.closeAnnouncementModal = closeAnnouncementModal;
-
-    initMobileSidebarDefault();
-    startClock();
-    renderApp();
-    loadAnnouncements();
-
-    window.addEventListener("resize", () => {
-      // keep mobile behavior nice
-      if (window.matchMedia("(max-width: 768px)").matches) {
-        // do not force close if user opened manually; but safe default:
-        // state.sidebarCollapsed = true;
-      }
-    });
-  </script>
+/* =========================
+   21) START
+   ========================= */
+(async function init(){
+  initSidebarDefault();
+  await loadAllData();
+  render();
+})();
+</script>
 </body>
 </html>
