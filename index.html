@@ -54,7 +54,7 @@
       border-right: 1px solid var(--border-color);
       display: flex; flex-direction: column;
       padding: 20px 12px;
-      transition: width 0.3s ease, transform 0.3s ease;
+      transition: width 0.3s ease;
       z-index: 50; flex-shrink: 0; overflow-x: hidden;
     }
 
@@ -90,11 +90,7 @@
     .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
     .nav-icon { font-size: 22px; display: flex; align-items: center; justify-content: center; }
 
-    /* FOOTER (Centered & 2 Lines) */
-    .sidebar-footer { 
-      margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; 
-      line-height: 1.4; padding-top: 20px;
-    }
+    .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; padding-top: 20px; line-height: 1.4; }
 
     /* ===== MAIN ===== */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -118,13 +114,17 @@
     .stat-sub { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
     .stat-sub.red { color: #D92D20; font-weight: 600; }
 
+    /* Clickable Card Effect (For Stats & Links) */
+    .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+    .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
+
     .page-banner {
       background: linear-gradient(135deg, var(--primary), #144d33); color: white;
       padding: 24px; border-radius: 16px; margin-bottom: 24px;
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
     }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
-    .banner-actions { display: flex; gap: 15px; } 
+    .banner-actions { display: flex; gap: 10px; } 
     .btn-action {
       background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);
       padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px;
@@ -132,6 +132,7 @@
     }
     .btn-action:hover { background: rgba(255,255,255,0.3); }
 
+    /* Forms */
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .form-select, .form-input {
       background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
@@ -141,27 +142,24 @@
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
 
+    /* Filter Panel */
     .filter-panel {
       display: none; padding: 20px; background: var(--bg-element); 
       border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color);
     }
     .filter-panel.open { display: block; }
-    .filter-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;
-    }
+    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
     .filter-label { font-size: 12px; font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-muted); }
 
+    /* Tables */
     .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
     table { width: 100%; border-collapse: collapse; min-width: 800px; font-size: 13px; }
     th { text-align: left; padding: 14px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
-    td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+    td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
-    .b-blue { background: #EFF8FF; color: #175CD3; } /* For Announcement Tag */
-
-    .link-card { cursor: pointer; transition: transform 0.2s; height: 100%; }
-    .link-card:hover { transform: translateY(-4px); border-color: var(--primary); }
+    .b-blue { background: #EFF8FF; color: #175CD3; }
 
     /* Modal */
     .modal-overlay {
@@ -170,7 +168,7 @@
     }
     .modal-overlay.active { display: grid; }
     .modal-content {
-      width: 90%; max-width: 450px; background: var(--bg-card);
+      width: 90%; max-width: 500px; background: var(--bg-card);
       border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
       max-height: 85vh; overflow-y: auto;
     }
@@ -238,22 +236,22 @@
         </div>
 
         <div class="dashboard-grid">
-          <div class="card stat-card">
+          <div class="card stat-card clickable" onclick="navTo('attendance')">
             <div class="stat-label">Kehadiran Hari Ini</div>
             <div class="stat-val" id="dToday">-</div>
             <div class="stat-sub red" id="dAbsent">- Tidak Hadir</div>
           </div>
-          <div class="card stat-card">
+          <div class="card stat-card clickable" onclick="navTo('attendance')">
             <div class="stat-label">Minggu Ini</div>
             <div class="stat-val" id="dWeek">-</div>
             <div class="stat-sub">Rekod Kehadiran</div>
           </div>
-          <div class="card stat-card">
+          <div class="card stat-card clickable" onclick="navTo('attendance')">
             <div class="stat-label">Bulan Ini</div>
             <div class="stat-val" id="dPct">-</div>
             <div class="stat-sub">Peratus Kehadiran</div>
           </div>
-          <div class="card stat-card">
+          <div class="card stat-card clickable" onclick="navTo('announcements')">
             <div class="stat-label">Pengumuman</div>
             <div class="stat-val" id="dAnn">-</div>
             <div class="stat-sub">Aktif</div>
@@ -411,6 +409,16 @@
   </main>
 </div>
 
+<div class="modal-overlay" id="infoModal">
+  <div class="modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h3 style="margin:0" id="infoTitle">Tajuk</h3>
+      <button class="icon-btn" onclick="document.getElementById('infoModal').classList.remove('active')"><span class="material-icons-round">close</span></button>
+    </div>
+    <div id="infoBody" style="line-height:1.6; font-size:14px; color:var(--text-main);"></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="settingsModal">
   <div class="modal-content">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -527,20 +535,23 @@ function parseCSV(text) {
   });
 }
 
-// Improved Key Finder
 function getVal(row, keyPart) {
   const key = Object.keys(row).find(k => k.includes(keyPart.toUpperCase()));
   return key ? row[key] : "";
 }
 
-// Convert DD/MM/YYYY to YYYY-MM-DD
+// Fixed Date Parser (Handles DD/MM/YYYY)
 function parseDateStr(dStr) {
   if(!dStr) return null;
-  if(dStr.includes('/')) {
+  // If Excel/Google Sheet format DD/MM/YYYY
+  if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
     const p = dStr.split('/');
-    return `${p[2]}-${p[1]}-${p[0]}`; // YYYY-MM-DD
+    // pad to 2 digits for ISO comparison (YYYY-MM-DD)
+    const day = p[0].padStart(2, '0');
+    const month = p[1].padStart(2, '0');
+    return `${p[2]}-${month}-${day}`;
   }
-  return dStr;
+  return dStr; // Assume already YYYY-MM-DD or invalid
 }
 
 async function loadAllData() {
@@ -568,27 +579,28 @@ function processAttendance() {
     const isoDate = parseDateStr(dStr);
     
     return {
-      date: dStr, // Display
-      isoDate: isoDate, // Filter
-      rawDate: new Date(isoDate), // Sort
+      date: dStr, 
+      isoDate: isoDate, // YYYY-MM-DD
+      rawDate: new Date(isoDate),
       name: getVal(r, 'NAMA'),
       kelas: getVal(r, 'KELAS'),
       gender: getVal(r, 'JANTINA') || '-',
       status: getVal(r, 'STATUS').toUpperCase()
     };
-  }).filter(r => r.isoDate);
+  }).filter(r => r.isoDate && !isNaN(r.rawDate));
 
   DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
 
-  // Global Stats
+  // Global Stats (Today)
   const todayStr = new Date().toISOString().split('T')[0];
   const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
   const present = todayRecs.filter(r => r.status === 'HADIR').length;
+  const absent = todayRecs.filter(r => r.status.includes('TIDAK')).length;
   
   document.getElementById('dToday').innerText = present;
-  document.getElementById('dAbsent').innerText = `${todayRecs.filter(r => r.status.includes('TIDAK')).length} Tidak Hadir`;
+  document.getElementById('dAbsent').innerText = `${absent} Tidak Hadir`;
   document.getElementById('dWeek').innerText = DATA_ATT_CLEAN.length;
-  document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(todayRecs.length||1))*100) + "%" : "0%";
+  document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(present+absent||1))*100) + "%" : "0%";
 
   populateAttSelectors();
   renderAttTable(DATA_ATT_CLEAN);
@@ -712,13 +724,58 @@ function resetPajskFilters() {
   renderPajskTable();
 }
 
-/* ================= CHART ================= */
-function setupTrendSelectors() {
-  const m = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"];
-  document.getElementById('trendMonth').innerHTML = m.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
-  document.getElementById('trendMonth').value = new Date().getMonth();
-  const y = new Date().getFullYear();
-  document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
+/* ================= ANNOUNCEMENT & DASHBOARD ================= */
+function renderAnn() {
+  // Logic: Show if today is within Start & End (if exists)
+  const today = new Date().toISOString().split('T')[0];
+  
+  const list = DATA.ann.filter(a => {
+    const start = parseDateStr(getVal(a, 'MULA'));
+    const end = parseDateStr(getVal(a, 'TAMAT'));
+    // If start exist & today < start -> hide
+    if(start && today < start) return false;
+    // If end exist & today > end -> hide
+    if(end && today > end) return false;
+    return true;
+  });
+
+  document.getElementById('dAnn').innerText = list.length;
+
+  document.getElementById('annGrid').innerHTML = list.map(a => {
+    // Fuzzy matching for columns
+    const title = getVal(a, 'TAJUK') || getVal(a, 'TITLE') || 'Info';
+    const content = getVal(a, 'KANDUNGAN') || getVal(a, 'CONTENT') || '';
+    const date = getVal(a, 'TARIKH') || getVal(a, 'MULA') || '';
+    
+    // Card Click Logic
+    return `<div class="card clickable" onclick="openInfoModal('${escapeHtml(title)}', '${escapeHtml(content)}')">
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+        <span class="badge b-blue">INFO</span>
+        <span style="font-size:11px; color:var(--text-muted)">${date}</span>
+      </div>
+      <h4 style="margin:0 0 10px;">${title}</h4>
+      <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${content}</p>
+    </div>`;
+  }).join('');
+}
+
+/* ================= PARENTS & CHART & CALENDAR ================= */
+function renderParents() {
+  document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
+    const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
+    return `<div class="card clickable" onclick="window.open('${url||'#'}', '_blank')">
+      <h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4>
+      <p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>
+      ${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}
+    </div>`;
+  }).join('');
+}
+
+function renderCalendar() {
+  if(!DATA.cal.length) return;
+  const k=Object.keys(DATA.cal[0]);
+  document.getElementById('calHead').innerHTML=`<tr>${k.map(x=>`<th>${x}</th>`).join('')}</tr>`;
+  document.getElementById('calBody').innerHTML=DATA.cal.map(r=>`<tr>${k.map(x=>`<td>${r[x]}</td>`).join('')}</tr>`).join('');
 }
 
 function renderTrend() {
@@ -761,46 +818,21 @@ function renderTrend() {
     </svg>`;
 }
 
-/* ================= OTHERS ================= */
-function renderAnn() {
-  document.getElementById('dAnn').innerText = DATA.ann.length;
-  // Fixed Ann Logic with Date Checking
-  const today = new Date().toISOString().split('T')[0];
-  const list = DATA.ann.filter(a => {
-    const start = parseDateStr(getVal(a, 'MULA'));
-    const end = parseDateStr(getVal(a, 'TAMAT'));
-    // Show if today >= start AND (today <= end OR no end date)
-    if(start && today < start) return false;
-    if(end && today > end) return false;
-    return true;
-  });
-
-  document.getElementById('annGrid').innerHTML = list.map(a => {
-    const t = getVal(a, 'TAJUK') || 'Info';
-    const c = getVal(a, 'KANDUNGAN') || '-';
-    return `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:10px"><span class="badge b-green">INFO</span></div><h4 style="margin:0 0 10px;">${t}</h4><p style="font-size:13px; color:var(--text-muted);">${c}</p></div>`;
-  }).join('');
+function setupTrendSelectors() {
+  const m = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"];
+  document.getElementById('trendMonth').innerHTML = m.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+  document.getElementById('trendMonth').value = new Date().getMonth();
+  const y = new Date().getFullYear();
+  document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
 }
 
-function renderParents() {
-  document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
-    const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
-    return `<div class="card link-card" onclick="window.open('${url||'#'}', '_blank')">
-      <h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4>
-      <p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>
-      ${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}
-    </div>`;
-  }).join('');
+/* ================= MODAL & SETTINGS ================= */
+function openInfoModal(title, body) {
+  document.getElementById('infoTitle').innerText = title;
+  document.getElementById('infoBody').innerText = body;
+  document.getElementById('infoModal').classList.add('active');
 }
 
-function renderCalendar() {
-  if(!DATA.cal.length) return;
-  const k=Object.keys(DATA.cal[0]);
-  document.getElementById('calHead').innerHTML=`<tr>${k.map(x=>`<th>${x}</th>`).join('')}</tr>`;
-  document.getElementById('calBody').innerHTML=DATA.cal.map(r=>`<tr>${k.map(x=>`<td>${r[x]}</td>`).join('')}</tr>`).join('');
-}
-
-/* ================= SETTINGS ================= */
 function openSettings() {
   document.getElementById('settingsModal').classList.add('active');
   document.getElementById('pinInput').value = '';
@@ -848,6 +880,7 @@ function toggleTheme() {
   renderTrend();
 }
 function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 
 init();
 </script>
