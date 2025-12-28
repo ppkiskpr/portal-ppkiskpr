@@ -296,7 +296,7 @@
       border-radius: 8px;
       font-size: 13px;
       font-family: inherit;
-      min-width: 150px;
+      min-width: 120px;
     }
     .btn {
       padding: 10px 16px;
@@ -412,8 +412,7 @@
             <h2>Dashboard</h2>
             <p>Selamat datang ke Portal Rasmi PPKI</p>
           </div>
-          <div class="banner-actions">
-            </div>
+          <div class="banner-actions"></div>
         </div>
 
         <div class="dashboard-grid">
@@ -440,14 +439,23 @@
         </div>
 
         <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="margin:0">📉 Trend Kehadiran</h3>
-            <select class="form-control" style="width:auto; padding:4px 8px;" id="trendMode" onchange="renderTrend()">
-              <option value="hadir">Hadir</option>
-              <option value="tidak">Tidak Hadir</option>
-            </select>
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:20px;">
+            <h3 style="margin:0">📉 Trend Harian</h3>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+               <select class="form-control" style="width:auto; padding:4px 8px;" id="trendMode" onchange="renderTrend()">
+                 <option value="hadir">Hadir</option>
+                 <option value="tidak">Tidak Hadir</option>
+                 <option value="pct">%</option>
+               </select>
+               <select class="form-control" style="width:auto; padding:4px 8px;" id="trendMonth" onchange="renderTrend()"></select>
+               <select class="form-control" style="width:auto; padding:4px 8px;" id="trendYear" onchange="renderTrend()"></select>
+               <select class="form-control" style="width:auto; padding:4px 8px;" id="trendClass" onchange="renderTrend()">
+                 <option value="">Semua Kelas</option>
+               </select>
+            </div>
           </div>
-          <div id="chartContainer" style="height:220px; width:100%;"></div>
+          <div id="chartContainer" style="height:260px; width:100%;"></div>
+          <p style="font-size:11px; color:var(--text-muted); margin-top:10px;">*Graf garis berdasarkan data kehadiran harian mengikut bulan dipilih.</p>
         </div>
       </div>
 
@@ -668,6 +676,7 @@ let DATA_CLEAN_ATT = [];
 function init() {
   applyTheme();
   renderSidebar();
+  setupTrendSelectors(); // Setup selectors first
   loadAllData();
   
   // Identity
@@ -815,18 +824,15 @@ function processAttendance() {
   document.getElementById('statWeek').textContent = DATA_CLEAN_ATT.length; 
   document.getElementById('statPct').textContent = list.length ? Math.round((present/(present+absent || 1))*100) + "%" : "-";
   
-  // Render Home Chart
+  // Update Selectors for Trend Chart & Attendance Page
+  populateClasses(DATA_CLEAN_ATT);
+  
+  // Render Home Chart (Initial)
   renderTrend();
-
-  // 2. ATTENDANCE PAGE SETUP
-  const classes = [...new Set(DATA_CLEAN_ATT.map(r => r.kelas))].sort();
-  const sel = document.getElementById('filterClassAtt');
-  sel.innerHTML = '<option value="">Semua Kelas</option>';
-  classes.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
 
   // Initial render of Attendance Page (Shows all)
   renderAttTable(DATA_CLEAN_ATT);
-  updateAttPageStats(DATA_CLEAN_ATT); // Update dynamic cards with full data
+  updateAttPageStats(DATA_CLEAN_ATT); 
 }
 
 function parseDate(str) {
@@ -838,19 +844,121 @@ function parseDate(str) {
   return new Date(str);
 }
 
-function renderTrend() {
-  const mode = document.getElementById('trendMode').value;
-  const ctx = document.getElementById('chartContainer');
+/* ================= TREND CHART LOGIC (LINE CHART SVG) ================= */
+
+function setupTrendSelectors() {
+  const months = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogos", "Sep", "Okt", "Nov", "Dis"];
+  const mSel = document.getElementById('trendMonth');
+  const ySel = document.getElementById('trendYear');
   
-  let html = `<div style="display:flex; align-items:flex-end; height:100%; gap:4px; padding-top:20px;">`;
-  for(let i=0; i<20; i++) {
-    const h = Math.floor(Math.random() * 80) + 10;
-    const color = mode === 'hadir' ? 'var(--primary)' : '#D92D20';
-    html += `<div style="flex:1; background:${color}; height:${h}%; border-radius:4px 4px 0 0; opacity:0.8;"></div>`;
-  }
-  html += `</div>`;
-  ctx.innerHTML = html;
+  // Months
+  mSel.innerHTML = months.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+  mSel.value = new Date().getMonth();
+
+  // Years
+  const curY = new Date().getFullYear();
+  ySel.innerHTML = `
+    <option value="${curY-1}">${curY-1}</option>
+    <option value="${curY}" selected>${curY}</option>
+    <option value="${curY+1}">${curY+1}</option>
+  `;
 }
+
+function populateClasses(data) {
+  const classes = [...new Set(data.map(r => r.kelas))].sort();
+  // For Trend Chart
+  const trendSel = document.getElementById('trendClass');
+  trendSel.innerHTML = '<option value="">Semua Kelas</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+  
+  // For Attendance Page
+  const attSel = document.getElementById('filterClassAtt');
+  attSel.innerHTML = '<option value="">Semua Kelas</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+function renderTrend() {
+  if (!DATA_CLEAN_ATT.length) return;
+
+  const mode = document.getElementById('trendMode').value;
+  const month = parseInt(document.getElementById('trendMonth').value);
+  const year = parseInt(document.getElementById('trendYear').value);
+  const kelas = document.getElementById('trendClass').value;
+
+  // Filter Data
+  const filtered = DATA_CLEAN_ATT.filter(r => {
+    return r.rawDate.getMonth() === month && 
+           r.rawDate.getFullYear() === year &&
+           (!kelas || r.kelas === kelas);
+  });
+
+  // Aggregate Data by Day
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const dataPoints = [];
+  
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dayRecords = filtered.filter(r => r.rawDate.getDate() === d);
+    let val = 0;
+    
+    if (mode === 'hadir') {
+      val = dayRecords.filter(r => r.status === 'HADIR').length;
+    } else if (mode === 'tidak') {
+      val = dayRecords.filter(r => r.status.includes('TIDAK')).length;
+    } else { // %
+      const total = dayRecords.length;
+      const present = dayRecords.filter(r => r.status === 'HADIR').length;
+      val = total > 0 ? (present / total) * 100 : 0;
+    }
+    dataPoints.push({ x: d, y: val });
+  }
+
+  // Draw SVG
+  drawSvgLine(dataPoints, mode === 'pct' ? 100 : null);
+}
+
+function drawSvgLine(data, forcedMaxY) {
+  const w = 900, h = 260;
+  const padL = 40, padR = 20, padT = 20, padB = 30;
+  const innerW = w - padL - padR;
+  const innerH = h - padT - padB;
+
+  const maxY = forcedMaxY || Math.max(10, ...data.map(d => d.y));
+  const scaleX = innerW / (data.length - 1 || 1);
+  const scaleY = innerH / maxY;
+
+  // Points for Polyline
+  const points = data.map((d, i) => {
+    const x = padL + (i * scaleX);
+    const y = padT + innerH - (d.y * scaleY);
+    return `${x},${y}`;
+  }).join(' ');
+
+  // Grid Lines
+  let gridHtml = '';
+  for (let i = 0; i <= 5; i++) {
+    const yVal = (maxY / 5) * i;
+    const yPos = padT + innerH - (yVal * scaleY);
+    gridHtml += `<line x1="${padL}" y1="${yPos}" x2="${w - padR}" y2="${yPos}" stroke="var(--border-color)" stroke-width="1" />
+                 <text x="${padL - 5}" y="${yPos + 4}" font-size="10" fill="var(--text-muted)" text-anchor="end">${Math.round(yVal)}</text>`;
+  }
+
+  const html = `
+    <svg viewBox="0 0 ${w} ${h}" width="100%" height="100%" preserveAspectRatio="none">
+      ${gridHtml}
+      <polyline points="${points}" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      ${data.map((d, i) => {
+         const x = padL + (i * scaleX);
+         const y = padT + innerH - (d.y * scaleY);
+         // Only show dots every 2 days if crowded
+         if(data.length > 20 && i % 2 !== 0) return '';
+         return `<circle cx="${x}" cy="${y}" r="4" fill="var(--bg-card)" stroke="var(--primary)" stroke-width="2" />
+                 <text x="${x}" y="${h - 5}" font-size="10" fill="var(--text-muted)" text-anchor="middle">${d.x}</text>`;
+      }).join('')}
+    </svg>
+  `;
+  
+  document.getElementById('chartContainer').innerHTML = html;
+}
+
+/* ================= ATTENDANCE TABLE LOGIC ================= */
 
 function renderAttTable(data) {
   const tbody = document.getElementById('attTableBody');
@@ -882,12 +990,22 @@ function applyFilterAtt() {
   const name = document.getElementById('searchAtt').value.toLowerCase();
   const cls = document.getElementById('filterClassAtt').value;
   const sts = document.getElementById('filterStatusAtt').value;
+  const dateInput = document.getElementById('filterDateAtt').value;
   
   const filtered = DATA_CLEAN_ATT.filter(r => {
+    // Basic date match if input is used
+    let dateMatch = true;
+    if(dateInput) {
+       // Assuming rawDate is Date obj. simple check
+       const rDate = r.rawDate.toISOString().split('T')[0];
+       dateMatch = (rDate === dateInput);
+    }
+
     return (
       (!name || r.name.toLowerCase().includes(name)) &&
       (!cls || r.kelas === cls) &&
-      (!sts || (sts === 'HADIR' ? r.status === 'HADIR' : r.status.includes('TIDAK')))
+      (!sts || (sts === 'HADIR' ? r.status === 'HADIR' : r.status.includes('TIDAK'))) &&
+      dateMatch
     );
   });
   
