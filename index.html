@@ -5,27 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal PPKI SKPR</title>
 
-  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Tailwind config -->
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          boxShadow: {
-            soft: '0 10px 30px rgba(0,0,0,.08)'
-          }
+          boxShadow: { soft: '0 10px 30px rgba(0,0,0,.08)' }
         }
       }
     }
   </script>
 
-  <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- CSV Parser + Chart -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
@@ -159,6 +151,58 @@
                   <canvas id="chartMonthly"></canvas>
                 </div>
               </div>
+
+              <!-- CLASS COMPARISON + TREND -->
+              <div class="mt-4 rounded-2xl p-4 bg-white border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div class="font-semibold">Perbandingan Kelas & Trend Harian</div>
+
+                  <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex items-center gap-2">
+                      <label class="text-xs text-slate-500 dark:text-slate-400">Bulan</label>
+                      <input id="cmpMonth" type="month"
+                        class="px-3 py-2 rounded-xl border border-slate-200 bg-white dark:bg-slate-950 dark:border-slate-800" />
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <label class="text-xs text-slate-500 dark:text-slate-400">Kelas</label>
+                      <select id="cmpClass"
+                        class="px-3 py-2 rounded-xl border border-slate-200 bg-white dark:bg-slate-950 dark:border-slate-800">
+                        <option value="">Semua Kelas</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Chart 1: % by class -->
+                <div class="mt-3">
+                  <div class="text-sm font-semibold mb-2">% Kehadiran Mengikut Kelas (Bulan Dipilih)</div>
+                  <canvas id="chartClassPct"></canvas>
+                </div>
+
+                <div class="mt-4 overflow-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+                  <table class="min-w-full text-sm">
+                    <thead class="bg-slate-50 dark:bg-slate-950">
+                      <tr class="text-left">
+                        <th class="px-4 py-3">Kelas</th>
+                        <th class="px-4 py-3">Hadir</th>
+                        <th class="px-4 py-3">Tidak Hadir</th>
+                        <th class="px-4 py-3">% Kehadiran</th>
+                      </tr>
+                    </thead>
+                    <tbody id="classPctBody" class="divide-y divide-slate-200 dark:divide-slate-800">
+                      <tr><td class="px-4 py-4 text-slate-500 dark:text-slate-400" colspan="4">Memuat…</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Chart 2: Daily trend -->
+                <div class="mt-5">
+                  <div id="trendTitle" class="text-sm font-semibold mb-2">Trend Harian (% Kehadiran) — Semua Kelas</div>
+                  <canvas id="chartDailyTrend"></canvas>
+                  <div id="trendNote" class="mt-2 text-xs text-slate-500 dark:text-slate-400">—</div>
+                </div>
+              </div>
             </div>
 
             <!-- Right: announcements preview -->
@@ -272,11 +316,7 @@
             </div>
 
             <div class="mt-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
-              <iframe
-                title="Takwim"
-                class="w-full h-[520px] bg-white dark:bg-slate-950"
-                src="about:blank">
-              </iframe>
+              <iframe title="Takwim" class="w-full h-[520px] bg-white dark:bg-slate-950" src="about:blank"></iframe>
             </div>
           </div>
         </section>
@@ -287,9 +327,6 @@
 
   <script src="./config.js"></script>
   <script src="./app.js"></script>
-
-  <script>
-    lucide.createIcons();
-  </script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>
