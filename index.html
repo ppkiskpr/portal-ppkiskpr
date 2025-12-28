@@ -1,517 +1,1640 @@
 <!doctype html>
-<html lang="ms" class="h-full">
+<html lang="ms">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal PPKI SK Paya Resak</title>
 
-  <!-- Tailwind (CDN) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js (untuk line chart) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
     :root{
-      --primary:#0f3d2e; /* forest */
-      --accent:#10b981;
+      --bg: #EAF4EA;
+      --bg2:#F6FBF6;
+      --card:#FFFFFF;
+      --text:#0B1220;
+      --muted:#51606f;
+      --line:#dbe7db;
+      --primary:#1F4D3A;
+      --accent:#2AA198;
+      --danger:#d33;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 18px;
     }
-    .bg-primary{ background-color: var(--primary); }
-    .text-primary{ color: var(--primary); }
-    .ring-primary{ --tw-ring-color: var(--primary); }
-    .bg-accent{ background-color: var(--accent); }
-    .text-accent{ color: var(--accent); }
-    .ring-accent{ --tw-ring-color: var(--accent); }
+    [data-theme="dark"]{
+      --bg:#0B1220;
+      --bg2:#0f1a2f;
+      --card:#111827;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:#22304b;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    /* Theme presets (warna primary/accent) */
+    [data-preset="forest"] { --primary:#1F4D3A; --accent:#2AA198; }
+    [data-preset="ocean"]  { --primary:#0b3b6e; --accent:#3aa0ff; }
+    [data-preset="purple"] { --primary:#4c1d95; --accent:#a78bfa; }
+    [data-preset="amber"]  { --primary:#92400e; --accent:#f59e0b; }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      color: var(--text);
+      min-height:100vh;
+    }
+    a{color:inherit}
+    .app{display:flex; min-height:100vh;}
+    .sidebar{
+      width: 280px;
+      background: var(--card);
+      border-right: 1px solid var(--line);
+      padding: 14px;
+      position: sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+      box-shadow: var(--shadow);
+    }
+    .sidebar.collapsed{
+      width: 84px;
+      padding: 14px 10px;
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+      padding: 10px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(31,77,58,.12), rgba(42,161,152,.12));
+      border: 1px solid var(--line);
+    }
+    .logoBox{
+      width: 46px; height: 46px;
+      border-radius: 14px;
+      background: rgba(0,0,0,.06);
+      overflow:hidden;
+      display:grid; place-items:center;
+      flex:0 0 auto;
+    }
+    .logoBox img{width:100%; height:100%; object-fit:cover}
+    .brandText{min-width:0}
+    .schoolName{
+      font-weight: 800;
+      font-size: 14.5px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .motto{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav{
+      margin-top: 14px;
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .navBtn{
+      display:flex; align-items:center; gap:10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      cursor:pointer;
+      user-select:none;
+      transition: .15s;
+    }
+    .navBtn:hover{background: rgba(0,0,0,.04)}
+    [data-theme="dark"] .navBtn:hover{background: rgba(255,255,255,.06)}
+    .navBtn.active{
+      background: linear-gradient(135deg, rgba(31,77,58,.14), rgba(42,161,152,.14));
+      border-color: var(--line);
+    }
+    .icon{
+      width: 38px; height: 38px;
+      border-radius: 14px;
+      display:grid; place-items:center;
+      background: rgba(0,0,0,.05);
+      flex:0 0 auto;
+      font-size: 18px;
+    }
+    [data-theme="dark"] .icon{background: rgba(255,255,255,.06)}
+    .label{
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .sidebar.collapsed .brandText,
+    .sidebar.collapsed .label,
+    .sidebar.collapsed .motto,
+    .sidebar.collapsed .schoolName{
+      display:none;
+    }
+
+    .sidebarFooter{
+      margin-top: 16px;
+      padding: 12px 10px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .main{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      min-width: 0;
+    }
+    .header{
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(255,255,255,.65);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    [data-theme="dark"] .header{background: rgba(17,24,39,.65)}
+    .headerLeft{display:flex; align-items:center; gap:10px; min-width:0}
+    .hamburger{
+      width: 44px; height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      cursor:pointer;
+      display:grid; place-items:center;
+      font-size: 18px;
+      box-shadow: var(--shadow);
+    }
+    .pageTitle{
+      font-weight: 900;
+      font-size: 16px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .headerRight{display:flex; align-items:center; gap:10px}
+    .chip{
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 800;
+      cursor:pointer;
+      display:flex; align-items:center; gap:8px;
+      box-shadow: var(--shadow);
+    }
+    .chip small{color:var(--muted); font-weight:700}
+    .badge{
+      background: var(--danger);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .content{
+      padding: 16px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .banner{
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(31,77,58,.16), rgba(42,161,152,.16));
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .banner h2{margin:0; font-size: 18px; font-weight: 1000}
+    .banner p{margin:6px 0 0; color: var(--muted); font-weight:700}
+    .clock{
+      font-weight: 1000;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      white-space: nowrap;
+    }
+
+    .grid{
+      display:grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .grid.cards{grid-template-columns: repeat(4, minmax(0, 1fr));}
+    @media (max-width: 1024px){
+      .grid.cards{grid-template-columns: repeat(2, minmax(0, 1fr));}
+    }
+    @media (max-width: 520px){
+      .grid.cards{grid-template-columns: 1fr;}
+    }
+
+    .card{
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      min-width:0;
+    }
+    .statCard{
+      cursor:pointer;
+      transition:.15s;
+    }
+    .statCard:hover{transform: translateY(-1px)}
+    .statTop{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .statTop .k{color: var(--muted); font-weight: 900; font-size: 12px}
+    .statTop .i{font-size: 18px}
+    .statVal{margin-top: 6px; font-size: 26px; font-weight: 1100}
+    .statSub{margin-top: 6px; color: var(--muted); font-weight: 800; font-size: 12px}
+
+    .sectionTitle{
+      margin: 16px 0 10px;
+      font-size: 14px;
+      font-weight: 1000;
+      color: var(--muted);
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    .tableWrap{
+      border-radius: var(--radius);
+      overflow:hidden;
+      border: 1px solid var(--line);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+    table{width:100%; border-collapse:collapse; font-size: 13px}
+    th, td{padding: 10px 10px; border-bottom: 1px solid var(--line); vertical-align:top}
+    th{background: rgba(0,0,0,.04); text-align:left; font-size: 12px; font-weight: 1000}
+    [data-theme="dark"] th{background: rgba(255,255,255,.06)}
+    tr:hover td{background: rgba(0,0,0,.02)}
+    [data-theme="dark"] tr:hover td{background: rgba(255,255,255,.03)}
+
+    .filters{
+      display:grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      margin: 12px 0;
+    }
+    @media (max-width: 1024px){ .filters{grid-template-columns: repeat(3, minmax(0, 1fr));} }
+    @media (max-width: 520px){ .filters{grid-template-columns: 1fr;} }
+
+    input, select, textarea{
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      outline:none;
+      font-weight: 800;
+    }
+    textarea{min-height: 90px; resize: vertical; font-weight: 700}
+    .btn{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      cursor:pointer;
+      font-weight: 1000;
+      box-shadow: var(--shadow);
+    }
+    .btn.primary{
+      border-color: transparent;
+      background: linear-gradient(135deg, rgba(31,77,58,.95), rgba(42,161,152,.95));
+      color:#fff;
+    }
+    .btn.danger{
+      background: rgba(211,51,51,.12);
+      border-color: rgba(211,51,51,.35);
+      color: var(--text);
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .row > *{flex:1; min-width: 220px}
+
+    /* Modals */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      z-index: 50;
+      padding: 18px;
+      overflow:auto;
+    }
+    .overlay.show{display:block}
+    .modal{
+      max-width: 760px;
+      margin: 30px auto;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modalHeader{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      gap: 12px;
+    }
+    .modalHeader h3{margin:0; font-size: 15px; font-weight: 1100}
+    .modalBody{padding: 16px}
+    .closeX{
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      cursor:pointer;
+      font-size: 18px;
+      display:grid; place-items:center;
+    }
+    .warn{
+      background: rgba(211,51,51,.12);
+      border: 1px solid rgba(211,51,51,.35);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-weight: 900;
+    }
+    .muted{color:var(--muted); font-weight: 800}
+
+    /* Mobile default: sidebar closed */
+    @media (max-width: 860px){
+      .sidebar{
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 30;
+        transform: translateX(-110%);
+        transition: .2s;
+      }
+      .sidebar.open{transform: translateX(0)}
+      .sidebarBackdrop{
+        display:none;
+        position: fixed;
+        inset:0;
+        background: rgba(0,0,0,.38);
+        z-index: 25;
+      }
+      .sidebarBackdrop.show{display:block}
+      .content{padding: 14px}
+    }
   </style>
 </head>
 
-<body class="h-full bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
-  <div id="app" class="h-full"></div>
+<body data-theme="light" data-preset="forest">
+  <div class="sidebarBackdrop" id="sidebarBackdrop"></div>
+
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar collapsed" id="sidebar">
+      <div class="brand" title="Portal PPKI">
+        <div class="logoBox" id="logoBox">
+          <span style="font-weight:1000;">🏫</span>
+        </div>
+        <div class="brandText">
+          <div class="schoolName" id="schoolName">SK Paya Resak</div>
+          <div class="motto" id="schoolMotto">Moving Forward</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="nav">
+        <div class="navBtn active" data-page="home">
+          <div class="icon">🏠</div>
+          <div class="label">Laman Utama</div>
+        </div>
+
+        <div class="navBtn" data-page="kehadiran">
+          <div class="icon">📋</div>
+          <div class="label">Kehadiran</div>
+        </div>
+
+        <div class="navBtn" data-page="pengumuman">
+          <div class="icon">📢</div>
+          <div class="label">
+            Pengumuman
+            <span id="annBadgeSide" class="badge" style="display:none; margin-left:8px;">0</span>
+          </div>
+        </div>
+
+        <div class="navBtn" data-page="takwim">
+          <div class="icon">🗓️</div>
+          <div class="label">Takwim</div>
+        </div>
+
+        <div class="navBtn" data-page="ibubapa">
+          <div class="icon">👨‍👩‍👧‍👦</div>
+          <div class="label">Ibu Bapa</div>
+        </div>
+      </nav>
+
+      <div class="sidebarFooter">
+        <div id="footerText">© 2025 NK. <br/>Hak Cipta Terpelihara.</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="header">
+        <div class="headerLeft">
+          <button class="hamburger" id="btnSidebar" title="Buka/Tutup Sidebar">☰</button>
+          <div class="pageTitle" id="pageTitle">Laman Utama</div>
+        </div>
+
+        <div class="headerRight">
+          <div class="chip" id="themeToggle" title="Tukar Light/Dark">
+            <span id="themeIcon">🌙</span>
+            <span style="font-weight:1100;">Tema</span>
+            <small id="themeLabel">Light</small>
+          </div>
+
+          <div class="chip" id="btnGear" title="Tetapan (Perlu PIN)">
+            <span>⚙️</span>
+            <span style="font-weight:1100;">Tetapan</span>
+          </div>
+
+          <div class="chip" title="Pengumuman Aktif">
+            <span>🔔</span>
+            <span id="annBadgeTop" class="badge">0</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- HOME -->
+        <section id="page-home">
+          <div class="banner">
+            <div>
+              <h2 id="welcomeTitle">Selamat Datang ke Portal Rasmi PPKI SK Paya Resak</h2>
+              <p class="muted">Maklumat ringkas & pantas untuk rujukan warga sekolah.</p>
+            </div>
+            <div class="clock" id="clock">--:--</div>
+          </div>
+
+          <div class="grid cards" style="margin-top:14px;">
+            <div class="card statCard" id="cardToday" title="Klik untuk pergi ke Kehadiran">
+              <div class="statTop">
+                <div class="k">Kehadiran Hari Ini</div>
+                <div class="i">✅</div>
+              </div>
+              <div class="statVal" id="vToday">-</div>
+              <div class="statSub" id="sToday">Memuatkan...</div>
+            </div>
+
+            <div class="card statCard" id="cardWeek" title="Klik untuk pergi ke Kehadiran">
+              <div class="statTop">
+                <div class="k">Kehadiran Minggu Ini</div>
+                <div class="i">📆</div>
+              </div>
+              <div class="statVal" id="vWeek">-</div>
+              <div class="statSub" id="sWeek">Memuatkan...</div>
+            </div>
+
+            <div class="card statCard" id="cardMonth" title="Klik untuk pergi ke Kehadiran">
+              <div class="statTop">
+                <div class="k">Kehadiran Bulan Ini</div>
+                <div class="i">🗓️</div>
+              </div>
+              <div class="statVal" id="vMonth">-</div>
+              <div class="statSub" id="sMonth">Memuatkan...</div>
+            </div>
+
+            <div class="card statCard" id="cardPct" title="Klik untuk pergi ke Kehadiran">
+              <div class="statTop">
+                <div class="k">Peratus Kehadiran Bulanan</div>
+                <div class="i">📈</div>
+              </div>
+              <div class="statVal" id="vPct">-</div>
+              <div class="statSub" id="sPct">Memuatkan...</div>
+            </div>
+          </div>
+
+          <div class="sectionTitle">Trend Kehadiran (Bulanan)</div>
+          <div class="card">
+            <canvas id="attChart" height="90"></canvas>
+            <div class="muted" style="margin-top:10px; font-size:12px;">
+              Paksi-X: Bulan • Paksi-Y: Bilangan “Hadir”
+            </div>
+          </div>
+
+          <div class="sectionTitle">Pengumuman Aktif</div>
+          <div class="card statCard" id="cardAnn" title="Klik untuk pergi ke Pengumuman">
+            <div class="statTop">
+              <div class="k">Senarai Pengumuman Aktif</div>
+              <div class="i">📢</div>
+            </div>
+            <div class="statVal"><span id="vAnnCount">0</span></div>
+            <div class="statSub" id="annListShort">Memuatkan...</div>
+          </div>
+        </section>
+
+        <!-- KEHADIRAN -->
+        <section id="page-kehadiran" style="display:none;">
+          <div class="banner" style="margin-bottom:14px;">
+            <div>
+              <h2>Dashboard Kehadiran</h2>
+              <p class="muted">Penapisan mengikut kolum, carian, dan julat tarikh.</p>
+            </div>
+            <div class="row" style="gap:10px;">
+              <button class="btn" id="btnReloadKehadiran">🔄 Muat Semula</button>
+              <button class="btn" id="btnAdminCols" style="display:none;">👁️ Kolum Admin</button>
+            </div>
+          </div>
+
+          <div class="grid cards">
+            <div class="card statCard" id="cardToday2">
+              <div class="statTop"><div class="k">Kehadiran Hari Ini</div><div class="i">✅</div></div>
+              <div class="statVal" id="vToday2">-</div>
+              <div class="statSub" id="sToday2">—</div>
+            </div>
+            <div class="card statCard" id="cardWeek2">
+              <div class="statTop"><div class="k">Kehadiran Minggu Ini</div><div class="i">📆</div></div>
+              <div class="statVal" id="vWeek2">-</div>
+              <div class="statSub" id="sWeek2">—</div>
+            </div>
+            <div class="card statCard" id="cardMonth2">
+              <div class="statTop"><div class="k">Kehadiran Bulan Ini</div><div class="i">🗓️</div></div>
+              <div class="statVal" id="vMonth2">-</div>
+              <div class="statSub" id="sMonth2">—</div>
+            </div>
+            <div class="card statCard" id="cardPct2">
+              <div class="statTop"><div class="k">Peratus Kehadiran Bulanan</div><div class="i">📈</div></div>
+              <div class="statVal" id="vPct2">-</div>
+              <div class="statSub" id="sPct2">—</div>
+            </div>
+          </div>
+
+          <div class="filters">
+            <div>
+              <div class="muted" style="font-size:12px; margin:0 0 6px;">Carian</div>
+              <input id="fSearch" placeholder="Cari apa-apa (Nama/Kelas/Status...)" />
+            </div>
+            <div>
+              <div class="muted" style="font-size:12px; margin:0 0 6px;">Tarikh Mula</div>
+              <input id="fDateFrom" type="date" />
+            </div>
+            <div>
+              <div class="muted" style="font-size:12px; margin:0 0 6px;">Tarikh Tamat</div>
+              <input id="fDateTo" type="date" />
+            </div>
+            <div>
+              <div class="muted" style="font-size:12px; margin:0 0 6px;">Filter Kelas</div>
+              <input id="fKelas" placeholder="cth: 1 AL-FARABI" />
+            </div>
+            <div>
+              <div class="muted" style="font-size:12px; margin:0 0 6px;">Filter Nama</div>
+              <input id="fNama" placeholder="cth: Ali" />
+            </div>
+            <div>
+              <div class="muted" style="font-size:12px; margin:0 0 6px;">Filter Status</div>
+              <input id="fStatus" placeholder="cth: Hadir" />
+            </div>
+          </div>
+
+          <div class="tableWrap">
+            <table id="kehadiranTable">
+              <thead id="kehadiranThead"></thead>
+              <tbody id="kehadiranTbody"></tbody>
+            </table>
+          </div>
+
+          <div class="muted" style="margin-top:10px; font-size:12px;">
+            Nota: Kolum kehadiran dibaca secara “LOCK MAPPING” (Tarikh, Kelas, Nama Murid, Status, Jantina).
+            Cikgu boleh guna `Nama Murid` atau `Nama_Murid`.
+          </div>
+        </section>
+
+        <!-- PENGUMUMAN -->
+        <section id="page-pengumuman" style="display:none;">
+          <div class="banner" style="margin-bottom:14px;">
+            <div>
+              <h2>Pengumuman</h2>
+              <p class="muted">Kad pengumuman boleh diklik untuk paparan detail.</p>
+            </div>
+            <button class="btn" id="btnReloadAnn">🔄 Muat Semula</button>
+          </div>
+
+          <div id="annContainer" class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));"></div>
+          <div class="muted" style="margin-top:12px; font-size:12px;">
+            Pengumuman aktif ditapis automatik berdasarkan Tarikh Mula/Tamat & kolum AKTIF (YA/TIDAK).
+          </div>
+        </section>
+
+        <!-- TAKWIM -->
+        <section id="page-takwim" style="display:none;">
+          <div class="banner" style="margin-bottom:14px;">
+            <div>
+              <h2>Takwim</h2>
+              <p class="muted">Boleh disambungkan ke Google Sheet (CSV) melalui Tetapan (PIN).</p>
+            </div>
+            <button class="btn" id="btnReloadTakwim">🔄 Muat Semula</button>
+          </div>
+
+          <div class="card">
+            <div class="muted" style="font-size:13px;">
+              Buat masa ini URL Takwim belum diisi (cikgu boleh isi di Tetapan).
+            </div>
+            <div style="margin-top:12px;" class="tableWrap">
+              <table id="takwimTable">
+                <thead id="takwimThead"></thead>
+                <tbody id="takwimTbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- IBU BAPA -->
+        <section id="page-ibubapa" style="display:none;">
+          <div class="banner" style="margin-bottom:14px;">
+            <div>
+              <h2>Ibu Bapa</h2>
+              <p class="muted">Kad makluman / pautan — boleh pilih pop-out atau buka tab baru (ikut data CSV).</p>
+            </div>
+            <button class="btn" id="btnReloadParents">🔄 Muat Semula</button>
+          </div>
+
+          <div id="parentsContainer" class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));"></div>
+          <div class="muted" style="margin-top:12px; font-size:12px;">
+            Cadangan kolum: Tajuk, Isi Kandungan, URL, Mod (POPUP / TAB).
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- PIN MODAL -->
+  <div class="overlay" id="pinOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modalHeader">
+        <h3>Masukkan PIN Tetapan</h3>
+        <button class="closeX" id="pinClose">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="muted" style="margin-bottom:10px;">
+          Hanya pemilik boleh kemaskini logo, nama sekolah, moto, footer, URL data & tema preset.
+        </div>
+
+        <div class="row">
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">PIN</div>
+            <input id="pinInput" type="password" placeholder="••••" inputmode="numeric" />
+          </div>
+          <div style="display:flex; align-items:end;">
+            <button class="btn primary" id="pinSubmit">Buka Tetapan</button>
+          </div>
+        </div>
+
+        <div id="pinWarn" class="warn" style="display:none; margin-top:12px;">
+          PIN salah. Sila cuba lagi.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="overlay" id="settingsOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" style="max-width: 980px;">
+      <div class="modalHeader">
+        <h3>Tetapan Portal (Admin)</h3>
+        <button class="closeX" id="settingsClose">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="warn" style="margin-bottom:12px;">
+          Perubahan disimpan dalam peranti (localStorage). Pengguna lain masih boleh tukar Light/Dark sahaja.
+        </div>
+
+        <div class="sectionTitle">Maklumat Portal</div>
+        <div class="row">
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">Nama Sekolah</div>
+            <input id="setSchoolName" />
+          </div>
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">Moto</div>
+            <input id="setMotto" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <div class="muted" style="font-size:12px; margin:10px 0 6px;">URL Logo (gambar)</div>
+            <input id="setLogoUrl" placeholder="cth: https://.../logo.png" />
+            <div class="muted" style="font-size:12px; margin-top:6px;">
+              Jika kosong, portal guna ikon 🏫.
+            </div>
+          </div>
+          <div>
+            <div class="muted" style="font-size:12px; margin:10px 0 6px;">Footer</div>
+            <textarea id="setFooter"></textarea>
+          </div>
+        </div>
+
+        <div class="sectionTitle">Tema</div>
+        <div class="row">
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">Preset Tema</div>
+            <select id="setPreset">
+              <option value="forest">Forest (Default)</option>
+              <option value="ocean">Ocean</option>
+              <option value="purple">Purple</option>
+              <option value="amber">Amber</option>
+            </select>
+            <div class="muted" style="font-size:12px; margin-top:6px;">
+              Semua pengguna boleh toggle Light/Dark di header.
+            </div>
+          </div>
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">Mod Default</div>
+            <select id="setDefaultTheme">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sectionTitle">URL Data (CSV)</div>
+        <div class="row">
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">Kehadiran (CSV)</div>
+            <input id="setUrlKehadiran" />
+          </div>
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">Pengumuman (CSV)</div>
+            <input id="setUrlAnn" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">Ibu Bapa (CSV)</div>
+            <input id="setUrlParents" />
+          </div>
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">Takwim (CSV)</div>
+            <input id="setUrlTakwim" placeholder="(isi bila sudah ada sheet)" />
+          </div>
+        </div>
+
+        <div class="sectionTitle">Kehadiran (Kolum Admin)</div>
+        <div class="row">
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">Sembunyikan kolum bila bukan admin</div>
+            <input id="setHideCols" placeholder="cth: Jantina, (lain-lain)" />
+            <div class="muted" style="font-size:12px; margin-top:6px;">
+              Asingkan dengan koma. Contoh: <b>Jantina</b>
+            </div>
+          </div>
+          <div>
+            <div class="muted" style="font-size:12px; margin:0 0 6px;">PIN Admin (paparan sahaja)</div>
+            <input value="5235" disabled />
+            <div class="muted" style="font-size:12px; margin-top:6px;">
+              PIN disimpan dalam kod. (Jika cikgu nak ubah, cari <b>ADMIN_PIN</b> dalam script.)
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px;">
+          <button class="btn danger" id="btnReset">Reset Tetapan</button>
+          <button class="btn primary" id="btnSave">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL (untuk Pengumuman/Ibu Bapa) -->
+  <div class="overlay" id="detailOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modalHeader">
+        <h3 id="detailTitle">Detail</h3>
+        <button class="closeX" id="detailClose">✕</button>
+      </div>
+      <div class="modalBody">
+        <div id="detailMeta" class="muted" style="margin-bottom:10px;"></div>
+        <div id="detailBody" style="white-space:pre-wrap; font-weight:800; line-height:1.5;"></div>
+        <div id="detailLinkWrap" style="margin-top:12px; display:none;">
+          <a id="detailLink" class="btn primary" href="#" target="_blank" rel="noopener">Buka Pautan</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    /**********************
-     * KONFIG URL CSV
-     **********************/
-    const CSV_KEHADIRAN = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv";
-    const CSV_PENGUMUMAN = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv";
-    const CSV_IBUBAPA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv";
+    /***********************
+     *  CONFIG (DEFAULT)
+     ***********************/
+    const ADMIN_PIN = "5235";
 
-    // Takwim (boleh set kemudian dalam Settings)
-    const DEFAULT_CSV_TAKWIM = "";
-
-    /**********************
-     * PIN SETTINGS
-     **********************/
-    const SETTINGS_PIN = "5235"; // seperti diminta
-
-    /**********************
-     * STATE + STORAGE
-     **********************/
-    const LS_KEY = "ppki_pr_portal_settings_v1";
-    const LS_UI  = "ppki_pr_portal_ui_v1";
-
-    const THEME_PRESETS = {
-      forest: { primary: "#0f3d2e", accent: "#10b981" },
-      ocean:  { primary: "#0b3a6a", accent: "#22c1c3" },
-      purple: { primary: "#4c1d95", accent: "#a855f7" },
-      slate:  { primary: "#0f172a", accent: "#64748b" }
-    };
-
-    const defaultSettings = {
+    const DEFAULTS = {
       schoolName: "SK Paya Resak",
-      schoolMotto: "Moving Forward",
-      logoDataUrl: "",
-      footerLine1: "© 2025 NK.",
-      footerLine2: "Hak Cipta Terpelihara.",
+      motto: "Moving Forward",
+      logoUrl: "",
+      footer: "© 2025 NK.\nHak Cipta Terpelihara.",
+      preset: "forest",
+      theme: "light",
 
-      // theme (boleh semua orang ubah untuk paparan sendiri)
-      themePreset: "forest",
-      darkMode: false,
+      urlKehadiran: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
+      urlAnn: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
+      urlParents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
+      urlTakwim: "",
 
-      // data URLs
-      csvKehadiran: CSV_KEHADIRAN,
-      csvPengumuman: CSV_PENGUMUMAN,
-      csvIbuBapa: CSV_IBUBAPA,
-      csvTakwim: DEFAULT_CSV_TAKWIM,
-
-      // admin-only display controls
-      hiddenKehadiranColumns: [] // contoh: ["ID", "No KP"]
+      hideColsNonAdmin: "Jantina"
     };
 
-    const defaultUI = {
-      currentPage: "home",     // home | kehadiran | pengumuman | takwim | ibubapa
-      sidebarOpen: false,      // mobile default tertutup
-      desktopSidebarCollapsed: false
+    const LS_KEY = "ppki_portal_settings_v1";
+    const SS_ADMIN = "ppki_admin_unlocked_v1";
+
+    const state = {
+      settings: loadSettings(),
+      adminUnlocked: sessionStorage.getItem(SS_ADMIN) === "1",
+      page: "home",
+
+      // data cache
+      kehadiran: { headers: [], rows: [] },
+      pengumuman: { headers: [], rows: [] },
+      parents:   { headers: [], rows: [] },
+      takwim:    { headers: [], rows: [] },
+
+      chart: null,
+      showAdminCols: false
     };
 
-    let settings = loadSettings();
-    let ui = loadUI();
+    applySettingsToUI();
 
-    function loadSettings(){
-      try{
-        const saved = JSON.parse(localStorage.getItem(LS_KEY) || "null");
-        return { ...defaultSettings, ...(saved || {}) };
-      }catch(e){
-        return { ...defaultSettings };
-      }
-    }
-    function saveSettings(){
-      localStorage.setItem(LS_KEY, JSON.stringify(settings));
-    }
-    function loadUI(){
-      try{
-        const saved = JSON.parse(localStorage.getItem(LS_UI) || "null");
-        return { ...defaultUI, ...(saved || {}) };
-      }catch(e){
-        return { ...defaultUI };
-      }
-    }
-    function saveUI(){
-      localStorage.setItem(LS_UI, JSON.stringify(ui));
-    }
-
-    function applyThemeToDocument(){
-      const root = document.documentElement;
-      const preset = THEME_PRESETS[settings.themePreset] || THEME_PRESETS.forest;
-
-      if (settings.darkMode) root.classList.add("dark");
-      else root.classList.remove("dark");
-
-      root.style.setProperty("--primary", preset.primary);
-      root.style.setProperty("--accent", preset.accent);
-    }
-
-    /**********************
-     * CSV HELPERS
-     **********************/
+    /***********************
+     *  UTIL: CSV PARSER
+     ***********************/
     function parseCSV(text){
-      // CSV sederhana (cukup untuk sheet biasa). Menyokong quote.
+      // Basic robust CSV parser (handles quotes)
       const rows = [];
       let row = [];
       let cur = "";
       let inQuotes = false;
 
-      for (let i=0;i<text.length;i++){
-        const ch = text[i];
-        const next = text[i+1];
+      for (let i=0; i<text.length; i++){
+        const c = text[i];
+        const n = text[i+1];
 
-        if (ch === '"' && inQuotes && next === '"'){
-          cur += '"'; i++;
-        } else if (ch === '"'){
-          inQuotes = !inQuotes;
-        } else if (ch === "," && !inQuotes){
-          row.push(cur); cur="";
-        } else if ((ch === "\n" || ch === "\r") && !inQuotes){
-          if (ch === "\r" && next === "\n") i++;
-          row.push(cur);
-          rows.push(row);
-          row=[]; cur="";
+        if (c === '"' ){
+          if (inQuotes && n === '"'){ cur += '"'; i++; }
+          else { inQuotes = !inQuotes; }
+        } else if (c === ',' && !inQuotes){
+          row.push(cur); cur = "";
+        } else if ((c === '\n' || c === '\r') && !inQuotes){
+          if (c === '\r' && n === '\n') i++;
+          row.push(cur); cur = "";
+          if (row.some(v => v.trim() !== "")) rows.push(row);
+          row = [];
         } else {
-          cur += ch;
+          cur += c;
         }
       }
-      if (cur.length || row.length){
-        row.push(cur);
-        rows.push(row);
+      // last cell
+      row.push(cur);
+      if (row.some(v => v.trim() !== "")) rows.push(row);
+
+      // trim
+      return rows.map(r => r.map(v => (v ?? "").trim()));
+    }
+
+    function rowsToObjects(headers, rows){
+      return rows.map(r => {
+        const o = {};
+        headers.forEach((h, idx) => o[h] = (r[idx] ?? "").trim());
+        return o;
+      });
+    }
+
+    function normalizeHeader(h){
+      return (h || "").trim();
+    }
+
+    /***********************
+     *  UTIL: DATE PARSER
+     ***********************/
+    function parseDateSmart(s){
+      const t = (s || "").trim();
+      if (!t) return null;
+
+      // try YYYY-MM-DD
+      if (/^\d{4}-\d{2}-\d{2}$/.test(t)){
+        const d = new Date(t + "T00:00:00");
+        return isNaN(d.getTime()) ? null : d;
       }
 
-      if (!rows.length) return { headers: [], data: [] };
-      const headers = rows[0].map(h => (h || "").trim());
-      const data = rows.slice(1)
-        .filter(r => r.some(c => (c || "").trim() !== ""))
-        .map(r => {
-          const obj = {};
-          headers.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
-          return obj;
-        });
-
-      return { headers, data };
-    }
-
-    async function fetchCSV(url){
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("Gagal ambil CSV");
-      const text = await res.text();
-      return parseCSV(text);
-    }
-
-    function normalizeKey(s){
-      return (s || "")
-        .toString()
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "_")
-        .replace(/[^\w_]/g, "");
-    }
-
-    function toISODateMaybe(val){
-      // terima: YYYY-MM-DD, DD/MM/YYYY, DD-MM-YYYY, dll (best effort)
-      const v = (val || "").trim();
-      if (!v) return "";
-      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
-
-      // DD/MM/YYYY or DD-MM-YYYY
-      const m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-      if (m){
-        const dd = String(m[1]).padStart(2,"0");
-        const mm = String(m[2]).padStart(2,"0");
-        const yy = m[3];
-        return `${yy}-${mm}-${dd}`;
+      // try DD/MM/YYYY
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(t)){
+        const [dd, mm, yyyy] = t.split("/").map(Number);
+        const d = new Date(yyyy, mm-1, dd);
+        return isNaN(d.getTime()) ? null : d;
       }
 
-      // try Date parsing
-      const d = new Date(v);
-      if (!isNaN(d.getTime())){
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth()+1).padStart(2,"0");
-        const dd = String(d.getDate()).padStart(2,"0");
-        return `${yyyy}-${mm}-${dd}`;
-      }
-      return "";
+      // fallback
+      const d = new Date(t);
+      return isNaN(d.getTime()) ? null : d;
     }
 
-    function startOfWeekISO(date){
+    function isSameDay(a,b){
+      return a && b &&
+        a.getFullYear()===b.getFullYear() &&
+        a.getMonth()===b.getMonth() &&
+        a.getDate()===b.getDate();
+    }
+    function startOfWeek(d){
       // Monday as start
-      const d = new Date(date);
-      const day = (d.getDay() + 6) % 7; // Mon=0
-      d.setDate(d.getDate() - day);
-      d.setHours(0,0,0,0);
-      return d;
+      const x = new Date(d);
+      const day = (x.getDay()+6)%7; // Mon=0
+      x.setDate(x.getDate() - day);
+      x.setHours(0,0,0,0);
+      return x;
+    }
+    function endOfWeek(d){
+      const s = startOfWeek(d);
+      const e = new Date(s);
+      e.setDate(e.getDate()+6);
+      e.setHours(23,59,59,999);
+      return e;
     }
 
-    function sameMonth(isoA, isoB){
-      return isoA.slice(0,7) === isoB.slice(0,7);
+    function fmtDateMY(d){
+      if (!d) return "-";
+      const opts = { weekday:'short', year:'numeric', month:'short', day:'2-digit' };
+      return d.toLocaleDateString('ms-MY', opts);
     }
 
-    /**********************
-     * DATA CACHE
-     **********************/
-    const dataStore = {
-      kehadiran: { headers: [], rows: [], loaded:false, error:"" },
-      pengumuman:{ headers: [], rows: [], loaded:false, error:"" },
-      ibubapa:   { headers: [], rows: [], loaded:false, error:"" },
-      takwim:    { headers: [], rows: [], loaded:false, error:"" }
+    function monthKey(d){
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      return `${y}-${m}`;
+    }
+
+    /***********************
+     *  LOCKED COLUMN MAPPING (Kehadiran)
+     ***********************/
+    function getKehadiranColumns(headers){
+      // ===== LOCKED COLUMN MAPPING =====
+      const COL_TARIKH = "Tarikh";
+      const COL_KELAS = "Kelas";
+      const COL_NAMA  = headers.includes("Nama Murid") ? "Nama Murid" : "Nama_Murid"; // fallback
+      const COL_STATUS = "Status";
+      const COL_JANTINA = "Jantina";
+
+      const missing = [];
+      [COL_TARIKH, COL_KELAS, COL_NAMA, COL_STATUS].forEach(col=>{
+        if (!headers.includes(col)) missing.push(col);
+      });
+      if (missing.length){
+        console.warn("❌ Kolum Kehadiran tidak dijumpai:", missing.join(", "));
+      }
+
+      return { tarikh: COL_TARIKH, kelas: COL_KELAS, nama: COL_NAMA, status: COL_STATUS, jantina: COL_JANTINA };
+    }
+
+    /***********************
+     *  LOAD & SAVE SETTINGS
+     ***********************/
+    function loadSettings(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return {...DEFAULTS};
+        const parsed = JSON.parse(raw);
+        return { ...DEFAULTS, ...parsed };
+      }catch{
+        return {...DEFAULTS};
+      }
+    }
+    function saveSettings(s){
+      localStorage.setItem(LS_KEY, JSON.stringify(s));
+    }
+
+    function applySettingsToUI(){
+      const s = state.settings;
+
+      document.body.setAttribute("data-preset", s.preset);
+      document.body.setAttribute("data-theme", s.theme);
+
+      // Sidebar brand
+      document.getElementById("schoolName").textContent = s.schoolName || DEFAULTS.schoolName;
+      document.getElementById("schoolMotto").textContent = s.motto || DEFAULTS.motto;
+
+      // Welcome
+      document.getElementById("welcomeTitle").textContent =
+        `Selamat Datang ke Portal Rasmi PPKI ${s.schoolName || DEFAULTS.schoolName}`;
+
+      // Footer
+      document.getElementById("footerText").innerText = s.footer || DEFAULTS.footer;
+
+      // Logo
+      const logoBox = document.getElementById("logoBox");
+      logoBox.innerHTML = "";
+      if (s.logoUrl && s.logoUrl.trim()){
+        const img = document.createElement("img");
+        img.src = s.logoUrl.trim();
+        img.alt = "Logo Sekolah";
+        img.onerror = () => {
+          logoBox.innerHTML = "<span style='font-weight:1000;'>🏫</span>";
+        };
+        logoBox.appendChild(img);
+      } else {
+        logoBox.innerHTML = "<span style='font-weight:1000;'>🏫</span>";
+      }
+
+      // Theme label
+      document.getElementById("themeLabel").textContent = s.theme === "dark" ? "Dark" : "Light";
+      document.getElementById("themeIcon").textContent = s.theme === "dark" ? "☀️" : "🌙";
+
+      // Admin btn columns visibility
+      document.getElementById("btnAdminCols").style.display = state.adminUnlocked ? "inline-block" : "none";
+    }
+
+    /***********************
+     *  CLOCK
+     ***********************/
+    function startClock(){
+      const el = document.getElementById("clock");
+      setInterval(()=>{
+        const now = new Date();
+        const t = now.toLocaleTimeString("ms-MY", { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        const d = now.toLocaleDateString("ms-MY", { weekday:'short', year:'numeric', month:'short', day:'2-digit' });
+        el.textContent = `${d} • ${t}`;
+      }, 1000);
+    }
+    startClock();
+
+    /***********************
+     *  NAVIGATION
+     ***********************/
+    function setActivePage(page){
+      state.page = page;
+      const titles = {
+        home:"Laman Utama",
+        kehadiran:"Kehadiran",
+        pengumuman:"Pengumuman",
+        takwim:"Takwim",
+        ibubapa:"Ibu Bapa"
+      };
+      document.getElementById("pageTitle").textContent = titles[page] || "Portal";
+
+      // show/hide sections
+      ["home","kehadiran","pengumuman","takwim","ibubapa"].forEach(p=>{
+        document.getElementById("page-"+p).style.display = (p===page) ? "" : "none";
+      });
+
+      // nav active
+      document.querySelectorAll(".navBtn").forEach(btn=>{
+        btn.classList.toggle("active", btn.dataset.page === page);
+      });
+
+      // on mobile: close sidebar after click
+      if (window.matchMedia("(max-width: 860px)").matches){
+        closeMobileSidebar();
+      }
+    }
+
+    document.getElementById("nav").addEventListener("click", (e)=>{
+      const btn = e.target.closest(".navBtn");
+      if (!btn) return;
+      setActivePage(btn.dataset.page);
+    });
+
+    // Cards jump
+    document.getElementById("cardToday").onclick = ()=> setActivePage("kehadiran");
+    document.getElementById("cardWeek").onclick  = ()=> setActivePage("kehadiran");
+    document.getElementById("cardMonth").onclick = ()=> setActivePage("kehadiran");
+    document.getElementById("cardPct").onclick   = ()=> setActivePage("kehadiran");
+    document.getElementById("cardToday2").onclick = ()=>{};
+    document.getElementById("cardWeek2").onclick  = ()=>{};
+    document.getElementById("cardMonth2").onclick = ()=>{};
+    document.getElementById("cardPct2").onclick   = ()=>{};
+    document.getElementById("cardAnn").onclick   = ()=> setActivePage("pengumuman");
+
+    /***********************
+     *  SIDEBAR TOGGLE
+     ***********************/
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("sidebarBackdrop");
+
+    function isMobile(){
+      return window.matchMedia("(max-width: 860px)").matches;
+    }
+
+    function openMobileSidebar(){
+      sidebar.classList.add("open");
+      backdrop.classList.add("show");
+    }
+    function closeMobileSidebar(){
+      sidebar.classList.remove("open");
+      backdrop.classList.remove("show");
+    }
+
+    function toggleSidebar(){
+      if (isMobile()){
+        if (sidebar.classList.contains("open")) closeMobileSidebar();
+        else openMobileSidebar();
+      } else {
+        sidebar.classList.toggle("collapsed");
+      }
+    }
+
+    document.getElementById("btnSidebar").onclick = toggleSidebar;
+    backdrop.onclick = closeMobileSidebar;
+
+    // Mobile default: sidebar closed
+    window.addEventListener("resize", ()=>{
+      if (!isMobile()){
+        closeMobileSidebar();
+      } else {
+        // keep default closed
+      }
+    });
+
+    /***********************
+     *  THEME TOGGLE (public)
+     ***********************/
+    document.getElementById("themeToggle").onclick = ()=>{
+      state.settings.theme = (state.settings.theme === "dark") ? "light" : "dark";
+      // semua orang boleh toggle; simpan supaya peranti itu ingat
+      saveSettings(state.settings);
+      applySettingsToUI();
+      if (state.chart) state.chart.update();
     };
 
-    async function loadAllData(){
-      // Load in parallel (silent fail per dataset)
-      await Promise.allSettled([
-        loadKehadiran(),
-        loadPengumuman(),
-        loadIbuBapa(),
-        loadTakwim()
-      ]);
-    }
+    /***********************
+     *  PIN FLOW + SETTINGS
+     *  - Klik gear => keluar PIN modal
+     *  - PIN betul => buka settings modal
+     ***********************/
+    const pinOverlay = document.getElementById("pinOverlay");
+    const settingsOverlay = document.getElementById("settingsOverlay");
+    const detailOverlay = document.getElementById("detailOverlay");
 
-    async function loadKehadiran(){
-      try{
-        dataStore.kehadiran.loaded = false;
-        dataStore.kehadiran.error = "";
-        const { headers, data } = await fetchCSV(settings.csvKehadiran);
-        dataStore.kehadiran.headers = headers;
-        dataStore.kehadiran.rows = data;
-        dataStore.kehadiran.loaded = true;
-      }catch(e){
-        dataStore.kehadiran.error = "Data kehadiran tidak dapat dimuat.";
-        dataStore.kehadiran.loaded = true;
+    function show(el){ el.classList.add("show"); el.setAttribute("aria-hidden","false"); }
+    function hide(el){ el.classList.remove("show"); el.setAttribute("aria-hidden","true"); }
+
+    document.getElementById("btnGear").onclick = ()=>{
+      // buka PIN modal sahaja
+      document.getElementById("pinInput").value = "";
+      document.getElementById("pinWarn").style.display = "none";
+      show(pinOverlay);
+      setTimeout(()=> document.getElementById("pinInput").focus(), 50);
+    };
+    document.getElementById("pinClose").onclick = ()=> hide(pinOverlay);
+
+    document.getElementById("pinSubmit").onclick = ()=>{
+      const val = document.getElementById("pinInput").value.trim();
+      if (val !== ADMIN_PIN){
+        document.getElementById("pinWarn").style.display = "";
+        return;
       }
+      // unlock
+      state.adminUnlocked = true;
+      sessionStorage.setItem(SS_ADMIN, "1");
+      document.getElementById("btnAdminCols").style.display = "inline-block";
+      hide(pinOverlay);
+      openSettingsModal();
+    };
+
+    document.getElementById("settingsClose").onclick = ()=> hide(settingsOverlay);
+
+    function openSettingsModal(){
+      // fill inputs
+      const s = state.settings;
+      document.getElementById("setSchoolName").value = s.schoolName || "";
+      document.getElementById("setMotto").value = s.motto || "";
+      document.getElementById("setLogoUrl").value = s.logoUrl || "";
+      document.getElementById("setFooter").value = s.footer || "";
+      document.getElementById("setPreset").value = s.preset || "forest";
+      document.getElementById("setDefaultTheme").value = s.theme || "light";
+      document.getElementById("setUrlKehadiran").value = s.urlKehadiran || "";
+      document.getElementById("setUrlAnn").value = s.urlAnn || "";
+      document.getElementById("setUrlParents").value = s.urlParents || "";
+      document.getElementById("setUrlTakwim").value = s.urlTakwim || "";
+      document.getElementById("setHideCols").value = s.hideColsNonAdmin || "";
+      show(settingsOverlay);
     }
-    async function loadPengumuman(){
-      try{
-        dataStore.pengumuman.loaded = false;
-        dataStore.pengumuman.error = "";
-        const { headers, data } = await fetchCSV(settings.csvPengumuman);
-        dataStore.pengumuman.headers = headers;
-        dataStore.pengumuman.rows = data;
-        dataStore.pengumuman.loaded = true;
-      }catch(e){
-        dataStore.pengumuman.error = "Data pengumuman tidak dapat dimuat.";
-        dataStore.pengumuman.loaded = true;
+
+    document.getElementById("btnSave").onclick = async ()=>{
+      state.settings.schoolName = document.getElementById("setSchoolName").value.trim() || DEFAULTS.schoolName;
+      state.settings.motto = document.getElementById("setMotto").value.trim() || DEFAULTS.motto;
+      state.settings.logoUrl = document.getElementById("setLogoUrl").value.trim();
+      state.settings.footer = document.getElementById("setFooter").value.trim() || DEFAULTS.footer;
+      state.settings.preset = document.getElementById("setPreset").value;
+      state.settings.theme = document.getElementById("setDefaultTheme").value;
+
+      state.settings.urlKehadiran = document.getElementById("setUrlKehadiran").value.trim();
+      state.settings.urlAnn = document.getElementById("setUrlAnn").value.trim();
+      state.settings.urlParents = document.getElementById("setUrlParents").value.trim();
+      state.settings.urlTakwim = document.getElementById("setUrlTakwim").value.trim();
+
+      state.settings.hideColsNonAdmin = document.getElementById("setHideCols").value.trim();
+
+      saveSettings(state.settings);
+      applySettingsToUI();
+      hide(settingsOverlay);
+
+      // refresh data
+      await loadAllData();
+    };
+
+    document.getElementById("btnReset").onclick = async ()=>{
+      state.settings = {...DEFAULTS};
+      saveSettings(state.settings);
+      applySettingsToUI();
+      hide(settingsOverlay);
+      await loadAllData();
+    };
+
+    /***********************
+     *  DETAIL MODAL
+     ***********************/
+    document.getElementById("detailClose").onclick = ()=> hide(detailOverlay);
+
+    function openDetail({title, meta, body, url}){
+      document.getElementById("detailTitle").textContent = title || "Detail";
+      document.getElementById("detailMeta").textContent = meta || "";
+      document.getElementById("detailBody").textContent = body || "";
+      const wrap = document.getElementById("detailLinkWrap");
+      const a = document.getElementById("detailLink");
+      if (url && url.trim()){
+        a.href = url.trim();
+        wrap.style.display = "";
+      } else {
+        wrap.style.display = "none";
       }
-    }
-    async function loadIbuBapa(){
-      try{
-        dataStore.ibubapa.loaded = false;
-        dataStore.ibubapa.error = "";
-        const { headers, data } = await fetchCSV(settings.csvIbuBapa);
-        dataStore.ibubapa.headers = headers;
-        dataStore.ibubapa.rows = data;
-        dataStore.ibubapa.loaded = true;
-      }catch(e){
-        dataStore.ibubapa.error = "Data Ibu Bapa tidak dapat dimuat.";
-        dataStore.ibubapa.loaded = true;
-      }
-    }
-    async function loadTakwim(){
-      try{
-        dataStore.takwim.loaded = false;
-        dataStore.takwim.error = "";
-        if (!settings.csvTakwim){
-          dataStore.takwim.headers = [];
-          dataStore.takwim.rows = [];
-          dataStore.takwim.loaded = true;
-          return;
-        }
-        const { headers, data } = await fetchCSV(settings.csvTakwim);
-        dataStore.takwim.headers = headers;
-        dataStore.takwim.rows = data;
-        dataStore.takwim.loaded = true;
-      }catch(e){
-        dataStore.takwim.error = "Data takwim tidak dapat dimuat.";
-        dataStore.takwim.loaded = true;
-      }
+      show(detailOverlay);
     }
 
-    /**********************
-     * KEHADIRAN - STAT & FILTER
-     **********************/
-    function detectKehadiranColumns(headers){
-      const n = headers.map(h => ({h, k: normalizeKey(h)}));
-      const dateCol =
-        n.find(x => ["tarikh","date","tanggal"].includes(x.k))?.h ||
-        n.find(x => x.k.includes("tarikh"))?.h ||
-        n.find(x => x.k.includes("date"))?.h ||
-        headers[0];
-
-      const statusCol =
-        n.find(x => ["status","kehadiran","hadir"].includes(x.k))?.h ||
-        n.find(x => x.k.includes("status"))?.h ||
-        n.find(x => x.k.includes("kehadiran"))?.h ||
-        null;
-
-      const classCol =
-        n.find(x => ["kelas","class"].includes(x.k))?.h ||
-        n.find(x => x.k.includes("kelas"))?.h ||
-        null;
-
-      return { dateCol, statusCol, classCol };
+    /***********************
+     *  FETCH CSV
+     ***********************/
+    async function fetchCSV(url){
+      if (!url) return { headers: [], rows: [] };
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("Gagal fetch CSV: " + res.status);
+      const text = await res.text();
+      const matrix = parseCSV(text);
+      if (!matrix.length) return { headers: [], rows: [] };
+      const headers = matrix[0].map(normalizeHeader);
+      const rows = matrix.slice(1);
+      return { headers, rows: rowsToObjects(headers, rows) };
     }
 
-    function isHadirValue(v){
-      const s = (v || "").toString().trim().toLowerCase();
-      return ["hadir","h","present","ya","y"].includes(s);
-    }
-    function isTidakHadirValue(v){
-      const s = (v || "").toString().trim().toLowerCase();
-      return ["tidak hadir","x hadir","absent","tidak","x","no","n"].includes(s);
-    }
+    /***********************
+     *  KEHADIRAN: stats + table + chart
+     ***********************/
+    function calcAttendanceStats(rows, cols){
+      const now = new Date();
+      now.setHours(0,0,0,0);
+      const weekStart = startOfWeek(now);
+      const weekEnd = endOfWeek(now);
 
-    function computeKehadiranStats(){
-      const { headers, rows } = dataStore.kehadiran;
-      if (!headers.length || !rows.length) return null;
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth()+1, 0);
+      monthEnd.setHours(23,59,59,999);
 
-      const { dateCol, statusCol } = detectKehadiranColumns(headers);
-      const todayIso = toISODateMaybe(new Date().toISOString().slice(0,10));
-      const weekStart = startOfWeekISO(new Date());
-      const weekStartIso = weekStart.toISOString().slice(0,10);
+      // normalization for "Hadir"
+      const isHadir = (v)=> (v || "").toLowerCase().includes("hadir") && !(v || "").toLowerCase().includes("tidak");
 
       let todayH=0, todayT=0, weekH=0, weekT=0, monthH=0, monthT=0;
 
+      const monthlyHadir = new Map(); // key YYYY-MM => count hadir
+
       for (const r of rows){
-        const dIso = toISODateMaybe(r[dateCol]);
-        if (!dIso) continue;
+        const d = parseDateSmart(r[cols.tarikh]);
+        if (!d) continue;
+        d.setHours(0,0,0,0);
 
-        const st = statusCol ? r[statusCol] : "";
-        const hadir = isHadirValue(st);
-        const tidak = isTidakHadirValue(st);
+        const status = r[cols.status] || "";
+        const hadir = isHadir(status);
 
-        // if status not detected, treat non-empty as hadir? (avoid wrong)
-        const hInc = hadir ? 1 : 0;
-        const tInc = tidak ? 1 : 0;
+        // month grouping (hadir only)
+        const mk = monthKey(d);
+        if (hadir) monthlyHadir.set(mk, (monthlyHadir.get(mk)||0)+1);
 
-        // Today
-        if (dIso === todayIso){
-          todayH += hInc; todayT += tInc;
+        // today
+        if (isSameDay(d, now)){
+          if (hadir) todayH++; else todayT++;
         }
-        // Week
-        if (new Date(dIso) >= new Date(weekStartIso)){
-          weekH += hInc; weekT += tInc;
+
+        // week
+        if (d >= weekStart && d <= weekEnd){
+          if (hadir) weekH++; else weekT++;
         }
-        // Month (current month)
-        if (sameMonth(dIso, todayIso)){
-          monthH += hInc; monthT += tInc;
+
+        // month
+        if (d >= monthStart && d <= monthEnd){
+          if (hadir) monthH++; else monthT++;
         }
       }
 
       const monthTotal = monthH + monthT;
-      const monthPct = monthTotal ? Math.round((monthH / monthTotal) * 1000) / 10 : 0;
+      const pct = monthTotal ? Math.round((monthH / monthTotal) * 1000) / 10 : 0; // 1 decimal
 
       return {
-        today: { hadir: todayH, tidak: todayT, total: todayH+todayT },
-        week:  { hadir: weekH,  tidak: weekT,  total: weekH+weekT },
-        month: { hadir: monthH, tidak: monthT, total: monthTotal, pct: monthPct }
+        today: { hadir: todayH, total: todayH+todayT },
+        week:  { hadir: weekH, total: weekH+weekT },
+        month: { hadir: monthH, total: monthH+monthT },
+        pct,
+        monthlyHadir
       };
     }
 
-    function buildMonthlyDailySeries(){
-      // series untuk chart (bulan semasa): kira "Hadir" per hari
-      const { headers, rows } = dataStore.kehadiran;
-      if (!headers.length || !rows.length) return null;
+    function setStatUI(prefix, label, stat){
+      const vEl = document.getElementById(prefix);
+      const sEl = document.getElementById(label);
+      if (!vEl || !sEl) return;
+      vEl.textContent = stat.hadir ?? "-";
+      sEl.textContent = `Jumlah rekod: ${stat.total ?? 0}`;
+    }
 
-      const { dateCol, statusCol } = detectKehadiranColumns(headers);
-      const todayIso = new Date().toISOString().slice(0,10);
-      const monthKey = todayIso.slice(0,7);
+    function setPctUI(prefix, label, pct){
+      const vEl = document.getElementById(prefix);
+      const sEl = document.getElementById(label);
+      if (!vEl || !sEl) return;
+      vEl.textContent = (pct ?? 0) + "%";
+      sEl.textContent = "Berdasarkan rekod bulan semasa";
+    }
 
-      const map = new Map(); // date -> {h,t}
-      for (const r of rows){
-        const dIso = toISODateMaybe(r[dateCol]);
-        if (!dIso || dIso.slice(0,7) !== monthKey) continue;
+    function buildAttendanceChart(monthlyHadir){
+      // sort keys
+      const keys = Array.from(monthlyHadir.keys()).sort();
+      const labels = keys.map(k=>{
+        const [y,m] = k.split("-");
+        const d = new Date(Number(y), Number(m)-1, 1);
+        return d.toLocaleDateString("ms-MY", { month:"short", year:"numeric" });
+      });
+      const data = keys.map(k=> monthlyHadir.get(k) || 0);
 
-        const st = statusCol ? r[statusCol] : "";
-        if (!map.has(dIso)) map.set(dIso, {h:0,t:0});
-        const obj = map.get(dIso);
-        if (isHadirValue(st)) obj.h += 1;
-        if (isTidakHadirValue(st)) obj.t += 1;
+      const ctx = document.getElementById("attChart");
+      if (!ctx) return;
+
+      if (state.chart){
+        state.chart.data.labels = labels;
+        state.chart.data.datasets[0].data = data;
+        state.chart.update();
+        return;
       }
 
-      const dates = Array.from(map.keys()).sort();
-      if (!dates.length) return { dates: [], hadir: [], tidak: [] };
+      state.chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "Bilangan Hadir",
+            data,
+            tension: 0.25,
+            pointRadius: 3,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: "Bulan" }
+            },
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "Bilangan (Hadir)" },
+              ticks: { precision: 0 }
+            }
+          }
+        }
+      });
+    }
 
-      return {
-        dates,
-        hadir: dates.map(d => map.get(d).h),
-        tidak: dates.map(d => map.get(d).t)
+    function getHiddenColsNonAdmin(){
+      const s = state.settings.hideColsNonAdmin || "";
+      return s.split(",").map(x=>x.trim()).filter(Boolean);
+    }
+
+    function renderKehadiranTable(){
+      const { headers, rows } = state.kehadiran;
+      const thead = document.getElementById("kehadiranThead");
+      const tbody = document.getElementById("kehadiranTbody");
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+
+      if (!headers.length){
+        thead.innerHTML = "<tr><th>Tiada data</th></tr>";
+        return;
+      }
+
+      const cols = getKehadiranColumns(headers);
+
+      // filters
+      const search = document.getElementById("fSearch").value.trim().toLowerCase();
+      const dateFrom = document.getElementById("fDateFrom").value ? new Date(document.getElementById("fDateFrom").value + "T00:00:00") : null;
+      const dateTo = document.getElementById("fDateTo").value ? new Date(document.getElementById("fDateTo").value + "T23:59:59") : null;
+      const fKelas = document.getElementById("fKelas").value.trim().toLowerCase();
+      const fNama  = document.getElementById("fNama").value.trim().toLowerCase();
+      const fStatus= document.getElementById("fStatus").value.trim().toLowerCase();
+
+      const hidden = (!state.adminUnlocked && !state.showAdminCols) ? getHiddenColsNonAdmin() : [];
+      const showHeaders = headers.filter(h => !hidden.includes(h));
+
+      // header row
+      const trh = document.createElement("tr");
+      showHeaders.forEach(h=>{
+        const th = document.createElement("th");
+        th.textContent = h;
+        trh.appendChild(th);
+      });
+      thead.appendChild(trh);
+
+      // body rows (filtered)
+      const filtered = rows.filter(r=>{
+        // date range filter
+        const d = parseDateSmart(r[cols.tarikh]);
+        if (dateFrom || dateTo){
+          if (!d) return false;
+          const t = d.getTime();
+          if (dateFrom && t < dateFrom.getTime()) return false;
+          if (dateTo && t > dateTo.getTime()) return false;
+        }
+
+        // column filters
+        if (fKelas && !(r[cols.kelas]||"").toLowerCase().includes(fKelas)) return false;
+        if (fNama  && !(r[cols.nama]||"").toLowerCase().includes(fNama)) return false;
+        if (fStatus&& !(r[cols.status]||"").toLowerCase().includes(fStatus)) return false;
+
+        // global search
+        if (search){
+          const s = showHeaders.map(h=> (r[h]||"")).join(" ").toLowerCase();
+          if (!s.includes(search)) return false;
+        }
+        return true;
+      });
+
+      if (!filtered.length){
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = showHeaders.length;
+        td.textContent = "Tiada rekod sepadan dengan filter.";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+
+      filtered.forEach(r=>{
+        const tr = document.createElement("tr");
+        showHeaders.forEach(h=>{
+          const td = document.createElement("td");
+          td.textContent = r[h] ?? "";
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function wireKehadiranFilters(){
+      ["fSearch","fDateFrom","fDateTo","fKelas","fNama","fStatus"].forEach(id=>{
+        document.getElementById(id).addEventListener("input", renderKehadiranTable);
+        document.getElementById(id).addEventListener("change", renderKehadiranTable);
+      });
+    }
+    wireKehadiranFilters();
+
+    /***********************
+     *  PENGUMUMAN
+     *  Columns: TARIKH MULA, TARIKH TAMAT, TAJUK, ISI KANDUNGAN, URL, KEUTAMAAN, AKTIF
+     ***********************/
+    function getAnnCols(headers){
+      const map = {
+        mula: findAny(headers, ["TARIKH MULA","Tarikh Mula","Tarikh_Mula"]),
+        tamat: findAny(headers, ["TARIKH TAMAT","Tarikh Tamat","Tarikh_Tamat"]),
+        tajuk: findAny(headers, ["TAJUK","Tajuk"]),
+        isi:   findAny(headers, ["ISI KANDUNGAN","Isi Kandungan","Isi_Kandungan","Isi"]),
+        url:   findAny(headers, ["URL","Pautan","Link"]),
+        prio:  findAny(headers, ["KEUTAMAAN","Keutamaan","Priority"]),
+        aktif: findAny(headers, ["AKTIF","Aktif"])
       };
+      return map;
+    }
+    function findAny(headers, candidates){
+      for (const c of candidates){
+        if (headers.includes(c)) return c;
+      }
+      return "";
+    }
+    function isYA(v){
+      const t = (v||"").trim().toLowerCase();
+      return t === "ya" || t === "yes" || t === "y" || t === "true" || t === "1";
     }
 
-    function renderBarChartSVG(labels, values, options={}){
-      const w = 760, h = 170, padX = 18, padY = 18;
-      const n = Math.max(1, values.length);
-      const max = Math.max(1, ...values);
-      const barW = (w - padX*2) / n;
+    function getActiveAnnouncements(){
+      const { headers, rows } = state.pengumuman;
+      const c = getAnnCols(headers);
+      const now = new Date();
+      now.setHours(0,0,0,0);
 
-      const bars = values.map((v,i)=>{
-        const bh = ((h - padY*2) * (v / max));
-        const x = padX + i * barW;
-        const y = (h - padY) - bh;
-        const title = `${labels[i]}: ${v}`;
-        return `
-          <g>
-            <title>${escapeHtml(title)}</title>
-            <rect x="${x+1}" y="${y}" width="${Math.max(2, barW-3)}" height="${bh}"
-              rx="4" ry="4" fill="currentColor" opacity="0.85"></rect>
-          </g>
+      let list = rows.map(r=>{
+        const dm = parseDateSmart(r[c.mula]);
+        const dt = parseDateSmart(r[c.tamat]);
+        const pr = Number((r[c.prio]||"").trim()) || 0;
+
+        const okDate =
+          (!dm || dm <= now) &&
+          (!dt || dt >= now);
+
+        const okAktif = c.aktif ? isYA(r[c.aktif]) : okDate; // fallback jika tiada kolum aktif
+
+        return {
+          mula: dm,
+          tamat: dt,
+          tajuk: r[c.tajuk] || "(Tanpa Tajuk)",
+          isi: r[c.isi] || "",
+          url: r[c.url] || "",
+          prio: pr,
+          ok: okDate && okAktif
+        };
+      }).filter(x=>x.ok);
+
+      // sort: keutamaan desc, mula desc
+      list.sort((a,b)=>{
+        if (b.prio !== a.prio) return b.prio - a.prio;
+        return (b.mula?.getTime()||0) - (a.mula?.getTime()||0);
+      });
+
+      return list;
+    }
+
+    function renderAnnouncements(){
+      const box = document.getElementById("annContainer");
+      box.innerHTML = "";
+
+      const list = getActiveAnnouncements();
+
+      // badges
+      document.getElementById("annBadgeTop").textContent = String(list.length);
+      const side = document.getElementById("annBadgeSide");
+      side.textContent = String(list.length);
+      side.style.display = list.length ? "" : "none";
+
+      document.getElementById("vAnnCount").textContent = String(list.length);
+
+      if (!list.length){
+        document.getElementById("annListShort").textContent = "Tiada pengumuman aktif.";
+        box.innerHTML = `<div class="card"><div class="muted">Tiada pengumuman aktif buat masa ini.</div></div>`;
+        return;
+      }
+
+      // short list on home
+      const topTitles = list.slice(0,5).map((x,idx)=> `${idx+1}. ${x.tajuk}`).join(" • ");
+      document.getElementById("annListShort").textContent = topTitles;
+
+      // cards
+      list.forEach((x, idx)=>{
+        const card = document.createElement("div");
+        card.className = "card statCard";
+        card.innerHTML = `
+          <div class="statTop">
+            <div class="k">#${idx+1} • Keutamaan: ${x.prio}</div>
+            <div class="i">📢</div>
+          </div>
+          <div style="margin-top:8px; font-weight:1100; font-size:15px;">${escapeHTML(x.tajuk)}</div>
+          <div class="muted" style="margin-top:6px; font-size:12px;">
+            ${x.mula ? "Mula: " + fmtDateMY(x.mula) : ""} ${x.tamat ? " • Tamat: " + fmtDateMY(x.tamat) : ""}
+          </div>
+          <div class="muted" style="margin-top:10px; font-size:12px; line-height:1.4;">
+            ${escapeHTML((x.isi||"").slice(0,140))}${(x.isi||"").length>140 ? "..." : ""}
+          </div>
         `;
-      }).join("");
-
-      const caption = options.caption ? `
-        <div class="text-xs text-slate-500 dark:text-slate-300 mt-1">${escapeHtml(options.caption)}</div>
-      ` : "";
-
-      return `
-        <div class="text-slate-800 dark:text-slate-100">
-          <svg viewBox="0 0 ${w} ${h}" class="w-full h-36">
-            ${bars}
-          </svg>
-          ${caption}
-        </div>
-      `;
+        card.onclick = ()=>{
+          openDetail({
+            title: x.tajuk,
+            meta: `${x.mula ? "Mula: "+fmtDateMY(x.mula) : ""}${x.tamat ? " • Tamat: "+fmtDateMY(x.tamat) : ""} • Keutamaan: ${x.prio}`,
+            body: x.isi,
+            url: x.url
+          });
+        };
+        box.appendChild(card);
+      });
     }
 
-    /**********************
-     * PENGUMUMAN - FILTER AKTIF
-     **********************/
-    function detectPengumumanColumns(headers){
-      const n = headers.map(h => ({h, k: normalizeKey(h)}));
-      const mula = n.find(x => ["tarikh_mula","mula"].includes(x.k))?.h || n.find(x => x.k.includes("tarikh_mula"))?.h || "TARIKH MULA";
-      const tamat= n.find(x => ["tarikh_tamat","tamat","expired"].includes(x.k))?.h || n.find(x => x.k.includes("tarikh_tamat"))?.h || "TARIKH TAMAT";
-      const tajuk= n.find(x => ["tajuk","title"].includes(x.k))?.h || "TAJUK";
-      const isi  = n.find(x => ["isi_kandungan","isi","kandungan","content"].includes(x.k))?.h || "ISI KANDUNGAN";
-      const url  = n.find(x => ["url","pautan","link"].includes(x.k))?.h || "URL";
-      const utm  = n.find(x => ["keutamaan","priority"].includes(x.k))?.h || "KEUTAMAAN";
-      const aktif= n.find(x => ["aktif","active"].includes(x.k))?.h || "AKTIF";
-      return { mula, tamat, tajuk, isi, url, utm, aktif };
-    }
-
-    function getPengumumanAktif(){
-      const { headers, rows } = dataStore.pengumuman;
-      if (!headers.length || !rows.length) return [];
-      const c = detectPengumumanColumns(headers);
-
-      const today = new Date();
-      const todayIso = today.toISOString().slice(0,10);
-
-      const out = rows
-        .map(r => {
-          const mulaIso = toISODateMaybe(r[c.mula]);
-          const tamatIso = toISODateMaybe(r[c.tamat]);
-          const tajuk = (r[c.tajuk] || "").trim();
-          const isi = (r[c.isi] || "").trim();
-          const url = (r[c.url] || "").trim();
-          const aktif = (r[c.aktif] || "").toString().trim().toUpperCase();
-          const pr = parseFloat((r[c.utm] || "0").toString().replace(",", ".")) || 0;
-          return { mulaIso, tamatIso, tajuk, isi, url, aktif, pr };
-        })
-        .filter(x => x.tajuk)
-        .filter(x => (x.aktif === "YA" || x.aktif === "Y" || x.aktif === "TRUE" || x.aktif === "1"))
-        .filter(x => {
-          if (!x.mulaIso) return true;
-          return x.mulaIso <= todayIso;
-        })
-        .filter(x => {
-          if (!x.tamatIso) return true;
-          return x.tamatIso >= todayIso;
-        })
-        .sort((a,b) => (b.pr - a.pr) || (b.mulaIso.localeCompare(a.mulaIso)));
-
-      return out;
-    }
-
-    /**********************
-     * IBU BAPA - CARD
-     **********************/
-    function detectIbuBapaColumns(headers){
-      const n = headers.map(h => ({h, k: normalizeKey(h)}));
-      const tajuk = n.find(x => ["tajuk","title"].includes(x.k))?.h || "TAJUK";
-      const isi   = n.find(x => ["isi_kandungan","isi","kandungan","content"].includes(x.k))?.h || "ISI KANDUNGAN";
-      const url   = n.find(x => ["url","pautan","link"].includes(x.k))?.h || "URL";
-      const mode  = n.find(x => ["mode","jenis","buka"].includes(x.k))?.h || ""; // optional: "POPUP" / "TAB"
-      return { tajuk, isi, url, mode };
-    }
-
-    /**********************
-     * UI RENDER
-     **********************/
-    function escapeHtml(s){
-      return (s ?? "")
-        .toString()
+    function escapeHTML(s){
+      return String(s || "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -519,1050 +1642,206 @@
         .replaceAll("'","&#039;");
     }
 
-    function pageTitle(){
-      switch(ui.currentPage){
-        case "home": return "Laman Utama";
-        case "kehadiran": return "Kehadiran";
-        case "pengumuman": return "Pengumuman";
-        case "takwim": return "Takwim";
-        case "ibubapa": return "Ibu Bapa";
-        default: return "Portal";
-      }
-    }
+    /***********************
+     *  IBU BAPA
+     ***********************/
+    function renderParents(){
+      const box = document.getElementById("parentsContainer");
+      box.innerHTML = "";
 
-    function setPage(p){
-      ui.currentPage = p;
-      // mobile: auto close sidebar after click
-      ui.sidebarOpen = false;
-      saveUI();
-      render();
-    }
-
-    function toggleMobileSidebar(){
-      ui.sidebarOpen = !ui.sidebarOpen;
-      saveUI();
-      render();
-    }
-    function toggleDesktopSidebar(){
-      ui.desktopSidebarCollapsed = !ui.desktopSidebarCollapsed;
-      saveUI();
-      render();
-    }
-
-    function setThemePreset(preset){
-      settings.themePreset = preset;
-      saveSettings();
-      applyThemeToDocument();
-      render();
-    }
-    function toggleDarkMode(){
-      settings.darkMode = !settings.darkMode;
-      saveSettings();
-      applyThemeToDocument();
-      render();
-    }
-
-    // Modal controls
-    let modal = { open:false, type:"", payload:null };
-    function openModal(type, payload=null){
-      modal.open = true; modal.type = type; modal.payload = payload;
-      render();
-    }
-    function closeModal(){
-      modal.open = false; modal.type = ""; modal.payload = null;
-      render();
-    }
-
-    /**********************
-     * SETTINGS (PIN-GUARDED SAVE)
-     **********************/
-    function openSettings(){
-      openModal("settings");
-      setTimeout(() => {
-        // init values
-        const $ = (id) => document.getElementById(id);
-        if (!$("setSchoolName")) return;
-
-        $("setSchoolName").value = settings.schoolName || "";
-        $("setSchoolMotto").value = settings.schoolMotto || "";
-        $("setFooter1").value = settings.footerLine1 || "";
-        $("setFooter2").value = settings.footerLine2 || "";
-        $("setThemePreset").value = settings.themePreset || "forest";
-
-        $("setCsvKehadiran").value = settings.csvKehadiran || "";
-        $("setCsvPengumuman").value = settings.csvPengumuman || "";
-        $("setCsvIbuBapa").value = settings.csvIbuBapa || "";
-        $("setCsvTakwim").value = settings.csvTakwim || "";
-
-        // columns (depends on loaded)
-        renderHiddenColsSelector();
-
-        // logo preview
-        const preview = $("logoPreview");
-        if (preview){
-          if (settings.logoDataUrl){
-            preview.src = settings.logoDataUrl;
-            preview.classList.remove("hidden");
-          } else {
-            preview.classList.add("hidden");
-          }
-        }
-      }, 30);
-    }
-
-    function renderHiddenColsSelector(){
-      const wrap = document.getElementById("hiddenColsWrap");
-      if (!wrap) return;
-
-      const { headers } = dataStore.kehadiran;
+      const { headers, rows } = state.parents;
       if (!headers.length){
-        wrap.innerHTML = `<div class="text-sm text-slate-500 dark:text-slate-300">Kolum kehadiran akan muncul selepas data dimuat.</div>`;
+        box.innerHTML = `<div class="card"><div class="muted">Tiada data ibu bapa.</div></div>`;
         return;
       }
-      wrap.innerHTML = headers.map(h => {
-        const checked = settings.hiddenKehadiranColumns.includes(h) ? "checked" : "";
-        return `
-          <label class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10">
-            <input type="checkbox" class="h-4 w-4" data-hidden-col="${escapeHtml(h)}" ${checked}>
-            <span class="text-sm">${escapeHtml(h)}</span>
-          </label>
+
+      const cTajuk = findAny(headers, ["TAJUK","Tajuk","Title"]);
+      const cIsi   = findAny(headers, ["ISI KANDUNGAN","Isi Kandungan","Isi_Kandungan","Isi","Kandungan","Catatan"]);
+      const cUrl   = findAny(headers, ["URL","Pautan","Link"]);
+      const cMod   = findAny(headers, ["MOD","Mod","Mode","TINDAKAN","Tindakan","Action"]);
+
+      rows.forEach((r)=>{
+        const tajuk = r[cTajuk] || "Makluman";
+        const isi = r[cIsi] || "";
+        const url = r[cUrl] || "";
+        const mod = (r[cMod] || "").trim().toUpperCase(); // POPUP / TAB
+
+        const card = document.createElement("div");
+        card.className = "card statCard";
+        card.innerHTML = `
+          <div class="statTop">
+            <div class="k">Ibu Bapa</div>
+            <div class="i">👨‍👩‍👧‍👦</div>
+          </div>
+          <div style="margin-top:8px; font-weight:1100; font-size:15px;">${escapeHTML(tajuk)}</div>
+          <div class="muted" style="margin-top:10px; font-size:12px; line-height:1.4;">
+            ${escapeHTML(isi.slice(0,160))}${isi.length>160 ? "..." : ""}
+          </div>
+          ${url ? `<div class="muted" style="margin-top:10px; font-size:12px;">Pautan tersedia</div>` : ""}
         `;
-      }).join("");
-    }
 
-    function handleLogoUpload(file){
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result;
-        const img = document.getElementById("logoPreview");
-        if (img){
-          img.src = dataUrl;
-          img.classList.remove("hidden");
-        }
-        // store temp in dataset
-        document.getElementById("setLogoDataUrl").value = dataUrl;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function saveSettingsWithPin(){
-      const pin = (document.getElementById("pinInput")?.value || "").trim();
-      if (pin !== SETTINGS_PIN){
-        const el = document.getElementById("pinError");
-        if (el) el.textContent = "PIN tidak tepat.";
-        return;
-      }
-      const el = document.getElementById("pinError");
-      if (el) el.textContent = "";
-
-      // commit form
-      settings.schoolName = (document.getElementById("setSchoolName").value || "").trim() || defaultSettings.schoolName;
-      settings.schoolMotto = (document.getElementById("setSchoolMotto").value || "").trim();
-      settings.footerLine1 = (document.getElementById("setFooter1").value || "").trim();
-      settings.footerLine2 = (document.getElementById("setFooter2").value || "").trim();
-
-      settings.themePreset = document.getElementById("setThemePreset").value || "forest";
-
-      settings.csvKehadiran = (document.getElementById("setCsvKehadiran").value || "").trim();
-      settings.csvPengumuman = (document.getElementById("setCsvPengumuman").value || "").trim();
-      settings.csvIbuBapa = (document.getElementById("setCsvIbuBapa").value || "").trim();
-      settings.csvTakwim = (document.getElementById("setCsvTakwim").value || "").trim();
-
-      const logoData = document.getElementById("setLogoDataUrl").value || "";
-      if (logoData) settings.logoDataUrl = logoData;
-
-      // hidden columns
-      const checks = document.querySelectorAll("[data-hidden-col]");
-      const hidden = [];
-      checks.forEach(ch => {
-        if (ch.checked) hidden.push(ch.getAttribute("data-hidden-col"));
-      });
-      settings.hiddenKehadiranColumns = hidden;
-
-      saveSettings();
-      applyThemeToDocument();
-
-      // reload data using possibly new urls
-      refreshData(true);
-      closeModal();
-    }
-
-    async function refreshData(force=false){
-      // show a subtle toast via re-render
-      openModal("loading", { text: "Mengemas kini data..." });
-      try{
-        await loadAllData();
-      }catch(e){}
-      closeModal();
-      render();
-    }
-
-    /**********************
-     * PAGE RENDERS
-     **********************/
-    function renderHome(){
-      const stats = computeKehadiranStats();
-      const ann = getPengumumanAktif();
-      const series = buildMonthlyDailySeries();
-
-      const now = new Date();
-      const timeStr = now.toLocaleString("ms-MY", {
-        weekday: "long", year: "numeric", month:"long", day:"numeric",
-        hour: "2-digit", minute:"2-digit"
-      });
-
-      // chart (Hadir per hari bulan semasa)
-      let chartHtml = "";
-      if (series && series.dates.length){
-        const labels = series.dates.map(d => d.slice(8,10)); // day
-        chartHtml = renderBarChartSVG(labels, series.hadir, {
-          caption: "Hadir (hari) — Bulan semasa"
-        });
-      } else {
-        chartHtml = `<div class="text-sm text-slate-500 dark:text-slate-300">Tiada data chart untuk bulan semasa.</div>`;
-      }
-
-      const cardStats = stats ? `
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          ${statCard("Kehadiran Hari Ini", stats.today.hadir, stats.today.total, "kehadiran", { scope:"today" })}
-          ${statCard("Kehadiran Minggu Ini", stats.week.hadir, stats.week.total, "kehadiran", { scope:"week" })}
-          ${statCard("Kehadiran Bulan Ini", stats.month.hadir, stats.month.total, "kehadiran", { scope:"month" })}
-          ${pctCard("Peratus Kehadiran Bulanan", stats.month.pct, "kehadiran", { scope:"month" })}
-        </div>
-      ` : `
-        <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5">
-          <div class="text-sm text-slate-500 dark:text-slate-300">Statistik kehadiran akan dipaparkan selepas data dimuat.</div>
-        </div>
-      `;
-
-      const annCard = `
-        <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5">
-          <div class="flex items-center justify-between gap-3">
-            <div class="font-extrabold text-slate-900 dark:text-white">📢 Pengumuman</div>
-            <button class="text-sm font-semibold text-accent hover:underline" onclick="setPage('pengumuman')">Lihat semua</button>
-          </div>
-
-          <div class="mt-3">
-            ${
-              dataStore.pengumuman.error ? `<div class="text-sm text-rose-500">${escapeHtml(dataStore.pengumuman.error)}</div>` :
-              (ann.length ? `
-                <div class="space-y-2">
-                  ${ann.slice(0,6).map((x, idx) => `
-                    <button class="w-full text-left px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 transition"
-                      onclick="openModal('pengumumanDetail', ${idx})">
-                      <div class="flex items-start justify-between gap-3">
-                        <div class="font-bold">${escapeHtml((idx+1)+'. '+x.tajuk)}</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-300">${escapeHtml(x.mulaIso || "")}</div>
-                      </div>
-                      <div class="text-sm text-slate-600 dark:text-slate-300 line-clamp-2">${escapeHtml(x.isi || "")}</div>
-                    </button>
-                  `).join("")}
-                </div>
-              ` : `<div class="text-sm text-slate-500 dark:text-slate-300">Tiada pengumuman aktif.</div>`)
-            }
-          </div>
-        </div>
-      `;
-
-      return `
-        <div class="space-y-5">
-          <!-- Banner -->
-          <div class="rounded-2xl bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] p-6 text-white shadow-sm">
-            <div class="text-sm font-semibold opacity-95">Selamat Datang ke Portal Rasmi PPKI SK Paya Resak</div>
-            <div class="mt-1 text-2xl font-extrabold">${escapeHtml(settings.schoolName)}</div>
-            <div class="mt-3 inline-flex items-center gap-2 rounded-xl bg-white/15 px-4 py-2">
-              <span class="text-sm font-semibold">${escapeHtml(timeStr)}</span>
-            </div>
-          </div>
-
-          ${cardStats}
-
-          <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
-            <div class="xl:col-span-2 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5">
-              <div class="flex items-center justify-between">
-                <div class="font-extrabold">Trend Kehadiran</div>
-                <button class="text-sm font-semibold text-accent hover:underline" onclick="setPage('kehadiran')">Buka Dashboard Kehadiran</button>
-              </div>
-              <div class="mt-4">
-                ${chartHtml}
-              </div>
-            </div>
-            ${annCard}
-          </div>
-        </div>
-      `;
-    }
-
-    function statCard(title, value, total, gotoPage, navExtra){
-      const sub = total ? `${value} / ${total}` : `${value}`;
-      const hint = total ? `${Math.round((value/Math.max(1,total))*100)}%` : "";
-      return `
-        <button class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 text-left hover:shadow-sm transition"
-          onclick="setPage('${gotoPage}')">
-          <div class="text-sm font-bold text-slate-600 dark:text-slate-300">${escapeHtml(title)}</div>
-          <div class="mt-2 text-3xl font-extrabold text-slate-900 dark:text-white">${escapeHtml(String(value))}</div>
-          <div class="mt-1 text-sm text-slate-500 dark:text-slate-300">${escapeHtml(sub)} ${hint ? "• "+escapeHtml(hint) : ""}</div>
-        </button>
-      `;
-    }
-    function pctCard(title, pct, gotoPage){
-      return `
-        <button class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 text-left hover:shadow-sm transition"
-          onclick="setPage('${gotoPage}')">
-          <div class="text-sm font-bold text-slate-600 dark:text-slate-300">${escapeHtml(title)}</div>
-          <div class="mt-2 text-3xl font-extrabold text-slate-900 dark:text-white">${escapeHtml(String(pct))}%</div>
-          <div class="mt-1 text-sm text-slate-500 dark:text-slate-300">Bulan semasa</div>
-        </button>
-      `;
-    }
-
-    // Kehadiran page
-    function renderKehadiran(){
-      const { headers, rows, error } = dataStore.kehadiran;
-
-      // build filters UI (dynamic per column)
-      if (error){
-        return `
-          <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6">
-            <div class="text-rose-500 font-semibold">${escapeHtml(error)}</div>
-          </div>
-        `;
-      }
-
-      if (!headers.length){
-        return `
-          <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6">
-            <div class="text-sm text-slate-500 dark:text-slate-300">Tiada data untuk dipaparkan.</div>
-          </div>
-        `;
-      }
-
-      const stats = computeKehadiranStats();
-      const { dateCol } = detectKehadiranColumns(headers);
-
-      // Build hide columns (admin saved)
-      const visibleHeaders = headers.filter(h => !settings.hiddenKehadiranColumns.includes(h));
-
-      return `
-        <div class="space-y-5">
-          <div class="flex items-start justify-between gap-3 flex-wrap">
-            <div>
-              <div class="text-2xl font-extrabold">Dashboard Kehadiran</div>
-              <div class="text-sm text-slate-500 dark:text-slate-300">Data daripada CSV</div>
-            </div>
-            <button class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition font-semibold text-sm"
-              onclick="refreshData(true)">
-              Segar Semula
-            </button>
-          </div>
-
-          ${
-            stats ? `
-              <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                ${statCard("Kehadiran Hari Ini", stats.today.hadir, stats.today.total, "kehadiran")}
-                ${statCard("Kehadiran Minggu Ini", stats.week.hadir, stats.week.total, "kehadiran")}
-                ${statCard("Kehadiran Bulan Ini", stats.month.hadir, stats.month.total, "kehadiran")}
-                ${pctCard("Peratus Kehadiran Bulanan", stats.month.pct, "kehadiran")}
-              </div>
-            ` : ``
+        card.onclick = ()=>{
+          if (url && mod === "TAB"){
+            window.open(url, "_blank", "noopener");
+            return;
           }
+          openDetail({
+            title: tajuk,
+            meta: url ? "Ada pautan (klik butang di bawah jika perlu)" : "",
+            body: isi,
+            url
+          });
+        };
 
-          <!-- Filter Panel -->
-          <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5">
-            <div class="font-extrabold">Penapisan</div>
-
-            <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div class="lg:col-span-1">
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Carian</label>
-                <input id="kSearch" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10"
-                  placeholder="Cari nama / kelas / apa-apa..."
-                  oninput="applyKehadiranFilters()"
-                />
-              </div>
-
-              <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Tarikh (Dari)</label>
-                  <input id="kDateFrom" type="date" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10"
-                    onchange="applyKehadiranFilters()"
-                  />
-                </div>
-                <div>
-                  <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Tarikh (Hingga)</label>
-                  <input id="kDateTo" type="date" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10"
-                    onchange="applyKehadiranFilters()"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-4">
-              <div class="text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">Filter kolum (pilih nilai)</div>
-              <div id="kColumnFilters" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
-            </div>
-
-            <div class="mt-4 flex items-center justify-between gap-3 flex-wrap">
-              <div class="text-sm text-slate-500 dark:text-slate-300">
-                Kolum tarikh dikesan: <span class="font-semibold">${escapeHtml(dateCol)}</span>
-              </div>
-              <button class="text-sm font-semibold text-accent hover:underline" onclick="resetKehadiranFilters()">Reset filter</button>
-            </div>
-          </div>
-
-          <!-- Table -->
-          <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3">
-              <div class="font-extrabold">Rekod Kehadiran</div>
-              <div class="text-sm text-slate-500 dark:text-slate-300"><span id="kRowCount">0</span> rekod</div>
-            </div>
-            <div class="overflow-auto">
-              <table class="min-w-full text-sm">
-                <thead class="bg-slate-50 dark:bg-white/5 sticky top-0">
-                  <tr>
-                    ${visibleHeaders.map(h => `<th class="text-left px-4 py-3 font-extrabold text-slate-700 dark:text-slate-100 whitespace-nowrap">${escapeHtml(h)}</th>`).join("")}
-                  </tr>
-                </thead>
-                <tbody id="kTableBody">
-                  <!-- rows injected -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function initKehadiranFilters(){
-      const { headers, rows } = dataStore.kehadiran;
-      if (!headers.length) return;
-
-      const visibleHeaders = headers.filter(h => !settings.hiddenKehadiranColumns.includes(h));
-      const wrap = document.getElementById("kColumnFilters");
-      if (!wrap) return;
-
-      // build dropdown filters for up to 6 columns (excluding tarikh if too big)
-      const { dateCol } = detectKehadiranColumns(headers);
-      const candidate = visibleHeaders.filter(h => h !== dateCol).slice(0, 6);
-
-      wrap.innerHTML = candidate.map(h => {
-        const values = Array.from(new Set(rows.map(r => (r[h] || "").trim()).filter(Boolean))).slice(0, 200);
-        return `
-          <div class="rounded-2xl bg-slate-100 dark:bg-white/10 p-3">
-            <div class="text-xs font-extrabold text-slate-600 dark:text-slate-200">${escapeHtml(h)}</div>
-            <select class="mt-2 w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-900 ring-1 ring-slate-200 dark:ring-white/10"
-              data-kfilter-col="${escapeHtml(h)}"
-              onchange="applyKehadiranFilters()">
-              <option value="">Semua</option>
-              ${values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("")}
-            </select>
-          </div>
-        `;
-      }).join("");
-
-      applyKehadiranFilters();
-    }
-
-    function applyKehadiranFilters(){
-      const { headers, rows } = dataStore.kehadiran;
-      if (!headers.length) return;
-
-      const visibleHeaders = headers.filter(h => !settings.hiddenKehadiranColumns.includes(h));
-      const { dateCol } = detectKehadiranColumns(headers);
-
-      const search = (document.getElementById("kSearch")?.value || "").trim().toLowerCase();
-      const from = document.getElementById("kDateFrom")?.value || "";
-      const to = document.getElementById("kDateTo")?.value || "";
-
-      // column filters
-      const selects = document.querySelectorAll("[data-kfilter-col]");
-      const colFilters = [];
-      selects.forEach(s => {
-        const col = s.getAttribute("data-kfilter-col");
-        const val = (s.value || "").trim();
-        if (col && val) colFilters.push({ col, val });
+        box.appendChild(card);
       });
-
-      const filtered = rows.filter(r => {
-        // date range
-        const dIso = toISODateMaybe(r[dateCol]);
-        if (from && dIso && dIso < from) return false;
-        if (to && dIso && dIso > to) return false;
-
-        // dropdown filters
-        for (const f of colFilters){
-          if (((r[f.col] || "").trim()) !== f.val) return false;
-        }
-
-        // search across visible columns
-        if (search){
-          let ok = false;
-          for (const h of visibleHeaders){
-            const v = (r[h] || "").toString().toLowerCase();
-            if (v.includes(search)) { ok = true; break; }
-          }
-          if (!ok) return false;
-        }
-        return true;
-      });
-
-      const tbody = document.getElementById("kTableBody");
-      const rc = document.getElementById("kRowCount");
-      if (rc) rc.textContent = String(filtered.length);
-
-      if (!tbody) return;
-      tbody.innerHTML = filtered.slice(0, 2000).map(r => `
-        <tr class="border-t border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5">
-          ${visibleHeaders.map(h => `<td class="px-4 py-3 whitespace-nowrap">${escapeHtml(r[h] || "")}</td>`).join("")}
-        </tr>
-      `).join("");
     }
 
-    function resetKehadiranFilters(){
-      const ids = ["kSearch","kDateFrom","kDateTo"];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-      });
-      const selects = document.querySelectorAll("[data-kfilter-col]");
-      selects.forEach(s => s.value = "");
-      applyKehadiranFilters();
-    }
-
-    // Pengumuman page
-    function renderPengumuman(){
-      const err = dataStore.pengumuman.error;
-      const list = getPengumumanAktif();
-
-      return `
-        <div class="space-y-5">
-          <div class="flex items-start justify-between gap-3 flex-wrap">
-            <div>
-              <div class="text-2xl font-extrabold">Pengumuman</div>
-              <div class="text-sm text-slate-500 dark:text-slate-300">Senarai pengumuman aktif</div>
-            </div>
-            <button class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition font-semibold text-sm"
-              onclick="refreshData(true)">
-              Segar Semula
-            </button>
-          </div>
-
-          ${
-            err ? `<div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 text-rose-500 font-semibold">${escapeHtml(err)}</div>` : ""
-          }
-
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            ${
-              list.length ? list.map((x, idx) => `
-                <button class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 text-left hover:shadow-sm transition"
-                  onclick="openModal('pengumumanDetail', ${idx})">
-                  <div class="flex items-start justify-between gap-3">
-                    <div class="font-extrabold text-lg">${escapeHtml(x.tajuk)}</div>
-                    <div class="text-xs text-slate-500 dark:text-slate-300 whitespace-nowrap">${escapeHtml(x.mulaIso || "")}</div>
-                  </div>
-                  <div class="mt-2 text-sm text-slate-600 dark:text-slate-300 line-clamp-3">${escapeHtml(x.isi || "")}</div>
-                  ${x.url ? `<div class="mt-3 text-sm font-semibold text-accent">Pautan tersedia</div>` : ``}
-                </button>
-              `).join("") : `
-                <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6">
-                  <div class="text-sm text-slate-500 dark:text-slate-300">Tiada pengumuman aktif.</div>
-                </div>
-              `
-            }
-          </div>
-        </div>
-      `;
-    }
-
-    // Takwim page
+    /***********************
+     *  TAKWIM
+     ***********************/
     function renderTakwim(){
-      const err = dataStore.takwim.error;
-      const { headers, rows } = dataStore.takwim;
+      const { headers, rows } = state.takwim;
+      const thead = document.getElementById("takwimThead");
+      const tbody = document.getElementById("takwimTbody");
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
 
-      if (err){
-        return `<div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 text-rose-500 font-semibold">${escapeHtml(err)}</div>`;
-      }
-      if (!settings.csvTakwim){
-        return `
-          <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6">
-            <div class="text-2xl font-extrabold">Takwim</div>
-            <div class="mt-2 text-sm text-slate-500 dark:text-slate-300">URL CSV takwim belum ditetapkan.</div>
-            <div class="mt-4">
-              <button class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition font-semibold text-sm"
-                onclick="openSettings()">
-                Tetapkan dalam Settings
-              </button>
-            </div>
-          </div>
-        `;
-      }
-
-      // best-effort columns
-      const n = headers.map(h => ({h, k: normalizeKey(h)}));
-      const colDate = n.find(x => ["tarikh","date"].includes(x.k) || x.k.includes("tarikh"))?.h || headers[0];
-      const colTitle= n.find(x => ["tajuk","title","program","aktiviti"].includes(x.k))?.h || headers[1] || headers[0];
-      const colTime = n.find(x => ["masa","time"].includes(x.k) || x.k.includes("masa"))?.h || "";
-      const colLoc  = n.find(x => ["tempat","lokasi","location"].includes(x.k) || x.k.includes("tempat"))?.h || "";
-
-      const items = rows
-        .map(r => ({
-          date: toISODateMaybe(r[colDate]),
-          title: (r[colTitle]||"").trim(),
-          time: colTime ? (r[colTime]||"").trim() : "",
-          loc:  colLoc ? (r[colLoc]||"").trim() : ""
-        }))
-        .filter(x => x.title)
-        .sort((a,b) => (a.date||"").localeCompare(b.date||""));
-
-      return `
-        <div class="space-y-5">
-          <div class="flex items-start justify-between gap-3 flex-wrap">
-            <div>
-              <div class="text-2xl font-extrabold">Takwim</div>
-              <div class="text-sm text-slate-500 dark:text-slate-300">Senarai aktiviti</div>
-            </div>
-            <button class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition font-semibold text-sm"
-              onclick="refreshData(true)">
-              Segar Semula
-            </button>
-          </div>
-
-          <div class="space-y-3">
-            ${
-              items.length ? items.map(x => `
-                <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5">
-                  <div class="flex items-start justify-between gap-3">
-                    <div class="font-extrabold">${escapeHtml(x.title)}</div>
-                    <div class="text-xs text-slate-500 dark:text-slate-300 whitespace-nowrap">${escapeHtml(x.date || "")}</div>
-                  </div>
-                  <div class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                    ${x.time ? `🕒 ${escapeHtml(x.time)}` : ``}
-                    ${x.time && x.loc ? `<span class="mx-2">•</span>` : ``}
-                    ${x.loc ? `📍 ${escapeHtml(x.loc)}` : ``}
-                  </div>
-                </div>
-              `).join("") : `
-                <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6">
-                  <div class="text-sm text-slate-500 dark:text-slate-300">Tiada rekod takwim.</div>
-                </div>
-              `
-            }
-          </div>
-        </div>
-      `;
-    }
-
-    // Ibu Bapa page
-    function renderIbuBapa(){
-      const err = dataStore.ibubapa.error;
-      const { headers, rows } = dataStore.ibubapa;
-
-      if (err){
-        return `<div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6 text-rose-500 font-semibold">${escapeHtml(err)}</div>`;
-      }
       if (!headers.length){
-        return `
-          <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-6">
-            <div class="text-sm text-slate-500 dark:text-slate-300">Tiada data.</div>
-          </div>
-        `;
+        thead.innerHTML = "<tr><th>Tiada data</th></tr>";
+        return;
+      }
+      const trh = document.createElement("tr");
+      headers.forEach(h=>{
+        const th = document.createElement("th");
+        th.textContent = h;
+        trh.appendChild(th);
+      });
+      thead.appendChild(trh);
+
+      if (!rows.length){
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = headers.length;
+        td.textContent = "Tiada rekod.";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
       }
 
-      const c = detectIbuBapaColumns(headers);
-      const items = rows
-        .map(r => ({
-          tajuk: (r[c.tajuk]||"").trim(),
-          isi: (r[c.isi]||"").trim(),
-          url: (r[c.url]||"").trim(),
-          mode: c.mode ? (r[c.mode]||"").trim().toUpperCase() : ""
-        }))
-        .filter(x => x.tajuk);
-
-      return `
-        <div class="space-y-5">
-          <div class="flex items-start justify-between gap-3 flex-wrap">
-            <div>
-              <div class="text-2xl font-extrabold">Ibu Bapa</div>
-              <div class="text-sm text-slate-500 dark:text-slate-300">Makluman & pautan penting</div>
-            </div>
-            <button class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition font-semibold text-sm"
-              onclick="refreshData(true)">
-              Segar Semula
-            </button>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            ${items.map(x => {
-              const go = x.url ? (x.mode === "TAB" ? `window.open('${escapeHtml(x.url)}','_blank')` : `openModal('ibubapaDetail', ${JSON.stringify(x).replaceAll('"','&quot;')})`) : `openModal('ibubapaDetail', ${JSON.stringify(x).replaceAll('"','&quot;')})`;
-              return `
-                <button class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 text-left hover:shadow-sm transition"
-                  onclick="${go}">
-                  <div class="font-extrabold text-lg">${escapeHtml(x.tajuk)}</div>
-                  <div class="mt-2 text-sm text-slate-600 dark:text-slate-300 line-clamp-3">${escapeHtml(x.isi)}</div>
-                  ${x.url ? `<div class="mt-3 text-sm font-semibold text-accent">Buka pautan</div>` : ``}
-                </button>
-              `;
-            }).join("")}
-          </div>
-        </div>
-      `;
+      rows.forEach(r=>{
+        const tr = document.createElement("tr");
+        headers.forEach(h=>{
+          const td = document.createElement("td");
+          td.textContent = r[h] ?? "";
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
     }
 
-    /**********************
-     * MODAL RENDER
-     **********************/
-    function renderModal(){
-      if (!modal.open) return "";
-      const base = `
-        <div class="fixed inset-0 z-50">
-          <div class="absolute inset-0 bg-black/40" onclick="closeModal()"></div>
-          <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-lg overflow-hidden">
-              ${renderModalInner()}
-            </div>
-          </div>
-        </div>
-      `;
-      return base;
+    /***********************
+     *  LOAD ALL DATA
+     ***********************/
+    async function loadAllData(){
+      // Kehadiran
+      try{
+        state.kehadiran = await fetchCSV(state.settings.urlKehadiran);
+      }catch(err){
+        console.warn(err);
+        state.kehadiran = { headers: [], rows: [] };
+      }
+
+      // Pengumuman
+      try{
+        state.pengumuman = await fetchCSV(state.settings.urlAnn);
+      }catch(err){
+        console.warn(err);
+        state.pengumuman = { headers: [], rows: [] };
+      }
+
+      // Parents
+      try{
+        state.parents = await fetchCSV(state.settings.urlParents);
+      }catch(err){
+        console.warn(err);
+        state.parents = { headers: [], rows: [] };
+      }
+
+      // Takwim
+      if (state.settings.urlTakwim){
+        try{
+          state.takwim = await fetchCSV(state.settings.urlTakwim);
+        }catch(err){
+          console.warn(err);
+          state.takwim = { headers: [], rows: [] };
+        }
+      } else {
+        state.takwim = { headers: [], rows: [] };
+      }
+
+      // Render everything
+      renderEverything();
     }
 
-    function renderModalInner(){
-      if (modal.type === "loading"){
-        return `
-          <div class="p-6">
-            <div class="text-lg font-extrabold">${escapeHtml(modal.payload?.text || "Memuat...")}</div>
-            <div class="mt-3 text-sm text-slate-500 dark:text-slate-300">Sila tunggu sebentar.</div>
-          </div>
-        `;
+    function renderEverything(){
+      // stats kehadiran
+      if (state.kehadiran.headers.length){
+        const cols = getKehadiranColumns(state.kehadiran.headers);
+        const st = calcAttendanceStats(state.kehadiran.rows, cols);
+
+        // Home
+        setStatUI("vToday","sToday", st.today);
+        setStatUI("vWeek","sWeek", st.week);
+        setStatUI("vMonth","sMonth", st.month);
+        setPctUI("vPct","sPct", st.pct);
+
+        // Kehadiran page
+        setStatUI("vToday2","sToday2", st.today);
+        setStatUI("vWeek2","sWeek2", st.week);
+        setStatUI("vMonth2","sMonth2", st.month);
+        setPctUI("vPct2","sPct2", st.pct);
+
+        // chart
+        buildAttendanceChart(st.monthlyHadir);
+      } else {
+        document.getElementById("sToday").textContent = "Gagal memuat data.";
+        document.getElementById("sWeek").textContent = "Gagal memuat data.";
+        document.getElementById("sMonth").textContent = "Gagal memuat data.";
+        document.getElementById("sPct").textContent = "Gagal memuat data.";
       }
 
-      if (modal.type === "pengumumanDetail"){
-        const list = getPengumumanAktif();
-        const x = list[modal.payload] || null;
-        if (!x) return `<div class="p-6"><div class="font-extrabold">Tiada data.</div></div>`;
+      // Table kehadiran
+      renderKehadiranTable();
 
-        return `
-          <div class="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-            <div class="font-extrabold text-lg">📢 ${escapeHtml(x.tajuk)}</div>
-            <button class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition text-sm font-semibold" onclick="closeModal()">Tutup</button>
-          </div>
-          <div class="p-6 space-y-4">
-            <div class="text-sm text-slate-500 dark:text-slate-300">${escapeHtml(x.mulaIso || "")}</div>
-            <div class="whitespace-pre-wrap text-slate-800 dark:text-slate-100">${escapeHtml(x.isi || "")}</div>
-            ${x.url ? `
-              <div>
-                <a class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-white font-semibold"
-                  href="${escapeHtml(x.url)}" target="_blank" rel="noopener">
-                  Buka Pautan
-                </a>
-              </div>
-            ` : ``}
-          </div>
-        `;
-      }
+      // Ann
+      renderAnnouncements();
 
-      if (modal.type === "ibubapaDetail"){
-        const x = modal.payload || {};
-        return `
-          <div class="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-            <div class="font-extrabold text-lg">${escapeHtml(x.tajuk || "Makluman")}</div>
-            <button class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition text-sm font-semibold" onclick="closeModal()">Tutup</button>
-          </div>
-          <div class="p-6 space-y-4">
-            <div class="whitespace-pre-wrap text-slate-800 dark:text-slate-100">${escapeHtml(x.isi || "")}</div>
-            ${x.url ? `
-              <div>
-                <a class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-white font-semibold"
-                  href="${escapeHtml(x.url)}" target="_blank" rel="noopener">
-                  Buka Pautan
-                </a>
-              </div>
-            ` : ``}
-          </div>
-        `;
-      }
+      // Parents
+      renderParents();
 
-      if (modal.type === "settings"){
-        return `
-          <div class="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-            <div class="font-extrabold text-lg">Tetapan Portal</div>
-            <button class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition text-sm font-semibold" onclick="closeModal()">Tutup</button>
-          </div>
-
-          <div class="p-6 space-y-5">
-            <div class="rounded-2xl bg-slate-50 dark:bg-white/5 p-4">
-              <div class="text-sm font-extrabold">Kemas kini tetapan memerlukan PIN</div>
-              <div class="mt-2 flex items-center gap-3">
-                <input id="pinInput" type="password" inputmode="numeric" placeholder="Masukkan PIN"
-                  class="w-48 px-4 py-3 rounded-xl bg-white dark:bg-slate-900 ring-1 ring-slate-200 dark:ring-white/10" />
-                <div id="pinError" class="text-sm text-rose-500 font-semibold"></div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Nama Sekolah</label>
-                <input id="setSchoolName" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10" />
-              </div>
-              <div>
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Moto</label>
-                <input id="setSchoolMotto" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10" />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Footer (Baris 1)</label>
-                <input id="setFooter1" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10" />
-              </div>
-              <div>
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Footer (Baris 2)</label>
-                <input id="setFooter2" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10" />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Tema Preset</label>
-                <select id="setThemePreset" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10">
-                  <option value="forest">Forest (Hijau)</option>
-                  <option value="ocean">Ocean (Biru/Teal)</option>
-                  <option value="purple">Purple</option>
-                  <option value="slate">Slate (Gelap)</option>
-                </select>
-                <div class="mt-2 text-xs text-slate-500 dark:text-slate-300">Tema ini untuk paparan peranti semasa.</div>
-              </div>
-
-              <div>
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Logo Sekolah</label>
-                <input type="hidden" id="setLogoDataUrl" value="" />
-                <div class="mt-1 flex items-center gap-3">
-                  <input id="setLogoFile" type="file" accept="image/*"
-                    class="block w-full text-sm text-slate-500 file:mr-3 file:rounded-xl file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:font-semibold hover:file:bg-slate-200 dark:file:bg-white/10 dark:text-slate-300 dark:hover:file:bg-white/15"
-                    onchange="handleLogoUpload(this.files[0])" />
-                  <img id="logoPreview" class="hidden h-12 w-12 rounded-xl object-cover border border-slate-200 dark:border-white/10" />
-                </div>
-              </div>
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-4">
-              <div class="font-extrabold">URL CSV</div>
-              <div class="mt-3 grid grid-cols-1 gap-3">
-                <div>
-                  <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Kehadiran</label>
-                  <input id="setCsvKehadiran" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10" />
-                </div>
-                <div>
-                  <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Pengumuman</label>
-                  <input id="setCsvPengumuman" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10" />
-                </div>
-                <div>
-                  <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Ibu Bapa</label>
-                  <input id="setCsvIbuBapa" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10" />
-                </div>
-                <div>
-                  <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Takwim</label>
-                  <input id="setCsvTakwim" class="mt-1 w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10" placeholder="(optional)" />
-                </div>
-              </div>
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-4">
-              <div class="font-extrabold">Kehadiran: Sembunyikan Kolum</div>
-              <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2" id="hiddenColsWrap"></div>
-            </div>
-
-            <div class="flex items-center justify-end gap-3 pt-2">
-              <button class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition font-semibold"
-                onclick="closeModal()">
-                Batal
-              </button>
-              <button class="px-5 py-2 rounded-xl bg-primary text-white hover:opacity-95 transition font-extrabold"
-                onclick="saveSettingsWithPin()">
-                Simpan
-              </button>
-            </div>
-          </div>
-        `;
-      }
-
-      return `<div class="p-6"><div class="font-extrabold">Modal</div></div>`;
+      // Takwim
+      renderTakwim();
     }
 
-    /**********************
-     * MAIN APP RENDER
-     **********************/
-    function render(){
-      applyThemeToDocument();
+    // Buttons reload
+    document.getElementById("btnReloadKehadiran").onclick = loadAllData;
+    document.getElementById("btnReloadAnn").onclick = loadAllData;
+    document.getElementById("btnReloadParents").onclick = loadAllData;
+    document.getElementById("btnReloadTakwim").onclick = loadAllData;
 
-      const app = document.getElementById("app");
-      const sidebarCollapsed = ui.desktopSidebarCollapsed;
+    // Admin columns toggle
+    document.getElementById("btnAdminCols").onclick = ()=>{
+      state.showAdminCols = !state.showAdminCols;
+      document.getElementById("btnAdminCols").textContent = state.showAdminCols ? "🙈 Sembunyi Kolum Admin" : "👁️ Kolum Admin";
+      renderKehadiranTable();
+    };
 
-      const menu = [
-        { id:"home", label:"Laman Utama", icon:"🏠" },
-        { id:"kehadiran", label:"Kehadiran", icon:"🧾" },
-        { id:"pengumuman", label:"Pengumuman", icon:"📢" },
-        { id:"takwim", label:"Takwim", icon:"🗓️" },
-        { id:"ibubapa", label:"Ibu Bapa", icon:"👨‍👩‍👧‍👦" }
-      ];
+    // First load
+    loadAllData();
 
-      const active = ui.currentPage;
-
-      const sidebarWidth = sidebarCollapsed ? "w-20" : "w-72";
-
-      app.innerHTML = `
-        <div class="h-full flex">
-          <!-- Mobile overlay -->
-          <div class="${ui.sidebarOpen ? "" : "hidden"} fixed inset-0 z-40 bg-black/40 lg:hidden" onclick="toggleMobileSidebar()"></div>
-
-          <!-- Sidebar -->
-          <aside class="
-            fixed lg:static z-50 lg:z-auto inset-y-0 left-0
-            ${ui.sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-            lg:translate-x-0
-            ${sidebarWidth}
-            transition-transform duration-200
-            bg-white dark:bg-slate-900
-            border-r border-slate-200 dark:border-white/10
-            flex flex-col
-          ">
-            <!-- Brand -->
-            <div class="px-4 py-4 border-b border-slate-200 dark:border-white/10">
-              <div class="flex items-center gap-3">
-                <div class="h-12 w-12 rounded-2xl bg-slate-100 dark:bg-white/10 overflow-hidden flex items-center justify-center shrink-0">
-                  ${
-                    settings.logoDataUrl
-                      ? `<img src="${escapeHtml(settings.logoDataUrl)}" class="h-full w-full object-cover" alt="Logo">`
-                      : `<div class="text-xl">🏫</div>`
-                  }
-                </div>
-                <div class="${sidebarCollapsed ? "hidden" : ""}">
-                  <div class="font-extrabold leading-tight">${escapeHtml(settings.schoolName)}</div>
-                  <div class="text-sm text-slate-500 dark:text-slate-300">${escapeHtml(settings.schoolMotto)}</div>
-                </div>
-
-                <div class="ml-auto hidden lg:block">
-                  <button class="p-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition"
-                    onclick="toggleDesktopSidebar()" title="Kecil/Besar sidebar">
-                    ${sidebarCollapsed ? "➡️" : "⬅️"}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Menu -->
-            <nav class="p-3 space-y-1 flex-1 overflow-auto">
-              ${menu.map(m => {
-                const isActive = m.id === active;
-                return `
-                  <button class="
-                    w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-left
-                    ${isActive ? "bg-slate-100 dark:bg-white/10" : "hover:bg-slate-50 dark:hover:bg-white/5"}
-                    transition
-                  " onclick="setPage('${m.id}')">
-                    <div class="text-lg">${m.icon}</div>
-                    <div class="${sidebarCollapsed ? "hidden" : ""} font-semibold">${escapeHtml(m.label)}</div>
-                  </button>
-                `;
-              }).join("")}
-            </nav>
-
-            <!-- Footer -->
-            <div class="p-4 border-t border-slate-200 dark:border-white/10">
-              <div class="${sidebarCollapsed ? "hidden" : ""} text-xs text-slate-500 dark:text-slate-300">
-                <div>${escapeHtml(settings.footerLine1)}</div>
-                <div>${escapeHtml(settings.footerLine2)}</div>
-              </div>
-              <div class="${sidebarCollapsed ? "" : "hidden"} text-xs text-slate-500 dark:text-slate-300 text-center">©</div>
-            </div>
-          </aside>
-
-          <!-- Main -->
-          <div class="flex-1 min-w-0 flex flex-col lg:ml-0">
-            <!-- Header -->
-            <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/10">
-              <div class="px-4 lg:px-6 py-4 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3 min-w-0">
-                  <button class="p-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition lg:hidden"
-                    onclick="toggleMobileSidebar()" aria-label="Menu">
-                    ☰
-                  </button>
-
-                  <button class="hidden lg:flex items-center gap-2 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 px-2 py-1 transition"
-                    onclick="setPage('home')" title="Kembali ke Laman Utama">
-                    <div class="h-9 w-9 rounded-xl bg-slate-100 dark:bg-white/10 overflow-hidden flex items-center justify-center">
-                      ${
-                        settings.logoDataUrl
-                          ? `<img src="${escapeHtml(settings.logoDataUrl)}" class="h-full w-full object-cover" alt="Logo">`
-                          : `<div>🏫</div>`
-                      }
-                    </div>
-                  </button>
-
-                  <div class="min-w-0">
-                    <div class="font-extrabold text-lg truncate">${escapeHtml(pageTitle())}</div>
-                    <div class="text-sm text-slate-500 dark:text-slate-300 truncate">${escapeHtml(settings.schoolName)}</div>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                  <!-- Theme preset -->
-                  <select class="hidden sm:block px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 dark:text-white ring-1 ring-slate-200 dark:ring-white/10 text-sm font-semibold"
-                    onchange="setThemePreset(this.value)">
-                    <option value="forest" ${settings.themePreset==="forest"?"selected":""}>Forest</option>
-                    <option value="ocean"  ${settings.themePreset==="ocean"?"selected":""}>Ocean</option>
-                    <option value="purple" ${settings.themePreset==="purple"?"selected":""}>Purple</option>
-                    <option value="slate"  ${settings.themePreset==="slate"?"selected":""}>Slate</option>
-                  </select>
-
-                  <!-- Dark mode toggle -->
-                  <button class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition text-sm font-extrabold"
-                    onclick="toggleDarkMode()"
-                    title="Tukar tema">
-                    ${settings.darkMode ? "🌙" : "☀️"}
-                  </button>
-
-                  <!-- Settings (PIN required to save) -->
-                  <button class="px-3 py-2 rounded-xl bg-primary text-white hover:opacity-95 transition text-sm font-extrabold"
-                    onclick="openSettings()">
-                    ⚙️
-                  </button>
-                </div>
-              </div>
-            </header>
-
-            <!-- Content -->
-            <main class="flex-1 overflow-auto px-4 lg:px-6 py-6">
-              ${active === "home" ? renderHome() :
-                active === "kehadiran" ? renderKehadiran() :
-                active === "pengumuman" ? renderPengumuman() :
-                active === "takwim" ? renderTakwim() :
-                active === "ibubapa" ? renderIbuBapa() : renderHome()
-              }
-            </main>
-          </div>
-        </div>
-
-        ${renderModal()}
-      `;
-
-      // After render hooks
-      if (ui.currentPage === "kehadiran"){
-        // init dropdown filters after DOM exists
-        setTimeout(() => initKehadiranFilters(), 30);
-      }
-    }
-
-    /**********************
-     * STARTUP
-     **********************/
-    (async function init(){
-      // mobile default sidebar tertutup: sudah di defaultUI.sidebarOpen=false
-      applyThemeToDocument();
-      render();
-
-      await loadAllData();
-      render();
-    })();
+    // Default page
+    setActivePage("home");
   </script>
 </body>
 </html>
