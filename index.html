@@ -32,7 +32,6 @@
       --sidebar-w-mini: 74px;
     }
 
-    /* Dark Mode */
     html[data-mode="dark"] {
       --bg-body: #0F1115;
       --bg-sidebar: #161B22;
@@ -59,19 +58,15 @@
       z-index: 50; flex-shrink: 0; overflow-x: hidden;
     }
 
-    /* Desktop Logic */
     @media (min-width: 769px) {
       .sidebar { width: var(--sidebar-w-full); }
       body.desktop-mini .sidebar { width: var(--sidebar-w-mini); }
-      body.desktop-mini .brand-text, 
-      body.desktop-mini .nav-text,
-      body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; }
+      body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; }
       body.desktop-mini .brand { justify-content: center; padding-left: 0; }
       body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; }
       body.desktop-mini .nav-icon { margin-right: 0; }
     }
 
-    /* Mobile Logic */
     @media (max-width: 768px) {
       .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); }
       body.mobile-active .sidebar { left: 0; }
@@ -79,7 +74,6 @@
       body.mobile-active .backdrop { display: block; }
     }
 
-    /* Sidebar Content */
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-height: 45px; overflow: hidden; white-space: nowrap; }
     .brand-logo { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
     .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
@@ -128,7 +122,7 @@
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
     }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
-    .banner-actions { display: flex; gap: 15px; } /* Wider Gap */
+    .banner-actions { display: flex; gap: 15px; } 
     .btn-action {
       background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);
       padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px;
@@ -136,22 +130,23 @@
     }
     .btn-action:hover { background: rgba(255,255,255,0.3); }
 
-    /* Forms */
+    /* Forms & Filters */
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .form-select, .form-input {
       background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
-      padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 13px;
+      padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%;
     }
     .btn { padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
 
-    /* Filter Panel Grid (PAJSK) */
+    /* Advanced Filter Panel */
     .filter-panel {
       display: none; padding: 20px; background: var(--bg-element); 
       border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color);
     }
     .filter-panel.open { display: block; }
+    
     .filter-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;
     }
@@ -182,11 +177,14 @@
       max-height: 85vh; overflow-y: auto;
     }
 
+    /* Checkbox for Menu Settings */
+    .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
+    .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
+
     @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 768px) { 
       .dashboard-grid { grid-template-columns: 1fr; }
       .page-banner { flex-direction: column; align-items: flex-start; }
-      .filter-row { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -268,16 +266,12 @@
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:20px;">
             <h3 style="margin:0; font-size:16px;">📈 Trend Harian</h3>
             <div class="filter-row">
-              <select class="form-select" id="trendType" onchange="renderTrend()">
-                <option value="hadir">Hadir</option>
-                <option value="tidak">Tidak Hadir</option>
-                <option value="pct">%</option>
+              <select class="form-select" style="width:auto" id="trendType" onchange="renderTrend()">
+                <option value="hadir">Hadir</option><option value="tidak">Tidak Hadir</option><option value="pct">%</option>
               </select>
-              <select class="form-select" id="trendMonth" onchange="renderTrend()"></select>
-              <select class="form-select" id="trendYear" onchange="renderTrend()"></select>
-              <select class="form-select" id="trendClass" onchange="renderTrend()">
-                <option value="">Semua Kelas</option>
-              </select>
+              <select class="form-select" style="width:auto" id="trendMonth" onchange="renderTrend()"></select>
+              <select class="form-select" style="width:auto" id="trendYear" onchange="renderTrend()"></select>
+              <select class="form-select" style="width:auto" id="trendClass" onchange="renderTrend()"><option value="">Semua Kelas</option></select>
             </div>
           </div>
           <div id="chartContainer" style="height:280px; width:100%;"></div>
@@ -304,21 +298,30 @@
         </div>
 
         <div class="card">
-          <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:12px;">
-            <input class="form-input" id="searchAtt" placeholder="Cari Nama..." style="flex:1; min-width:200px;">
-            <select class="form-select" id="filterClassAtt"><option value="">Semua Kelas</option></select>
-            <select class="form-select" id="filterGenderAtt">
-              <option value="">Semua Jantina</option>
-              <option value="LELAKI">Lelaki</option>
-              <option value="PEREMPUAN">Perempuan</option>
-            </select>
-            <div style="display:flex; align-items:center; gap:5px;">
-              <input type="date" class="form-input" id="filterDateStart" title="Mula">
-              <span style="color:var(--text-muted)">-</span>
-              <input type="date" class="form-input" id="filterDateEnd" title="Akhir">
+          <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input class="form-input" id="searchAtt" placeholder="Cari Nama Murid..." style="flex:1;">
+            <button class="btn btn-outline" onclick="toggleFilterPanel('attFilters')">
+              <span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan
+            </button>
+            <button class="btn btn-primary" onclick="applyFilterAtt()">Cari</button>
+          </div>
+
+          <div id="attFilters" class="filter-panel">
+            <div class="filter-grid">
+              <div><label class="filter-label">Tarikh Mula</label><input type="date" class="form-input" id="filterDateStart"></div>
+              <div><label class="filter-label">Tarikh Akhir</label><input type="date" class="form-input" id="filterDateEnd"></div>
+              <div><label class="filter-label">Kelas</label><select class="form-select" id="filterClassAtt"><option value="">Semua Kelas</option></select></div>
+              <div><label class="filter-label">Jantina</label><select class="form-select" id="filterGenderAtt">
+                <option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option>
+              </select></div>
+              <div><label class="filter-label">Status</label><select class="form-select" id="filterStatusAtt">
+                <option value="">Semua</option><option value="HADIR">Hadir</option><option value="TIDAK">Tidak Hadir</option>
+              </select></div>
             </div>
-            <button class="btn btn-primary" onclick="applyFilterAtt()">Tapis</button>
-            <button class="btn btn-outline" onclick="resetFilterAtt()">Reset</button>
+            <div style="text-align:right">
+              <button class="btn btn-outline" onclick="resetFilterAtt()">Reset Filter</button>
+              <button class="btn btn-primary" onclick="applyFilterAtt()">Terapkan</button>
+            </div>
           </div>
 
           <div class="table-wrap">
@@ -344,9 +347,9 @@
         </div>
 
         <div class="card">
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
-            <input class="form-input" id="searchPajsk" placeholder="Cari Nama / Acara..." style="flex:1; min-width:200px;">
-            <button class="btn btn-outline" onclick="togglePajskFilters()">
+          <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input class="form-input" id="searchPajsk" placeholder="Cari Nama / Acara..." style="flex:1;">
+            <button class="btn btn-outline" onclick="toggleFilterPanel('pajskFilters')">
               <span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan
             </button>
             <button class="btn btn-primary" onclick="renderPajskTable()">Cari</button>
@@ -354,13 +357,13 @@
 
           <div id="pajskFilters" class="filter-panel">
             <div class="filter-grid">
-              <div><label class="filter-label">Unit</label><select class="form-select" id="fPajskUnit" style="width:100%"><option value="">Semua</option></select></div>
-              <div><label class="filter-label">Kelas</label><select class="form-select" id="fPajskKelas" style="width:100%"><option value="">Semua</option></select></div>
-              <div><label class="filter-label">Acara</label><select class="form-select" id="fPajskAcara" style="width:100%"><option value="">Semua</option></select></div>
-              <div><label class="filter-label">Penglibatan</label><select class="form-select" id="fPajskLibat" style="width:100%"><option value="">Semua</option></select></div>
-              <div><label class="filter-label">Pencapaian</label><select class="form-select" id="fPajskCapai" style="width:100%"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Tarikh (Single)</label><input type="date" class="form-input" id="fPajskDate"></div>
+              <div><label class="filter-label">Unit</label><select class="form-select" id="fPajskUnit"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Kelas</label><select class="form-select" id="fPajskKelas"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Penglibatan</label><select class="form-select" id="fPajskLibat"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Pencapaian</label><select class="form-select" id="fPajskCapai"><option value="">Semua</option></select></div>
             </div>
-            <div style="text-align:right;">
+            <div style="text-align:right">
               <button class="btn btn-outline" onclick="resetPajskFilters()">Reset Filter</button>
               <button class="btn btn-primary" onclick="renderPajskTable()">Terapkan</button>
             </div>
@@ -503,7 +506,11 @@ function navTo(id) {
   if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
 }
 
-/* ================= DATA PARSING ================= */
+function toggleFilterPanel(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+/* ================= DATA HANDLING ================= */
 async function fetchCSV(url) {
   if(!url) return [];
   try {
@@ -523,10 +530,19 @@ function parseCSV(text) {
   });
 }
 
-// Improved Get Value (Fuzzy Match)
 function getVal(row, keyPart) {
   const key = Object.keys(row).find(k => k.includes(keyPart.toUpperCase()));
   return key ? row[key] : "";
+}
+
+// Convert DD/MM/YYYY to YYYY-MM-DD
+function parseDateStr(dStr) {
+  if(!dStr) return null;
+  if(dStr.includes('/')) {
+    const p = dStr.split('/');
+    return `${p[2]}-${p[1]}-${p[0]}`; // YYYY-MM-DD
+  }
+  return dStr;
 }
 
 async function loadAllData() {
@@ -545,31 +561,30 @@ async function loadAllData() {
   renderCalendar();
 }
 
-/* ================= ATTENDANCE ================= */
+/* ================= ATTENDANCE LOGIC ================= */
 function processAttendance() {
   if(!DATA.att.length) return;
+  
   DATA_ATT_CLEAN = DATA.att.map(r => {
     const dStr = getVal(r, 'TARIKH');
-    let dObj = null;
-    if(dStr && dStr.includes('/')) {
-      const p = dStr.split('/');
-      dObj = new Date(`${p[2]}-${p[1]}-${p[0]}`);
-    } else if (dStr) dObj = new Date(dStr);
-
+    const isoDate = parseDateStr(dStr);
+    
     return {
-      date: dStr,
-      rawDate: dObj,
+      date: dStr, // For display
+      isoDate: isoDate, // For filter (YYYY-MM-DD)
+      rawDate: new Date(isoDate), // For sort/chart
       name: getVal(r, 'NAMA'),
       kelas: getVal(r, 'KELAS'),
       gender: getVal(r, 'JANTINA') || '-',
       status: getVal(r, 'STATUS').toUpperCase()
     };
-  }).filter(r => r.rawDate && !isNaN(r.rawDate));
+  }).filter(r => r.isoDate);
 
   DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
 
+  // Global Stats
   const todayStr = new Date().toISOString().split('T')[0];
-  const todayRecs = DATA_ATT_CLEAN.filter(r => r.rawDate.toISOString().startsWith(todayStr));
+  const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
   const present = todayRecs.filter(r => r.status === 'HADIR').length;
   
   document.getElementById('dToday').innerText = present;
@@ -614,8 +629,7 @@ function applyFilterAtt() {
   const filtered = DATA_ATT_CLEAN.filter(r => {
     let dOk = true;
     if(start && end) {
-      const rd = r.rawDate.toISOString().split('T')[0];
-      dOk = rd >= start && rd <= end;
+      dOk = r.isoDate >= start && r.isoDate <= end;
     }
     return dOk && (!q || r.name.toLowerCase().includes(q)) &&
            (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) &&
@@ -625,6 +639,17 @@ function applyFilterAtt() {
   updateAttStats(filtered);
 }
 
+function resetFilterAtt() {
+  document.getElementById('searchAtt').value = '';
+  document.getElementById('filterClassAtt').value = '';
+  document.getElementById('filterStatusAtt').value = '';
+  document.getElementById('filterGenderAtt').value = '';
+  document.getElementById('filterDateStart').value = '';
+  document.getElementById('filterDateEnd').value = '';
+  renderAttTable(DATA_ATT_CLEAN);
+  updateAttStats(DATA_ATT_CLEAN);
+}
+
 function populateAttSelectors() {
   const classes = [...new Set(DATA_ATT_CLEAN.map(r => r.kelas))].sort();
   const opts = '<option value="">Semua Kelas</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
@@ -632,39 +657,39 @@ function populateAttSelectors() {
   document.getElementById('trendClass').innerHTML = opts;
 }
 
-/* ================= PAJSK (FIXED) ================= */
-function togglePajskFilters() { document.getElementById('pajskFilters').classList.toggle('open'); }
-
+/* ================= PAJSK LOGIC (FIXED) ================= */
 function initPajsk() {
-  // Populate dropdowns unique values
   const pop = (id, key) => {
     const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
     document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
   };
   pop('fPajskUnit', 'UNIT');
   pop('fPajskKelas', 'KELAS');
-  pop('fPajskAcara', 'ACARA');
   pop('fPajskLibat', 'PENGLIBATAN');
   pop('fPajskCapai', 'PENCAPAIAN');
   renderPajskTable();
 }
 
 function renderPajskTable() {
-  if(!DATA.pajsk.length) { document.getElementById('pajskBody').innerHTML='<tr><td colspan="7">Tiada Data. Semak URL CSV.</td></tr>'; return; }
+  if(!DATA.pajsk.length) { document.getElementById('pajskBody').innerHTML='<tr><td colspan="7">Tiada Data.</td></tr>'; return; }
   
   const q = document.getElementById('searchPajsk').value.toLowerCase();
+  const fDate = document.getElementById('fPajskDate').value;
   const fUnit = document.getElementById('fPajskUnit').value;
   const fKelas = document.getElementById('fPajskKelas').value;
-  const fAcara = document.getElementById('fPajskAcara').value;
   const fLibat = document.getElementById('fPajskLibat').value;
   const fCapai = document.getElementById('fPajskCapai').value;
 
   const filtered = DATA.pajsk.filter(r => {
-    const txt = Object.values(r).join(' ').toLowerCase();
-    return (!q || txt.includes(q)) &&
+    const name = getVal(r, 'NAMA').toLowerCase();
+    const acara = getVal(r, 'ACARA').toLowerCase();
+    const searchMatch = !q || name.includes(q) || acara.includes(q);
+    const iso = parseDateStr(getVal(r, 'TARIKH'));
+    
+    return searchMatch &&
+           (!fDate || iso === fDate) &&
            (!fUnit || getVal(r,'UNIT') === fUnit) &&
            (!fKelas || getVal(r,'KELAS') === fKelas) &&
-           (!fAcara || getVal(r,'ACARA') === fAcara) &&
            (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
            (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
   });
@@ -681,13 +706,15 @@ function renderPajskTable() {
     </tr>
   `).join('');
 }
+
 function resetPajskFilters() {
   document.getElementById('searchPajsk').value = '';
+  document.getElementById('fPajskDate').value = '';
   document.querySelectorAll('#pajskFilters select').forEach(s => s.value='');
   renderPajskTable();
 }
 
-/* ================= CHART ================= */
+/* ================= CHART & OTHERS ================= */
 function setupTrendSelectors() {
   const m = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"];
   document.getElementById('trendMonth').innerHTML = m.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
@@ -723,7 +750,6 @@ function renderTrend() {
   const W=900, H=280, Pad=30;
   const innerW = W - Pad*2;
   const innerH = H - Pad*2;
-  
   const path = points.map((p,i) => {
     const px = Pad + (i * (innerW / (daysInMonth-1)));
     const py = (H - Pad) - (p.y / maxVal) * innerH;
@@ -737,30 +763,22 @@ function renderTrend() {
     </svg>`;
 }
 
-/* ================= ANNOUNCEMENTS (FIXED) ================= */
 function renderAnn() {
   document.getElementById('dAnn').innerText = DATA.ann.length;
-  // Fallback if header names mismatch - dump raw data if needed
   document.getElementById('annGrid').innerHTML = DATA.ann.map(a => {
-    // Try to find title/content smartly
-    const title = getVal(a, 'TAJUK') || getVal(a, 'PERKARA') || getVal(a, 'TITLE') || Object.values(a)[0] || 'Tiada Tajuk';
-    const content = getVal(a, 'KANDUNGAN') || getVal(a, 'BUTIRAN') || getVal(a, 'CONTENT') || Object.values(a)[1] || '';
-    const date = getVal(a, 'TARIKH') || '';
-    
+    const title = getVal(a, 'TAJUK') || getVal(a, 'PERKARA') || 'Info';
+    const content = getVal(a, 'KANDUNGAN') || getVal(a, 'BUTIRAN') || '-';
     return `<div class="card">
       <div style="display:flex; justify-content:space-between; margin-bottom:10px">
         <span class="badge b-green">INFO</span>
-        <span style="font-size:11px; color:var(--text-muted)">${date}</span>
+        <span style="font-size:11px; color:var(--text-muted)">${getVal(a,'TARIKH')}</span>
       </div>
       <h4 style="margin:0 0 10px;">${title}</h4>
       <p style="font-size:13px; color:var(--text-muted);">${content}</p>
     </div>`;
   }).join('');
-  
-  if(!DATA.ann.length) document.getElementById('annGrid').innerHTML = '<p style="color:var(--text-muted)">Tiada pengumuman.</p>';
 }
 
-/* ================= PARENTS ================= */
 function renderParents() {
   document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
     const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
@@ -804,7 +822,7 @@ function populateSettings() {
   document.getElementById('setUrlPajsk').value = CONFIG.urls.pajsk;
   document.getElementById('setUrlAnn').value = CONFIG.urls.announcements;
   document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `
-    <div style="display:flex; justify-content:space-between; margin-bottom:8px; align-items:center;">
+    <div class="menu-toggle-item">
       <span>${m.label}</span>
       <input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}">
     </div>
