@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Portal Rasmi PPKI SK Paya Resak</title>
+
   <style>
     :root{
       --bg: #0b1220;
@@ -24,9 +25,10 @@
       --radius: 18px;
       --radius2: 22px;
       --sidebarW: 292px;
-      --sidebarWC: 86px;
+      --sidebarWC: 86px; /* (kekal untuk masa depan, tapi kita tak guna collapsed icons lagi) */
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
+
     /* Light theme variables */
     html[data-mode="light"]{
       --bg: #eaf4ea;
@@ -40,6 +42,7 @@
       --chip2: rgba(17,24,39,.10);
       --focus: rgba(42,161,152,.25);
     }
+
     /* Preset accents */
     html[data-preset="forest"]{ --accent2:#1F4D3A; --accent:#2AA198; }
     html[data-preset="ocean"]{ --accent2:#0b3d91; --accent:#22a3d6; }
@@ -47,17 +50,22 @@
     html[data-preset="violet"]{ --accent2:#4c1d95; --accent:#a78bfa; }
 
     *{box-sizing:border-box}
-    body{ margin:0; font-family:var(--font); background: radial-gradient(1100px 700px at 20% -10%, rgba(42,161,152,.25), transparent 60%),
-          radial-gradient(900px 600px at 90% 10%, rgba(31,77,58,.25), transparent 55%),
-          var(--bg);
-          color:var(--text);
-          min-height:100vh;
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:
+        radial-gradient(1100px 700px at 20% -10%, rgba(42,161,152,.25), transparent 60%),
+        radial-gradient(900px 600px at 90% 10%, rgba(31,77,58,.25), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
     }
     a{ color:inherit; text-decoration:none; }
     button,input,select,textarea{ font-family:inherit; }
 
     /* Layout */
     .app{ display:flex; min-height:100vh; }
+
     .sidebar{
       width: var(--sidebarW);
       background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 42%),
@@ -68,19 +76,24 @@
       top: 0;
       height: 100vh;
       overflow: hidden;
-      transition: width .22s ease, transform .22s ease;
+      transition: width .22s ease, transform .22s ease, opacity .15s ease;
       backdrop-filter: blur(10px);
     }
-    html[data-mode="light"] .sidebar{
-      background: rgba(255,255,255,.55);
+    html[data-mode="light"] .sidebar{ background: rgba(255,255,255,.55); }
+
+    /* ✅ Desktop "hide totally" (no mini icons, no collapsed sidebar) */
+    body.sidebar-hidden .sidebar{
+      display:none !important;
     }
-    .sidebar.collapsed{ width: var(--sidebarWC); }
+
     .brand{
       display:flex; gap:12px; align-items:center;
       padding: 10px 10px;
       border-radius: var(--radius);
       background: var(--chip);
       border:1px solid var(--border);
+      cursor:pointer;
+      user-select:none;
     }
     .logo{
       width:44px;height:44px;border-radius:14px;
@@ -94,7 +107,6 @@
     .brandText{ display:flex; flex-direction:column; gap:2px; min-width:0; }
     .brandText .name{ font-weight:800; letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .brandText .motto{ font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .sidebar.collapsed .brandText{ display:none; }
 
     .nav{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
     .navBtn{
@@ -114,9 +126,16 @@
       background: linear-gradient(135deg, rgba(42,161,152,.18), rgba(255,255,255,.06));
       border-color: rgba(42,161,152,.35);
     }
-    .navIcon{ width:34px; height:34px; border-radius: 12px; display:grid; place-items:center; background: var(--chip); border:1px solid var(--border); flex:0 0 auto; }
+    .navIcon{
+      width:34px; height:34px;
+      border-radius: 12px;
+      display:grid; place-items:center;
+      background: var(--chip);
+      border:1px solid var(--border);
+      flex:0 0 auto;
+    }
     .navLabel{ font-weight:700; letter-spacing:.1px; }
-    .sidebar.collapsed .navLabel{ display:none; }
+
     .sidebarFooter{
       position:absolute; left:14px; right:14px; bottom:14px;
       padding: 10px 10px;
@@ -127,7 +146,7 @@
       font-size: 12px;
       line-height: 1.4;
     }
-    .sidebar.collapsed .sidebarFooter{ font-size: 10px; }
+
     .main{ flex:1; padding: 18px 18px 30px; min-width:0; }
 
     /* Header */
@@ -153,6 +172,7 @@
       cursor:pointer;
       display:grid; place-items:center;
       transition: transform .04s ease, background .15s ease;
+      user-select:none;
     }
     .iconBtn:hover{ background: var(--chip2); }
     .iconBtn:active{ transform: translateY(1px); }
@@ -163,6 +183,8 @@
       overflow:hidden;
       background: var(--chip);
       display:none;
+      cursor:pointer;
+      user-select:none;
     }
     .miniLogo img{ width:100%; height:100%; object-fit:cover; display:block; }
     .pageTitle{
@@ -173,16 +195,6 @@
       text-overflow:ellipsis;
     }
     .headerRight{ display:flex; align-items:center; gap:10px; }
-    .pill{
-      display:flex; align-items:center; gap:10px;
-      padding: 8px 10px;
-      border-radius: 16px;
-      background: var(--chip);
-      border:1px solid var(--border);
-      color: var(--muted);
-      font-weight:700;
-      font-size: 13px;
-    }
     select.preset{
       border:1px solid var(--border);
       background: transparent;
@@ -197,6 +209,7 @@
       background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
       cursor:pointer;
       display:grid; place-items:center;
+      user-select:none;
     }
 
     /* Content */
@@ -311,7 +324,7 @@
       display:none;
       z-index: 60;
       padding: 14px;
-      overflow:auto; /* FIX: boleh scroll */
+      overflow:auto;
     }
     .overlay.show{ display:block; }
     .modal{
@@ -322,7 +335,7 @@
       border:1px solid var(--border);
       box-shadow: 0 22px 70px rgba(0,0,0,.45);
       overflow:hidden;
-      max-height: calc(100vh - 80px); /* FIX: muat skrin */
+      max-height: calc(100vh - 80px);
       display:flex;
       flex-direction:column;
     }
@@ -336,7 +349,7 @@
     .modalHead h3{ margin:0; font-size: 15px; letter-spacing:.2px; }
     .modalBody{
       padding: 14px;
-      overflow:auto; /* FIX: dalam modal pun scroll */
+      overflow:auto;
     }
     .modalGrid{
       display:grid;
@@ -352,6 +365,7 @@
       padding: 10px 12px;
       cursor:pointer;
       font-weight:900;
+      user-select:none;
     }
     .btnPrimary{
       border-color: rgba(42,161,152,.35);
@@ -390,12 +404,18 @@
       .stats{ grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
     @media (max-width: 860px){
+      /* Mobile: sidebar slide-out (off-canvas) */
       .sidebar{
         position: fixed;
         left: 0; top: 0;
         transform: translateX(-105%);
         z-index: 80;
         box-shadow: 0 25px 70px rgba(0,0,0,.55);
+        display:block !important; /* ignore desktop hide on mobile layout */
+      }
+      body.sidebar-hidden .sidebar{
+        /* desktop hide tak terpakai; mobile tetap guna slide-out */
+        display:block !important;
       }
       .sidebar.open{ transform: translateX(0); }
       .main{ padding: 14px; }
@@ -409,7 +429,7 @@
   <div class="app">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-      <div class="brand" title="Klik untuk ke Laman Utama">
+      <div class="brand" id="brandGoHome" title="Klik untuk ke Laman Utama">
         <div class="logo" id="sidebarLogo">
           <span style="font-weight:1000;">🏫</span>
         </div>
@@ -444,7 +464,7 @@
     </aside>
 
     <!-- Main -->
-    <main class="main">
+    <main class="main" id="main">
       <!-- Header -->
       <header class="header">
         <div class="headerLeft">
@@ -715,6 +735,23 @@
               <input class="field" id="setFooter1" placeholder="Footer (Baris 1)" style="width:100%; margin-top:10px;">
               <input class="field" id="setFooter2" placeholder="Footer (Baris 2)" style="width:100%; margin-top:10px;">
 
+              <!-- ✅ NEW: Sidebar controls -->
+              <div style="margin-top:12px;">
+                <label class="sub" style="font-weight:900;">Paparan Sidebar (Desktop)</label>
+
+                <div class="row" style="gap:10px; margin-top:8px;">
+                  <input type="checkbox" id="setSidebarHidden" style="width:18px;height:18px; accent-color: var(--accent);" />
+                  <span class="sub">Sembunyikan sidebar secara default</span>
+                </div>
+
+                <div class="row" style="gap:10px; margin-top:8px;">
+                  <input type="checkbox" id="setAutoHideSidebar" style="width:18px;height:18px; accent-color: var(--accent);" />
+                  <span class="sub">Auto-hide bila klik luar sidebar</span>
+                </div>
+
+                <p class="help">Tip: Tekan butang ☰ untuk buka/tutup sidebar. Jika auto-hide ON, klik mana-mana content akan tutup sidebar.</p>
+              </div>
+
               <div style="margin-top:10px;">
                 <label class="sub" style="font-weight:900;">Logo Sekolah</label>
                 <input class="field" id="setLogoFile" type="file" accept="image/*" style="width:100%; margin-top:6px;">
@@ -802,6 +839,11 @@
       preset: "forest",
       mode: "dark",
       pin: "5235",
+
+      // ✅ NEW: sidebar preferences
+      sidebarHidden: false,      // sembunyi sidebar secara default (desktop)
+      autoHideSidebar: true,     // auto-hide bila klik luar sidebar
+
       urls: {
         attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
         announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
@@ -849,6 +891,8 @@
     const btnMenu = document.getElementById("btnMenu");
     const pageTitle = document.getElementById("pageTitle");
     const nav = document.getElementById("nav");
+    const main = document.getElementById("main");
+    const brandGoHome = document.getElementById("brandGoHome");
 
     const schoolNameSide = document.getElementById("schoolNameSide");
     const schoolMottoSide = document.getElementById("schoolMottoSide");
@@ -878,13 +922,19 @@
     const setFooter1 = document.getElementById("setFooter1");
     const setFooter2 = document.getElementById("setFooter2");
     const setLogoFile = document.getElementById("setLogoFile");
+
     const setUrlAttendance = document.getElementById("setUrlAttendance");
     const setUrlAnnouncements = document.getElementById("setUrlAnnouncements");
     const setUrlParents = document.getElementById("setUrlParents");
     const setUrlCalendar = document.getElementById("setUrlCalendar");
+
     const btnSaveSettings = document.getElementById("btnSaveSettings");
     const btnResetSettings = document.getElementById("btnResetSettings");
     const btnLogoutSettings = document.getElementById("btnLogoutSettings");
+
+    // ✅ NEW: sidebar settings controls
+    const setSidebarHidden = document.getElementById("setSidebarHidden");
+    const setAutoHideSidebar = document.getElementById("setAutoHideSidebar");
 
     // Mapping
     const mapTarikh = document.getElementById("mapTarikh");
@@ -966,7 +1016,6 @@
       const idx = headers.findIndex(h => normKey(h) === want);
       if(idx !== -1) return headers[idx];
 
-      // fallback common aliases
       const aliases = {
         tarikh: ["tarikh","date","tanggal"],
         kelas: ["kelas","class"],
@@ -980,19 +1029,17 @@
         const j = headers.findIndex(h => normKey(h) === a);
         if(j !== -1) return headers[j];
       }
-      // partial match
       const part = headers.find(h => normKey(h).includes(want) || want.includes(normKey(h)));
       return part || null;
     }
 
     function parseCSV(text){
-      // Simple CSV parser supporting quotes
       const rows = [];
       let row = [], cur = "", inQ = false;
       for(let i=0;i<text.length;i++){
         const ch = text[i];
         const next = text[i+1];
-        if(ch === '"' ){
+        if(ch === '"'){
           if(inQ && next === '"'){ cur += '"'; i++; }
           else inQ = !inQ;
         } else if(ch === "," && !inQ){
@@ -1006,9 +1053,9 @@
           cur += ch;
         }
       }
-      // last
       row.push(cur);
       if(row.some(v => String(v).trim()!=="")) rows.push(row);
+
       if(rows.length === 0) return { headers: [], data: [] };
       const headers = rows[0].map(h => String(h||"").trim());
       const data = rows.slice(1).map(r => {
@@ -1020,7 +1067,6 @@
     }
 
     function parseDateDMY(s){
-      // dd/mm/yyyy OR yyyy-mm-dd
       if(!s) return null;
       const str = String(s).trim();
       if(/^\d{4}-\d{2}-\d{2}/.test(str)){
@@ -1034,17 +1080,15 @@
       if(d.getFullYear()!==yy || d.getMonth()!==mm-1 || d.getDate()!==dd) return null;
       return d;
     }
-
     function formatDMY(d){
       const dd = String(d.getDate()).padStart(2,"0");
       const mm = String(d.getMonth()+1).padStart(2,"0");
       const yy = d.getFullYear();
       return `${dd}/${mm}/${yy}`;
     }
-
     function startOfWeekMonday(d){
       const x = new Date(d); x.setHours(0,0,0,0);
-      const day = x.getDay(); // 0 Sun .. 6 Sat
+      const day = x.getDay();
       const diff = (day === 0 ? -6 : (1 - day));
       x.setDate(x.getDate() + diff);
       return x;
@@ -1055,10 +1099,8 @@
       return e;
     }
 
-    function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-
     /***********************
-     * APPLY SETTINGS (THEME + IDENTITY)
+     * THEME + IDENTITY
      ***********************/
     function applyTheme(){
       document.documentElement.dataset.preset = SETTINGS.preset || "forest";
@@ -1073,7 +1115,6 @@
       footerLine1Side.textContent = SETTINGS.footer1;
       footerLine2Side.textContent = SETTINGS.footer2;
 
-      // logo (from localStorage)
       const logoData = localStorage.getItem(LS.logo);
       const sidebarLogo = document.getElementById("sidebarLogo");
       sidebarLogo.innerHTML = "";
@@ -1091,6 +1132,96 @@
         miniLogoFallback.style.display = "grid";
       }
     }
+
+    /***********************
+     * SIDEBAR OPEN/CLOSE (NEW RULE)
+     * - Desktop: hidden totally (no mini icons)
+     * - Mobile: slide-out open/close
+     ***********************/
+    function isMobile(){
+      return window.matchMedia("(max-width: 860px)").matches;
+    }
+    function hideSidebar(){
+      if(isMobile()){
+        sidebar.classList.remove("open");
+        return;
+      }
+      document.body.classList.add("sidebar-hidden");
+      SETTINGS.sidebarHidden = true;
+      saveSettings(SETTINGS);
+    }
+    function showSidebar(){
+      if(isMobile()){
+        sidebar.classList.add("open");
+        return;
+      }
+      document.body.classList.remove("sidebar-hidden");
+      SETTINGS.sidebarHidden = false;
+      saveSettings(SETTINGS);
+    }
+    function toggleSidebar(){
+      if(isMobile()){
+        sidebar.classList.toggle("open");
+        return;
+      }
+      document.body.classList.toggle("sidebar-hidden");
+      SETTINGS.sidebarHidden = document.body.classList.contains("sidebar-hidden");
+      saveSettings(SETTINGS);
+    }
+    function initSidebarState(){
+      // Desktop apply from settings
+      if(!isMobile()){
+        if(SETTINGS.sidebarHidden) document.body.classList.add("sidebar-hidden");
+        else document.body.classList.remove("sidebar-hidden");
+        sidebar.classList.remove("open");
+      }else{
+        // Mobile default: closed
+        sidebar.classList.remove("open");
+        document.body.classList.remove("sidebar-hidden");
+      }
+    }
+
+    btnMenu.addEventListener("click", ()=> toggleSidebar());
+
+    // Click logo / miniLogo go home (and for mobile close sidebar)
+    function goHome(){
+      showPage("home");
+      if(isMobile()) sidebar.classList.remove("open");
+    }
+    miniLogo.addEventListener("click", goHome);
+    brandGoHome.addEventListener("click", goHome);
+
+    // Auto-hide when click outside (if enabled)
+    function setupAutoHideSidebar(){
+      document.addEventListener("click", (e)=>{
+        if(isMobile()){
+          // On mobile: if sidebar open and click outside -> close
+          if(sidebar.classList.contains("open")){
+            if(!e.target.closest("#sidebar") && !e.target.closest("#btnMenu")){
+              // Ignore clicks inside overlays/modals (biar user interaksi modal)
+              if(e.target.closest(".overlay") || e.target.closest(".modal")) return;
+              sidebar.classList.remove("open");
+            }
+          }
+          return;
+        }
+
+        // Desktop:
+        if(!SETTINGS.autoHideSidebar) return;
+        if(document.body.classList.contains("sidebar-hidden")) return;
+
+        // do not hide on sidebar or menu button
+        if(e.target.closest("#sidebar")) return;
+        if(e.target.closest("#btnMenu")) return;
+
+        // do not hide when interacting overlays/modals
+        if(e.target.closest(".overlay") || e.target.closest(".modal")) return;
+
+        hideSidebar();
+      }, { capture: true });
+    }
+
+    window.addEventListener("resize", initSidebarState);
 
     /***********************
      * PAGES NAVIGATION
@@ -1111,7 +1242,7 @@
       pageTitle.textContent = titles[page] || "Portal";
 
       // close sidebar on mobile after select
-      if(window.matchMedia("(max-width: 860px)").matches){
+      if(isMobile()){
         sidebar.classList.remove("open");
       }
     }
@@ -1123,38 +1254,12 @@
     });
 
     /***********************
-     * MOBILE SIDEBAR DEFAULT CLOSED
-     ***********************/
-    function syncSidebarDefault(){
-      const isMobile = window.matchMedia("(max-width: 860px)").matches;
-      if(isMobile){
-        sidebar.classList.remove("collapsed"); // use slide-out on mobile
-        sidebar.classList.remove("open"); // default closed
-      }else{
-        sidebar.classList.remove("open");
-      }
-    }
-    window.addEventListener("resize", syncSidebarDefault);
-
-    btnMenu.addEventListener("click", ()=>{
-      const isMobile = window.matchMedia("(max-width: 860px)").matches;
-      if(isMobile){
-        sidebar.classList.toggle("open");
-      }else{
-        sidebar.classList.toggle("collapsed");
-      }
-    });
-
-    miniLogo.addEventListener("click", ()=> showPage("home"));
-
-    /***********************
      * HEADER THEME CONTROLS (NO PIN)
      ***********************/
     presetSelect.addEventListener("change", ()=>{
       SETTINGS.preset = presetSelect.value;
       saveSettings(SETTINGS);
       applyTheme();
-      // redraw chart if exists
       renderTrend();
     });
 
@@ -1177,9 +1282,7 @@
       settingsUnlocked = false;
       pinStep.style.display = "block";
       settingsStep.style.display = "none";
-      // preload fields (once unlocked)
     }
-
     function closeSettings(){
       overlaySettings.classList.remove("show");
     }
@@ -1201,7 +1304,6 @@
       pinStep.style.display = "none";
       settingsStep.style.display = "block";
 
-      // load fields
       setSchoolName.value = SETTINGS.schoolName;
       setSchoolMotto.value = SETTINGS.schoolMotto;
       setFooter1.value = SETTINGS.footer1;
@@ -1211,6 +1313,10 @@
       setUrlAnnouncements.value = SETTINGS.urls.announcements;
       setUrlParents.value = SETTINGS.urls.parents;
       setUrlCalendar.value = SETTINGS.urls.calendar || "";
+
+      // ✅ load sidebar toggles
+      setSidebarHidden.checked = !!SETTINGS.sidebarHidden;
+      setAutoHideSidebar.checked = !!SETTINGS.autoHideSidebar;
 
       mapTarikh.value = SETTINGS.attendanceMap.tarikh;
       mapKelas.value = SETTINGS.attendanceMap.kelas;
@@ -1225,6 +1331,7 @@
 
     btnSaveSettings.addEventListener("click", ()=>{
       if(!settingsUnlocked) return;
+
       SETTINGS.schoolName = setSchoolName.value.trim() || DEFAULTS.schoolName;
       SETTINGS.schoolMotto = setSchoolMotto.value.trim() || DEFAULTS.schoolMotto;
       SETTINGS.footer1 = setFooter1.value.trim() || DEFAULTS.footer1;
@@ -1235,17 +1342,22 @@
       SETTINGS.urls.parents = setUrlParents.value.trim() || DEFAULTS.urls.parents;
       SETTINGS.urls.calendar = setUrlCalendar.value.trim();
 
+      // ✅ save sidebar toggles
+      SETTINGS.sidebarHidden = !!setSidebarHidden.checked;
+      SETTINGS.autoHideSidebar = !!setAutoHideSidebar.checked;
+
       saveSettings(SETTINGS);
       applyIdentity();
 
-      // reload data
+      // apply sidebar immediately (desktop)
+      initSidebarState();
+
       loadAll();
       alert("Tetapan berjaya disimpan.");
     });
 
     btnResetSettings.addEventListener("click", ()=>{
       if(!settingsUnlocked) return;
-      // reload from storage
       SETTINGS = loadSettings();
       applyTheme();
       applyIdentity();
@@ -1260,12 +1372,17 @@
       setUrlParents.value = SETTINGS.urls.parents;
       setUrlCalendar.value = SETTINGS.urls.calendar || "";
 
+      // ✅ reset sidebar toggles
+      setSidebarHidden.checked = !!SETTINGS.sidebarHidden;
+      setAutoHideSidebar.checked = !!SETTINGS.autoHideSidebar;
+
       mapTarikh.value = SETTINGS.attendanceMap.tarikh;
       mapKelas.value = SETTINGS.attendanceMap.kelas;
       mapNama.value = SETTINGS.attendanceMap.nama;
       mapStatus.value = SETTINGS.attendanceMap.status;
       mapJantina.value = SETTINGS.attendanceMap.jantina;
 
+      initSidebarState();
       alert("Tetapan disegar semula.");
     });
 
@@ -1297,7 +1414,7 @@
       };
       saveSettings(SETTINGS);
       alert("Pemetaan disimpan. Data akan dikira ikut kolum ini.");
-      loadAttendance(); // refresh
+      loadAttendance();
     });
 
     function fileToDataURL(file){
@@ -1322,7 +1439,7 @@
     /***********************
      * DATA STATE
      ***********************/
-    let attendanceRaw = [];     // normalized objects
+    let attendanceRaw = [];
     let attendanceHeaders = [];
     let announcementsRaw = [];
     let parentsRaw = [];
@@ -1342,7 +1459,6 @@
       const headers = parsed.headers;
       attendanceHeaders = headers;
 
-      // map columns by user mapping
       const colTarikh = pickCol(headers, SETTINGS.attendanceMap.tarikh) || pickCol(headers, "Tarikh");
       const colKelas  = pickCol(headers, SETTINGS.attendanceMap.kelas)  || pickCol(headers, "Kelas");
       const colNama   = pickCol(headers, SETTINGS.attendanceMap.nama)   || pickCol(headers, "Nama Murid") || pickCol(headers, "Nama_Murid");
@@ -1362,16 +1478,13 @@
           Jantina: r[colJantina] || "",
           __raw: r
         };
-      }).filter(x=> x.__tarikh); // keep valid dates
+      }).filter(x=> x.__tarikh);
 
-      // sort by date desc
       data.sort((a,b)=> b.__tarikh - a.__tarikh);
       return data;
     }
 
     function normalizeAnnouncements(parsed){
-      // Expected columns:
-      // ID, TARIKH MULA, TARIKH TAMAT, TAJUK, ISI KANDUNGAN, URL, KEUTAMAAN, AKTIF
       const H = parsed.headers;
 
       const colStart = pickCol(H,"TARIKH MULA") || pickCol(H,"Tarikh Mula");
@@ -1391,11 +1504,8 @@
         const body = (r[colBody]||"").trim();
         const url = (r[colUrl]||"").trim();
         const pri = (r[colPri]||"").trim().toUpperCase();
-        const aktif = (r[colAktif]||"").trim().toUpperCase(); // optional
-        // Auto rules:
-        // - Must have start and title
-        // - Active if start <= today AND (end empty OR end >= today)
-        // - If AKTIF filled, allow override: YA/TIDAK
+        const aktif = (r[colAktif]||"").trim().toUpperCase();
+
         let computedActive = false;
         if(start && title){
           computedActive = (start <= now) && (!end || end >= now);
@@ -1414,7 +1524,6 @@
         };
       });
 
-      // sort by priority + start desc
       const priRank = (p)=>{
         p = String(p||"").toUpperCase();
         if(p.includes("TINGGI")) return 3;
@@ -1431,8 +1540,6 @@
     }
 
     function normalizeParents(parsed){
-      // Flexible expected columns:
-      // Tajuk, Isi Kandungan, URL, Mod (POPUP/TAB) optional
       const H = parsed.headers;
       const colTitle = pickCol(H,"TAJUK") || pickCol(H,"Tajuk");
       const colBody  = pickCol(H,"ISI KANDUNGAN") || pickCol(H,"Isi Kandungan") || pickCol(H,"Isi");
@@ -1444,13 +1551,12 @@
           title: (r[colTitle]||"").trim(),
           body: (r[colBody]||"").trim(),
           url: (r[colUrl]||"").trim(),
-          mode: ((r[colMode]||"POPUP").trim().toUpperCase()) // POPUP or TAB
+          mode: ((r[colMode]||"POPUP").trim().toUpperCase())
         }))
         .filter(x=>x.title);
     }
 
     function normalizeCalendar(parsed){
-      // If provided, just show list for now
       return parsed.data;
     }
 
@@ -1492,7 +1598,6 @@
     }
 
     function setStatUI(stats){
-      // Home
       vToday.textContent = stats.todayHadir;
       sToday.textContent = `${stats.todayHadir} / ${stats.todayTotal}`;
       vWeek.textContent = stats.weekHadir;
@@ -1501,7 +1606,6 @@
       sMonth.textContent = `${stats.monthHadir} / ${stats.monthTotal}`;
       vPct.textContent = `${stats.pct.toFixed(1)}%`;
 
-      // Attendance page
       vToday2.textContent = stats.todayHadir;
       sToday2.textContent = `${stats.todayHadir} / ${stats.todayTotal}`;
       vWeek2.textContent = stats.weekHadir;
@@ -1517,7 +1621,7 @@
     function renderLineChartSVG(opts){
       const {
         width=780, height=260,
-        data=[], // array of {xLabel, xValue(1..31), y}
+        data=[],
         yMax=null,
         yMin=0,
         yLabel="",
@@ -1533,12 +1637,9 @@
       const ys = data.map(d=>d.y);
       const maxY = (yMax!==null) ? yMax : Math.max(1, ...ys, 1);
       const minY = (yMin!==null) ? yMin : 0;
-
-      // If all values are same, give a bit of range
       const range = (maxY - minY) || 1;
 
       function xScale(x){
-        // x from 1..N
         const minX = data.length ? Math.min(...data.map(d=>d.xValue)) : 1;
         const maxX = data.length ? Math.max(...data.map(d=>d.xValue)) : 31;
         const rx = (maxX - minX) || 1;
@@ -1549,7 +1650,6 @@
         return padT + (1 - t) * innerH;
       }
 
-      // gridlines + y ticks
       const yTicks = (mode==="pct") ? [0,25,50,75,100] : (()=>{
         const t = 4;
         const step = Math.max(1, Math.round(maxY / t));
@@ -1559,28 +1659,15 @@
         return arr.slice(0,6);
       })();
 
-      // x ticks - show 1, 5, 10, 15, 20, 25, 30 (if exists)
       const xTicks = [1,5,10,15,20,25,30,31];
 
-      // polyline points
       const pts = data
         .sort((a,b)=>a.xValue-b.xValue)
         .map(d=> `${xScale(d.xValue).toFixed(1)},${yScale(d.y).toFixed(1)}`)
         .join(" ");
 
-      // determine stroke colors by mode (use current text color style-friendly)
-      const stroke = "currentColor";
-
-      const gridColor = "rgba(255,255,255,.12)";
-      const axisColor = "rgba(255,255,255,.32)";
-      const textColor = "rgba(255,255,255,.75)";
-      const fillColor = "rgba(42,161,152,.12)";
-
-      // Light mode overrides via CSS variables not easy inside svg; use currentColor + opacity.
-      // We'll use 'currentColor' and rely on parent color.
       const svg = `
         <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="color: var(--text);">
-          <!-- Y gridlines -->
           ${yTicks.map(v=>{
             const y = yScale(v);
             return `
@@ -1589,12 +1676,10 @@
             `;
           }).join("")}
 
-          <!-- X axis -->
           <line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--border)" stroke-width="1" />
           <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="var(--border)" stroke-width="1" />
 
           ${xTicks.map(v=>{
-            // only show ticks that exist in data range
             if(!data.length) return "";
             const minX = Math.min(...data.map(d=>d.xValue));
             const maxX = Math.max(...data.map(d=>d.xValue));
@@ -1606,13 +1691,11 @@
             `;
           }).join("")}
 
-          <!-- Area fill (optional) -->
           ${data.length ? `
             <path d="M ${padL} ${H-padB} L ${pts.replaceAll(" ", " L ")} L ${W-padR} ${H-padB} Z"
               fill="rgba(42,161,152,.10)" stroke="none" />
           ` : ""}
 
-          <!-- Line -->
           ${data.length ? `
             <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="3.2"
               stroke-linecap="round" stroke-linejoin="round" />
@@ -1622,7 +1705,6 @@
             </text>
           `}
 
-          <!-- End dot -->
           ${data.length ? (()=> {
             const last = data.slice().sort((a,b)=>a.xValue-b.xValue).at(-1);
             const cx = xScale(last.xValue);
@@ -1630,7 +1712,6 @@
             return `<circle cx="${cx}" cy="${cy}" r="5.4" fill="currentColor" />`;
           })() : ""}
 
-          <!-- Axis labels -->
           <text x="${W/2}" y="${H-2}" text-anchor="middle" font-size="11" fill="var(--muted)" font-weight="900">${xLabel}</text>
           <text x="12" y="${H/2}" text-anchor="middle" font-size="11" fill="var(--muted)" font-weight="900" transform="rotate(-90 12 ${H/2})">${yLabel}</text>
         </svg>
@@ -1639,7 +1720,7 @@
     }
 
     /***********************
-     * TREND CHART (MONTH SELECT)
+     * TREND CHART
      ***********************/
     function setupTrendSelectors(){
       const now = new Date();
@@ -1687,7 +1768,6 @@
       const year = Number(trendYear.value);
       const kelas = trendClass.value;
 
-      // filter by class + month + year
       const filtered = attendanceRaw.filter(r=>{
         if(!r.__tarikh) return false;
         if(r.__tarikh.getFullYear() !== year) return false;
@@ -1699,8 +1779,7 @@
       const isHadir = (r)=> String(r.Status||"").toUpperCase()==="HADIR";
       const isTidak = (r)=> String(r.Status||"").toUpperCase().includes("TIDAK");
 
-      // group by day
-      const map = new Map(); // day -> {hadir, tidak, total}
+      const map = new Map();
       filtered.forEach(r=>{
         const day = r.__tarikh.getDate();
         if(!map.has(day)) map.set(day, {hadir:0, tidak:0, total:0});
@@ -1710,7 +1789,6 @@
         if(isTidak(r)) o.tidak++;
       });
 
-      // Build series from 1..last day of month
       const lastDay = new Date(year, month+1, 0).getDate();
       const series = [];
       for(let d=1; d<=lastDay; d++){
@@ -1777,7 +1855,6 @@
       const kelas = filterClass.value;
       const statusSel = filterStatus.value;
 
-      // date range from inputs (yyyy-mm-dd)
       const df = dateFrom.value ? new Date(dateFrom.value+"T00:00:00") : null;
       const dt = dateTo.value ? new Date(dateTo.value+"T23:59:59") : null;
 
@@ -1809,10 +1886,7 @@
       dateTo.value = "";
       renderAttendanceTable(attendanceRaw);
     });
-    searchAttendance.addEventListener("input", ()=>{
-      // live filter
-      applyAttendanceFilter();
-    });
+    searchAttendance.addEventListener("input", applyAttendanceFilter);
     filterClass.addEventListener("change", applyAttendanceFilter);
     filterStatus.addEventListener("change", applyAttendanceFilter);
     dateFrom.addEventListener("change", applyAttendanceFilter);
@@ -1848,14 +1922,12 @@
           `;
           card.addEventListener("click", ()=>{
             showPage("announcements");
-            // open detail as popout too
             openAnnouncementModal(a);
           });
           annListHome.appendChild(card);
         });
       }
 
-      // Full page cards
       annGrid.innerHTML = "";
       const list = announcementsRaw.filter(a=>a.active);
       if(!list.length){
@@ -1953,7 +2025,6 @@
             window.open(item.url, "_blank", "noopener");
             return;
           }
-          // popup
           annModalTitle.textContent = item.title;
           annModalBody.innerHTML = `
             <div class="card" style="margin:0;">
@@ -1973,11 +2044,10 @@
         parentsGrid.appendChild(el);
       });
     }
-
     btnReloadParents.addEventListener("click", loadParents);
 
     /***********************
-     * CALENDAR UI (simple)
+     * CALENDAR UI
      ***********************/
     function renderCalendar(){
       if(!SETTINGS.urls.calendar){
@@ -1988,7 +2058,6 @@
         calendarArea.textContent = "Tiada data.";
         return;
       }
-      // Just show first few lines
       calendarArea.innerHTML = `
         <div class="tableWrap">
           <table>
@@ -2030,11 +2099,9 @@
         populateClassOptions();
         renderAttendanceTable(attendanceRaw);
 
-        // Stats
         const stats = computeStats(attendanceRaw);
         setStatUI(stats);
 
-        // Trend
         renderTrend();
       }catch(err){
         console.error(err);
@@ -2106,11 +2173,8 @@
     document.getElementById("statMonth").addEventListener("click", ()=>{ showPage("attendance"); });
     document.getElementById("statPct").addEventListener("click", ()=>{ showPage("attendance"); });
 
-    // Same on attendance stats (optional)
     document.querySelectorAll('[data-jump]').forEach(el=>{
-      el.addEventListener("click", ()=>{
-        showPage("attendance");
-      });
+      el.addEventListener("click", ()=>{ showPage("attendance"); });
     });
 
     /***********************
@@ -2119,14 +2183,13 @@
     function init(){
       applyTheme();
       applyIdentity();
-      syncSidebarDefault();
+      initSidebarState();
+      setupAutoHideSidebar();
+
       tickClock();
       setupTrendSelectors();
 
-      // Default: home
       showPage("home");
-
-      // Load data
       loadAll();
     }
     init();
