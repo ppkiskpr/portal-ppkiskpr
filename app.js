@@ -1,135 +1,180 @@
 const $ = q => document.querySelector(q);
+let rows = [], chartGender;
 
-const state = {
-  rawRows: [],
-  trendMode: "pct",
-  charts: { trend: null }
-};
+// =======================
+// PARSE TARIKH (SMART)
+// =======================
+function parseDateSmart(s) {
+  if (!s) return null;
 
-function parseDate(s){
-  const d = new Date(s+"T00:00:00");
-  return isNaN(d) ? null : d;
+  // Jika format DD/MM/YYYY
+  if (s.includes("/")) {
+    const [dd, mm, yyyy] = s.split("/").map(Number);
+    if (yyyy && mm && dd) return new Date(yyyy, mm - 1, dd);
+  }
+
+  // Jika format YYYY-MM-DD
+  if (s.includes("-")) {
+    const d = new Date(s + "T00:00:00");
+    if (!isNaN(d)) return d;
+  }
+
+  return null;
 }
 
-function normalizeRow(r){
-  return {
-    Tarikh: r.Tarikh,
-    Nama: r["Nama Murid"],
-    Kelas: r.Kelas,
-    Status: r.Status,
-    dateObj: parseDate(r.Tarikh),
-    isHadir: String(r.Status).toLowerCase()==="hadir",
-    isTidak: String(r.Status).toLowerCase()!=="hadir"
-  };
-}
+// =======================
+// LOAD CSV
+// =======================
+function loadCSV() {
+  Papa.parse(window.PORTAL_CONFIG.CSV_URL, {
+    download: true,
+    header: true,
+    complete: r => {
+      rows = r.data.map(x => {
+        const d = parseDateSmart(x.Tarikh);
+        return {
+          tarikhRaw: x.Tarikh,
+          nama: x["Nama Murid"],
+          kelas: x.Kelas,
+          status: x.Status,
+          jantina: x.Jantina,
+          hadir: String(x.Status).toLowerCase() === "hadir",
+          date: d
+        };
+      }).filter(x => x.nama && x.date);
 
-async function loadCSV(){
-  const url = window.PORTAL_CONFIG.CSV_URL || "./data/kehadiran.csv";
-  $("#csvSourceText").textContent = url;
-
-  Papa.parse(url,{
-    download:true,
-    header:true,
-    complete: r=>{
-      state.rawRows = r.data.map(normalizeRow).filter(x=>x.dateObj);
-      populateClass();
-      renderAll();
+      initUI();
     }
   });
 }
 
-function populateClass(){
-  const sel=$("#cmpClass");
-  const set=[...new Set(state.rawRows.map(r=>r.Kelas))];
-  sel.innerHTML='<option value="">Semua Kelas</option>'+set.map(k=>`<option>${k}</option>`).join("");
+// =======================
+// INIT UI
+// =======================
+function initUI() {
+  const cls = [...new Set(rows.map(r => r.kelas))];
+  $("#classPick").innerHTML =
+    '<option value="">Semua Kelas</option>' +
+    cls.map(c => `<option>${c}</option>`).join("");
+
+  const now = new Date();
+  $("#monthPick").value =
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+  $("#monthPick").onchange = renderAll;
+  $("#classPick").onchange = renderAll;
+  $("#btnPDF").onclick = exportPDF;
+
+  renderAll();
 }
 
-function getMonthRange(v){
-  const [y,m]=v.split("-").map(Number);
-  return {
-    start:new Date(y,m-1,1),
-    end:new Date(y,m,0,23,59,59)
-  };
+// =======================
+// MAIN RENDER
+// =======================
+function renderAll() {
+  const [y, m] = $("#monthPick").value.split("-").map(Number);
+  const cls = $("#classPick").value;
+
+  const start = new Date(y, m - 1, 1);
+  const end = new Date(y, m, 0, 23, 59, 59);
+
+  const data = rows.filter(r =>
+    r.date >= start &&
+    r.date <= end &&
+    (cls === "" || r.kelas === cls)
+  );
+
+  renderKPI(data);
+  renderGender(data);
+  renderRanking(data);
 }
 
-function renderAll(){
-  renderTrend();
-  renderTopAbsent();
+// =======================
+// KPI
+// =======================
+function renderKPI(d) {
+  const murid = [...new Set(d.map(x => x.nama))];
+  const L = d.filter(x => x.jantina === "Lelaki").length;
+  const P = d.filter(x => x.jantina === "Perempuan").length;
+  const pct = d.length
+    ? Math.round(d.filter(x => x.hadir).length / d.length * 100)
+    : 0;
+
+  $("#kpiTotal").textContent = murid.length;
+  $("#kpiL").textContent = L;
+  $("#kpiP").textContent = P;
+  $("#kpiPct").textContent = pct + "%";
 }
 
-function renderTrend(){
-  const m=$("#cmpMonth").value;
-  if(!m) return;
+// =======================
+// GRAF JANTINA
+// =======================
+function renderGender(d) {
+  const L = d.filter(x => x.jantina === "Lelaki").length;
+  const P = d.filter(x => x.jantina === "Perempuan").length;
 
-  const cls=$("#cmpClass").value;
-  const range=getMonthRange(m);
+  if (chartGender) chartGender.destroy();
+  chartGender = new Chart($("#chartGender"), {
+    type: "bar",
+    data: {
+      labels: ["Lelaki", "Perempuan"],
+      datasets: [{ data: [L, P] }]
+    },
+    options: { scales: { y: { beginAtZero: true } } }
+  });
+}
 
-  const days=[];
-  const d=new Date(range.start);
-  while(d<=range.end){ days.push(new Date(d)); d.setDate(d.getDate()+1); }
-
-  const map={};
-  days.forEach(d=>map[d.toISOString().slice(0,10)]={hadir:0,total:0});
-
-  state.rawRows
-    .filter(r=>r.dateObj>=range.start && r.dateObj<=range.end)
-    .filter(r=>!cls||r.Kelas===cls)
-    .forEach(r=>{
-      const k=r.Tarikh;
-      if(map[k]){
-        map[k].total++;
-        if(r.isHadir) map[k].hadir++;
-      }
-    });
-
-  let data;
-  if(state.trendMode==="hadir") data=days.map(d=>map[d.toISOString().slice(0,10)].hadir);
-  else if(state.trendMode==="tidak") data=days.map(d=>map[d.toISOString().slice(0,10)].total-map[d.toISOString().slice(0,10)].hadir);
-  else data=days.map(d=>{
-    const x=map[d.toISOString().slice(0,10)];
-    return x.total?Math.round(x.hadir/x.total*100):null;
+// =======================
+// RANKING MURID
+// =======================
+function renderRanking(d) {
+  const map = {};
+  d.forEach(x => {
+    if (!map[x.nama]) map[x.nama] = { n: x.nama, k: x.kelas, t: 0, h: 0 };
+    map[x.nama].t++;
+    if (x.hadir) map[x.nama].h++;
   });
 
-  if(state.charts.trend) state.charts.trend.destroy();
-  state.charts.trend=new Chart($("#chartDailyTrend"),{
-    type:"line",
-    data:{labels:days.map(d=>d.getDate()),datasets:[{label:"Trend",data}]},
-    options:{scales:{y:{beginAtZero:true,max:100}}}
+  const list = Object.values(map)
+    .map(x => ({ ...x, p: Math.round(x.h / x.t * 100) }))
+    .sort((a, b) => b.p - a.p)
+    .slice(0, 10);
+
+  $("#rankBody").innerHTML = list.map((x, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${x.n}</td>
+      <td>${x.k}</td>
+      <td>${x.p}%</td>
+    </tr>
+  `).join("");
+}
+
+// =======================
+// EXPORT PDF
+// =======================
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  pdf.text("Laporan Kehadiran PPKI", 10, 10);
+  pdf.text("Bulan: " + $("#monthPick").value, 10, 18);
+  pdf.text("Kelas: " + ($("#classPick").value || "Semua"), 10, 26);
+
+  pdf.text("Jumlah Murid: " + $("#kpiTotal").textContent, 10, 38);
+  pdf.text("Lelaki: " + $("#kpiL").textContent, 10, 46);
+  pdf.text("Perempuan: " + $("#kpiP").textContent, 10, 54);
+  pdf.text("% Kehadiran: " + $("#kpiPct").textContent, 10, 62);
+
+  pdf.text("Ranking Murid:", 10, 74);
+  let y = 82;
+  document.querySelectorAll("#rankBody tr").forEach(r => {
+    pdf.text(r.innerText.replace(/\s+/g, " | "), 10, y);
+    y += 8;
   });
+
+  pdf.save("Laporan_PPKI.pdf");
 }
 
-function renderTopAbsent(){
-  const m=$("#cmpMonth").value;
-  if(!m) return;
-  const cls=$("#cmpClass").value;
-  const range=getMonthRange(m);
-
-  const map={};
-  state.rawRows
-    .filter(r=>r.dateObj>=range.start && r.dateObj<=range.end)
-    .filter(r=>!cls||r.Kelas===cls)
-    .filter(r=>r.isTidak)
-    .forEach(r=>{
-      const k=r.Nama+"|"+r.Kelas;
-      if(!map[k]) map[k]={n:r.Nama,k:r.Kelas,c:0};
-      map[k].c++;
-    });
-
-  const top=Object.values(map).sort((a,b)=>b.c-a.c).slice(0,5);
-  $("#topAbsentBody").innerHTML=top.length
-    ? top.map(x=>`<tr><td>${x.n}</td><td>${x.k}</td><td>${x.c}</td></tr>`).join("")
-    : `<tr><td colspan="3">Tiada data</td></tr>`;
-}
-
-/* EVENTS */
-document.addEventListener("click",e=>{
-  if(e.target.classList.contains("trendBtn")){
-    state.trendMode=e.target.dataset.mode;
-    renderTrend();
-  }
-});
-
-$("#cmpMonth").addEventListener("change",renderAll);
-$("#cmpClass").addEventListener("change",renderAll);
-
+// =======================
 loadCSV();
