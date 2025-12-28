@@ -1,2574 +1,596 @@
 <!doctype html>
 <html lang="ms" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal Sekolah</title>
-  <script type="text/javascript" nonce="f415e6d7f3bb4631946e1be2570" src="//injections.adguard.org?ts=1766815573086&amp;type=content-script&amp;dmn=bxpa8q4yy74gxsb4.canvacode.com&amp;url=https%3A%2F%2Fbxpa8q4yy74gxsb4.canvacode.com%2Fcodelet%2FAAEAEGJ4cGE4cTR5eTc0Z3hzYjQAAAAAAZtlMxRgppurfTID7YIbxxTrTd6Zs5U6hoccQXeaasP7PIwJ0nw%2Findex.html&amp;app=chrome.exe&amp;css=3&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1&amp;stealth=1&amp;st-dnt"></script><script type="text/javascript" nonce="f415e6d7f3bb4631946e1be2570" src="//injections.adguard.org?ts=1766815573086&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script><link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Poppins:wght@300;400;600;700&amp;family=Open+Sans:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
-  <script src="/_sdk/data_sdk.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    body {
-      box-sizing: border-box;
-    }
-    
-    * {
-      box-sizing: border-box;
-    }
-    
-    .toast-enter {
-      animation: slideInRight 0.3s ease-out;
-    }
-    
-    .toast-exit {
-      animation: slideOutRight 0.3s ease-in;
-    }
-    
-    @keyframes slideInRight {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-    
-    @keyframes slideOutRight {
-      from {
-        transform: translateX(0);
-        opacity: 1;
-      }
-      to {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-    }
-    
-    .modal-backdrop {
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
-    }
-    
-    .sidebar-transition {
-      transition: all 0.3s ease-in-out;
-    }
-    
-    .gradient-clock {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    .menu-item-hover {
-      transition: all 0.2s ease;
-    }
-    
-    .menu-item-hover:hover {
-      transform: translateX(4px);
-    }
-    
-    .delete-confirm {
-      background: #fee;
-      border: 2px solid #f88;
-    }
-
-    .banner-preview-small {
-      min-height: 200px;
-    }
-
-    .banner-preview-medium {
-      min-height: 300px;
-    }
-
-    .banner-preview-large {
-      min-height: 400px;
-    }
-
-    .banner-bg-cover {
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-
-    .card-hover {
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .card-hover:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
-    }
-
-    .priority-badge-high {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
-
-    .priority-badge-medium {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-    }
-
-    .priority-badge-low {
-      background: linear-gradient(135deg, #10b981, #059669);
-    }
-
-    .modal-card-backdrop {
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
-      animation: fadeIn 0.3s ease-out;
-    }
-
-    .modal-card-content {
-      animation: slideUp 0.3s ease-out;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes slideUp {
-      from {
-        transform: translateY(50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .line-clamp-3 {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
+    body, * { box-sizing: border-box; }
+    .sidebar-transition { transition: all .25s ease-in-out; }
+    .menu-item-hover { transition: all .18s ease; }
+    .menu-item-hover:hover { transform: translateX(4px); }
+    .toast-enter { animation: slideInRight .25s ease-out; }
+    .toast-exit { animation: slideOutRight .25s ease-in; }
+    @keyframes slideInRight { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+    @keyframes slideOutRight { from{transform:translateX(0);opacity:1} to{transform:translateX(100%);opacity:0} }
+    .modal-backdrop { background: rgba(0,0,0,.55); backdrop-filter: blur(6px); }
+    .gradient-clock { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .line-clamp-3 { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .card-hover { transition: all .25s ease; cursor:pointer; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.15); }
   </style>
-  <style>@view-transition { navigation: auto; }</style>
- </head>
- <body class="h-full overflow-hidden">
+</head>
+
+<body class="h-full overflow-hidden">
   <div id="app" class="h-full w-full flex flex-col"></div>
-  <script>
-    const defaultConfig = {
-      school_name: "SMK Contoh",
-      school_motto: "Cemerlang, Gemilang, Terbilang",
-      copyright_text: "© 2025 NK. Hak Cipta Terpelihara.",
-      header_color: "#3b82f6",
-      bg_color: "#f3f4f6",
-      sidebar_color: "#1f2937",
-      card_color: "#ffffff",
-      text_color: "#1f2937",
-      font_family: "Roboto",
-      gradient_enabled: false,
-      gradient_secondary: "#6366f1",
-      gradient_direction: "top",
-      hover_brightness: "darken",
-      hover_animation: "scale",
-      border_radius: 8,
-      shadow_intensity: 3,
-      spacing_density: "normal",
-      animation_speed: "normal",
-      banner_title: "Selamat Datang ke Portal Sekolah",
-      banner_description: "Sistem pengurusan sekolah moden yang memudahkan pengurusan pentadbiran dan akses maklumat",
-      banner_image: "",
-      banner_height: "medium",
-      banner_text_align: "center",
-      banner_show_clock: true,
-      banner_cta_text: "",
-      banner_cta_link: "",
-      banner_cta_enabled: false
+
+<script>
+/* =========================
+   1) CONFIG & STORAGE
+========================= */
+const STORAGE_KEY = "PORTAL_NK_STATE_V1";
+
+const defaultState = {
+  config: {
+    school_name: "PPKI SK Paya Resak",
+    school_motto: "Cemerlang, Gemilang, Terbilang",
+    copyright_text: "© 2026 NK. Hak Cipta Terpelihara.",
+    header_color: "#2563eb",
+    bg_color: "#f3f4f6",
+    sidebar_color: "#1f2937",
+    card_color: "#ffffff",
+    text_color: "#111827",
+    font_family: "Poppins",
+    banner_title: "Selamat Datang ke Portal Sekolah",
+    banner_description: "Sistem pengurusan sekolah moden untuk maklumat & kemas kini.",
+    banner_show_clock: true
+  },
+  ui: {
+    sidebarCollapsed: false,
+    currentPage: "home",
+    settingsOpen: false
+  },
+  menus: [
+    { id: "dashboard", icon: "🏠", label: "Dashboard", page: "home" },
+    { id: "data", icon: "📊", label: "Data", page: "data" }
+  ],
+  cards: [
+    {
+      id: crypto.randomUUID(),
+      type: "announcement",
+      title: "Pengumuman Contoh",
+      content: "Ini contoh kad pengumuman. Cikgu boleh edit/padam di Panel Ringkas.",
+      date: new Date().toISOString().slice(0,10),
+      priority: "medium",
+      visible: true,
+      author: "Portal"
+    }
+  ]
+};
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return structuredClone(defaultState);
+    const s = JSON.parse(raw);
+    // fallback merge simple
+    return {
+      ...structuredClone(defaultState),
+      ...s,
+      config: {...defaultState.config, ...(s.config||{})},
+      ui: {...defaultState.ui, ...(s.ui||{})},
+      menus: Array.isArray(s.menus) ? s.menus : defaultState.menus,
+      cards: Array.isArray(s.cards) ? s.cards : defaultState.cards,
     };
-
-    let allData = [];
-    let currentUser = null;
-    let sidebarCollapsed = false;
-    let currentPage = 'home';
-    let deleteConfirmId = null;
-    let deleteConfirmType = null;
-    let cardFilter = 'all';
-    let cardSort = 'date-desc';
-    let editingCard = null;
-    let viewingCard = null;
-
-    const DEFAULT_SUPERADMIN = {
-      username: 'superadmin',
-      password: 'super123',
-      name: 'Super Admin',
-      role: 'Superadmin',
-      isDefault: true
-    };
-
-    const CARD_TYPES = {
-      announcement: { label: 'Pengumuman', icon: '📢', color: '#3b82f6' },
-      event: { label: 'Acara', icon: '📅', color: '#8b5cf6' },
-      news: { label: 'Berita', icon: '📰', color: '#10b981' },
-      info: { label: 'Maklumat', icon: 'ℹ️', color: '#f59e0b' }
-    };
-
-    const DAYS_MS = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
-    const MONTHS_MS = ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'];
-
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = `toast-enter px-6 py-4 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'} max-w-sm`;
-      toast.textContent = message;
-      container.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.classList.remove('toast-enter');
-        toast.classList.add('toast-exit');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }
-
-    function formatDateTime() {
-      const now = new Date();
-      const day = DAYS_MS[now.getDay()];
-      const date = now.getDate();
-      const month = MONTHS_MS[now.getMonth()];
-      const year = now.getFullYear();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      return `${day}, ${date} ${month} ${year}, ${hours}:${minutes}:${seconds}`;
-    }
-
-    function formatDateShort(dateStr) {
-      if (!dateStr) return '';
-      const date = new Date(dateStr);
-      const day = date.getDate();
-      const month = MONTHS_MS[date.getMonth()];
-      const year = date.getFullYear();
-      return `${day} ${month} ${year}`;
-    }
-
-    function updateClock() {
-      const clockElements = document.querySelectorAll('.live-clock');
-      clockElements.forEach(el => {
-        el.textContent = formatDateTime();
-      });
-    }
-
-    setInterval(updateClock, 1000);
-
-    function toggleSidebar() {
-      sidebarCollapsed = !sidebarCollapsed;
-      renderApp();
-    }
-
-    function logout() {
-      currentUser = null;
-      currentPage = 'home';
-      showToast('Anda telah log keluar', 'info');
-      renderApp();
-    }
-
-    function showLoginModal() {
-      const modal = document.getElementById('login-modal');
-      if (modal) {
-        modal.classList.remove('hidden');
-      }
-    }
-
-    function hideLoginModal() {
-      const modal = document.getElementById('login-modal');
-      if (modal) {
-        modal.classList.add('hidden');
-        document.getElementById('login-username').value = '';
-        document.getElementById('login-password').value = '';
-      }
-    }
-
-    function showCardModal(card) {
-      viewingCard = card;
-      renderApp();
-    }
-
-    function hideCardModal() {
-      viewingCard = null;
-      renderApp();
-    }
-
-    async function handleLogin(e) {
-      e.preventDefault();
-      const username = document.getElementById('login-username').value;
-      const password = document.getElementById('login-password').value;
-
-      if (username === DEFAULT_SUPERADMIN.username && password === DEFAULT_SUPERADMIN.password) {
-        currentUser = {
-          name: DEFAULT_SUPERADMIN.name,
-          username: DEFAULT_SUPERADMIN.username,
-          role: DEFAULT_SUPERADMIN.role,
-          isDefaultSuperadmin: true,
-          avatar: null
-        };
-        hideLoginModal();
-        showToast('Selamat datang, Super Admin!', 'success');
-        renderApp();
-        return;
-      }
-
-      const admins = allData.filter(d => d.type === 'admin');
-      const admin = admins.find(a => a.username === username && a.password === password);
-
-      if (admin) {
-        if (admin.status === 'Tidak Aktif') {
-          showToast('Akaun anda tidak aktif', 'error');
-          return;
-        }
-        currentUser = {
-          name: admin.admin_name,
-          username: admin.username,
-          role: admin.role,
-          avatar: admin.avatar,
-          adminId: admin.__backendId,
-          isDefaultSuperadmin: false
-        };
-        hideLoginModal();
-        showToast(`Selamat datang, ${admin.admin_name}!`, 'success');
-        renderApp();
-      } else {
-        showToast('Username atau password salah', 'error');
-      }
-    }
-
-    function navigateTo(page) {
-      currentPage = page;
-      renderApp();
-    }
-
-    function getMenus() {
-      return allData
-        .filter(d => d.type === 'menu')
-        .sort((a, b) => a.sort_order - b.sort_order);
-    }
-
-    function getCards() {
-      let cards = allData.filter(d => d.type === 'card');
-      
-      if (cardFilter !== 'all') {
-        cards = cards.filter(c => c.card_type === cardFilter);
-      }
-
-      if (!currentUser || (currentUser.role !== 'Admin' && currentUser.role !== 'Superadmin')) {
-        cards = cards.filter(c => c.card_visible === true);
-      }
-
-      if (cardSort === 'date-desc') {
-        cards.sort((a, b) => new Date(b.card_date) - new Date(a.card_date));
-      } else if (cardSort === 'date-asc') {
-        cards.sort((a, b) => new Date(a.card_date) - new Date(b.card_date));
-      } else if (cardSort === 'priority') {
-        const priorityOrder = { high: 0, medium: 1, low: 2 };
-        cards.sort((a, b) => priorityOrder[a.card_priority] - priorityOrder[b.card_priority]);
-      } else if (cardSort === 'title') {
-        cards.sort((a, b) => a.card_title.localeCompare(b.card_title));
-      }
-
-      return cards;
-    }
-
-    function canAccessPage(page) {
-      if (!currentUser) {
-        return page === 'home' || allData.some(d => d.type === 'menu' && d.page_id === page);
-      }
-      
-      if (currentUser.role === 'Superadmin') {
-        return true;
-      }
-      
-      if (currentUser.role === 'Admin') {
-        return page === 'home' || page === 'profile' || page === 'tetapanlamanutama' || page === 'cards' || allData.some(d => d.type === 'menu' && d.page_id === page);
-      }
-      
-      return false;
-    }
-
-    async function handleAddAdmin(e) {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      
-      const name = formData.get('admin_name');
-      const username = formData.get('username');
-      const password = formData.get('password');
-      const role = formData.get('role');
-      const status = formData.get('status');
-      const avatar = formData.get('avatar');
-
-      if (!name || !username || !password) {
-        showToast('Sila isi semua field yang diperlukan', 'error');
-        return;
-      }
-
-      if (password.length < 6) {
-        showToast('Password mestilah sekurang-kurangnya 6 aksara', 'error');
-        return;
-      }
-
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Menambah...';
-
-      const result = await window.dataSdk.create({
-        type: 'admin',
-        admin_name: name,
-        username: username,
-        password: password,
-        role: role,
-        status: status,
-        avatar: avatar || null,
-        created_at: new Date().toISOString()
-      });
-
-      btn.disabled = false;
-      btn.textContent = 'Tambah Admin';
-
-      if (result.isOk) {
-        showToast('Admin berjaya ditambah', 'success');
-        e.target.reset();
-      } else {
-        showToast('Gagal menambah admin', 'error');
-      }
-    }
-
-    async function handleDeleteAdmin(adminId) {
-      if (deleteConfirmId === adminId && deleteConfirmType === 'admin') {
-        const admin = allData.find(d => d.__backendId === adminId);
-        if (admin) {
-          const result = await window.dataSdk.delete(admin);
-          if (result.isOk) {
-            showToast('Admin berjaya dipadam', 'success');
-            deleteConfirmId = null;
-            deleteConfirmType = null;
-          } else {
-            showToast('Gagal memadam admin', 'error');
-          }
-        }
-      } else {
-        deleteConfirmId = adminId;
-        deleteConfirmType = 'admin';
-        renderApp();
-        setTimeout(() => {
-          if (deleteConfirmId === adminId) {
-            deleteConfirmId = null;
-            deleteConfirmType = null;
-            renderApp();
-          }
-        }, 5000);
-      }
-    }
-
-    function handleImageUpload(inputId, callback) {
-      const input = document.getElementById(inputId);
-      const file = input.files[0];
-      
-      if (!file) return;
-      
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
-      if (!validTypes.includes(file.type)) {
-        showToast('Format gambar tidak sah. Gunakan JPG, PNG, GIF atau SVG', 'error');
-        input.value = '';
-        return;
-      }
-      
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('Saiz gambar terlalu besar. Maksimum 5MB', 'error');
-        input.value = '';
-        return;
-      }
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        callback(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-
-    async function handleUpdateProfile(e) {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      
-      const name = formData.get('name');
-      const username = formData.get('username');
-      const password = formData.get('password');
-      const confirmPassword = formData.get('confirm_password');
-
-      if (!name || !username) {
-        showToast('Nama dan username diperlukan', 'error');
-        return;
-      }
-
-      if (password && password !== confirmPassword) {
-        showToast('Password tidak sepadan', 'error');
-        return;
-      }
-
-      if (password && password.length < 6) {
-        showToast('Password mestilah sekurang-kurangnya 6 aksara', 'error');
-        return;
-      }
-
-      if (currentUser.isDefaultSuperadmin) {
-        showToast('Perubahan tidak kekal untuk default superadmin', 'info');
-        currentUser.name = name;
-        currentUser.username = username;
-        renderApp();
-        return;
-      }
-
-      const admin = allData.find(d => d.__backendId === currentUser.adminId);
-      if (admin) {
-        const btn = e.target.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.textContent = 'Mengemaskini...';
-
-        const updatedAdmin = {
-          ...admin,
-          admin_name: name,
-          username: username
-        };
-
-        if (password) {
-          updatedAdmin.password = password;
-        }
-
-        const avatarInput = document.getElementById('profile-avatar-input');
-        if (avatarInput && avatarInput.files[0]) {
-          const reader = new FileReader();
-          reader.onload = async (e) => {
-            updatedAdmin.avatar = e.target.result;
-            const result = await window.dataSdk.update(updatedAdmin);
-            btn.disabled = false;
-            btn.textContent = 'Kemaskini Profil';
-            
-            if (result.isOk) {
-              currentUser.name = name;
-              currentUser.username = username;
-              currentUser.avatar = updatedAdmin.avatar;
-              showToast('Profil berjaya dikemaskini', 'success');
-              renderApp();
-            } else {
-              showToast('Gagal mengemaskini profil', 'error');
-            }
-          };
-          reader.readAsDataURL(avatarInput.files[0]);
-        } else {
-          const result = await window.dataSdk.update(updatedAdmin);
-          btn.disabled = false;
-          btn.textContent = 'Kemaskini Profil';
-          
-          if (result.isOk) {
-            currentUser.name = name;
-            currentUser.username = username;
-            showToast('Profil berjaya dikemaskini', 'success');
-            renderApp();
-          } else {
-            showToast('Gagal mengemaskini profil', 'error');
-          }
-        }
-      }
-    }
-
-    async function handleAddMenu(e) {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      
-      const label = formData.get('menu_label');
-      const icon = formData.get('menu_icon');
-      const pageId = formData.get('page_id');
-      const sortOrder = formData.get('sort_order');
-
-      if (!label || !icon || !pageId || !sortOrder) {
-        showToast('Sila isi semua field', 'error');
-        return;
-      }
-
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Menambah...';
-
-      const result = await window.dataSdk.create({
-        type: 'menu',
-        menu_label: label,
-        menu_icon: icon,
-        page_id: pageId.toLowerCase().replace(/\s+/g, ''),
-        sort_order: Number(sortOrder),
-        created_at: new Date().toISOString()
-      });
-
-      btn.disabled = false;
-      btn.textContent = 'Tambah Menu';
-
-      if (result.isOk) {
-        showToast('Menu berjaya ditambah', 'success');
-        e.target.reset();
-      } else {
-        showToast('Gagal menambah menu', 'error');
-      }
-    }
-
-    async function handleDeleteMenu(menuId) {
-      if (deleteConfirmId === menuId && deleteConfirmType === 'menu') {
-        const menu = allData.find(d => d.__backendId === menuId);
-        if (menu) {
-          const result = await window.dataSdk.delete(menu);
-          if (result.isOk) {
-            showToast('Menu berjaya dipadam', 'success');
-            deleteConfirmId = null;
-            deleteConfirmType = null;
-          } else {
-            showToast('Gagal memadam menu', 'error');
-          }
-        }
-      } else {
-        deleteConfirmId = menuId;
-        deleteConfirmType = 'menu';
-        renderApp();
-        setTimeout(() => {
-          if (deleteConfirmId === menuId) {
-            deleteConfirmId = null;
-            deleteConfirmType = null;
-            renderApp();
-          }
-        }, 5000);
-      }
-    }
-
-    function handleImportCSV(e) {
-      e.preventDefault();
-      const fileInput = document.getElementById('csv-file-input');
-      const file = fileInput.files[0];
-      
-      if (!file) {
-        showToast('Sila pilih fail CSV', 'error');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        const csv = event.target.result;
-        const lines = csv.split('\n').filter(line => line.trim());
-        
-        if (lines.length < 2) {
-          showToast('Fail CSV kosong atau tidak sah', 'error');
-          return;
-        }
-
-        const btn = document.getElementById('import-csv-btn');
-        btn.disabled = true;
-        btn.textContent = 'Mengimport...';
-
-        let successCount = 0;
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',').map(v => v.trim());
-          if (values.length >= 5) {
-            const [name, username, password, role, status] = values;
-            if (name && username && password) {
-              const result = await window.dataSdk.create({
-                type: 'admin',
-                admin_name: name,
-                username: username,
-                password: password,
-                role: role || 'Admin',
-                status: status || 'Aktif',
-                avatar: null,
-                created_at: new Date().toISOString()
-              });
-              if (result.isOk) successCount++;
-            }
-          }
-        }
-
-        btn.disabled = false;
-        btn.textContent = 'Import CSV';
-        
-        showToast(`${successCount} admin berjaya diimport`, 'success');
-        document.getElementById('csv-modal').classList.add('hidden');
-        fileInput.value = '';
-      };
-      reader.readAsText(file);
-    }
-
-    function downloadCSVTemplate() {
-      const csv = 'Nama,Username,Password,Peranan,Status\nAhmad Ali,ahmad,pass123,Admin,Aktif\nSiti Nor,siti,pass456,Superadmin,Aktif';
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'template_admin.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    async function handleSaveBanner(e) {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-
-      const bannerTitle = formData.get('banner_title');
-      const bannerDescription = formData.get('banner_description');
-      const bannerHeight = formData.get('banner_height');
-      const bannerTextAlign = formData.get('banner_text_align');
-      const bannerShowClock = formData.get('banner_show_clock') === 'on';
-      const bannerCtaText = formData.get('banner_cta_text');
-      const bannerCtaLink = formData.get('banner_cta_link');
-      const bannerCtaEnabled = formData.get('banner_cta_enabled') === 'on';
-
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Menyimpan...';
-
-      const config = {
-        banner_title: bannerTitle,
-        banner_description: bannerDescription,
-        banner_height: bannerHeight,
-        banner_text_align: bannerTextAlign,
-        banner_show_clock: bannerShowClock,
-        banner_cta_text: bannerCtaText,
-        banner_cta_link: bannerCtaLink,
-        banner_cta_enabled: bannerCtaEnabled
-      };
-
-      const imageInput = document.getElementById('banner-image-input');
-      if (imageInput && imageInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          config.banner_image = e.target.result;
-          if (window.elementSdk) {
-            await window.elementSdk.setConfig(config);
-            btn.disabled = false;
-            btn.textContent = 'Simpan Banner';
-            showToast('Banner berjaya dikemaskini!', 'success');
-            updateBannerPreview();
-          }
-        };
-        reader.readAsDataURL(imageInput.files[0]);
-      } else {
-        if (window.elementSdk) {
-          await window.elementSdk.setConfig(config);
-          btn.disabled = false;
-          btn.textContent = 'Simpan Banner';
-          showToast('Banner berjaya dikemaskini!', 'success');
-          updateBannerPreview();
-        }
-      }
-    }
-
-    function handleRemoveBannerImage() {
-      if (window.elementSdk) {
-        window.elementSdk.setConfig({ banner_image: "" });
-        showToast('Imej banner dibuang', 'info');
-        const input = document.getElementById('banner-image-input');
-        if (input) input.value = '';
-        updateBannerPreview();
-      }
-    }
-
-    function updateBannerPreview() {
-      const config = window.elementSdk.config;
-      const preview = document.getElementById('banner-preview-container');
-      if (!preview) return;
-
-      const alignClass = config.banner_text_align === 'left' ? 'text-left' : config.banner_text_align === 'right' ? 'text-right' : 'text-center';
-      const heightClass = config.banner_height === 'small' ? 'banner-preview-small' : config.banner_height === 'large' ? 'banner-preview-large' : 'banner-preview-medium';
-      
-      const bgStyle = config.banner_image ? `background-image: url('${config.banner_image}');` : `background-color: ${config.card_color};`;
-
-      preview.innerHTML = `
-        <div class="${heightClass} banner-bg-cover rounded-lg shadow-lg p-8 flex flex-col justify-center" style="${bgStyle}">
-          <div class="bg-white bg-opacity-90 rounded-lg p-6">
-            <h1 class="text-3xl font-bold mb-4 ${alignClass}" style="color: ${config.text_color};">${config.banner_title || defaultConfig.banner_title}</h1>
-            <p class="mb-6 ${alignClass}" style="color: ${config.text_color};">${config.banner_description || defaultConfig.banner_description}</p>
-            ${config.banner_show_clock ? `
-              <div class="gradient-clock text-white text-center py-6 rounded-lg mb-4">
-                <div class="live-clock text-2xl font-semibold">${formatDateTime()}</div>
-              </div>
-            ` : ''}
-            ${config.banner_cta_enabled && config.banner_cta_text ? `
-              <div class="${alignClass}">
-                <button class="px-6 py-3 text-white rounded-lg font-semibold" style="background-color: ${config.header_color}; border-radius: ${config.border_radius}px;">
-                  ${config.banner_cta_text}
-                </button>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      `;
-      updateClock();
-    }
-
-    async function handleSaveCard(e) {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-
-      const title = formData.get('card_title');
-      const type = formData.get('card_type');
-      const content = formData.get('card_content');
-      const priority = formData.get('card_priority');
-      const date = formData.get('card_date');
-      const visible = formData.get('card_visible') === 'on';
-
-      if (!title || !type || !content || !date) {
-        showToast('Sila isi semua field yang diperlukan', 'error');
-        return;
-      }
-
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = editingCard ? 'Mengemaskini...' : 'Menyimpan...';
-
-      const cardData = {
-        type: 'card',
-        card_title: title,
-        card_type: type,
-        card_content: content,
-        card_priority: priority,
-        card_date: date,
-        card_visible: visible,
-        card_author: currentUser ? currentUser.name : 'System',
-        created_at: editingCard ? editingCard.created_at : new Date().toISOString()
-      };
-
-      const imageInput = document.getElementById('card-image-input');
-      if (imageInput && imageInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          cardData.card_image = e.target.result;
-          
-          let result;
-          if (editingCard) {
-            result = await window.dataSdk.update({ ...editingCard, ...cardData });
-          } else {
-            result = await window.dataSdk.create(cardData);
-          }
-
-          btn.disabled = false;
-          btn.textContent = editingCard ? 'Kemaskini Kad' : 'Tambah Kad';
-
-          if (result.isOk) {
-            showToast(editingCard ? 'Kad berjaya dikemaskini!' : 'Kad berjaya ditambah!', 'success');
-            editingCard = null;
-            document.getElementById('card-form-container').classList.add('hidden');
-            document.querySelector('form[onsubmit*="handleSaveCard"]').reset();
-          } else {
-            showToast('Gagal menyimpan kad', 'error');
-          }
-        };
-        reader.readAsDataURL(imageInput.files[0]);
-      } else {
-        if (editingCard && editingCard.card_image) {
-          cardData.card_image = editingCard.card_image;
-        } else {
-          cardData.card_image = null;
-        }
-
-        let result;
-        if (editingCard) {
-          result = await window.dataSdk.update({ ...editingCard, ...cardData });
-        } else {
-          result = await window.dataSdk.create(cardData);
-        }
-
-        btn.disabled = false;
-        btn.textContent = editingCard ? 'Kemaskini Kad' : 'Tambah Kad';
-
-        if (result.isOk) {
-          showToast(editingCard ? 'Kad berjaya dikemaskini!' : 'Kad berjaya ditambah!', 'success');
-          editingCard = null;
-          document.getElementById('card-form-container').classList.add('hidden');
-          document.querySelector('form[onsubmit*="handleSaveCard"]').reset();
-        } else {
-          showToast('Gagal menyimpan kad', 'error');
-        }
-      }
-    }
-
-    function showCardForm(card = null) {
-      editingCard = card;
-      const formContainer = document.getElementById('card-form-container');
-      const form = document.querySelector('form[onsubmit*="handleSaveCard"]');
-      
-      if (card) {
-        form.querySelector('input[name="card_title"]').value = card.card_title;
-        form.querySelector('select[name="card_type"]').value = card.card_type;
-        form.querySelector('textarea[name="card_content"]').value = card.card_content;
-        form.querySelector('select[name="card_priority"]').value = card.card_priority;
-        form.querySelector('input[name="card_date"]').value = card.card_date;
-        form.querySelector('input[name="card_visible"]').checked = card.card_visible;
-        form.querySelector('button[type="submit"]').textContent = 'Kemaskini Kad';
-      } else {
-        form.reset();
-        form.querySelector('input[name="card_date"]').value = new Date().toISOString().split('T')[0];
-        form.querySelector('button[type="submit"]').textContent = 'Tambah Kad';
-      }
-      
-      formContainer.classList.remove('hidden');
-      formContainer.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function hideCardForm() {
-      editingCard = null;
-      document.getElementById('card-form-container').classList.add('hidden');
-      document.querySelector('form[onsubmit*="handleSaveCard"]').reset();
-    }
-
-    function handleRemoveCardImage() {
-      const input = document.getElementById('card-image-input');
-      if (input) input.value = '';
-      if (editingCard) {
-        editingCard.card_image = null;
-      }
-      showToast('Imej kad dibuang', 'info');
-    }
-
-    async function handleDeleteCard(cardId) {
-      if (deleteConfirmId === cardId && deleteConfirmType === 'card') {
-        const card = allData.find(d => d.__backendId === cardId);
-        if (card) {
-          const result = await window.dataSdk.delete(card);
-          if (result.isOk) {
-            showToast('Kad berjaya dipadam', 'success');
-            deleteConfirmId = null;
-            deleteConfirmType = null;
-          } else {
-            showToast('Gagal memadam kad', 'error');
-          }
-        }
-      } else {
-        deleteConfirmId = cardId;
-        deleteConfirmType = 'card';
-        renderApp();
-        setTimeout(() => {
-          if (deleteConfirmId === cardId) {
-            deleteConfirmId = null;
-            deleteConfirmType = null;
-            renderApp();
-          }
-        }, 5000);
-      }
-    }
-
-    function setCardFilter(filter) {
-      cardFilter = filter;
-      renderApp();
-    }
-
-    function setCardSort(sort) {
-      cardSort = sort;
-      renderApp();
-    }
-
-    function applyPresetTheme(theme) {
-      const themes = {
-        professional: {
-          header_color: '#1e40af',
-          bg_color: '#f8fafc',
-          sidebar_color: '#334155',
-          card_color: '#ffffff',
-          text_color: '#1e293b',
-          gradient_enabled: false
-        },
-        vibrant: {
-          header_color: '#ec4899',
-          bg_color: '#fef3c7',
-          sidebar_color: '#7c3aed',
-          card_color: '#ffffff',
-          text_color: '#1f2937',
-          gradient_enabled: false
-        },
-        dark: {
-          header_color: '#1e293b',
-          bg_color: '#0f172a',
-          sidebar_color: '#334155',
-          card_color: '#1e293b',
-          text_color: '#f1f5f9',
-          gradient_enabled: false
-        },
-        nature: {
-          header_color: '#059669',
-          bg_color: '#f0fdf4',
-          sidebar_color: '#064e3b',
-          card_color: '#ffffff',
-          text_color: '#064e3b',
-          gradient_enabled: false
-        },
-        sunset: {
-          header_color: '#f97316',
-          bg_color: '#fff7ed',
-          sidebar_color: '#7c2d12',
-          card_color: '#ffffff',
-          text_color: '#7c2d12',
-          gradient_enabled: true,
-          gradient_secondary: '#a855f7',
-          gradient_direction: 'top'
-        },
-        ocean: {
-          header_color: '#0891b2',
-          bg_color: '#ecfeff',
-          sidebar_color: '#164e63',
-          card_color: '#ffffff',
-          text_color: '#164e63',
-          gradient_enabled: true,
-          gradient_secondary: '#3b82f6',
-          gradient_direction: 'left'
-        }
-      };
-
-      const selectedTheme = themes[theme];
-      if (selectedTheme && window.elementSdk) {
-        window.elementSdk.setConfig(selectedTheme);
-        showToast(`Tema ${theme} berjaya digunakan!`, 'success');
-      }
-    }
-
-    function getGradientStyle(color1, color2, direction) {
-      const dirMap = {
-        'top': 'to bottom',
-        'left': 'to right',
-        'diagonal': 'to bottom right'
-      };
-      return `linear-gradient(${dirMap[direction] || 'to bottom'}, ${color1}, ${color2})`;
-    }
-
-    function getHoverStyle(baseColor, brightness) {
-      if (brightness === 'darken') {
-        return `filter: brightness(0.9);`;
-      } else if (brightness === 'lighten') {
-        return `filter: brightness(1.1);`;
-      }
-      return '';
-    }
-
-    function getAnimationClass(animation) {
-      const animMap = {
-        'scale': 'transform: scale(1.05);',
-        'lift': 'transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.2);',
-        'glow': 'box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);'
-      };
-      return animMap[animation] || '';
-    }
-
-    function getShadowClass(intensity) {
-      const shadows = {
-        1: '0 1px 2px rgba(0,0,0,0.05)',
-        2: '0 1px 3px rgba(0,0,0,0.1)',
-        3: '0 4px 6px rgba(0,0,0,0.1)',
-        4: '0 10px 15px rgba(0,0,0,0.1)',
-        5: '0 20px 25px rgba(0,0,0,0.15)'
-      };
-      return shadows[intensity] || shadows[3];
-    }
-
-    function getSpacingClass(density) {
-      const spacing = {
-        'compact': { padding: '0.5rem', gap: '0.5rem' },
-        'normal': { padding: '1rem', gap: '1rem' },
-        'comfortable': { padding: '1.5rem', gap: '1.5rem' }
-      };
-      return spacing[density] || spacing['normal'];
-    }
-
-    function getTransitionSpeed(speed) {
-      const speeds = {
-        'fast': '0.15s',
-        'normal': '0.3s',
-        'slow': '0.5s'
-      };
-      return speeds[speed] || speeds['normal'];
-    }
-
-    function setupColorPickers() {
-      const colorInputs = [
-        { id: 'color-header', key: 'header_color' },
-        { id: 'color-bg', key: 'bg_color' },
-        { id: 'color-sidebar', key: 'sidebar_color' },
-        { id: 'color-card', key: 'card_color' },
-        { id: 'color-text', key: 'text_color' },
-        { id: 'color-gradient-secondary', key: 'gradient_secondary' }
-      ];
-
-      colorInputs.forEach(({ id, key }) => {
-        const input = document.getElementById(id);
-        if (input) {
-          input.addEventListener('input', (e) => {
-            if (window.elementSdk) {
-              window.elementSdk.setConfig({ [key]: e.target.value });
-            }
-          });
-        }
-      });
-
-      const fontSelect = document.getElementById('font-select');
-      if (fontSelect) {
-        fontSelect.addEventListener('change', (e) => {
-          if (window.elementSdk) {
-            window.elementSdk.setConfig({ font_family: e.target.value });
-          }
-        });
-      }
-
-      const gradientToggle = document.getElementById('gradient-toggle');
-      if (gradientToggle) {
-        gradientToggle.addEventListener('change', (e) => {
-          if (window.elementSdk) {
-            window.elementSdk.setConfig({ gradient_enabled: e.target.checked });
-          }
-        });
-      }
-
-      const gradientDir = document.getElementById('gradient-direction');
-      if (gradientDir) {
-        gradientDir.addEventListener('change', (e) => {
-          if (window.elementSdk) {
-            window.elementSdk.setConfig({ gradient_direction: e.target.value });
-          }
-        });
-      }
-
-      const hoverBrightness = document.getElementById('hover-brightness');
-      if (hoverBrightness) {
-        hoverBrightness.addEventListener('change', (e) => {
-          if (window.elementSdk) {
-            window.elementSdk.setConfig({ hover_brightness: e.target.value });
-          }
-        });
-      }
-
-      const hoverAnimation = document.getElementById('hover-animation');
-      if (hoverAnimation) {
-        hoverAnimation.addEventListener('change', (e) => {
-          if (window.elementSdk) {
-            window.elementSdk.setConfig({ hover_animation: e.target.value });
-          }
-        });
-      }
-
-      const borderRadius = document.getElementById('border-radius');
-      if (borderRadius) {
-        borderRadius.addEventListener('input', (e) => {
-          if (window.elementSdk) {
-            window.elementSdk.setConfig({ border_radius: Number(e.target.value) });
-          }
-          const label = document.getElementById('border-radius-value');
-          if (label) label.textContent = e.target.value + 'px';
-        });
-      }
-
-      const shadowIntensity = document.getElementById('shadow-intensity');
-      if (shadowIntensity) {
-        shadowIntensity.addEventListener('input', (e) => {
-          if (window.elementSdk) {
-            window.elementSdk.setConfig({ shadow_intensity: Number(e.target.value) });
-          }
-          const label = document.getElementById('shadow-intensity-value');
-          if (label) label.textContent = e.target.value;
-        });
-      }
-
-      const spacingDensity = document.getElementById('spacing-density');
-      if (spacingDensity) {
-        spacingDensity.addEventListener('change', (e) => {
-          if (window.elementSdk) {
-            window.elementSdk.setConfig({ spacing_density: e.target.value });
-          }
-        });
-      }
-
-      const animationSpeed = document.getElementById('animation-speed');
-      if (animationSpeed) {
-        animationSpeed.addEventListener('change', (e) => {
-          if (window.elementSdk) {
-            window.elementSdk.setConfig({ animation_speed: e.target.value });
-          }
-        });
-      }
-    }
-
-    function resetToDefault() {
-      if (window.elementSdk) {
-        window.elementSdk.setConfig(defaultConfig);
-        showToast('Tema dikembalikan ke default!', 'success');
-      }
-    }
-
-    function toggleSection(sectionId) {
-      const section = document.getElementById(sectionId);
-      if (section) {
-        section.classList.toggle('hidden');
-      }
-    }
-
-    function renderCardItem(card, config, showActions = false) {
-      const cardType = CARD_TYPES[card.card_type] || CARD_TYPES.info;
-      const priorityClass = card.card_priority === 'high' ? 'priority-badge-high' : card.card_priority === 'medium' ? 'priority-badge-medium' : 'priority-badge-low';
-      
-      return `
-        <div onclick="${showActions ? '' : `showCardModal(${JSON.stringify(card).replace(/"/g, '&quot;')})`}" class="card-hover rounded-lg shadow-lg overflow-hidden" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-          ${card.card_image ? `
-            <img src="${card.card_image}" alt="${card.card_title}" class="w-full h-48 object-cover">
-          ` : ''}
+  }catch(e){
+    return structuredClone(defaultState);
+  }
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+let state = loadState();
+
+/* =========================
+   2) UTIL
+========================= */
+const DAYS_MS = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+const MONTHS_MS = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+
+function nowText(){
+  const now = new Date();
+  const day = DAYS_MS[now.getDay()];
+  const date = now.getDate();
+  const month = MONTHS_MS[now.getMonth()];
+  const year = now.getFullYear();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  return `${day}, ${date} ${month} ${year}, ${hh}:${mm}:${ss}`;
+}
+function formatDateShort(d){
+  const date = new Date(d);
+  const day = date.getDate();
+  const month = MONTHS_MS[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+function toast(msg, type="info"){
+  const c = document.getElementById("toast-container");
+  if(!c) return;
+  const el = document.createElement("div");
+  const bg = type==="success" ? "bg-emerald-600" : type==="error" ? "bg-red-600" : "bg-sky-600";
+  el.className = `toast-enter px-5 py-3 rounded-xl shadow-lg text-white ${bg} max-w-sm`;
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(()=>{
+    el.classList.remove("toast-enter");
+    el.classList.add("toast-exit");
+    setTimeout(()=>el.remove(), 250);
+  }, 2500);
+}
+
+/* =========================
+   3) ACTIONS
+========================= */
+function toggleSidebar(){
+  state.ui.sidebarCollapsed = !state.ui.sidebarCollapsed;
+  saveState(); render();
+}
+function navigate(page){
+  state.ui.currentPage = page;
+  state.ui.settingsOpen = false;
+  saveState(); render();
+}
+function toggleSettings(){
+  state.ui.settingsOpen = !state.ui.settingsOpen;
+  saveState(); render();
+}
+function closeSettings(){
+  state.ui.settingsOpen = false;
+  saveState(); render();
+}
+function updateConfig(patch){
+  state.config = {...state.config, ...patch};
+  saveState(); render();
+}
+function addCard(){
+  const title = prompt("Tajuk kad?");
+  if(!title) return;
+  const content = prompt("Kandungan ringkas?");
+  if(!content) return;
+  state.cards.unshift({
+    id: crypto.randomUUID(),
+    type: "announcement",
+    title, content,
+    date: new Date().toISOString().slice(0,10),
+    priority: "medium",
+    visible: true,
+    author: "Admin"
+  });
+  saveState(); render();
+  toast("Kad ditambah", "success");
+}
+function deleteCard(id){
+  if(!confirm("Padam kad ini?")) return;
+  state.cards = state.cards.filter(c=>c.id!==id);
+  saveState(); render();
+  toast("Kad dipadam", "success");
+}
+
+/* =========================
+   4) RENDER PARTS
+========================= */
+function renderHeaderTitle(){
+  const p = state.ui.currentPage;
+  if(p==="home") return "Laman Utama";
+  if(p==="data") return "Data";
+  if(p==="settings") return "Tetapan";
+  return "Portal Sekolah";
+}
+
+function renderCards(){
+  const cfg = state.config;
+  const cards = (state.cards||[])
+    .filter(c=>c.visible)
+    .sort((a,b)=> new Date(b.date) - new Date(a.date))
+    .slice(0,6);
+
+  if(!cards.length){
+    return `
+      <div class="text-center py-10 text-slate-500">
+        <div class="text-5xl mb-3">📭</div>
+        Tiada kad lagi. Tambah melalui Panel Ringkas.
+      </div>`;
+  }
+
+  return `
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      ${cards.map(c=>`
+        <div class="card-hover rounded-lg shadow-lg overflow-hidden"
+             style="background-color:${cfg.card_color}; border-radius:14px;">
           <div class="p-6">
             <div class="flex items-center justify-between mb-3">
-              <span class="px-3 py-1 rounded-full text-white text-sm font-semibold" style="background-color: ${cardType.color};">
-                ${cardType.icon} ${cardType.label}
-              </span>
-              <span class="px-3 py-1 rounded-full text-white text-xs font-semibold ${priorityClass}">
-                ${card.card_priority === 'high' ? 'TINGGI' : card.card_priority === 'medium' ? 'SEDERHANA' : 'RENDAH'}
-              </span>
+              <span class="px-3 py-1 rounded-full text-white text-sm font-semibold"
+                    style="background-color:#2563eb;">📢 Pengumuman</span>
+              <span class="text-xs text-slate-500">📅 ${formatDateShort(c.date)}</span>
             </div>
-            <div class="flex items-center justify-between mb-2">
-              <h3 class="text-xl font-bold flex-1" style="color: ${config.text_color};">${card.card_title}</h3>
-              ${showActions ? `<span class="ml-2 text-2xl">${card.card_visible ? '👁️' : '🚫'}</span>` : ''}
+            <h3 class="text-xl font-bold mb-2" style="color:${cfg.text_color};">${c.title}</h3>
+            <p class="text-sm text-slate-600 line-clamp-3 whitespace-pre-wrap">${c.content}</p>
+
+            <div class="mt-4 flex gap-2">
+              <button onclick="alert(${JSON.stringify(c.content).replace(/"/g,'&quot;')})"
+                      class="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:opacity-90">
+                Buka
+              </button>
+              <button onclick="deleteCard('${c.id}')"
+                      class="px-4 py-2 bg-red-600 text-white rounded-lg hover:opacity-90">
+                Padam
+              </button>
             </div>
-            <p class="text-sm text-gray-600 mb-3 ${showActions ? '' : 'line-clamp-3'}">${card.card_content}</p>
-            <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
-              <span>📅 ${formatDateShort(card.card_date)}</span>
-              <span>✍️ ${card.card_author}</span>
-            </div>
-            ${showActions ? `
-              <div class="flex gap-2" onclick="event.stopPropagation()">
-                ${deleteConfirmId === card.__backendId && deleteConfirmType === 'card' ? `
-                  <div class="delete-confirm px-4 py-2 rounded-lg flex-1">
-                    <span class="text-red-800 font-semibold mr-2 text-sm">Padam?</span>
-                    <button onclick="handleDeleteCard('${card.__backendId}')" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 mr-2 text-sm">Ya</button>
-                    <button onclick="deleteConfirmId = null; deleteConfirmType = null; renderApp();" class="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 text-sm">Batal</button>
-                  </div>
-                ` : `
-                  <button onclick='showCardForm(${JSON.stringify(card).replace(/'/g, "&apos;")})' class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm" style="border-radius: ${config.border_radius}px;">
-                    ✏️ Edit
-                  </button>
-                  <button onclick="handleDeleteCard('${card.__backendId}')" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm" style="border-radius: ${config.border_radius}px;">
-                    🗑️ Padam
-                  </button>
-                `}
-              </div>
-            ` : ''}
           </div>
         </div>
-      `;
-    }
-
-    function renderPage() {
-      const config = window.elementSdk.config;
-      
-      if (currentPage === 'home') {
-        const menus = getMenus().slice(0, 6);
-        const cards = getCards().slice(0, 6);
-        const alignClass = config.banner_text_align === 'left' ? 'text-left' : config.banner_text_align === 'right' ? 'text-right' : 'text-center';
-        const heightClass = config.banner_height === 'small' ? 'banner-preview-small' : config.banner_height === 'large' ? 'banner-preview-large' : 'banner-preview-medium';
-        const bgStyle = config.banner_image ? `background-image: url('${config.banner_image}');` : `background-color: ${config.card_color};`;
-
-        return `
-          <div class="p-8 overflow-auto h-full">
-            <div class="max-w-7xl mx-auto">
-              <div class="${heightClass} banner-bg-cover rounded-lg shadow-lg p-8 mb-8 flex flex-col justify-center" style="${bgStyle}">
-                <div class="bg-white bg-opacity-90 rounded-lg p-6">
-                  <h1 class="text-3xl font-bold mb-4 ${alignClass}" style="color: ${config.text_color};">${config.banner_title || defaultConfig.banner_title}</h1>
-                  <p class="mb-6 ${alignClass}" style="color: ${config.text_color};">${config.banner_description || defaultConfig.banner_description}</p>
-                  ${config.banner_show_clock ? `
-                    <div class="gradient-clock text-white text-center py-6 rounded-lg mb-4">
-                      <div class="live-clock text-2xl font-semibold">${formatDateTime()}</div>
-                    </div>
-                  ` : ''}
-                  ${config.banner_cta_enabled && config.banner_cta_text ? `
-                    <div class="${alignClass}">
-                      <button onclick="${config.banner_cta_link ? `navigateTo('${config.banner_cta_link}')` : ''}" class="px-6 py-3 text-white rounded-lg font-semibold hover:opacity-90 transition-all" style="background-color: ${config.header_color}; border-radius: ${config.border_radius}px;">
-                        ${config.banner_cta_text}
-                      </button>
-                    </div>
-                  ` : ''}
-                </div>
-              </div>
-
-              ${cards.length > 0 ? `
-                <div class="mb-8">
-                  <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold" style="color: ${config.text_color};">📌 Kemas Kini Terkini</h2>
-                    ${currentUser && (currentUser.role === 'Admin' || currentUser.role === 'Superadmin') ? `
-                      <button onclick="navigateTo('cards')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm">
-                        Lihat Semua Kad →
-                      </button>
-                    ` : ''}
-                  </div>
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    ${cards.map(card => renderCardItem(card, config, false)).join('')}
-                  </div>
-                </div>
-              ` : ''}
-
-              ${menus.length > 0 ? `
-                <h2 class="text-2xl font-bold mb-6" style="color: ${config.text_color};">Menu Pantas</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  ${menus.map(menu => `
-                    <div onclick="navigateTo('${menu.page_id}')" class="cursor-pointer rounded-lg shadow-lg p-6 hover:shadow-xl transition-all transform hover:scale-105" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                      <div class="text-5xl mb-4 text-center">${menu.menu_icon}</div>
-                      <h3 class="text-xl font-semibold text-center" style="color: ${config.text_color};">${menu.menu_label}</h3>
-                    </div>
-                  `).join('')}
-                </div>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }
-
-      if (currentPage === 'cards' && currentUser && (currentUser.role === 'Admin' || currentUser.role === 'Superadmin')) {
-        const cards = getCards();
-        return `
-          <div class="p-8 overflow-auto h-full">
-            <div class="max-w-7xl mx-auto">
-              <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold" style="color: ${config.text_color};">📋 Pengurusan Kad</h1>
-                <button onclick="showCardForm()" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold">
-                  ➕ Tambah Kad Baru
-                </button>
-              </div>
-
-              <div id="card-form-container" class="hidden rounded-lg shadow-lg p-6 mb-8" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                <div class="flex justify-between items-center mb-6">
-                  <h2 class="text-2xl font-bold" style="color: ${config.text_color};">${editingCard ? '✏️ Edit Kad' : '➕ Tambah Kad Baru'}</h2>
-                  <button onclick="hideCardForm()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400">
-                    ✕ Tutup
-                  </button>
-                </div>
-
-                <form onsubmit="handleSaveCard(event)" class="space-y-4">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2">
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Tajuk Kad *</label>
-                      <input type="text" name="card_title" required placeholder="cth: Pengumuman Peperiksaan" class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                    </div>
-
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Jenis Kad *</label>
-                      <select name="card_type" required class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                        <option value="announcement">📢 Pengumuman</option>
-                        <option value="event">📅 Acara</option>
-                        <option value="news">📰 Berita</option>
-                        <option value="info">ℹ️ Maklumat</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Keutamaan *</label>
-                      <select name="card_priority" required class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                        <option value="high">🔴 Tinggi</option>
-                        <option value="medium" selected>🟡 Sederhana</option>
-                        <option value="low">🟢 Rendah</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Tarikh *</label>
-                      <input type="date" name="card_date" required class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                    </div>
-
-                    <div class="flex items-center">
-                      <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" name="card_visible" checked class="w-5 h-5 mr-3">
-                        <span class="font-medium" style="color: ${config.text_color};">👁️ Paparkan Kad (Visible)</span>
-                      </label>
-                    </div>
-
-                    <div class="md:col-span-2">
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Kandungan *</label>
-                      <textarea name="card_content" rows="5" required placeholder="Tulis kandungan kad di sini..." class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;"></textarea>
-                    </div>
-
-                    <div class="md:col-span-2">
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Imej Kad (Optional)</label>
-                      <input type="file" id="card-image-input" accept="image/jpeg,image/png,image/gif,image/svg+xml" class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                      <p class="text-sm text-gray-500 mt-1">JPG, PNG, GIF atau SVG. Maksimum 5MB.</p>
-                      ${editingCard && editingCard.card_image ? `
-                        <div class="mt-2">
-                          <button type="button" onclick="handleRemoveCardImage()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm" style="border-radius: ${config.border_radius}px;">
-                            Buang Imej
-                          </button>
-                        </div>
-                      ` : ''}
-                    </div>
-                  </div>
-
-                  <div class="flex gap-4">
-                    <button type="submit" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold" style="border-radius: ${config.border_radius}px;">
-                      ${editingCard ? '💾 Kemaskini Kad' : '➕ Tambah Kad'}
-                    </button>
-                    <button type="button" onclick="hideCardForm()" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 font-semibold" style="border-radius: ${config.border_radius}px;">
-                      Batal
-                    </button>
-                  </div>
-                </form>
-              </div>
-
-              <div class="rounded-lg shadow-lg p-6 mb-6" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                <div class="flex flex-wrap gap-4 items-center">
-                  <div>
-                    <label class="block mb-2 font-medium text-sm" style="color: ${config.text_color};">Filter:</label>
-                    <select onchange="setCardFilter(this.value)" class="px-4 py-2 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                      <option value="all" ${cardFilter === 'all' ? 'selected' : ''}>🌐 Semua</option>
-                      <option value="announcement" ${cardFilter === 'announcement' ? 'selected' : ''}>📢 Pengumuman</option>
-                      <option value="event" ${cardFilter === 'event' ? 'selected' : ''}>📅 Acara</option>
-                      <option value="news" ${cardFilter === 'news' ? 'selected' : ''}>📰 Berita</option>
-                      <option value="info" ${cardFilter === 'info' ? 'selected' : ''}>ℹ️ Maklumat</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label class="block mb-2 font-medium text-sm" style="color: ${config.text_color};">Sort:</label>
-                    <select onchange="setCardSort(this.value)" class="px-4 py-2 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                      <option value="date-desc" ${cardSort === 'date-desc' ? 'selected' : ''}>📅 Tarikh (Terbaru)</option>
-                      <option value="date-asc" ${cardSort === 'date-asc' ? 'selected' : ''}>📅 Tarikh (Terlama)</option>
-                      <option value="priority" ${cardSort === 'priority' ? 'selected' : ''}>⭐️ Keutamaan</option>
-                      <option value="title" ${cardSort === 'title' ? 'selected' : ''}>🔤 Tajuk (A-Z)</option>
-                    </select>
-                  </div>
-
-                  <div class="ml-auto">
-                    <p class="text-sm font-semibold" style="color: ${config.text_color};">
-                      Jumlah: <span class="text-blue-600">${cards.length}</span> kad
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              ${cards.length === 0 ? `
-                <div class="text-center py-16">
-                  <div class="text-6xl mb-4">📭</div>
-                  <p class="text-xl font-semibold mb-2" style="color: ${config.text_color};">Tiada Kad</p>
-                  <p class="text-gray-500 mb-6">Klik butang "Tambah Kad Baru" untuk mula menambah kad</p>
-                </div>
-              ` : `
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  ${cards.map(card => renderCardItem(card, config, true)).join('')}
-                </div>
-              `}
-            </div>
-          </div>
-        `;
-      }
-
-      if (currentPage === 'tetapanlamanutama' && currentUser && (currentUser.role === 'Admin' || currentUser.role === 'Superadmin')) {
-        return `
-          <div class="p-8 overflow-auto h-full" style="font-family: ${config.font_family}, sans-serif;">
-            <div class="max-w-7xl mx-auto">
-              <h1 class="text-3xl font-bold mb-6" style="color: ${config.text_color};">⚙️ Tetapan Laman Utama</h1>
-              
-              <div class="rounded-lg shadow-lg p-6 mb-8" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                <h2 class="text-2xl font-bold mb-6" style="color: ${config.text_color};">🎨 Banner Customization</h2>
-                
-                <form onsubmit="handleSaveBanner(event)" class="space-y-6">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Tajuk Banner *</label>
-                      <input type="text" name="banner_title" value="${config.banner_title || defaultConfig.banner_title}" required class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                    </div>
-
-                    <div class="md:col-span-2">
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Deskripsi Banner *</label>
-                      <textarea name="banner_description" rows="3" required class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">${config.banner_description || defaultConfig.banner_description}</textarea>
-                    </div>
-
-                    <div class="md:col-span-2">
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Imej Banner (Optional)</label>
-                      <input type="file" id="banner-image-input" accept="image/jpeg,image/png,image/gif,image/svg+xml" class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                      <p class="text-sm text-gray-500 mt-1">JPG, PNG, GIF atau SVG. Maksimum 5MB.</p>
-                      ${config.banner_image ? `
-                        <div class="mt-2">
-                          <button type="button" onclick="handleRemoveBannerImage()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm" style="border-radius: ${config.border_radius}px;">
-                            Buang Imej
-                          </button>
-                        </div>
-                      ` : ''}
-                    </div>
-
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Ketinggian Banner *</label>
-                      <select name="banner_height" class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                        <option value="small" ${config.banner_height === 'small' ? 'selected' : ''}>Small</option>
-                        <option value="medium" ${config.banner_height === 'medium' ? 'selected' : ''}>Medium</option>
-                        <option value="large" ${config.banner_height === 'large' ? 'selected' : ''}>Large</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Alignment Teks *</label>
-                      <select name="banner_text_align" class="w-full px-4 py-3 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                        <option value="left" ${config.banner_text_align === 'left' ? 'selected' : ''}>Left</option>
-                        <option value="center" ${config.banner_text_align === 'center' ? 'selected' : ''}>Center</option>
-                        <option value="right" ${config.banner_text_align === 'right' ? 'selected' : ''}>Right</option>
-                      </select>
-                    </div>
-
-                    <div class="md:col-span-2">
-                      <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" name="banner_show_clock" ${config.banner_show_clock ? 'checked' : ''} class="w-5 h-5 mr-3">
-                        <span class="font-medium" style="color: ${config.text_color};">Tunjukkan Jam (Live Clock)</span>
-                      </label>
-                    </div>
-
-                    <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg" style="border-radius: ${config.border_radius}px;">
-                      <h3 class="font-bold mb-4" style="color: ${config.text_color};">CTA Button (Optional)</h3>
-                      
-                      <div class="mb-4">
-                        <label class="flex items-center cursor-pointer">
-                          <input type="checkbox" name="banner_cta_enabled" ${config.banner_cta_enabled ? 'checked' : ''} class="w-5 h-5 mr-3">
-                          <span class="font-medium" style="color: ${config.text_color};">Aktifkan CTA Button</span>
-                        </label>
-                      </div>
-
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label class="block mb-2 font-medium" style="color: ${config.text_color};">Teks Button</label>
-                          <input type="text" name="banner_cta_text" value="${config.banner_cta_text || ''}" placeholder="cth: Daftar Sekarang" class="w-full px-4 py-2 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                        </div>
-                        <div>
-                          <label class="block mb-2 font-medium" style="color: ${config.text_color};">Link/Page ID</label>
-                          <input type="text" name="banner_cta_link" value="${config.banner_cta_link || ''}" placeholder="cth: daftar atau profile" class="w-full px-4 py-2 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button type="submit" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold transition-all" style="border-radius: ${config.border_radius}px;">
-                    💾 Simpan Banner
-                  </button>
-                </form>
-              </div>
-
-              <div class="rounded-lg shadow-lg p-6" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                <h2 class="text-2xl font-bold mb-6" style="color: ${config.text_color};">👁️ Preview Banner</h2>
-                <div id="banner-preview-container"></div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      if (currentPage === 'admin' && currentUser && currentUser.role === 'Superadmin') {
-        const admins = allData.filter(d => d.type === 'admin');
-        return `
-          <div class="p-8 overflow-auto h-full">
-            <div class="max-w-7xl mx-auto">
-              <h1 class="text-3xl font-bold mb-6" style="color: ${config.text_color};">Pengurusan Admin</h1>
-              
-              <div class="rounded-lg shadow-lg p-6 mb-8" style="background-color: ${config.card_color};">
-                <div class="flex gap-4 mb-6">
-                  <button onclick="document.getElementById('add-admin-form').classList.toggle('hidden')" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all font-semibold">
-                    Tambah Admin
-                  </button>
-                  <button onclick="document.getElementById('csv-modal').classList.remove('hidden')" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all font-semibold">
-                    Import CSV
-                  </button>
-                </div>
-
-                <form id="add-admin-form" onsubmit="handleAddAdmin(event)" class="hidden mb-8 p-6 bg-gray-50 rounded-lg">
-                  <h3 class="text-xl font-semibold mb-4" style="color: ${config.text_color};">Tambah Admin Baru</h3>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Nama *</label>
-                      <input type="text" name="admin_name" required class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Username *</label>
-                      <input type="text" name="username" required class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Password *</label>
-                      <input type="password" name="password" required minlength="6" class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Peranan *</label>
-                      <select name="role" required class="w-full px-4 py-2 border rounded-lg">
-                        <option value="Admin">Admin</option>
-                        <option value="Superadmin">Superadmin</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Status *</label>
-                      <select name="status" required class="w-full px-4 py-2 border rounded-lg">
-                        <option value="Aktif">Aktif</option>
-                        <option value="Tidak Aktif">Tidak Aktif</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Avatar (optional)</label>
-                      <input type="file" id="admin-avatar-upload" accept="image/jpeg,image/png,image/gif,image/svg+xml" class="w-full px-4 py-2 border rounded-lg" onchange="handleImageUpload('admin-avatar-upload', (base64) => { document.querySelector('input[name=avatar]').value = base64; })">
-                      <input type="hidden" name="avatar">
-                    </div>
-                  </div>
-                  <button type="submit" class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                    Tambah Admin
-                  </button>
-                </form>
-
-                <div class="overflow-x-auto">
-                  <table class="w-full">
-                    <thead>
-                      <tr class="border-b-2">
-                        <th class="text-left py-3 px-4" style="color: ${config.text_color};">Avatar</th>
-                        <th class="text-left py-3 px-4" style="color: ${config.text_color};">Nama</th>
-                        <th class="text-left py-3 px-4" style="color: ${config.text_color};">Username</th>
-                        <th class="text-left py-3 px-4" style="color: ${config.text_color};">Peranan</th>
-                        <th class="text-left py-3 px-4" style="color: ${config.text_color};">Status</th>
-                        <th class="text-left py-3 px-4" style="color: ${config.text_color};">Tindakan</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${admins.map(admin => `
-                        <tr class="border-b">
-                          <td class="py-3 px-4">
-                            ${admin.avatar ? 
-                              `<img src="${admin.avatar}" alt="Avatar" class="w-10 h-10 rounded-full object-cover">` :
-                              `<div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold">${admin.admin_name.charAt(0)}</div>`
-                            }
-                          </td>
-                          <td class="py-3 px-4" style="color: ${config.text_color};">${admin.admin_name}</td>
-                          <td class="py-3 px-4" style="color: ${config.text_color};">${admin.username}</td>
-                          <td class="py-3 px-4">
-                            <span class="px-3 py-1 rounded-full text-sm ${admin.role === 'Superadmin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
-                              ${admin.role}
-                            </span>
-                          </td>
-                          <td class="py-3 px-4">
-                            <span class="px-3 py-1 rounded-full text-sm ${admin.status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                              ${admin.status}
-                            </span>
-                          </td>
-                          <td class="py-3 px-4">
-                            ${deleteConfirmId === admin.__backendId && deleteConfirmType === 'admin' ? `
-                              <div class="delete-confirm px-4 py-2 rounded-lg inline-block">
-                                <span class="text-red-800 font-semibold mr-2">Padam?</span>
-                                <button onclick="handleDeleteAdmin('${admin.__backendId}')" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 mr-2">Ya</button>
-                                <button onclick="deleteConfirmId = null; deleteConfirmType = null; renderApp();" class="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Batal</button>
-                              </div>
-                            ` : `
-                              <button onclick="handleDeleteAdmin('${admin.__backendId}')" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                                Padam
-                              </button>
-                            `}
-                          </td>
-                        </tr>
-                      `).join('')}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      if (currentPage === 'profile' && currentUser && !currentUser.isDefaultSuperadmin) {
-        const admin = allData.find(d => d.__backendId === currentUser.adminId);
-        if (admin) {
-          return `
-            <div class="p-8 overflow-auto h-full">
-              <div class="max-w-3xl mx-auto">
-                <h1 class="text-3xl font-bold mb-6" style="color: ${config.text_color};">Profil Saya</h1>
-                
-                <div class="rounded-lg shadow-lg p-8" style="background-color: ${config.card_color};">
-                  <div class="flex items-center mb-8">
-                    <div class="relative">
-                      ${admin.avatar ? 
-                        `<img src="${admin.avatar}" alt="Avatar" class="w-24 h-24 rounded-full object-cover">` :
-                        `<div class="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-3xl font-bold">${admin.admin_name.charAt(0)}</div>`
-                      }
-                      <label class="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-2 cursor-pointer hover:bg-blue-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        <input type="file" id="profile-avatar-input" accept="image/jpeg,image/png,image/gif,image/svg+xml" class="hidden">
-                      </label>
-                    </div>
-                    <div class="ml-6">
-                      <h2 class="text-2xl font-bold" style="color: ${config.text_color};">${admin.admin_name}</h2>
-                      <p class="text-gray-600">${admin.username}</p>
-                      <span class="inline-block mt-2 px-3 py-1 rounded-full text-sm ${admin.role === 'Superadmin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
-                        ${admin.role}
-                      </span>
-                      <span class="inline-block mt-2 ml-2 px-3 py-1 rounded-full text-sm ${admin.status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                        ${admin.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  <form onsubmit="handleUpdateProfile(event)">
-                    <div class="space-y-4">
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Nama *</label>
-                        <input type="text" name="name" value="${admin.admin_name}" required class="w-full px-4 py-2 border rounded-lg">
-                      </div>
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Username *</label>
-                        <input type="text" name="username" value="${admin.username}" required class="w-full px-4 py-2 border rounded-lg">
-                      </div>
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Password Baru (kosongkan jika tidak mahu tukar)</label>
-                        <input type="password" name="password" minlength="6" class="w-full px-4 py-2 border rounded-lg">
-                      </div>
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Sahkan Password</label>
-                        <input type="password" name="confirm_password" class="w-full px-4 py-2 border rounded-lg">
-                      </div>
-                    </div>
-                    <button type="submit" class="mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold">
-                      Kemaskini Profil
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          `;
-        }
-      }
-
-      if (currentPage === 'profile' && currentUser && currentUser.isDefaultSuperadmin) {
-        return `
-          <div class="p-8 overflow-auto h-full">
-            <div class="max-w-3xl mx-auto">
-              <h1 class="text-3xl font-bold mb-6" style="color: ${config.text_color};">Profil Saya</h1>
-              
-              <div class="rounded-lg shadow-lg p-8" style="background-color: ${config.card_color};">
-                <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6">
-                  <p class="text-yellow-800 font-semibold">⚠️ Perhatian: Perubahan tidak kekal selepas refresh untuk default superadmin</p>
-                </div>
-
-                <div class="flex items-center mb-8">
-                  <div class="w-24 h-24 rounded-full bg-purple-500 flex items-center justify-center text-white text-3xl font-bold">
-                    S
-                  </div>
-                  <div class="ml-6">
-                    <h2 class="text-2xl font-bold" style="color: ${config.text_color};">${currentUser.name}</h2>
-                    <p class="text-gray-600">${currentUser.username}</p>
-                    <span class="inline-block mt-2 px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800">
-                      ${currentUser.role}
-                    </span>
-                  </div>
-                </div>
-
-                <form onsubmit="handleUpdateProfile(event)">
-                  <div class="space-y-4">
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Nama *</label>
-                      <input type="text" name="name" value="${currentUser.name}" required class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Username *</label>
-                      <input type="text" name="username" value="${currentUser.username}" required class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                  </div>
-                  <button type="submit" class="mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold">
-                    Kemaskini Profil
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      if (currentPage === 'tema') {
-        const spacing = getSpacingClass(config.spacing_density);
-        const transitionSpeed = getTransitionSpeed(config.animation_speed);
-        
-        return `
-          <div class="p-8 overflow-auto h-full" style="font-family: ${config.font_family}, sans-serif;">
-            <div class="max-w-7xl mx-auto">
-              <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold" style="color: ${config.text_color};">🎨 Tetapan Tema Portal</h1>
-                <button onclick="resetToDefault()" class="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 font-semibold transition-all">
-                  🔄 Reset ke Default
-                </button>
-              </div>
-
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 space-y-4">
-                  
-                  <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                    <button onclick="toggleSection('section-font')" class="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-all" style="color: ${config.text_color};">
-                      <span class="text-lg font-bold">🔤 Font Family</span>
-                      <span>▼</span>
-                    </button>
-                    <div id="section-font" class="px-6 pb-6">
-                      <label class="block mb-3 font-medium" style="color: ${config.text_color};">Pilih Font:</label>
-                      <select id="font-select" value="${config.font_family}" class="w-full px-4 py-3 border-2 rounded-lg text-lg" style="border-radius: ${config.border_radius}px;">
-                        <option value="Roboto">Roboto</option>
-                        <option value="Poppins">Poppins</option>
-                        <option value="Open Sans">Open Sans</option>
-                        <option value="Verdana">Verdana</option>
-                      </select>
-                      <p class="text-sm text-gray-500 mt-2">Font akan digunakan di seluruh portal</p>
-                    </div>
-                  </div>
-
-                  <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                    <button onclick="toggleSection('section-presets')" class="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-all" style="color: ${config.text_color};">
-                      <span class="text-lg font-bold">⚡ Tema Preset (One-Click)</span>
-                      <span>▼</span>
-                    </button>
-                    <div id="section-presets" class="px-6 pb-6">
-                      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <button onclick="applyPresetTheme('professional')" class="p-4 rounded-lg border-2 hover:border-blue-500 transition-all text-left" style="border-radius: ${config.border_radius}px;">
-                          <div class="flex gap-1 mb-2">
-                            <div class="w-6 h-6 rounded" style="background: #1e40af;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #f8fafc;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #334155;"></div>
-                          </div>
-                          <p class="font-bold text-sm">Professional</p>
-                          <p class="text-xs text-gray-500">Blue corporate</p>
-                        </button>
-                        
-                        <button onclick="applyPresetTheme('vibrant')" class="p-4 rounded-lg border-2 hover:border-blue-500 transition-all text-left" style="border-radius: ${config.border_radius}px;">
-                          <div class="flex gap-1 mb-2">
-                            <div class="w-6 h-6 rounded" style="background: #ec4899;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #fef3c7;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #7c3aed;"></div>
-                          </div>
-                          <p class="font-bold text-sm">Vibrant</p>
-                          <p class="text-xs text-gray-500">Colourful energy</p>
-                        </button>
-                        
-                        <button onclick="applyPresetTheme('dark')" class="p-4 rounded-lg border-2 hover:border-blue-500 transition-all text-left" style="border-radius: ${config.border_radius}px;">
-                          <div class="flex gap-1 mb-2">
-                            <div class="w-6 h-6 rounded" style="background: #1e293b;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #0f172a;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #334155;"></div>
-                          </div>
-                          <p class="font-bold text-sm">Dark Mode</p>
-                          <p class="text-xs text-gray-500">Dark theme</p>
-                        </button>
-                        
-                        <button onclick="applyPresetTheme('nature')" class="p-4 rounded-lg border-2 hover:border-blue-500 transition-all text-left" style="border-radius: ${config.border_radius}px;">
-                          <div class="flex gap-1 mb-2">
-                            <div class="w-6 h-6 rounded" style="background: #059669;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #f0fdf4;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #064e3b;"></div>
-                          </div>
-                          <p class="font-bold text-sm">Nature</p>
-                          <p class="text-xs text-gray-500">Green earthy</p>
-                        </button>
-                        
-                        <button onclick="applyPresetTheme('sunset')" class="p-4 rounded-lg border-2 hover:border-blue-500 transition-all text-left" style="border-radius: ${config.border_radius}px;">
-                          <div class="flex gap-1 mb-2">
-                            <div class="w-6 h-6 rounded" style="background: linear-gradient(to bottom, #f97316, #a855f7);"></div>
-                            <div class="w-6 h-6 rounded" style="background: #fff7ed;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #7c2d12;"></div>
-                          </div>
-                          <p class="font-bold text-sm">Sunset</p>
-                          <p class="text-xs text-gray-500">Warm gradient</p>
-                        </button>
-                        
-                        <button onclick="applyPresetTheme('ocean')" class="p-4 rounded-lg border-2 hover:border-blue-500 transition-all text-left" style="border-radius: ${config.border_radius}px;">
-                          <div class="flex gap-1 mb-2">
-                            <div class="w-6 h-6 rounded" style="background: linear-gradient(to right, #0891b2, #3b82f6);"></div>
-                            <div class="w-6 h-6 rounded" style="background: #ecfeff;"></div>
-                            <div class="w-6 h-6 rounded" style="background: #164e63;"></div>
-                          </div>
-                          <p class="font-bold text-sm">Ocean</p>
-                          <p class="text-xs text-gray-500">Cool blue/teal</p>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                    <button onclick="toggleSection('section-colors')" class="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-all" style="color: ${config.text_color};">
-                      <span class="text-lg font-bold">🎨 Warna Portal</span>
-                      <span>▼</span>
-                    </button>
-                    <div id="section-colors" class="px-6 pb-6 space-y-4">
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label class="block mb-2 font-medium" style="color: ${config.text_color};">Header</label>
-                          <div class="flex gap-3">
-                            <input type="color" id="color-header" value="${config.header_color}" class="w-16 h-16 rounded cursor-pointer" style="border-radius: ${config.border_radius}px;">
-                            <div class="flex-1">
-                              <p class="font-mono text-sm">${config.header_color}</p>
-                              <p class="text-xs text-gray-500">Warna bar atas</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <label class="block mb-2 font-medium" style="color: ${config.text_color};">Background</label>
-                          <div class="flex gap-3">
-                            <input type="color" id="color-bg" value="${config.bg_color}" class="w-16 h-16 rounded cursor-pointer" style="border-radius: ${config.border_radius}px;">
-                            <div class="flex-1">
-                              <p class="font-mono text-sm">${config.bg_color}</p>
-                              <p class="text-xs text-gray-500">Latar belakang</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <label class="block mb-2 font-medium" style="color: ${config.text_color};">Sidebar</label>
-                          <div class="flex gap-3">
-                            <input type="color" id="color-sidebar" value="${config.sidebar_color}" class="w-16 h-16 rounded cursor-pointer" style="border-radius: ${config.border_radius}px;">
-                            <div class="flex-1">
-                              <p class="font-mono text-sm">${config.sidebar_color}</p>
-                              <p class="text-xs text-gray-500">Menu kiri</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <label class="block mb-2 font-medium" style="color: ${config.text_color};">Card</label>
-                          <div class="flex gap-3">
-                            <input type="color" id="color-card" value="${config.card_color}" class="w-16 h-16 rounded cursor-pointer" style="border-radius: ${config.border_radius}px;">
-                            <div class="flex-1">
-                              <p class="font-mono text-sm">${config.card_color}</p>
-                              <p class="text-xs text-gray-500">Kotak & panel</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <label class="block mb-2 font-medium" style="color: ${config.text_color};">Text</label>
-                          <div class="flex gap-3">
-                            <input type="color" id="color-text" value="${config.text_color}" class="w-16 h-16 rounded cursor-pointer" style="border-radius: ${config.border_radius}px;">
-                            <div class="flex-1">
-                              <p class="font-mono text-sm">${config.text_color}</p>
-                              <p class="text-xs text-gray-500">Teks utama</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                    <button onclick="toggleSection('section-gradient')" class="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-all" style="color: ${config.text_color};">
-                      <span class="text-lg font-bold">🌈 Gradient Backgrounds</span>
-                      <span>▼</span>
-                    </button>
-                    <div id="section-gradient" class="hidden px-6 pb-6 space-y-4">
-                      <div class="flex items-center gap-3">
-                        <label class="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" id="gradient-toggle" ${config.gradient_enabled ? 'checked' : ''} class="sr-only peer">
-                          <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                        <span class="font-medium" style="color: ${config.text_color};">Enable Gradient Mode</span>
-                      </div>
-                      
-                      ${config.gradient_enabled ? `
-                        <div>
-                          <label class="block mb-2 font-medium" style="color: ${config.text_color};">Secondary Gradient Color</label>
-                          <div class="flex gap-3">
-                            <input type="color" id="color-gradient-secondary" value="${config.gradient_secondary}" class="w-16 h-16 rounded cursor-pointer" style="border-radius: ${config.border_radius}px;">
-                            <div class="flex-1">
-                              <p class="font-mono text-sm">${config.gradient_secondary}</p>
-                              <p class="text-xs text-gray-500">Warna kedua untuk gradient</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <label class="block mb-2 font-medium" style="color: ${config.text_color};">Gradient Direction</label>
-                          <select id="gradient-direction" value="${config.gradient_direction}" class="w-full px-4 py-2 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                            <option value="top">Top to Bottom</option>
-                            <option value="left">Left to Right</option>
-                            <option value="diagonal">Diagonal</option>
-                          </select>
-                        </div>
-                      ` : ''}
-                    </div>
-                  </div>
-
-                  <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                    <button onclick="toggleSection('section-hover')" class="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-all" style="color: ${config.text_color};">
-                      <span class="text-lg font-bold">✨ Hover Effects</span>
-                      <span>▼</span>
-                    </button>
-                    <div id="section-hover" class="hidden px-6 pb-6 space-y-4">
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Hover Brightness</label>
-                        <select id="hover-brightness" value="${config.hover_brightness}" class="w-full px-4 py-2 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                          <option value="darken">Darken</option>
-                          <option value="lighten">Lighten</option>
-                          <option value="none">None</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Hover Animation</label>
-                        <select id="hover-animation" value="${config.hover_animation}" class="w-full px-4 py-2 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                          <option value="scale">Scale (Grow)</option>
-                          <option value="lift">Lift (Move Up)</option>
-                          <option value="glow">Glow (Shadow)</option>
-                          <option value="none">None</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                    <button onclick="toggleSection('section-advanced')" class="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-all" style="color: ${config.text_color};">
-                      <span class="text-lg font-bold">⚙️ Tetapan Lanjutan</span>
-                      <span>▼</span>
-                    </button>
-                    <div id="section-advanced" class="hidden px-6 pb-6 space-y-4">
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Border Radius: <span id="border-radius-value">${config.border_radius}px</span></label>
-                        <input type="range" id="border-radius" min="0" max="24" value="${config.border_radius}" class="w-full">
-                        <div class="flex justify-between text-xs text-gray-500 mt-1">
-                          <span>Sharp (0px)</span>
-                          <span>Very Rounded (24px)</span>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Shadow Intensity: <span id="shadow-intensity-value">${config.shadow_intensity}</span></label>
-                        <input type="range" id="shadow-intensity" min="1" max="5" value="${config.shadow_intensity}" class="w-full">
-                        <div class="flex justify-between text-xs text-gray-500 mt-1">
-                          <span>Subtle</span>
-                          <span>Prominent</span>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Spacing/Density</label>
-                        <select id="spacing-density" value="${config.spacing_density}" class="w-full px-4 py-2 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                          <option value="compact">Compact</option>
-                          <option value="normal">Normal</option>
-                          <option value="comfortable">Comfortable</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label class="block mb-2 font-medium" style="color: ${config.text_color};">Animation Speed</label>
-                        <select id="animation-speed" value="${config.animation_speed}" class="w-full px-4 py-2 border rounded-lg" style="border-radius: ${config.border_radius}px;">
-                          <option value="fast">Fast</option>
-                          <option value="normal">Normal</option>
-                          <option value="slow">Slow</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
-                <div class="lg:col-span-1">
-                  <div class="sticky top-4">
-                    <div class="rounded-lg shadow-lg overflow-hidden" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;">
-                      <div class="px-6 py-4" style="background: ${config.gradient_enabled ? getGradientStyle(config.header_color, config.gradient_secondary, config.gradient_direction) : config.header_color};">
-                        <h3 class="text-white font-bold text-lg">Live Preview</h3>
-                      </div>
-                      
-                      <div class="p-6 space-y-4" style="background: ${config.gradient_enabled ? getGradientStyle(config.bg_color, config.gradient_secondary, config.gradient_direction) : config.bg_color}; font-family: ${config.font_family}, sans-serif;">
-                        <div class="p-4 rounded-lg" style="background: ${config.card_color}; border-radius: ${config.border_radius}px; box-shadow: ${getShadowClass(config.shadow_intensity)}; transition: all ${transitionSpeed};">
-                          <h4 class="font-bold mb-2" style="color: ${config.text_color};">Sample Card</h4>
-                          <p class="text-sm mb-3" style="color: ${config.text_color};">Ini adalah contoh kad dengan tetapan semasa.</p>
-                          
-                          <button class="w-full px-4 py-2 text-white rounded-lg font-semibold transition-all" 
-                            style="background: ${config.header_color}; border-radius: ${config.border_radius}px; transition: all ${transitionSpeed};"
-                            onmouseover="this.style.cssText='background: ${config.header_color}; border-radius: ${config.border_radius}px; ${getHoverStyle(config.header_color, config.hover_brightness)} ${getAnimationClass(config.hover_animation)} transition: all ${transitionSpeed};'"
-                            onmouseout="this.style.cssText='background: ${config.header_color}; border-radius: ${config.border_radius}px; transition: all ${transitionSpeed};'">
-                            Hover Me!
-                          </button>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-3">
-                          <div class="p-3 rounded-lg text-center" style="background: ${config.sidebar_color}; border-radius: ${config.border_radius}px;">
-                            <p class="text-white text-sm font-semibold">Sidebar</p>
-                          </div>
-                          <div class="p-3 rounded-lg text-center" style="background: ${config.card_color}; border-radius: ${config.border_radius}px; box-shadow: ${getShadowClass(config.shadow_intensity)};">
-                            <p class="text-sm font-semibold" style="color: ${config.text_color};">Card</p>
-                          </div>
-                        </div>
-                        
-                        <div class="text-center p-4" style="color: ${config.text_color};">
-                          <p class="text-sm">Font: <strong>${config.font_family}</strong></p>
-                          <p class="text-xs mt-1">Border Radius: ${config.border_radius}px</p>
-                          <p class="text-xs">Shadow: Level ${config.shadow_intensity}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      if (currentPage === 'menu' && currentUser && currentUser.role === 'Superadmin') {
-        const menus = getMenus();
-        return `
-          <div class="p-8 overflow-auto h-full">
-            <div class="max-w-7xl mx-auto">
-              <h1 class="text-3xl font-bold mb-6" style="color: ${config.text_color};">Tetapan Pengurusan Menu</h1>
-              
-              <div class="rounded-lg shadow-lg p-6 mb-8" style="background-color: ${config.card_color};">
-                <h3 class="text-xl font-semibold mb-4" style="color: ${config.text_color};">Menu Tetap</h3>
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div class="flex items-center">
-                    <span class="text-2xl mr-4">🏠</span>
-                    <span class="font-semibold" style="color: ${config.text_color};">Laman Utama</span>
-                  </div>
-                  <span class="px-3 py-1 bg-gray-300 text-gray-800 rounded-full text-sm font-semibold">TETAP</span>
-                </div>
-              </div>
-
-              <div class="rounded-lg shadow-lg p-6 mb-8" style="background-color: ${config.card_color};">
-                <h3 class="text-xl font-semibold mb-4" style="color: ${config.text_color};">Tambah Menu Baru</h3>
-                <form onsubmit="handleAddMenu(event)" class="space-y-4">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Label Menu *</label>
-                      <input type="text" name="menu_label" required placeholder="cth: Profil Saya" class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Icon Menu (Emoji) *</label>
-                      <input type="text" name="menu_icon" required placeholder="cth: 👤 atau 📊" class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">ID Halaman *</label>
-                      <input type="text" name="page_id" required placeholder="cth: profile atau dashboard" class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                      <label class="block mb-2 font-medium" style="color: ${config.text_color};">Susunan *</label>
-                      <input type="number" name="sort_order" required placeholder="cth: 1, 2, 3" class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                  </div>
-                  <button type="submit" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold">
-                    Tambah Menu
-                  </button>
-                </form>
-              </div>
-
-              <div class="rounded-lg shadow-lg p-6" style="background-color: ${config.card_color};">
-                <h3 class="text-xl font-semibold mb-4" style="color: ${config.text_color};">Menu Dinamik</h3>
-                ${menus.length === 0 ? `
-                  <p class="text-gray-500 text-center py-8">Tiada menu dinamik. Tambah menu baru di atas.</p>
-                ` : `
-                  <div class="space-y-4">
-                    ${menus.map(menu => `
-                      <div class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                        <div class="flex items-center flex-1">
-                          <span class="text-2xl mr-4">${menu.menu_icon}</span>
-                          <div>
-                            <div class="font-semibold" style="color: ${config.text_color};">${menu.menu_label}</div>
-                            <div class="text-sm text-gray-500">ID: ${menu.page_id} | Susunan: ${menu.sort_order}</div>
-                          </div>
-                        </div>
-                        ${deleteConfirmId === menu.__backendId && deleteConfirmType === 'menu' ? `
-                          <div class="delete-confirm px-4 py-2 rounded-lg">
-                            <span class="text-red-800 font-semibold mr-2">Padam?</span>
-                            <button onclick="handleDeleteMenu('${menu.__backendId}')" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 mr-2">Ya</button>
-                            <button onclick="deleteConfirmId = null; deleteConfirmType = null; renderApp();" class="px-3 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Batal</button>
-                          </div>
-                        ` : `
-                          <button onclick="handleDeleteMenu('${menu.__backendId}')" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                            Padam
-                          </button>
-                        `}
-                      </div>
-                    `).join('')}
-                  </div>
-                `}
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      const dynamicMenu = allData.find(d => d.type === 'menu' && d.page_id === currentPage);
-      if (dynamicMenu) {
-        return `
-          <div class="p-8 overflow-auto h-full flex items-center justify-center">
-            <div class="text-center">
-              <div class="text-8xl mb-6">${dynamicMenu.menu_icon}</div>
-              <h1 class="text-4xl font-bold mb-4" style="color: ${config.text_color};">${dynamicMenu.menu_label}</h1>
-              <div class="rounded-lg shadow-lg p-6 max-w-md mx-auto" style="background-color: ${config.card_color};">
-                <p class="text-sm text-gray-600 mb-2"><strong>Nama Menu:</strong> ${dynamicMenu.menu_label}</p>
-                <p class="text-sm text-gray-600 mb-2"><strong>ID Halaman:</strong> ${dynamicMenu.page_id}</p>
-                <p class="text-sm text-gray-600 mb-2"><strong>Susunan:</strong> ${dynamicMenu.sort_order}</p>
-                <p class="text-sm text-gray-600"><strong>Dicipta:</strong> ${new Date(dynamicMenu.created_at).toLocaleDateString('ms-MY')}</p>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      return `
-        <div class="p-8 overflow-auto h-full flex items-center justify-center">
-          <div class="text-center">
-            <div class="text-6xl mb-4">❌</div>
-            <h1 class="text-3xl font-bold" style="color: ${config.text_color};">Halaman Tidak Dijumpai</h1>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderApp() {
-      const config = window.elementSdk.config;
-      const app = document.getElementById('app');
-      
-      const menus = getMenus();
-
-      app.innerHTML = `
-        <div class="flex h-full">
-          ${!sidebarCollapsed ? `
-          <aside class="sidebar-transition flex-shrink-0" style="width: 280px; background-color: ${config.sidebar_color};">
-            <div class="flex flex-col h-full">
-              <div class="p-6 border-b border-gray-700">
-                <div onclick="navigateTo('home')" class="flex justify-center mb-4 cursor-pointer hover:scale-110 transition-transform">
-                  <div class="w-20 h-20 rounded-full bg-white flex items-center justify-center text-4xl">
-                    🏫
-                  </div>
-                </div>
-                <h2 class="text-white text-center font-bold text-xl mb-1">${config.school_name}</h2>
-                <p class="text-gray-400 text-center text-sm">${config.school_motto}</p>
-              </div>
-
-              <nav class="flex-1 overflow-y-auto py-4">
-                <div onclick="navigateTo('home')" class="menu-item-hover flex items-center px-6 py-3 text-white cursor-pointer ${currentPage === 'home' ? 'bg-blue-600' : 'hover:bg-gray-700'}">
-                  <span class="text-2xl">🏠</span>
-                  <span class="ml-4 font-medium">Laman Utama</span>
-                </div>
-
-                ${currentUser && (currentUser.role === 'Admin' || currentUser.role === 'Superadmin') ? `
-                  <div onclick="navigateTo('profile')" class="menu-item-hover flex items-center px-6 py-3 text-white cursor-pointer ${currentPage === 'profile' ? 'bg-blue-600' : 'hover:bg-gray-700'}">
-                    <span class="text-2xl">👤</span>
-                    <span class="ml-4 font-medium">Profil</span>
-                  </div>
-                ` : ''}
-
-                ${currentUser && currentUser.role === 'Superadmin' ? `
-                  <div onclick="navigateTo('admin')" class="menu-item-hover flex items-center px-6 py-3 text-white cursor-pointer ${currentPage === 'admin' ? 'bg-blue-600' : 'hover:bg-gray-700'}">
-                    <span class="text-2xl">👥</span>
-                    <span class="ml-4 font-medium">Pengurusan Admin</span>
-                  </div>
-                ` : ''}
-
-                ${currentUser && (currentUser.role === 'Admin' || currentUser.role === 'Superadmin') ? `
-                  <div onclick="navigateTo('cards')" class="menu-item-hover flex items-center px-6 py-3 text-white cursor-pointer ${currentPage === 'cards' ? 'bg-blue-600' : 'hover:bg-gray-700'}">
-                    <span class="text-2xl">📋</span>
-                    <span class="ml-4 font-medium">Pengurusan Kad</span>
-                  </div>
-                ` : ''}
-
-                ${menus.map(menu => `
-                  <div onclick="navigateTo('${menu.page_id}')" class="menu-item-hover flex items-center px-6 py-3 text-white cursor-pointer ${currentPage === menu.page_id ? 'bg-blue-600' : 'hover:bg-gray-700'}">
-                    <span class="text-2xl">${menu.menu_icon}</span>
-                    <span class="ml-4 font-medium">${menu.menu_label}</span>
-                  </div>
-                `).join('')}
-              </nav>
-
-              <div class="p-4 border-t border-gray-700">
-                <p class="text-gray-400 text-xs text-center">${config.copyright_text}</p>
-              </div>
-            </div>
-          </aside>
-          ` : ''}
-
-          <div class="flex-1 flex flex-col h-full overflow-hidden">
-            <header class="flex-shrink-0 shadow-lg" style="background-color: ${config.header_color};">
-              <div class="px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center">
-                  <button onclick="toggleSidebar()" class="text-white p-2 hover:bg-blue-600 rounded-lg mr-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                  </button>
-                  ${sidebarCollapsed ? `
-                    <div onclick="navigateTo('home')" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-2xl mr-4 cursor-pointer hover:scale-110 transition-transform">
-                      🏫
-                    </div>
-                  ` : ''}
-                  <h1 class="text-white text-xl font-bold">${currentPage === 'home' ? 'Laman Utama' : currentPage === 'admin' ? 'Admin' : currentPage === 'profile' ? 'Profil' : currentPage === 'menu' ? 'Menu' : currentPage === 'tema' ? 'Tema' : currentPage === 'cards' ? 'Kad' : currentPage === 'tetapanlamanutama' ? 'Tetapan Laman Utama' : menus.find(m => m.page_id === currentPage)?.menu_label || 'Portal Sekolah'}</h1>
-                </div>
-
-                <div class="flex items-center space-x-4">
-                  <div class="relative">
-                    <button class="text-white p-2 hover:bg-blue-600 rounded-lg relative">
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                      </svg>
-                      <span class="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
-                    </button>
-                  </div>
-
-                  <div class="relative">
-                    <button onclick="document.getElementById('settings-dropdown').classList.toggle('hidden')" class="text-white p-2 hover:bg-blue-600 rounded-lg">
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      </svg>
-                    </button>
-                    <div id="settings-dropdown" class="hidden absolute right-0 mt-2 w-56 rounded-lg shadow-lg py-2 z-50" style="background-color: ${config.card_color};">
-                      ${currentUser && (currentUser.role === 'Admin' || currentUser.role === 'Superadmin') ? `
-                        <a onclick="navigateTo('tetapanlamanutama'); document.getElementById('settings-dropdown').classList.add('hidden');" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer" style="color: ${config.text_color};">🏠 Laman Utama</a>
-                      ` : ''}
-                      ${currentUser && currentUser.role === 'Superadmin' ? `
-                        <a onclick="navigateTo('admin'); document.getElementById('settings-dropdown').classList.add('hidden');" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer" style="color: ${config.text_color};">👥 Admin</a>
-                        <a onclick="navigateTo('menu'); document.getElementById('settings-dropdown').classList.add('hidden');" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer" style="color: ${config.text_color};">📋 Menu</a>
-                      ` : ''}
-                      <a onclick="navigateTo('tema'); document.getElementById('settings-dropdown').classList.add('hidden');" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer" style="color: ${config.text_color};">🎨 Tema</a>
-                    </div>
-                  </div>
-
-                  <div class="relative">
-                    <button onclick="document.getElementById('avatar-dropdown').classList.toggle('hidden')" class="flex items-center space-x-2 text-white hover:bg-blue-600 rounded-lg p-2">
-                      ${currentUser ? 
-                        (currentUser.avatar ? 
-                          `<img src="${currentUser.avatar}" alt="Avatar" class="w-8 h-8 rounded-full object-cover">` :
-                          `<div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold text-sm">${currentUser.name.charAt(0)}</div>`
-                        ) :
-                        `<div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold">?</div>`
-                      }
-                    </button>
-                    <div id="avatar-dropdown" class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-lg py-2 z-50" style="background-color: ${config.card_color};">
-                      ${currentUser ? `
-                        <div class="px-4 py-2 border-b">
-                          <p class="font-semibold" style="color: ${config.text_color};">${currentUser.name}</p>
-                          <p class="text-sm text-gray-500">${currentUser.role}</p>
-                        </div>
-                        <a onclick="logout(); document.getElementById('avatar-dropdown').classList.add('hidden');" class="block px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer">Log Keluar</a>
-                      ` : `
-                        <a onclick="showLoginModal(); document.getElementById('avatar-dropdown').classList.add('hidden');" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer" style="color: ${config.text_color};">Log Masuk</a>
-                      `}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </header>
-
-            <main class="flex-1 overflow-hidden" style="background-color: ${config.bg_color};">
-              ${renderPage()}
-            </main>
-          </div>
-        </div>
-
-        ${viewingCard ? `
-          <div onclick="if(event.target === this) hideCardModal()" class="fixed inset-0 z-50 flex items-center justify-center modal-card-backdrop p-4">
-            <div class="modal-card-content rounded-lg shadow-2xl w-full max-w-3xl" style="background-color: ${config.card_color}; border-radius: ${config.border_radius}px;" onclick="event.stopPropagation()">
-              <div class="flex justify-between items-start p-6 border-b">
-                <div class="flex-1">
-                  <div class="flex items-center gap-3 mb-3">
-                    <span class="px-3 py-1 rounded-full text-white text-sm font-semibold" style="background-color: ${(CARD_TYPES[viewingCard.card_type] || CARD_TYPES.info).color};">
-                      ${(CARD_TYPES[viewingCard.card_type] || CARD_TYPES.info).icon} ${(CARD_TYPES[viewingCard.card_type] || CARD_TYPES.info).label}
-                    </span>
-                    <span class="px-3 py-1 rounded-full text-white text-xs font-semibold ${viewingCard.card_priority === 'high' ? 'priority-badge-high' : viewingCard.card_priority === 'medium' ? 'priority-badge-medium' : 'priority-badge-low'}">
-                      ${viewingCard.card_priority === 'high' ? 'TINGGI' : viewingCard.card_priority === 'medium' ? 'SEDERHANA' : 'RENDAH'}
-                    </span>
-                  </div>
-                  <h2 class="text-3xl font-bold" style="color: ${config.text_color};">${viewingCard.card_title}</h2>
-                </div>
-                <button onclick="hideCardModal()" class="ml-4 text-gray-500 hover:text-gray-700 text-3xl font-bold leading-none">
-                  ×
-                </button>
-              </div>
-
-              ${viewingCard.card_image ? `
-                <div class="w-full">
-                  <img src="${viewingCard.card_image}" alt="${viewingCard.card_title}" class="w-full max-h-96 object-contain">
-                </div>
-              ` : ''}
-
-              <div class="p-6">
-                <div class="prose max-w-none mb-6">
-                  <p class="text-lg leading-relaxed whitespace-pre-wrap" style="color: ${config.text_color};">${viewingCard.card_content}</p>
-                </div>
-
-                <div class="flex items-center justify-between pt-4 border-t">
-                  <div class="flex items-center gap-4 text-sm text-gray-600">
-                    <span class="flex items-center gap-2">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                      </svg>
-                      ${formatDateShort(viewingCard.card_date)}
-                    </span>
-                    <span class="flex items-center gap-2">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                      </svg>
-                      ${viewingCard.card_author}
-                    </span>
-                  </div>
-                  <button onclick="hideCardModal()" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold" style="border-radius: ${config.border_radius}px;">
-                    Tutup
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ` : ''}
-
-        <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop">
-          <div class="rounded-lg shadow-2xl p-8 max-w-md w-full mx-4" style="background-color: ${config.card_color};">
-            <h2 class="text-2xl font-bold mb-6 text-center" style="color: ${config.text_color};">Log Masuk</h2>
-            <form onsubmit="handleLogin(event)">
-              <div class="mb-4">
-                <label class="block mb-2 font-medium" style="color: ${config.text_color};">Username</label>
-                <input type="text" id="login-username" required class="w-full px-4 py-2 border rounded-lg">
-              </div>
-              <div class="mb-6">
-                <label class="block mb-2 font-medium" style="color: ${config.text_color};">Password</label>
-                <input type="password" id="login-password" required class="w-full px-4 py-2 border rounded-lg">
-              </div>
-              <div class="flex gap-4">
-                <button type="submit" class="flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold">
-                  Log Masuk
-                </button>
-                <button type="button" onclick="hideLoginModal()" class="flex-1 px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 font-semibold">
-                  Batal
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div id="csv-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop">
-          <div class="rounded-lg shadow-2xl p-8 max-w-2xl w-full mx-4" style="background-color: ${config.card_color};">
-            <h2 class="text-2xl font-bold mb-6" style="color: ${config.text_color};">Import Admin dari CSV</h2>
-            
-            <div class="mb-6 p-4 bg-blue-50 rounded-lg">
-              <h3 class="font-semibold mb-2" style="color: ${config.text_color};">Langkah-langkah:</h3>
-              <ol class="list-decimal list-inside space-y-1 text-sm text-gray-700">
-                <li>Muat turun template CSV</li>
-                <li>Isi maklumat admin dalam format: Nama,Username,Password,Peranan,Status</li>
-                <li>Upload fail CSV</li>
-              </ol>
-            </div>
-
-            <button onclick="downloadCSVTemplate()" class="mb-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-semibold">
-              📥 Muat Turun Template CSV
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderHome(){
+  const cfg = state.config;
+  const clock = cfg.banner_show_clock ? `
+    <div class="gradient-clock text-white text-center py-5 rounded-xl mb-4">
+      <div class="live-clock text-xl font-semibold">${nowText()}</div>
+    </div>` : "";
+
+  return `
+    <div class="p-8 overflow-auto h-full" style="font-family:${cfg.font_family}, sans-serif;">
+      <div class="max-w-7xl mx-auto">
+
+        <div class="rounded-2xl shadow-lg p-8 mb-8" style="background-color:${cfg.card_color};">
+          <h1 class="text-3xl font-bold mb-3" style="color:${cfg.text_color};">${cfg.banner_title}</h1>
+          <p class="mb-6 text-slate-600">${cfg.banner_description}</p>
+          ${clock}
+          <div class="flex flex-wrap gap-3">
+            <button onclick="addCard()" class="px-5 py-3 text-white rounded-xl hover:opacity-90"
+                    style="background-color:${cfg.header_color};">
+              ➕ Tambah Kad
             </button>
-
-            <form onsubmit="handleImportCSV(event)">
-              <div class="mb-6">
-                <label class="block mb-2 font-medium" style="color: ${config.text_color};">Pilih Fail CSV</label>
-                <input type="file" id="csv-file-input" accept=".csv" required class="w-full px-4 py-2 border rounded-lg">
-              </div>
-              <div class="flex gap-4">
-                <button type="submit" id="import-csv-btn" class="flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold">
-                  Import CSV
-                </button>
-                <button type="button" onclick="document.getElementById('csv-modal').classList.add('hidden')" class="flex-1 px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 font-semibold">
-                  Batal
-                </button>
-              </div>
-            </form>
+            <button onclick="navigate('data')" class="px-5 py-3 bg-slate-900 text-white rounded-xl hover:opacity-90">
+              📊 Pergi ke Data
+            </button>
           </div>
         </div>
 
-        <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
-      `;
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-2xl font-bold" style="color:${cfg.text_color};">📌 Kemas Kini Terkini</h2>
+          <button onclick="navigate('settings')" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300">
+            ⚙️ Tetapan
+          </button>
+        </div>
 
-      updateClock();
-      
-      if (currentPage === 'tema') {
-        setupColorPickers();
-      }
+        ${renderCards()}
+      </div>
+    </div>
+  `;
+}
 
-      if (currentPage === 'tetapanlamanutama') {
-        setTimeout(() => {
-          updateBannerPreview();
-          const imageInput = document.getElementById('banner-image-input');
-          if (imageInput) {
-            imageInput.addEventListener('change', () => {
-              handleImageUpload('banner-image-input', () => {
-                updateBannerPreview();
-              });
-            });
-          }
-        }, 100);
-      }
-      
-      document.addEventListener('click', function(e) {
-        if (!e.target.closest('#settings-dropdown') && !e.target.closest('button[onclick*="settings-dropdown"]')) {
-          const dropdown = document.getElementById('settings-dropdown');
-          if (dropdown) dropdown.classList.add('hidden');
-        }
-        if (!e.target.closest('#avatar-dropdown') && !e.target.closest('button[onclick*="avatar-dropdown"]')) {
-          const dropdown = document.getElementById('avatar-dropdown');
-          if (dropdown) dropdown.classList.add('hidden');
-        }
-      });
-    }
+function renderData(){
+  const cfg = state.config;
+  return `
+    <div class="p-8 overflow-auto h-full" style="font-family:${cfg.font_family}, sans-serif;">
+      <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-4" style="color:${cfg.text_color};">📊 Data</h1>
+        <div class="rounded-2xl shadow-lg p-6" style="background-color:${cfg.card_color};">
+          <p class="text-slate-600 mb-3">
+            Ini placeholder untuk modul Data (CSV/Google Sheet). Bila cikgu dah set link CSV,
+            kita sambung modul table + filter + dashboard kehadiran.
+          </p>
+          <div class="text-sm text-slate-500">
+            Tip: GitHub Pages sesuai untuk “dashboard view”. Data boleh tarik dari CSV (public).
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
-    const dataHandler = {
-      onDataChanged(data) {
-        allData = data;
-        renderApp();
+function renderSettingsPanel(){
+  const cfg = state.config;
+  return `
+    <div class="p-8 overflow-auto h-full" style="font-family:${cfg.font_family}, sans-serif;">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6" style="color:${cfg.text_color};">⚙️ Tetapan</h1>
+
+        <div class="rounded-2xl shadow-lg p-6 mb-6" style="background-color:${cfg.card_color};">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Nama Sekolah</label>
+              <input id="sname" class="w-full px-4 py-3 rounded-xl border" value="${cfg.school_name}">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Moto</label>
+              <input id="smotto" class="w-full px-4 py-3 rounded-xl border" value="${cfg.school_motto}">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Tajuk Banner</label>
+              <input id="btitle" class="w-full px-4 py-3 rounded-xl border" value="${cfg.banner_title}">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Deskripsi Banner</label>
+              <textarea id="bdesc" class="w-full px-4 py-3 rounded-xl border" rows="3">${cfg.banner_description}</textarea>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <input id="bclock" type="checkbox" ${cfg.banner_show_clock ? "checked":""} class="w-5 h-5">
+              <label class="text-sm font-semibold" style="color:${cfg.text_color};">Papar Jam</label>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Font</label>
+              <select id="ffont" class="w-full px-4 py-3 rounded-xl border">
+                ${["Poppins","Roboto","Open Sans","Verdana"].map(f=>`<option ${cfg.font_family===f?"selected":""}>${f}</option>`).join("")}
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Warna Header</label>
+              <input id="cheader" type="color" value="${cfg.header_color}" class="w-16 h-12 rounded-lg border">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Warna Sidebar</label>
+              <input id="cside" type="color" value="${cfg.sidebar_color}" class="w-16 h-12 rounded-lg border">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Warna Latar</label>
+              <input id="cbg" type="color" value="${cfg.bg_color}" class="w-16 h-12 rounded-lg border">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold mb-2" style="color:${cfg.text_color};">Warna Teks</label>
+              <input id="ctext" type="color" value="${cfg.text_color}" class="w-16 h-12 rounded-lg border">
+            </div>
+          </div>
+
+          <div class="mt-6 flex gap-3">
+            <button onclick="saveSettingsFromUI()" class="px-6 py-3 rounded-xl text-white hover:opacity-90"
+                    style="background-color:${cfg.header_color};">
+              💾 Simpan
+            </button>
+            <button onclick="resetAll()" class="px-6 py-3 rounded-xl bg-slate-200 hover:bg-slate-300">
+              🔄 Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="rounded-2xl shadow-lg p-6" style="background-color:${cfg.card_color};">
+          <h2 class="text-xl font-bold mb-3" style="color:${cfg.text_color};">🧩 Panel Ringkas</h2>
+          <p class="text-slate-600 mb-4">Tambah kad & urus data ringkas (localStorage).</p>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="addCard()" class="px-5 py-3 bg-sky-600 text-white rounded-xl hover:opacity-90">➕ Tambah Kad</button>
+            <button onclick="exportJSON()" class="px-5 py-3 bg-slate-900 text-white rounded-xl hover:opacity-90">⬇️ Export JSON</button>
+            <button onclick="importJSON()" class="px-5 py-3 bg-slate-200 rounded-xl hover:bg-slate-300">⬆️ Import JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================
+   5) MAIN RENDER
+========================= */
+function render(){
+  const cfg = state.config;
+  const app = document.getElementById("app");
+
+  const sidebarCollapsed = state.ui.sidebarCollapsed;
+  const current = state.ui.currentPage;
+
+  const mainContent =
+    current==="home" ? renderHome()
+    : current==="data" ? renderData()
+    : current==="settings" ? renderSettingsPanel()
+    : renderHome();
+
+  app.innerHTML = `
+    <div class="flex h-full" style="font-family:${cfg.font_family},sans-serif;">
+      ${!sidebarCollapsed ? `
+      <aside class="sidebar-transition flex-shrink-0" style="width:280px; background-color:${cfg.sidebar_color};">
+        <div class="flex flex-col h-full">
+          <div class="p-6 border-b border-white/10">
+            <div onclick="navigate('home')" class="flex justify-center mb-4 cursor-pointer hover:scale-110 transition-transform">
+              <div class="w-20 h-20 rounded-full bg-white flex items-center justify-center text-4xl">🏫</div>
+            </div>
+            <h2 class="text-white text-center font-bold text-xl mb-1">${cfg.school_name}</h2>
+            <p class="text-white/60 text-center text-sm">${cfg.school_motto}</p>
+          </div>
+
+          <nav class="flex-1 overflow-y-auto py-4">
+            ${state.menus.map(m=>`
+              <div onclick="navigate('${m.page}')" class="menu-item-hover flex items-center px-6 py-3 text-white cursor-pointer ${current===m.page ? 'bg-white/15' : 'hover:bg-white/10'}">
+                <span class="text-2xl">${m.icon}</span>
+                <span class="ml-4 font-medium">${m.label}</span>
+              </div>
+            `).join("")}
+
+            <div onclick="navigate('settings')" class="menu-item-hover flex items-center px-6 py-3 text-white cursor-pointer ${current==='settings' ? 'bg-white/15' : 'hover:bg-white/10'}">
+              <span class="text-2xl">⚙️</span>
+              <span class="ml-4 font-medium">Tetapan</span>
+            </div>
+          </nav>
+
+          <div class="p-4 border-t border-white/10">
+            <p class="text-white/60 text-xs text-center">${cfg.copyright_text}</p>
+          </div>
+        </div>
+      </aside>
+      ` : ''}
+
+      <div class="flex-1 flex flex-col h-full overflow-hidden">
+        <header class="flex-shrink-0 shadow-lg" style="background-color:${cfg.header_color};">
+          <div class="px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+              <button onclick="toggleSidebar()" class="text-white p-2 hover:bg-white/15 rounded-lg mr-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+              </button>
+
+              ${sidebarCollapsed ? `
+                <div onclick="navigate('home')" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-2xl mr-3 cursor-pointer hover:scale-110 transition-transform">
+                  🏫
+                </div>
+              ` : ''}
+
+              <h1 class="text-white text-xl font-bold">${renderHeaderTitle()}</h1>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <button onclick="navigate('home')" class="text-white px-3 py-2 rounded-lg hover:bg-white/15">🏠</button>
+
+              <div class="relative">
+                <button onclick="toggleSettings()" class="text-white p-2 hover:bg-white/15 rounded-lg">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                </button>
+
+                ${state.ui.settingsOpen ? `
+                  <div class="absolute right-0 mt-2 w-56 rounded-xl shadow-lg py-2 z-50"
+                       style="background-color:${cfg.card_color};">
+                    <a onclick="navigate('settings')" class="block px-4 py-2 hover:bg-slate-100 cursor-pointer"
+                       style="color:${cfg.text_color};">⚙️ Tetapan Portal</a>
+                    <a onclick="addCard(); closeSettings()" class="block px-4 py-2 hover:bg-slate-100 cursor-pointer"
+                       style="color:${cfg.text_color};">➕ Tambah Kad</a>
+                  </div>
+                ` : ''}
+              </div>
+
+              <div class="w-9 h-9 rounded-full bg-white flex items-center justify-center font-bold"
+                   style="color:${cfg.header_color};">NK</div>
+            </div>
+          </div>
+        </header>
+
+        <main class="flex-1 overflow-hidden" style="background-color:${cfg.bg_color};">
+          ${mainContent}
+        </main>
+      </div>
+    </div>
+
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+  `;
+
+  // update live clock
+  updateClock();
+}
+
+function updateClock(){
+  const els = document.querySelectorAll(".live-clock");
+  els.forEach(el=> el.textContent = nowText());
+}
+setInterval(updateClock, 1000);
+
+/* =========================
+   6) SETTINGS HELPERS
+========================= */
+function saveSettingsFromUI(){
+  const sname = document.getElementById("sname")?.value ?? state.config.school_name;
+  const smotto= document.getElementById("smotto")?.value ?? state.config.school_motto;
+  const btitle= document.getElementById("btitle")?.value ?? state.config.banner_title;
+  const bdesc = document.getElementById("bdesc")?.value ?? state.config.banner_description;
+  const bclock= document.getElementById("bclock")?.checked ?? state.config.banner_show_clock;
+  const ffont = document.getElementById("ffont")?.value ?? state.config.font_family;
+
+  const cheader = document.getElementById("cheader")?.value ?? state.config.header_color;
+  const cside   = document.getElementById("cside")?.value ?? state.config.sidebar_color;
+  const cbg     = document.getElementById("cbg")?.value ?? state.config.bg_color;
+  const ctext   = document.getElementById("ctext")?.value ?? state.config.text_color;
+
+  updateConfig({
+    school_name: sname,
+    school_motto: smotto,
+    banner_title: btitle,
+    banner_description: bdesc,
+    banner_show_clock: bclock,
+    font_family: ffont,
+    header_color: cheader,
+    sidebar_color: cside,
+    bg_color: cbg,
+    text_color: ctext
+  });
+  toast("Tetapan disimpan", "success");
+}
+
+function resetAll(){
+  if(!confirm("Reset portal ke default?")) return;
+  state = structuredClone(defaultState);
+  saveState(); render();
+  toast("Reset berjaya", "success");
+}
+
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "portal_state.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Export siap", "success");
+}
+
+function importJSON(){
+  const input = document.createElement("input");
+  input.type="file";
+  input.accept="application/json";
+  input.onchange = () => {
+    const file = input.files?.[0];
+    if(!file) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try{
+        const imported = JSON.parse(r.result);
+        state = {
+          ...structuredClone(defaultState),
+          ...imported,
+          config:{...defaultState.config, ...(imported.config||{})},
+          ui:{...defaultState.ui, ...(imported.ui||{})}
+        };
+        saveState(); render();
+        toast("Import berjaya", "success");
+      }catch(e){
+        toast("Fail JSON tidak sah", "error");
       }
     };
+    r.readAsText(file);
+  };
+  input.click();
+}
 
-    async function onConfigChange(config) {
-      renderApp();
-    }
+/* =========================
+   7) CLICK OUTSIDE (close dropdown)
+========================= */
+document.addEventListener("click", (e)=>{
+  // close settings dropdown if click outside
+  const isBtn = e.target.closest("button[onclick*='toggleSettings']");
+  const isDrop= e.target.closest("div.absolute.right-0");
+  if(!isBtn && !isDrop && state.ui.settingsOpen){
+    state.ui.settingsOpen = false;
+    saveState(); render();
+  }
+});
 
-    (async function init() {
-      const initResult = await window.dataSdk.init(dataHandler);
-      if (!initResult.isOk) {
-        console.error('Failed to initialize Data SDK');
-        return;
-      }
-
-      await window.elementSdk.init({
-        defaultConfig,
-        onConfigChange,
-        mapToCapabilities: (config) => ({
-          recolorables: [
-            {
-              get: () => config.header_color || defaultConfig.header_color,
-              set: (value) => {
-                config.header_color = value;
-                window.elementSdk.setConfig({ header_color: value });
-              }
-            },
-            {
-              get: () => config.bg_color || defaultConfig.bg_color,
-              set: (value) => {
-                config.bg_color = value;
-                window.elementSdk.setConfig({ bg_color: value });
-              }
-            },
-            {
-              get: () => config.sidebar_color || defaultConfig.sidebar_color,
-              set: (value) => {
-                config.sidebar_color = value;
-                window.elementSdk.setConfig({ sidebar_color: value });
-              }
-            },
-            {
-              get: () => config.card_color || defaultConfig.card_color,
-              set: (value) => {
-                config.card_color = value;
-                window.elementSdk.setConfig({ card_color: value });
-              }
-            },
-            {
-              get: () => config.text_color || defaultConfig.text_color,
-              set: (value) => {
-                config.text_color = value;
-                window.elementSdk.setConfig({ text_color: value });
-              }
-            }
-          ],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined
-        }),
-        mapToEditPanelValues: (config) => new Map([
-          ['school_name', config.school_name || defaultConfig.school_name],
-          ['school_motto', config.school_motto || defaultConfig.school_motto],
-          ['copyright_text', config.copyright_text || defaultConfig.copyright_text]
-        ])
-      });
-
-      renderApp();
-    })();
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b493f311149f8d6',t:'MTc2Njg0MzAwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+/* INIT */
+render();
+</script>
+</body>
 </html>
-
