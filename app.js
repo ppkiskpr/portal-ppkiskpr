@@ -135,11 +135,45 @@ function endOfMonth(d) {
 }
 
 function normalizeRow(r) {
-  // CSV columns expected: Tarikh, Nama, Kelas, Status
-  const Tarikh = (r.Tarikh || r.tarikh || "").trim();
-  const Nama = (r.Nama || r.nama || "").trim();
-  const Kelas = (r.Kelas || r.kelas || "").trim();
-  const Status = (r.Status || r.status || "").trim();
+  // Sokong pelbagai header Google Sheet / AppSheet
+  const Tarikh =
+    (r.Tarikh || r.tarikh || r.TARIKH || "").toString().trim();
+
+  const Nama =
+    (r.Nama ||
+     r.nama ||
+     r["Nama Murid"] ||
+     r["NAMA MURID"] ||
+     "").toString().trim();
+
+  const Kelas =
+    (r.Kelas || r.kelas || r.KELAS || "").toString().trim();
+
+  const Status =
+    (r.Status || r.status || r.STATUS || "").toString().trim();
+
+  const Jantina =
+    (r.Jantina || r.jantina || r.JANTINA || "").toString().trim();
+
+  const dateObj = parseDateISO(Tarikh);
+  const statusNorm = Status.toLowerCase();
+
+  return {
+    Tarikh,
+    Nama,
+    Kelas,
+    Status,
+    Jantina,
+    dateObj,
+    isHadir: statusNorm === "hadir",
+    isTidakHadir:
+      statusNorm === "tidak hadir" ||
+      statusNorm === "tidakhadir" ||
+      statusNorm === "absent" ||
+      statusNorm === "x hadir"
+  };
+}
+
 
   const dateObj = parseDateISO(Tarikh);
   const statusNorm = Status.toLowerCase();
