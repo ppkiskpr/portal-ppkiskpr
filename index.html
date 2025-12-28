@@ -5,35 +5,45 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Portal Rasmi PPKI SK Paya Resak</title>
 
+  <!-- Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      /* ===== Fixed Theme ===== */
-      --brand:#1F6F4A;        /* main green */
-      --brand2:#0f4f34;       /* darker green */
-      --accent:#111827;       /* dark text */
+      --brand:#1F6F4A;
+      --brand2:#0f4f34;
+      --text:#111827;
       --muted:#6b7280;
-      --bg:#f3f4f6;           /* light background */
+
+      --bg:#f3f4f6;
       --card:#ffffff;
       --card2:#f9fafb;
       --border:#e5e7eb;
-      --shadow: 0 12px 28px rgba(17,24,39,.08);
 
-      /* layout */
+      --shadow: 0 16px 34px rgba(17,24,39,.10);
+
       --radius:18px;
       --radius2:22px;
-      --rail:72px;            /* icon rail width */
-      --sidebarW:280px;       /* expanded sidebar */
-      --contentMax: 1180px;
+
+      --sidebarOpen: 292px;
+      --sidebarClosed: 82px;
+
+      --contentMax: 1200px;
     }
 
     html[data-mode="dark"]{
       --bg:#0b1220;
-      --accent:rgba(255,255,255,.92);
+      --text:rgba(255,255,255,.92);
       --muted:rgba(255,255,255,.65);
+
       --card:#111827;
       --card2:#0f172a;
       --border:rgba(255,255,255,.12);
-      --shadow: 0 18px 50px rgba(0,0,0,.45);
+
+      --shadow: 0 18px 60px rgba(0,0,0,.52);
+
       --brand:#1F6F4A;
       --brand2:#0f4f34;
     }
@@ -41,142 +51,146 @@
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      font-family: "Poppins", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       background: var(--bg);
-      color: var(--accent);
+      color: var(--text);
       min-height:100vh;
     }
     a{color:inherit;text-decoration:none}
-    button,input,select{font-family:inherit}
+    button,input,select,textarea{font-family:inherit}
+
     .app{display:flex;min-height:100vh}
 
-    /* ===== Desktop: icon rail (always) ===== */
-    .rail{
-      width: var(--rail);
-      background: #0b0f1a;
-      color: rgba(255,255,255,.92);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding: 10px 8px;
-      gap: 10px;
-      position: sticky;
-      top:0;
-      height: 100vh;
-      z-index: 30;
-    }
-    html[data-mode="dark"] .rail{
-      background:#060a12;
-    }
-
-    .railLogo{
-      width:48px;height:48px;border-radius:16px;
-      background: rgba(255,255,255,.10);
-      display:grid;place-items:center;
-      border:1px solid rgba(255,255,255,.14);
-      overflow:hidden;
-      cursor:pointer;
-      user-select:none;
-    }
-    .railLogo img{width:100%;height:100%;object-fit:cover;display:block}
-    .railBtn{
-      width:48px;height:48px;border-radius:16px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      display:grid;place-items:center;
-      cursor:pointer;
-      user-select:none;
-      transition: transform .04s ease, background .15s ease;
-      font-size:18px;
-    }
-    .railBtn:hover{ background: rgba(255,255,255,.10); }
-    .railBtn:active{ transform: translateY(1px); }
-    .railBtn.active{ background: rgba(31,111,74,.55); border-color: rgba(31,111,74,.55); }
-
-    .railSpacer{flex:1}
-    .railFooter{
-      font-size:11px;
-      opacity:.8;
-      text-align:center;
-      line-height:1.3;
-      padding-bottom:6px;
-      user-select:none;
-    }
-
-    /* ===== Expanded sidebar (optional) ===== */
+    /* ======================
+       ONE SIDEBAR (toggle)
+    ====================== */
     .sidebar{
-      width: var(--sidebarW);
+      width: var(--sidebarOpen);
       background: var(--card);
       border-right:1px solid var(--border);
-      padding: 14px 14px;
+      padding: 14px;
       position: sticky;
       top:0;
       height:100vh;
       overflow:auto;
-      display:none; /* default collapsed */
-      z-index: 25;
+      transition: width .18s ease;
+      z-index: 30;
     }
-    body.sidebar-open .sidebar{ display:block; }
+    body.sb-closed .sidebar{
+      width: var(--sidebarClosed);
+      padding: 14px 10px;
+    }
 
-    .brandBox{
+    /* Mobile becomes drawer */
+    @media (max-width: 900px){
+      .sidebar{
+        position: fixed;
+        left:0; top:0;
+        height:100vh;
+        transform: translateX(-110%);
+        width: min(320px, 86vw);
+        box-shadow: 0 26px 70px rgba(0,0,0,.55);
+        transition: transform .18s ease;
+      }
+      body.sb-open .sidebar{ transform: translateX(0); }
+      body.sb-closed .sidebar{ width: min(320px, 86vw); } /* ignore closed on mobile */
+    }
+
+    .sbBrand{
+      display:flex; gap:12px; align-items:center;
       border:1px solid var(--border);
+      background: var(--card2);
       border-radius: var(--radius2);
       padding: 12px;
-      background: var(--card2);
-      display:flex; gap:10px; align-items:center;
       cursor:pointer;
       user-select:none;
+      transition: background .15s ease, border-color .15s ease;
     }
-    .brandBox .logo{
-      width:44px;height:44px;border-radius:16px;
-      background: rgba(31,111,74,.14);
+    .sbBrand:hover{ border-color: rgba(31,111,74,.35); }
+
+    .sbLogo{
+      width:46px;height:46px;border-radius:16px;
       border:1px solid var(--border);
+      background: rgba(31,111,74,.14);
       overflow:hidden;
       display:grid;place-items:center;
       flex:0 0 auto;
     }
-    .brandBox .logo img{width:100%;height:100%;object-fit:cover;display:block}
-    .brandBox .t{min-width:0}
-    .brandBox .t .name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .brandBox .t .motto{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sbLogo img{width:100%;height:100%;object-fit:cover;display:block}
 
-    .sideList{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
-    .sideItem{
+    .sbBrandText{min-width:0}
+    .sbName{
+      font-weight:900;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      letter-spacing:.2px;
+    }
+    .sbMotto{
+      margin-top:2px;
+      font-size:12px;
+      font-weight:700;
+      color: var(--muted);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+
+    body.sb-closed .sbBrandText{display:none;}
+
+    .sbList{margin-top:12px;display:flex;flex-direction:column;gap:10px;}
+    .sbItem{
       display:flex;align-items:center;gap:12px;
+      padding: 12px 12px;
+      border-radius: 18px;
       border:1px solid transparent;
-      border-radius: 16px;
-      padding: 10px 12px;
       cursor:pointer;
       user-select:none;
-      background: transparent;
       transition: background .15s ease, border-color .15s ease;
       font-weight:800;
     }
-    .sideItem:hover{ background: var(--card2); border-color: var(--border); }
-    .sideItem.active{ background: rgba(31,111,74,.12); border-color: rgba(31,111,74,.25); }
-    .sideIcon{
-      width:36px;height:36px;border-radius:14px;
+    .sbItem:hover{
+      background: var(--card2);
+      border-color: var(--border);
+    }
+    .sbItem.active{
+      background: rgba(31,111,74,.12);
+      border-color: rgba(31,111,74,.28);
+    }
+
+    .sbIcon{
+      width:40px;height:40px;border-radius:16px;
       display:grid;place-items:center;
       border:1px solid var(--border);
       background: var(--card);
       flex:0 0 auto;
+      font-size:18px;
     }
-    .sideFoot{
-      margin-top:14px;
-      border:1px solid var(--border);
-      border-radius: var(--radius2);
-      padding: 10px 12px;
-      background: var(--card2);
-      color: var(--muted);
-      font-size:12px;
-      line-height:1.4;
-    }
+    .sbLabel{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    body.sb-closed .sbLabel{display:none;}
+    body.sb-closed .sbItem{justify-content:center; padding: 10px 10px;}
+    body.sb-closed .sbIcon{width:44px;height:44px;border-radius:18px;}
 
-    /* ===== Main area ===== */
+    .sbSpacer{flex:1}
+    .sbFooter{
+      margin-top: 14px;
+      border-radius: var(--radius2);
+      border:1px solid var(--border);
+      background: var(--card2);
+      padding: 12px;
+      font-size:12px;
+      color: var(--muted);
+      font-weight:700;
+      line-height:1.5;
+    }
+    body.sb-closed .sbFooter{display:none;}
+
+    /* ======================
+       MAIN
+    ====================== */
     .main{
       flex:1;
       min-width:0;
-      padding: 14px 16px 26px;
+      padding: 16px 18px 28px;
+    }
+    @media (max-width: 900px){
+      .main{padding: 12px 12px 22px;}
     }
 
     .topbar{
@@ -186,7 +200,7 @@
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      padding: 12px 14px;
+      padding: 14px 14px;
       border-radius: var(--radius2);
       background: var(--card);
       border:1px solid var(--border);
@@ -195,10 +209,13 @@
       top: 10px;
       z-index: 20;
     }
+    @media (max-width: 900px){
+      .topbar{top: 8px;}
+    }
 
-    .topLeft{display:flex;align-items:center;gap:10px;min-width:0;}
-    .hamburger{
-      width:44px;height:44px;border-radius:16px;
+    .topLeft{display:flex;align-items:center;gap:12px;min-width:0;}
+    .burger{
+      width:46px;height:46px;border-radius:18px;
       border:1px solid var(--border);
       background: var(--card2);
       display:grid;place-items:center;
@@ -206,13 +223,13 @@
       user-select:none;
       font-size:18px;
     }
-    .pageTitleWrap{min-width:0}
-    .pageTitle{font-weight:950;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .pageSub{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .titleWrap{min-width:0}
+    .pageTitle{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pageSub{font-size:12px;color:var(--muted);font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
     .topRight{display:flex;align-items:center;gap:10px;}
     .iconBtn{
-      width:44px;height:44px;border-radius:16px;
+      width:46px;height:46px;border-radius:18px;
       border:1px solid var(--border);
       background: var(--card2);
       display:grid;place-items:center;
@@ -221,77 +238,117 @@
       font-size:18px;
     }
 
-    /* ===== Content layout ===== */
     .content{
       max-width: var(--contentMax);
-      margin: 14px auto 0;
+      margin: 16px auto 0;
       display:flex;
       flex-direction:column;
-      gap: 12px;
+      gap: 16px; /* less compact */
     }
 
     .banner{
       border-radius: var(--radius2);
-      padding: 14px 16px;
+      padding: 16px 18px;
       background: linear-gradient(90deg, var(--brand2), var(--brand));
       color: #fff;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap: 12px;
+      gap: 14px;
       box-shadow: var(--shadow);
     }
-    html[data-mode="dark"] .banner{
-      box-shadow: 0 18px 55px rgba(0,0,0,.5);
-    }
-    .banner h1{margin:0;font-size:22px;letter-spacing:.2px}
+    .banner h1{margin:0;font-size:22px;font-weight:900;letter-spacing:.2px}
     .banner .timeBox{
       background: rgba(255,255,255,.16);
       border:1px solid rgba(255,255,255,.25);
       padding: 10px 12px;
       border-radius: 16px;
-      font-weight:900;
+      font-weight:800;
       white-space:nowrap;
+      font-size:13px;
+    }
+    @media (max-width: 900px){
+      .banner{flex-direction:column;align-items:flex-start}
+      .banner h1{font-size:18px}
+      .banner .timeBox{align-self:flex-end}
     }
 
+    /* Stats: looser spacing + 2-line display */
     .gridStats{
       display:grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
+      gap: 14px;
+    }
+    @media (max-width: 1100px){
+      .gridStats{grid-template-columns: repeat(2, minmax(0, 1fr));}
     }
     .statCard{
       background: var(--card);
       border:1px solid var(--border);
       border-radius: var(--radius2);
-      padding: 14px;
+      padding: 16px 16px 14px; /* less compact */
       box-shadow: var(--shadow);
       min-width:0;
     }
-    .statLabel{font-size:13px;color:var(--muted);font-weight:900}
-    .statValue{margin-top:6px;font-size:30px;font-weight:1000;letter-spacing:.2px}
-    .statSub{margin-top:2px;font-size:12px;color:var(--muted);font-weight:900}
+    .statLabel{
+      font-size:13px;
+      color: var(--muted);
+      font-weight:800;
+      letter-spacing:.1px;
+    }
+    .statBig{
+      margin-top:10px;
+      font-size:30px;
+      font-weight:900;
+      line-height:1.05;
+    }
+    .statSmall{
+      margin-top:8px;
+      font-size:13px;
+      font-weight:800;
+      color: var(--muted);
+    }
 
     .panelRow{
       display:grid;
-      grid-template-columns: 1fr 2fr; /* left announcements, right trend chart */
-      gap: 12px;
+      grid-template-columns: 1fr 2fr;
+      gap: 14px;
       align-items:start;
+    }
+    @media (max-width: 1100px){
+      .panelRow{grid-template-columns: 1fr;}
     }
 
     .card{
       background: var(--card);
       border:1px solid var(--border);
       border-radius: var(--radius2);
-      padding: 14px;
+      padding: 16px;
       box-shadow: var(--shadow);
       min-width:0;
     }
     .cardHead{
-      display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
-      margin-bottom: 8px;
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+      margin-bottom: 10px;
     }
-    .cardHead h2{margin:0;font-size:16px;letter-spacing:.2px}
-    .sub{margin:0;color:var(--muted);font-size:12px;font-weight:800}
+    .cardHead h2{margin:0;font-size:16px;font-weight:900}
+    .sub{margin:0;color:var(--muted);font-size:12px;font-weight:700}
+
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{
+      border:1px solid var(--border);
+      background: var(--card2);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      user-select:none;
+      font-weight:800;
+    }
+    .btnPrimary{
+      background: rgba(31,111,74,.14);
+      border-color: rgba(31,111,74,.28);
+    }
 
     .pillRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .pill{
@@ -301,74 +358,58 @@
       border-radius: 999px;
       cursor:pointer;
       user-select:none;
-      font-weight:950;
+      font-weight:800;
       color: var(--muted);
     }
     .pill.active{
       background: rgba(31,111,74,.14);
       border-color: rgba(31,111,74,.28);
-      color: var(--accent);
+      color: var(--text);
     }
 
     .field{
       border:1px solid var(--border);
       background: var(--card2);
-      color: var(--accent);
+      color: var(--text);
       padding: 10px 12px;
       border-radius: 14px;
       outline:none;
-      font-weight:900;
+      font-weight:800;
+      min-width: 160px;
     }
+    input.field{min-width:220px}
 
-    /* announcement items */
-    .annList{display:flex;flex-direction:column;gap:10px;}
+    .annList{display:flex;flex-direction:column;gap:12px;}
     .annItem{
       border:1px solid var(--border);
       background: var(--card2);
       border-radius: 18px;
-      padding: 12px;
+      padding: 14px;
       cursor:pointer;
       user-select:none;
     }
-    .annTitle{font-weight:1000;margin:0 0 6px 0}
-    .annMeta{font-size:12px;color:var(--muted);font-weight:900;margin:0}
+    .annTitle{font-weight:900;margin:0 0 8px 0}
+    .annMeta{font-size:12px;color:var(--muted);font-weight:700;margin:0}
 
-    /* chart area */
     .chartWrap{
       border:1px solid var(--border);
       background: var(--card2);
       border-radius: 18px;
-      padding: 10px;
+      padding: 12px;
       overflow:hidden;
-    }
-
-    /* ===== Attendance/Table Page ===== */
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .btn{
-      border:1px solid var(--border);
-      background: var(--card2);
-      color: var(--accent);
-      padding: 10px 12px;
-      border-radius: 14px;
-      cursor:pointer;
-      user-select:none;
-      font-weight:1000;
-    }
-    .btnPrimary{
-      background: rgba(31,111,74,.14);
-      border-color: rgba(31,111,74,.28);
+      min-height: 280px;
     }
 
     .tableWrap{
-      margin-top: 12px;
+      margin-top: 14px;
       overflow:auto;
       border-radius: 18px;
       border:1px solid var(--border);
       background: var(--card);
     }
     table{border-collapse:separate;border-spacing:0;width:100%;min-width:860px}
-    th,td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:top}
-    th{position:sticky;top:0;background: var(--card);text-align:left;font-size:12px;color:var(--muted);font-weight:1000}
+    th,td{padding:12px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+    th{position:sticky;top:0;background: var(--card);text-align:left;font-size:12px;color:var(--muted);font-weight:900}
     td{font-size:13px}
     tr:hover td{background: rgba(31,111,74,.06)}
     html[data-mode="dark"] tr:hover td{background: rgba(255,255,255,.03)}
@@ -378,25 +419,25 @@
       padding: 6px 10px;border-radius:999px;
       border:1px solid var(--border);
       background: var(--card2);
-      font-weight:1000;font-size:12px;
+      font-weight:900;font-size:12px;
     }
     .bOk{background: rgba(34,197,94,.12);border-color: rgba(34,197,94,.28)}
     .bNo{background: rgba(239,68,68,.12);border-color: rgba(239,68,68,.28)}
     .bHi{background: rgba(245,158,11,.12);border-color: rgba(245,158,11,.30)}
 
-    /* ===== Modals ===== */
+    /* Modal */
     .overlay{
       position:fixed;inset:0;background: rgba(0,0,0,.55);
-      display:none;z-index:70;padding:14px;overflow:auto;
+      display:none;z-index:80;padding:14px;overflow:auto;
     }
     .overlay.show{display:block}
     .modal{
-      width:min(980px,100%);
+      width:min(1020px,100%);
       margin: 40px auto;
       background: var(--card);
       border:1px solid var(--border);
       border-radius: 22px;
-      box-shadow: 0 22px 80px rgba(0,0,0,.45);
+      box-shadow: 0 22px 90px rgba(0,0,0,.48);
       overflow:hidden;
       display:flex;flex-direction:column;
       max-height: calc(100vh - 80px);
@@ -407,7 +448,7 @@
       border-bottom:1px solid var(--border);
       background: var(--card2);
     }
-    .modalHead h3{margin:0;font-size:15px;font-weight:1000}
+    .modalHead h3{margin:0;font-size:15px;font-weight:900}
     .modalBody{padding:14px;overflow:auto}
 
     .warnBox{
@@ -415,98 +456,66 @@
       background: rgba(239,68,68,.12);
       border-radius: 16px;
       padding: 10px 12px;
-      font-weight:1000;
+      font-weight:900;
       display:none;
       margin-top: 10px;
     }
     .warnBox.show{display:block}
 
-    /* ===== Responsive ===== */
-    @media (max-width: 1100px){
-      .gridStats{grid-template-columns: repeat(2, minmax(0, 1fr));}
-      .panelRow{grid-template-columns: 1fr;}
+    /* Menu Manager */
+    .menuCard{
+      border:1px solid var(--border);
+      background: var(--card2);
+      border-radius: 18px;
+      padding: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
     }
-    @media (max-width: 860px){
-      /* Mobile practical */
-      .rail{display:none;} /* hide rail on mobile */
-      .sidebar{
-        display:block;
-        position:fixed;
-        left:0;top:0;height:100vh;
-        transform: translateX(-105%);
-        z-index:80;
-        box-shadow: 0 25px 70px rgba(0,0,0,.55);
-      }
-      body.sidebar-open .sidebar{ transform: translateX(0); }
-      .main{padding: 12px;}
-      .topbar{top: 8px;}
-      .banner{flex-direction:column;align-items:flex-start}
-      .banner h1{font-size:18px}
-      .banner .timeBox{align-self:flex-end}
-      .gridStats{grid-template-columns: repeat(2, minmax(0, 1fr));}
-      .statValue{font-size:26px}
-      table{min-width: 780px;}
+    .menuLeft{display:flex;align-items:center;gap:12px;min-width:0}
+    .menuIcon{
+      width:42px;height:42px;border-radius:16px;
+      border:1px solid var(--border);
+      background: var(--card);
+      display:grid;place-items:center;
+      font-size:18px;
+      flex:0 0 auto;
     }
+    .menuText{min-width:0}
+    .menuTitle{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .menuMeta{font-size:12px;color:var(--muted);font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .menuActions{display:flex;gap:8px;flex-wrap:wrap}
   </style>
 </head>
 
 <body>
 <div class="app">
 
-  <aside class="rail" id="rail">
-    <div class="railLogo" id="railHome" title="Home">
-      <span id="railLogoFallback" style="font-weight:1000;">🏫</span>
-      <img id="railLogoImg" alt="" style="display:none;">
-    </div>
-
-    <div class="railBtn" id="railToggle" title="Buka/Tutup Menu">☰</div>
-
-    <div class="railBtn active" data-page="home" title="Laman Utama">🏠</div>
-    <div class="railBtn" data-page="attendance" title="Kehadiran">🧾</div>
-    <div class="railBtn" data-page="pajsk" title="PAJSK">🎖️</div> <div class="railBtn" data-page="announcements" title="Pengumuman">📢</div>
-    <div class="railBtn" data-page="calendar" title="Takwim">🗓️</div>
-    <div class="railBtn" data-page="parents" title="Ibu Bapa">👨‍👩‍👧‍👦</div>
-
-    <div class="railSpacer"></div>
-
-    <div class="railBtn" id="railMode" title="Mode Cerah/Gelap">🌙</div>
-    <div class="railBtn" id="railSettings" title="Tetapan">⚙️</div>
-
-    <div class="railFooter" id="railFooterText">
-      © 2025<br/>NK
-    </div>
-  </aside>
-
+  <!-- SIDEBAR (only one) -->
   <aside class="sidebar" id="sidebar">
-    <div class="brandBox" id="brandGoHome">
-      <div class="logo" id="sideLogo">
-        <span style="font-weight:1000;">🏫</span>
-      </div>
-      <div class="t">
-        <div class="name" id="schoolNameSide">SK Paya Resak</div>
-        <div class="motto" id="schoolMottoSide">Moving Forward</div>
+    <div class="sbBrand" id="brandGoHome" title="Pergi Home">
+      <div class="sbLogo" id="sideLogo"><span style="font-weight:900;">🏫</span></div>
+      <div class="sbBrandText">
+        <div class="sbName" id="schoolNameSide">SK Paya Resak</div>
+        <div class="sbMotto" id="schoolMottoSide">Moving Forward</div>
       </div>
     </div>
 
-    <div class="sideList" id="sideList">
-      <div class="sideItem active" data-page="home"><div class="sideIcon">🏠</div> Laman Utama</div>
-      <div class="sideItem" data-page="attendance"><div class="sideIcon">🧾</div> Kehadiran</div>
-      <div class="sideItem" data-page="pajsk"><div class="sideIcon">🎖️</div> PAJSK</div> <div class="sideItem" data-page="announcements"><div class="sideIcon">📢</div> Pengumuman</div>
-      <div class="sideItem" data-page="calendar"><div class="sideIcon">🗓️</div> Takwim</div>
-      <div class="sideItem" data-page="parents"><div class="sideIcon">👨‍👩‍👧‍👦</div> Ibu Bapa</div>
-    </div>
+    <div class="sbList" id="sbList"></div>
 
-    <div class="sideFoot">
+    <div class="sbFooter">
       <div id="footerLine1Side">© 2025 NK.</div>
       <div id="footerLine2Side">Hak Cipta Terpelihara.</div>
     </div>
   </aside>
 
+  <!-- MAIN -->
   <main class="main">
     <header class="topbar">
       <div class="topLeft">
-        <button class="hamburger" id="btnMenu" title="Menu">☰</button>
-        <div class="pageTitleWrap">
+        <button class="burger" id="btnMenu" title="Menu">☰</button>
+        <div class="titleWrap">
           <div class="pageTitle" id="pageTitle">Laman Utama</div>
           <div class="pageSub" id="pageSub">Portal Rasmi PPKI</div>
         </div>
@@ -520,32 +529,34 @@
 
     <section class="content">
 
+      <!-- HOME -->
       <div class="page" id="page-home">
         <div class="banner">
           <h1 id="bannerText">Selamat Datang ke Portal Rasmi PPKI SK Paya Resak</h1>
           <div class="timeBox" id="timeNow">Ahad, 28 Disember 2025 · 00:00:00</div>
         </div>
 
+        <!-- 2-line stats -->
         <div class="gridStats">
           <div class="statCard">
             <div class="statLabel">Kehadiran Hari Ini</div>
-            <div class="statValue" id="vToday">-</div>
-            <div class="statSub" id="sToday">—</div>
+            <div class="statBig" id="vTodayA">-</div>
+            <div class="statSmall" id="vTodayB">-</div>
           </div>
           <div class="statCard">
             <div class="statLabel">Kehadiran Minggu Ini</div>
-            <div class="statValue" id="vWeek">-</div>
-            <div class="statSub" id="sWeek">—</div>
+            <div class="statBig" id="vWeekA">-</div>
+            <div class="statSmall" id="vWeekB">-</div>
           </div>
           <div class="statCard">
             <div class="statLabel">Kehadiran Bulan Ini</div>
-            <div class="statValue" id="vMonth">-</div>
-            <div class="statSub" id="sMonth">—</div>
+            <div class="statBig" id="vMonthA">-</div>
+            <div class="statSmall" id="vMonthB">-</div>
           </div>
           <div class="statCard">
             <div class="statLabel">% Kehadiran Bulanan</div>
-            <div class="statValue" id="vPct">-</div>
-            <div class="statSub" id="sPct">Bulan semasa</div>
+            <div class="statBig" id="vPctA">-</div>
+            <div class="statSmall" id="vPctB">Bulan semasa</div>
           </div>
         </div>
 
@@ -579,56 +590,57 @@
               <select class="field" id="trendClass"><option value="">Semua Kelas</option></select>
             </div>
 
-            <div style="margin-top:10px" class="chartWrap">
+            <div style="margin-top:12px" class="chartWrap">
               <div id="trendChart"></div>
             </div>
 
-            <p class="sub" style="margin-top:10px">
+            <p class="sub" style="margin-top:12px">
               *Graf ringkas berdasarkan data kehadiran (Tarikh dd/mm/yyyy).
             </p>
           </div>
         </div>
       </div>
 
+      <!-- KEHADIRAN -->
       <div class="page" id="page-attendance" style="display:none;">
         <div class="card">
           <div class="cardHead">
             <div>
               <h2>Dashboard Kehadiran</h2>
-              <p class="sub">Filter ini akan ubah sekali statistik kad di atas (ikut kelas/status/date range/carian).</p>
+              <p class="sub">Filter di bawah akan ubah statistik kad ini mengikut pilihan (kelas/status/tarikh/carian).</p>
             </div>
             <div class="row">
               <button class="btn" id="btnReloadAttendance">Muat Semula Data</button>
             </div>
           </div>
 
-          <div class="gridStats" style="margin-top:10px">
+          <div class="gridStats" style="margin-top:12px">
             <div class="statCard">
               <div class="statLabel">Kehadiran Hari Ini</div>
-              <div class="statValue" id="vToday2">-</div>
-              <div class="statSub" id="sToday2">—</div>
+              <div class="statBig" id="vTodayA2">-</div>
+              <div class="statSmall" id="vTodayB2">-</div>
             </div>
             <div class="statCard">
               <div class="statLabel">Kehadiran Minggu Ini</div>
-              <div class="statValue" id="vWeek2">-</div>
-              <div class="statSub" id="sWeek2">—</div>
+              <div class="statBig" id="vWeekA2">-</div>
+              <div class="statSmall" id="vWeekB2">-</div>
             </div>
             <div class="statCard">
               <div class="statLabel">Kehadiran Bulan Ini</div>
-              <div class="statValue" id="vMonth2">-</div>
-              <div class="statSub" id="sMonth2">—</div>
+              <div class="statBig" id="vMonthA2">-</div>
+              <div class="statSmall" id="vMonthB2">-</div>
             </div>
             <div class="statCard">
               <div class="statLabel">% Kehadiran Bulanan</div>
-              <div class="statValue" id="vPct2">-</div>
-              <div class="statSub" id="sPct2">Bulan semasa</div>
+              <div class="statBig" id="vPctA2">-</div>
+              <div class="statSmall" id="vPctB2">Bulan semasa</div>
             </div>
           </div>
 
-          <div class="card" style="margin-top:12px">
+          <div class="card" style="margin-top:14px">
             <div class="row" style="justify-content:space-between">
               <div class="row" style="flex:1;min-width:0">
-                <input class="field" id="searchAttendance" placeholder="Carian (nama/kelas/status...)" style="flex:1;min-width:220px">
+                <input class="field" id="searchAttendance" placeholder="Carian (nama/kelas/status...)" style="flex:1;min-width:260px">
                 <select class="field" id="filterClass"><option value="">Kelas: Semua</option></select>
                 <select class="field" id="filterStatus">
                   <option value="">Status: Semua</option>
@@ -652,35 +664,12 @@
               </table>
             </div>
 
-            <p class="sub" id="attendanceMeta" style="margin-top:10px">—</p>
+            <p class="sub" id="attendanceMeta" style="margin-top:12px">—</p>
           </div>
         </div>
       </div>
 
-      <div class="page" id="page-pajsk" style="display:none;">
-        <div class="card">
-          <div class="cardHead">
-            <div>
-              <h2>Rekod PAJSK</h2>
-              <p class="sub">Data dipaparkan terus dari CSV PAJSK.</p>
-            </div>
-            <button class="btn" id="btnReloadPajsk">Muat Semula</button>
-          </div>
-
-          <div class="row" style="margin-top:12px">
-            <input class="field" id="searchPajsk" placeholder="Cari dalam PAJSK (Nama/Kelas...)" style="flex:1;min-width:220px">
-          </div>
-
-          <div class="tableWrap">
-            <table>
-              <thead><tr id="pajskHead"></tr></thead>
-              <tbody id="pajskBody"></tbody>
-            </table>
-          </div>
-          <p class="sub" id="pajskMeta" style="margin-top:10px">—</p>
-        </div>
-      </div>
-
+      <!-- PENGUMUMAN -->
       <div class="page" id="page-announcements" style="display:none;">
         <div class="card">
           <div class="cardHead">
@@ -690,32 +679,74 @@
             </div>
             <button class="btn" id="btnReloadAnnouncements">Muat Semula</button>
           </div>
-          <div id="annGrid" style="display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))"></div>
+          <div id="annGrid" style="display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr))"></div>
         </div>
       </div>
 
+      <!-- DATA CSV GENERIC (future-proof) -->
+      <div class="page" id="page-data" style="display:none;">
+        <div class="card">
+          <div class="cardHead">
+            <div>
+              <h2 id="dataTitle">Data CSV</h2>
+              <p class="sub" id="dataSub">Paparan data daripada CSV (boleh tambah menu data lain dalam Tetapan).</p>
+            </div>
+            <div class="row">
+              <button class="btn" id="btnReloadData">Muat Semula</button>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <div class="row" style="justify-content:space-between">
+              <div class="row" style="flex:1;min-width:0">
+                <input class="field" id="dataSearch" placeholder="Carian (semua kolum)" style="flex:1;min-width:280px">
+                <select class="field" id="dataColFilter">
+                  <option value="">Filter Kolum: (pilih)</option>
+                </select>
+                <input class="field" id="dataColValue" placeholder="Nilai (contoh: 1 AL-FARABI)" style="min-width:260px">
+              </div>
+              <div class="row">
+                <button class="btn btnPrimary" id="btnApplyDataFilter">Tapis</button>
+                <button class="btn" id="btnResetDataFilter">Reset</button>
+              </div>
+            </div>
+
+            <div class="tableWrap">
+              <table>
+                <thead><tr id="dataHead"></tr></thead>
+                <tbody id="dataBody"></tbody>
+              </table>
+            </div>
+
+            <p class="sub" id="dataMeta" style="margin-top:12px">—</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAKWIM (placeholder) -->
       <div class="page" id="page-calendar" style="display:none;">
         <div class="card">
           <div class="cardHead">
             <div>
               <h2>Takwim</h2>
-              <p class="sub">Jadual aktiviti tahunan.</p>
+              <p class="sub">Jika cikgu nak paparan grid takwim (bulan), saya boleh upgrade.</p>
             </div>
           </div>
           <div id="calendarArea" class="sub">Belum disambungkan.</div>
         </div>
       </div>
 
+      <!-- IBU BAPA -->
       <div class="page" id="page-parents" style="display:none;">
         <div class="card">
           <div class="cardHead">
             <div>
               <h2>Ibu Bapa</h2>
-              <p class="sub">Kad info (pop out / buka tab baru ikut setting CSV).</p>
+              <p class="sub">Kad info (pop out / buka tab baru ikut data CSV).</p>
             </div>
             <button class="btn" id="btnReloadParents">Muat Semula</button>
           </div>
-          <div id="parentsGrid" style="display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))"></div>
+          <div id="parentsGrid" style="display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr))"></div>
         </div>
       </div>
 
@@ -723,6 +754,7 @@
   </main>
 </div>
 
+<!-- Modal: Info -->
 <div class="overlay" id="overlayInfo">
   <div class="modal">
     <div class="modalHead">
@@ -733,6 +765,7 @@
   </div>
 </div>
 
+<!-- Modal: Settings -->
 <div class="overlay" id="overlaySettings">
   <div class="modal">
     <div class="modalHead">
@@ -743,7 +776,7 @@
     <div class="modalBody">
       <div id="pinStep">
         <p class="sub" style="margin:0 0 10px;">
-          Untuk kemaskini Nama/Moto/Footer/Logo & URL CSV, masukkan PIN.
+          Untuk kemaskini tetapan & menu sidebar, masukkan PIN.
         </p>
         <div class="row">
           <input class="field" id="pinInput" inputmode="numeric" placeholder="Masukkan PIN" style="min-width:220px">
@@ -753,7 +786,8 @@
       </div>
 
       <div id="settingsStep" style="display:none;">
-        <div style="display:grid;gap:12px;grid-template-columns:1fr 1fr;">
+
+        <div style="display:grid;gap:14px;grid-template-columns:1fr 1fr;">
           <div class="card" style="box-shadow:none">
             <div class="cardHead">
               <div>
@@ -767,9 +801,18 @@
             <input class="field" id="setFooter2" placeholder="Footer (Baris 2)" style="width:100%;margin-top:10px">
 
             <div style="margin-top:12px">
-              <div class="sub" style="font-weight:1000">Logo Sekolah</div>
+              <div class="sub" style="font-weight:900">Logo Sekolah</div>
               <input class="field" id="setLogoFile" type="file" accept="image/*" style="width:100%;margin-top:6px">
               <p class="sub" style="margin-top:8px">Logo disimpan dalam browser (localStorage).</p>
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="sub" style="font-weight:900">Mod Sidebar (Desktop)</div>
+              <div class="row" style="margin-top:8px">
+                <button class="btn" id="btnSidebarOpen">Buka (Default)</button>
+                <button class="btn" id="btnSidebarClose">Tutup (Icon Sahaja)</button>
+              </div>
+              <p class="sub" style="margin-top:8px">Mobile tetap guna drawer.</p>
             </div>
           </div>
 
@@ -777,23 +820,20 @@
             <div class="cardHead">
               <div>
                 <h2>URL CSV</h2>
-                <p class="sub">Kehadiran / PAJSK / Pengumuman / Ibu Bapa</p>
+                <p class="sub">Kehadiran / Pengumuman / Ibu Bapa / Takwim</p>
               </div>
             </div>
 
-            <div class="sub" style="font-weight:1000;margin-top:6px">Kehadiran</div>
+            <div class="sub" style="font-weight:900;margin-top:6px">Kehadiran</div>
             <input class="field" id="setUrlAttendance" style="width:100%;margin-top:6px">
 
-            <div class="sub" style="font-weight:1000;margin-top:10px">PAJSK (Baru)</div>
-            <input class="field" id="setUrlPajsk" style="width:100%;margin-top:6px" placeholder="URL CSV PAJSK">
-
-            <div class="sub" style="font-weight:1000;margin-top:10px">Pengumuman</div>
+            <div class="sub" style="font-weight:900;margin-top:10px">Pengumuman</div>
             <input class="field" id="setUrlAnnouncements" style="width:100%;margin-top:6px">
 
-            <div class="sub" style="font-weight:1000;margin-top:10px">Ibu Bapa</div>
+            <div class="sub" style="font-weight:900;margin-top:10px">Ibu Bapa</div>
             <input class="field" id="setUrlParents" style="width:100%;margin-top:6px">
 
-            <div class="sub" style="font-weight:1000;margin-top:10px">Takwim (optional)</div>
+            <div class="sub" style="font-weight:900;margin-top:10px">Takwim (optional)</div>
             <input class="field" id="setUrlCalendar" style="width:100%;margin-top:6px" placeholder="(optional)">
 
             <div class="row" style="margin-top:12px">
@@ -806,7 +846,23 @@
           </div>
         </div>
 
-        <div class="card" style="margin-top:12px;box-shadow:none">
+        <div class="card" style="margin-top:14px;box-shadow:none">
+          <div class="cardHead">
+            <div>
+              <h2>Pengurusan Menu Sidebar (Dinamik)</h2>
+              <p class="sub">Tambah menu untuk CSV lain pada masa depan (Data CSV / Halaman / Pautan Luar).</p>
+            </div>
+            <button class="btn btnPrimary" id="btnAddMenu">+ Tambah Menu</button>
+          </div>
+
+          <div id="menuManagerList" style="display:flex;flex-direction:column;gap:10px;"></div>
+
+          <p class="sub" style="margin-top:10px">
+            Tip: Untuk “Data CSV”, masukkan URL publish CSV (Google Sheet output=csv).
+          </p>
+        </div>
+
+        <div class="card" style="margin-top:14px;box-shadow:none">
           <div class="cardHead">
             <div>
               <h2>Pemetaan Kolum Kehadiran</h2>
@@ -816,19 +872,19 @@
 
           <div style="display:grid;gap:12px;grid-template-columns:1fr 1fr;">
             <div>
-              <div class="sub" style="font-weight:1000">Tarikh</div>
+              <div class="sub" style="font-weight:900">Tarikh</div>
               <input class="field" id="mapTarikh" style="width:100%;margin-top:6px" placeholder="Contoh: Tarikh">
             </div>
             <div>
-              <div class="sub" style="font-weight:1000">Kelas</div>
+              <div class="sub" style="font-weight:900">Kelas</div>
               <input class="field" id="mapKelas" style="width:100%;margin-top:6px" placeholder="Contoh: Kelas">
             </div>
             <div>
-              <div class="sub" style="font-weight:1000">Nama Murid</div>
+              <div class="sub" style="font-weight:900">Nama Murid</div>
               <input class="field" id="mapNama" style="width:100%;margin-top:6px" placeholder="Contoh: Nama Murid / Nama_Murid">
             </div>
             <div>
-              <div class="sub" style="font-weight:1000">Status</div>
+              <div class="sub" style="font-weight:900">Status</div>
               <input class="field" id="mapStatus" style="width:100%;margin-top:6px" placeholder="Contoh: Status">
             </div>
           </div>
@@ -837,6 +893,50 @@
             <button class="btn btnPrimary" id="btnSaveMapping">Simpan Pemetaan</button>
           </div>
         </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add/Edit Menu -->
+<div class="overlay" id="overlayMenuEdit">
+  <div class="modal">
+    <div class="modalHead">
+      <h3 id="menuEditTitle">Tambah Menu</h3>
+      <button class="iconBtn" id="btnCloseMenuEdit" title="Tutup">✕</button>
+    </div>
+    <div class="modalBody">
+      <div class="row">
+        <input class="field" id="mTitle" placeholder="Tajuk menu (contoh: Data PAJSK)" style="flex:1;min-width:260px">
+        <input class="field" id="mIcon" placeholder="Ikon (emoji) contoh: 📊" style="min-width:200px">
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <select class="field" id="mType" style="min-width:240px">
+          <option value="page">Halaman</option>
+          <option value="data">Data CSV</option>
+          <option value="link">Pautan Luar</option>
+        </select>
+        <input class="field" id="mOrder" type="number" placeholder="Urutan (1..)" style="min-width:180px">
+      </div>
+
+      <div id="mPageWrap" style="margin-top:10px">
+        <textarea class="field" id="mPageContent" rows="5" style="width:100%;min-width:0" placeholder="Kandungan halaman (ringkas)"></textarea>
+      </div>
+
+      <div id="mDataWrap" style="display:none;margin-top:10px">
+        <input class="field" id="mCsvUrl" style="width:100%;min-width:0" placeholder="URL CSV (Google Sheet publish output=csv)">
+        <p class="sub" style="margin-top:8px">Page “Data” akan auto load CSV ini bila menu dipilih.</p>
+      </div>
+
+      <div id="mLinkWrap" style="display:none;margin-top:10px">
+        <input class="field" id="mLinkUrl" style="width:100%;min-width:0" placeholder="URL Pautan Luar (https://...)">
+      </div>
+
+      <div class="row" style="margin-top:12px;justify-content:flex-end">
+        <button class="btn" id="btnCancelMenuEdit">Batal</button>
+        <button class="btn btnPrimary" id="btnSaveMenuEdit">Simpan</button>
       </div>
     </div>
   </div>
@@ -844,7 +944,7 @@
 
 <script>
 /* =========================
-   STORAGE + DEFAULTS
+   DEFAULTS + STORAGE
 ========================= */
 const DEFAULTS = {
   schoolName: "SK Paya Resak",
@@ -853,24 +953,31 @@ const DEFAULTS = {
   footer2: "Hak Cipta Terpelihara.",
   mode: "light",
   pin: "5235",
+  sidebarDefault: "open", // open | closed
   urls: {
     attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
     announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
     parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
-    calendar: "",
-    pajsk: "" // Default empty
+    calendar: ""
   },
   attendanceMap: {
     tarikh: "Tarikh",
     kelas: "Kelas",
     nama: "Nama Murid",
     status: "Status"
-  }
+  },
+  menus: [
+    { id:"home",  title:"Laman Utama", icon:"🏠", type:"built", order:1 },
+    { id:"att",   title:"Kehadiran",   icon:"🧾", type:"built", order:2 },
+    { id:"ann",   title:"Pengumuman",  icon:"📢", type:"built", order:3 },
+    { id:"cal",   title:"Takwim",      icon:"🗓️", type:"built", order:4 },
+    { id:"par",   title:"Ibu Bapa",    icon:"👨‍👩‍👧‍👦", type:"built", order:5 },
+  ]
 };
 
 const LS = {
-  settings: "ppki_portal_settings_v2_fixedtheme",
-  logo: "ppki_portal_logo_v2_fixedtheme"
+  settings: "ppki_portal_settings_v3_one_sidebar",
+  logo: "ppki_portal_logo_v3_one_sidebar"
 };
 
 function loadSettings(){
@@ -882,69 +989,59 @@ function loadSettings(){
       ...structuredClone(DEFAULTS),
       ...s,
       urls: {...structuredClone(DEFAULTS.urls), ...(s.urls||{})},
-      attendanceMap: {...structuredClone(DEFAULTS.attendanceMap), ...(s.attendanceMap||{})}
+      attendanceMap: {...structuredClone(DEFAULTS.attendanceMap), ...(s.attendanceMap||{})},
+      menus: Array.isArray(s.menus) && s.menus.length ? s.menus : structuredClone(DEFAULTS.menus)
     };
   }catch{
     return structuredClone(DEFAULTS);
   }
 }
-function saveSettings(s){
-  localStorage.setItem(LS.settings, JSON.stringify(s));
-}
+function saveSettings(s){ localStorage.setItem(LS.settings, JSON.stringify(s)); }
 let SETTINGS = loadSettings();
 
 /* =========================
    DOM
 ========================= */
-const pageTitle = document.getElementById("pageTitle");
-const pageSub = document.getElementById("pageSub");
 const btnMenu = document.getElementById("btnMenu");
 const btnMode = document.getElementById("btnMode");
 const btnReload = document.getElementById("btnReload");
 const btnSettings = document.getElementById("btnSettings");
 
-const rail = document.getElementById("rail");
-const railToggle = document.getElementById("railToggle");
-const railMode = document.getElementById("railMode");
-const railSettings = document.getElementById("railSettings");
-const railHome = document.getElementById("railHome");
-const railLogoImg = document.getElementById("railLogoImg");
-const railLogoFallback = document.getElementById("railLogoFallback");
-const railFooterText = document.getElementById("railFooterText");
-
-const sidebar = document.getElementById("sidebar");
-const sideList = document.getElementById("sideList");
 const brandGoHome = document.getElementById("brandGoHome");
 const sideLogo = document.getElementById("sideLogo");
-
 const schoolNameSide = document.getElementById("schoolNameSide");
 const schoolMottoSide = document.getElementById("schoolMottoSide");
 const footerLine1Side = document.getElementById("footerLine1Side");
 const footerLine2Side = document.getElementById("footerLine2Side");
 
+const sbList = document.getElementById("sbList");
+
+const pageTitle = document.getElementById("pageTitle");
+const pageSub = document.getElementById("pageSub");
 const bannerText = document.getElementById("bannerText");
 const timeNow = document.getElementById("timeNow");
 
-/* Home stats */
-const vToday = document.getElementById("vToday");
-const sToday = document.getElementById("sToday");
-const vWeek = document.getElementById("vWeek");
-const sWeek = document.getElementById("sWeek");
-const vMonth = document.getElementById("vMonth");
-const sMonth = document.getElementById("sMonth");
-const vPct = document.getElementById("vPct");
-const sPct = document.getElementById("sPct");
+/* Stats home */
+const vTodayA = document.getElementById("vTodayA");
+const vTodayB = document.getElementById("vTodayB");
+const vWeekA = document.getElementById("vWeekA");
+const vWeekB = document.getElementById("vWeekB");
+const vMonthA = document.getElementById("vMonthA");
+const vMonthB = document.getElementById("vMonthB");
+const vPctA = document.getElementById("vPctA");
+const vPctB = document.getElementById("vPctB");
 
-/* Attendance stats */
-const vToday2 = document.getElementById("vToday2");
-const sToday2 = document.getElementById("sToday2");
-const vWeek2 = document.getElementById("vWeek2");
-const sWeek2 = document.getElementById("sWeek2");
-const vMonth2 = document.getElementById("vMonth2");
-const sMonth2 = document.getElementById("sMonth2");
-const vPct2 = document.getElementById("vPct2");
-const sPct2 = document.getElementById("sPct2");
+/* Stats attendance */
+const vTodayA2 = document.getElementById("vTodayA2");
+const vTodayB2 = document.getElementById("vTodayB2");
+const vWeekA2 = document.getElementById("vWeekA2");
+const vWeekB2 = document.getElementById("vWeekB2");
+const vMonthA2 = document.getElementById("vMonthA2");
+const vMonthB2 = document.getElementById("vMonthB2");
+const vPctA2 = document.getElementById("vPctA2");
+const vPctB2 = document.getElementById("vPctB2");
 
+/* Attendance filter */
 const btnReloadAttendance = document.getElementById("btnReloadAttendance");
 const searchAttendance = document.getElementById("searchAttendance");
 const filterClass = document.getElementById("filterClass");
@@ -956,13 +1053,6 @@ const btnResetFilter = document.getElementById("btnResetFilter");
 const attendanceHead = document.getElementById("attendanceHead");
 const attendanceBody = document.getElementById("attendanceBody");
 const attendanceMeta = document.getElementById("attendanceMeta");
-
-/* PAJSK DOM */
-const btnReloadPajsk = document.getElementById("btnReloadPajsk");
-const searchPajsk = document.getElementById("searchPajsk");
-const pajskHead = document.getElementById("pajskHead");
-const pajskBody = document.getElementById("pajskBody");
-const pajskMeta = document.getElementById("pajskMeta");
 
 /* Trend */
 const trendMode = document.getElementById("trendMode");
@@ -978,10 +1068,25 @@ const btnToAnnouncements = document.getElementById("btnToAnnouncements");
 const annGrid = document.getElementById("annGrid");
 const btnReloadAnnouncements = document.getElementById("btnReloadAnnouncements");
 
-/* Parents & Calendar */
+/* Parents */
 const parentsGrid = document.getElementById("parentsGrid");
 const btnReloadParents = document.getElementById("btnReloadParents");
+
+/* Calendar */
 const calendarArea = document.getElementById("calendarArea");
+
+/* Data generic */
+const dataTitle = document.getElementById("dataTitle");
+const dataSub = document.getElementById("dataSub");
+const btnReloadData = document.getElementById("btnReloadData");
+const dataSearch = document.getElementById("dataSearch");
+const dataColFilter = document.getElementById("dataColFilter");
+const dataColValue = document.getElementById("dataColValue");
+const btnApplyDataFilter = document.getElementById("btnApplyDataFilter");
+const btnResetDataFilter = document.getElementById("btnResetDataFilter");
+const dataHead = document.getElementById("dataHead");
+const dataBody = document.getElementById("dataBody");
+const dataMeta = document.getElementById("dataMeta");
 
 /* Info modal */
 const overlayInfo = document.getElementById("overlayInfo");
@@ -1003,21 +1108,45 @@ const setSchoolMotto = document.getElementById("setSchoolMotto");
 const setFooter1 = document.getElementById("setFooter1");
 const setFooter2 = document.getElementById("setFooter2");
 const setLogoFile = document.getElementById("setLogoFile");
+
 const setUrlAttendance = document.getElementById("setUrlAttendance");
 const setUrlAnnouncements = document.getElementById("setUrlAnnouncements");
 const setUrlParents = document.getElementById("setUrlParents");
 const setUrlCalendar = document.getElementById("setUrlCalendar");
-const setUrlPajsk = document.getElementById("setUrlPajsk"); // NEW
 
 const btnSaveSettings = document.getElementById("btnSaveSettings");
 const btnResetSettings = document.getElementById("btnResetSettings");
 const btnLockSettings = document.getElementById("btnLockSettings");
+
+const btnSidebarOpen = document.getElementById("btnSidebarOpen");
+const btnSidebarClose = document.getElementById("btnSidebarClose");
 
 const mapTarikh = document.getElementById("mapTarikh");
 const mapKelas = document.getElementById("mapKelas");
 const mapNama = document.getElementById("mapNama");
 const mapStatus = document.getElementById("mapStatus");
 const btnSaveMapping = document.getElementById("btnSaveMapping");
+
+/* Menu manager */
+const menuManagerList = document.getElementById("menuManagerList");
+const btnAddMenu = document.getElementById("btnAddMenu");
+
+/* Menu edit modal */
+const overlayMenuEdit = document.getElementById("overlayMenuEdit");
+const menuEditTitle = document.getElementById("menuEditTitle");
+const btnCloseMenuEdit = document.getElementById("btnCloseMenuEdit");
+const btnCancelMenuEdit = document.getElementById("btnCancelMenuEdit");
+const btnSaveMenuEdit = document.getElementById("btnSaveMenuEdit");
+const mTitle = document.getElementById("mTitle");
+const mIcon = document.getElementById("mIcon");
+const mType = document.getElementById("mType");
+const mOrder = document.getElementById("mOrder");
+const mPageWrap = document.getElementById("mPageWrap");
+const mPageContent = document.getElementById("mPageContent");
+const mDataWrap = document.getElementById("mDataWrap");
+const mCsvUrl = document.getElementById("mCsvUrl");
+const mLinkWrap = document.getElementById("mLinkWrap");
+const mLinkUrl = document.getElementById("mLinkUrl");
 
 /* =========================
    UTIL
@@ -1090,7 +1219,6 @@ function formatDMY(d){
   const mm = String(d.getMonth()+1).padStart(2,"0");
   return `${dd}/${mm}/${d.getFullYear()}`;
 }
-
 function startOfWeekMonday(d){
   const x = new Date(d); x.setHours(0,0,0,0);
   const day = x.getDay();
@@ -1119,6 +1247,14 @@ function fileToDataURL(file){
   });
 }
 
+function uid(){
+  return "m_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+}
+
+function isMobile(){
+  return window.matchMedia("(max-width: 900px)").matches;
+}
+
 /* =========================
    THEME + IDENTITY
 ========================= */
@@ -1126,7 +1262,6 @@ function applyMode(){
   document.documentElement.dataset.mode = SETTINGS.mode || "light";
   const isDark = document.documentElement.dataset.mode === "dark";
   btnMode.textContent = isDark ? "☀️" : "🌙";
-  railMode.textContent = isDark ? "☀️" : "🌙";
 }
 function applyIdentity(){
   schoolNameSide.textContent = SETTINGS.schoolName;
@@ -1134,104 +1269,52 @@ function applyIdentity(){
   footerLine1Side.textContent = SETTINGS.footer1;
   footerLine2Side.textContent = SETTINGS.footer2;
 
-  railFooterText.innerHTML = `${escapeHtml(SETTINGS.footer1).replace("©","©")}<br/>NK`;
-
   const logoData = localStorage.getItem(LS.logo);
-
   sideLogo.innerHTML = "";
   if(logoData){
     const img = document.createElement("img");
     img.src = logoData;
     sideLogo.appendChild(img);
-
-    railLogoImg.src = logoData;
-    railLogoImg.style.display = "block";
-    railLogoFallback.style.display = "none";
   }else{
-    sideLogo.innerHTML = "<span style='font-weight:1000;'>🏫</span>";
-    railLogoImg.style.display = "none";
-    railLogoFallback.style.display = "block";
+    sideLogo.innerHTML = "<span style='font-weight:900;'>🏫</span>";
+  }
+}
+function applySidebarDefault(){
+  // Desktop only: open/closed icon-mode
+  if(isMobile()){
+    document.body.classList.remove("sb-closed");
+    return;
+  }
+  if((SETTINGS.sidebarDefault||"open")==="closed"){
+    document.body.classList.add("sb-closed");
+  }else{
+    document.body.classList.remove("sb-closed");
   }
 }
 
 /* =========================
-   NAV / PAGES
+   SIDEBAR TOGGLE (ONE)
 ========================= */
-function isMobile(){
-  return window.matchMedia("(max-width: 860px)").matches;
+function toggleSidebar(){
+  if(isMobile()){
+    document.body.classList.toggle("sb-open");
+    return;
+  }
+  // desktop: toggle closed/open (icon only)
+  document.body.classList.toggle("sb-closed");
+  SETTINGS.sidebarDefault = document.body.classList.contains("sb-closed") ? "closed" : "open";
+  saveSettings(SETTINGS);
 }
-function openSidebar(){ document.body.classList.add("sidebar-open"); }
-function closeSidebar(){ document.body.classList.remove("sidebar-open"); }
-function toggleSidebar(){ document.body.classList.toggle("sidebar-open"); }
 
 btnMenu.addEventListener("click", toggleSidebar);
-railToggle.addEventListener("click", ()=> {
-  // desktop: open the full sidebar panel (optional)
-  if(isMobile()) openSidebar();
-  else toggleSidebar();
-});
 
+// close drawer when click outside (mobile)
 document.addEventListener("click",(e)=>{
   if(!isMobile()) return;
-  if(!document.body.classList.contains("sidebar-open")) return;
+  if(!document.body.classList.contains("sb-open")) return;
   if(e.target.closest("#sidebar") || e.target.closest("#btnMenu")) return;
-  closeSidebar();
+  document.body.classList.remove("sb-open");
 },{capture:true});
-
-function setActiveNav(page){
-  document.querySelectorAll(".railBtn[data-page]").forEach(b=>{
-    b.classList.toggle("active", b.dataset.page===page);
-  });
-  document.querySelectorAll(".sideItem").forEach(b=>{
-    b.classList.toggle("active", b.dataset.page===page);
-  });
-}
-
-function showPage(page){
-  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
-  const el = document.getElementById("page-"+page);
-  if(el) el.style.display = "block";
-
-  const titles = {
-    home: ["Laman Utama","Portal Rasmi PPKI"],
-    attendance: ["Kehadiran","Dashboard & Analisis"],
-    pajsk: ["PAJSK", "Rekod Aktiviti & Pencapaian"], // NEW
-    announcements: ["Pengumuman","Makluman Semasa"],
-    calendar: ["Takwim","Aktiviti & Jadual"],
-    parents: ["Ibu Bapa","Info & Pautan"]
-  };
-  pageTitle.textContent = titles[page]?.[0] || "Portal";
-  pageSub.textContent = titles[page]?.[1] || "";
-
-  setActiveNav(page);
-  if(isMobile()) closeSidebar();
-}
-
-rail.addEventListener("click",(e)=>{
-  const btn = e.target.closest(".railBtn[data-page]");
-  if(!btn) return;
-  showPage(btn.dataset.page);
-});
-sideList.addEventListener("click",(e)=>{
-  const item = e.target.closest(".sideItem");
-  if(!item) return;
-  showPage(item.dataset.page);
-});
-
-railHome.addEventListener("click", ()=> showPage("home"));
-brandGoHome.addEventListener("click", ()=> showPage("home"));
-
-/* =========================
-   MODE toggle
-========================= */
-function toggleMode(){
-  SETTINGS.mode = (SETTINGS.mode === "dark") ? "light" : "dark";
-  saveSettings(SETTINGS);
-  applyMode();
-  renderTrend();
-}
-btnMode.addEventListener("click", toggleMode);
-railMode.addEventListener("click", toggleMode);
 
 /* =========================
    CLOCK
@@ -1247,21 +1330,174 @@ function tickClock(){
 setInterval(tickClock, 1000);
 
 /* =========================
+   PAGES
+========================= */
+let currentPage = "home";
+function showPage(page, payload=null){
+  currentPage = page;
+
+  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+  const el = document.getElementById("page-"+page);
+  if(el) el.style.display = "block";
+
+  const titles = {
+    home: ["Laman Utama","Portal Rasmi PPKI"],
+    attendance: ["Kehadiran","Dashboard & Analisis"],
+    announcements: ["Pengumuman","Makluman Semasa"],
+    calendar: ["Takwim","Aktiviti & Jadual"],
+    parents: ["Ibu Bapa","Info & Pautan"],
+    data: ["Data CSV","Paparan Data"]
+  };
+  pageTitle.textContent = titles[page]?.[0] || "Portal";
+  pageSub.textContent = titles[page]?.[1] || "";
+
+  // highlight sidebar
+  document.querySelectorAll(".sbItem").forEach(x=>{
+    x.classList.toggle("active", x.dataset.page===page && x.dataset.mid===String(payload?.mid||""));
+  });
+
+  if(isMobile()) document.body.classList.remove("sb-open");
+
+  // If opening dynamic data
+  if(page==="data" && payload && payload.menu){
+    openDataMenu(payload.menu);
+  }
+}
+
+brandGoHome.addEventListener("click", ()=> showPage("home"));
+
+/* =========================
+   SIDEBAR MENU RENDER
+========================= */
+function sortMenus(menus){
+  return [...menus].sort((a,b)=> (Number(a.order||999)-Number(b.order||999)) || String(a.title||"").localeCompare(String(b.title||"")));
+}
+function menuMetaText(m){
+  if(m.type==="built") return "Modul Portal";
+  if(m.type==="data") return "Data CSV";
+  if(m.type==="link") return "Pautan Luar";
+  if(m.type==="page") return "Halaman";
+  return "";
+}
+function renderSidebarMenus(){
+  sbList.innerHTML = "";
+
+  const menus = sortMenus(SETTINGS.menus || []);
+  menus.forEach(m=>{
+    const item = document.createElement("div");
+    item.className = "sbItem";
+    item.dataset.mid = m.id;
+
+    // map built pages
+    let page = "home";
+    if(m.type==="built"){
+      if(m.id==="home") page="home";
+      else if(m.id==="att") page="attendance";
+      else if(m.id==="ann") page="announcements";
+      else if(m.id==="cal") page="calendar";
+      else if(m.id==="par") page="parents";
+    }else if(m.type==="data"){
+      page="data";
+    }else if(m.type==="page"){
+      page="data"; // we reuse data page to show content card if page-type (simple & future-proof)
+    }else if(m.type==="link"){
+      page="home"; // no actual page, we open external
+    }
+
+    item.dataset.page = page;
+
+    item.innerHTML = `
+      <div class="sbIcon">${escapeHtml(m.icon||"📄")}</div>
+      <div class="sbLabel">${escapeHtml(m.title||"Menu")}</div>
+    `;
+
+    item.addEventListener("click", ()=>{
+      if(m.type==="link"){
+        if(m.url) window.open(m.url, "_blank", "noopener");
+        return;
+      }
+      if(m.type==="page"){
+        openSimplePage(m);
+        return;
+      }
+      if(m.type==="data"){
+        showPage("data",{menu:m, mid:m.id});
+        return;
+      }
+      // built
+      showPage(page);
+    });
+
+    sbList.appendChild(item);
+  });
+
+  // set active
+  highlightActiveSidebar();
+}
+function highlightActiveSidebar(){
+  document.querySelectorAll(".sbItem").forEach(x=>{
+    const mid = x.dataset.mid;
+    const m = (SETTINGS.menus||[]).find(mm=>mm.id===mid);
+    if(!m) return;
+    let should = false;
+    if(m.type==="built"){
+      if(currentPage==="home" && m.id==="home") should=true;
+      if(currentPage==="attendance" && m.id==="att") should=true;
+      if(currentPage==="announcements" && m.id==="ann") should=true;
+      if(currentPage==="calendar" && m.id==="cal") should=true;
+      if(currentPage==="parents" && m.id==="par") should=true;
+    }else if(m.type==="data" && currentPage==="data"){
+      // only active if this data menu was last opened
+      should = (currentDataMenu && currentDataMenu.id===m.id);
+    }else if(m.type==="page" && currentPage==="data"){
+      should = (currentSimplePage && currentSimplePage.id===m.id);
+    }
+    x.classList.toggle("active", should);
+  });
+}
+
+/* =========================
+   MODE toggle
+========================= */
+function toggleMode(){
+  SETTINGS.mode = (SETTINGS.mode === "dark") ? "light" : "dark";
+  saveSettings(SETTINGS);
+  applyMode();
+  renderTrend();
+}
+btnMode.addEventListener("click", toggleMode);
+
+/* =========================
+   INFO MODAL
+========================= */
+function openInfoModal(title, html){
+  infoTitle.textContent = title || "Butiran";
+  infoBody.innerHTML = html;
+  overlayInfo.classList.add("show");
+}
+btnCloseInfo.addEventListener("click", ()=> overlayInfo.classList.remove("show"));
+overlayInfo.addEventListener("click",(e)=>{ if(e.target===overlayInfo) overlayInfo.classList.remove("show"); });
+
+/* =========================
    DATA STATE
 ========================= */
 let attendanceRaw = [];
-let attendanceHeaders = [];
 let announcementsRaw = [];
 let parentsRaw = [];
 let calendarRaw = [];
-let pajskRaw = []; // NEW
+
+/* Generic Data CSV state */
+let currentDataMenu = null;
+let currentDataHeaders = [];
+let currentDataRows = [];
+let filteredDataRows = [];
+let currentSimplePage = null;
 
 /* =========================
    NORMALIZE DATA
 ========================= */
 function normalizeAttendance(parsed){
   const headers = parsed.headers;
-  attendanceHeaders = headers;
 
   const colTarikh = pickCol(headers, SETTINGS.attendanceMap.tarikh) || pickCol(headers, "Tarikh");
   const colKelas  = pickCol(headers, SETTINGS.attendanceMap.kelas)  || pickCol(headers, "Kelas");
@@ -1278,7 +1514,6 @@ function normalizeAttendance(parsed){
       Kelas: r[colKelas] || "",
       "Nama Murid": r[colNama] || "",
       Status: status || (r[colStatus]||""),
-      __raw: r
     };
   }).filter(x=> x.__tarikh);
 
@@ -1340,7 +1575,7 @@ function normalizeParents(parsed){
 }
 
 /* =========================
-   STATS
+   STATS (2-line: Hadir / Tidak Hadir)
 ========================= */
 function computeStats(list){
   const now = new Date(); now.setHours(0,0,0,0);
@@ -1351,51 +1586,50 @@ function computeStats(list){
   const monthEnd = new Date(now.getFullYear(), now.getMonth()+1, 0, 23,59,59,999);
 
   const isHadir = r => String(r.Status||"").toUpperCase()==="HADIR";
+  const isTidak = r => String(r.Status||"").toUpperCase().includes("TIDAK");
 
   const todayList = list.filter(r => r.__tarikh && r.__tarikh.getTime()===now.getTime());
   const weekList  = list.filter(r => r.__tarikh && r.__tarikh>=weekStart && r.__tarikh<=weekEnd);
   const monthList = list.filter(r => r.__tarikh && r.__tarikh>=monthStart && r.__tarikh<=monthEnd);
 
-  const todayHadir = todayList.filter(isHadir).length;
-  const weekHadir = weekList.filter(isHadir).length;
-  const monthHadir = monthList.filter(isHadir).length;
+  const todayH = todayList.filter(isHadir).length;
+  const todayT = todayList.filter(isTidak).length;
+  const todayN = todayList.length;
 
-  const todayTotal = todayList.length;
-  const weekTotal = weekList.length;
-  const monthTotal = monthList.length;
+  const weekH = weekList.filter(isHadir).length;
+  const weekT = weekList.filter(isTidak).length;
+  const weekN = weekList.length;
 
-  const pct = monthTotal ? (monthHadir/monthTotal*100) : 0;
+  const monthH = monthList.filter(isHadir).length;
+  const monthT = monthList.filter(isTidak).length;
+  const monthN = monthList.length;
 
-  return {todayHadir,todayTotal,weekHadir,weekTotal,monthHadir,monthTotal,pct};
+  const pct = monthN ? (monthH/monthN*100) : 0;
+
+  return {todayH,todayT,weekH,weekT,monthH,monthT,pct};
 }
 
-function setHomeStats(stats){
-  vToday.textContent = stats.todayHadir;
-  sToday.textContent = `${stats.todayHadir} / ${stats.todayTotal}`;
-  vWeek.textContent = stats.weekHadir;
-  sWeek.textContent = `${stats.weekHadir} / ${stats.weekTotal}`;
-  vMonth.textContent = stats.monthHadir;
-  sMonth.textContent = `${stats.monthHadir} / ${stats.monthTotal}`;
-  vPct.textContent = `${stats.pct.toFixed(1)}%`;
-  sPct.textContent = "Bulan semasa";
-}
+function setStats2Line(prefix, stats){
+  const set = (id, text)=> document.getElementById(id).textContent = text;
 
-function setAttendanceStats(stats){
-  vToday2.textContent = stats.todayHadir;
-  sToday2.textContent = `${stats.todayHadir} / ${stats.todayTotal}`;
-  vWeek2.textContent = stats.weekHadir;
-  sWeek2.textContent = `${stats.weekHadir} / ${stats.weekTotal}`;
-  vMonth2.textContent = stats.monthHadir;
-  sMonth2.textContent = `${stats.monthHadir} / ${stats.monthTotal}`;
-  vPct2.textContent = `${stats.pct.toFixed(1)}%`;
-  sPct2.textContent = "Bulan semasa";
+  set(prefix+"TodayA", `${stats.todayH} Hadir`);
+  set(prefix+"TodayB", `${stats.todayT} Tidak Hadir`);
+
+  set(prefix+"WeekA", `${stats.weekH} Hadir`);
+  set(prefix+"WeekB", `${stats.weekT} Tidak Hadir`);
+
+  set(prefix+"MonthA", `${stats.monthH} Hadir`);
+  set(prefix+"MonthB", `${stats.monthT} Tidak Hadir`);
+
+  set(prefix+"PctA", `${stats.pct.toFixed(1)}%`);
+  set(prefix+"PctB", `Bulan semasa`);
 }
 
 /* =========================
    TREND CHART (SVG)
 ========================= */
-function renderLineChartSVG({width=860,height=260,data=[],mode="hadir"}){
-  const padL=44,padR=16,padT=14,padB=34;
+function renderLineChartSVG({width=900,height=290,data=[],mode="hadir"}){
+  const padL=46,padR=16,padT=14,padB=34;
   const W=width,H=height;
   const innerW=W-padL-padR, innerH=H-padT-padB;
 
@@ -1435,7 +1669,7 @@ function renderLineChartSVG({width=860,height=260,data=[],mode="hadir"}){
       const y=yScale(v);
       return `
         <line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="${grid}" stroke-width="1"/>
-        <text x="${padL-8}" y="${y+4}" text-anchor="end" font-size="11" fill="${label}" font-weight="900">${v}${mode==="pct"?"%":""}</text>
+        <text x="${padL-8}" y="${y+4}" text-anchor="end" font-size="11" fill="${label}" font-weight="800">${v}${mode==="pct"?"%":""}</text>
       `;
     }).join("")}
 
@@ -1448,7 +1682,7 @@ function renderLineChartSVG({width=860,height=260,data=[],mode="hadir"}){
       const x=xScale(v);
       return `
         <line x1="${x}" y1="${H-padB}" x2="${x}" y2="${H-padB+5}" stroke="${grid}" stroke-width="1"/>
-        <text x="${x}" y="${H-12}" text-anchor="middle" font-size="11" fill="${label}" font-weight="900">${v}</text>
+        <text x="${x}" y="${H-12}" text-anchor="middle" font-size="11" fill="${label}" font-weight="800">${v}</text>
       `;
     }).join("")}
 
@@ -1458,7 +1692,7 @@ function renderLineChartSVG({width=860,height=260,data=[],mode="hadir"}){
       <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="3.2"
         stroke-linecap="round" stroke-linejoin="round"/>
     ` : `
-      <text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="13" fill="${label}" font-weight="900">
+      <text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="13" fill="${label}" font-weight="800">
         Tiada data untuk pilihan ini
       </text>
     `}
@@ -1468,7 +1702,6 @@ function renderLineChartSVG({width=860,height=260,data=[],mode="hadir"}){
 function setupTrendSelectors(){
   const now = new Date();
   const months = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"];
-
   trendMonth.innerHTML = months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
   trendMonth.value = String(now.getMonth());
 
@@ -1567,6 +1800,7 @@ function renderAttendanceTable(list){
   attendanceMeta.textContent = `Paparan: ${list.length} rekod`;
 }
 
+/* ✅ FIX: filter updates stats + table */
 function applyAttendanceFilter(){
   const q = (searchAttendance.value||"").trim().toLowerCase();
   const kelas = filterClass.value;
@@ -1591,8 +1825,34 @@ function applyAttendanceFilter(){
   });
 
   renderAttendanceTable(filtered);
-  const stats = computeStats(filtered);
-  setAttendanceStats(stats);
+  setStats2Line("v", computeStats(filtered));      // Home (optional)
+  setStats2Line("v", computeStats(attendanceRaw)); // keep home correct? we'll handle below
+  setAttendanceStats2(filtered);
+}
+
+function setAttendanceStats2(list){
+  const s = computeStats(list);
+  vTodayA2.textContent = `${s.todayH} Hadir`;
+  vTodayB2.textContent = `${s.todayT} Tidak Hadir`;
+  vWeekA2.textContent  = `${s.weekH} Hadir`;
+  vWeekB2.textContent  = `${s.weekT} Tidak Hadir`;
+  vMonthA2.textContent = `${s.monthH} Hadir`;
+  vMonthB2.textContent = `${s.monthT} Tidak Hadir`;
+  vPctA2.textContent   = `${s.pct.toFixed(1)}%`;
+  vPctB2.textContent   = `Bulan semasa`;
+}
+
+/* Home stats */
+function setHomeStats2(list){
+  const s = computeStats(list);
+  vTodayA.textContent = `${s.todayH} Hadir`;
+  vTodayB.textContent = `${s.todayT} Tidak Hadir`;
+  vWeekA.textContent  = `${s.weekH} Hadir`;
+  vWeekB.textContent  = `${s.weekT} Tidak Hadir`;
+  vMonthA.textContent = `${s.monthH} Hadir`;
+  vMonthB.textContent = `${s.monthT} Tidak Hadir`;
+  vPctA.textContent   = `${s.pct.toFixed(1)}%`;
+  vPctB.textContent   = `Bulan semasa`;
 }
 
 btnApplyFilter.addEventListener("click", applyAttendanceFilter);
@@ -1603,7 +1863,7 @@ btnResetFilter.addEventListener("click", ()=>{
   dateFrom.value="";
   dateTo.value="";
   renderAttendanceTable(attendanceRaw);
-  setAttendanceStats(computeStats(attendanceRaw));
+  setAttendanceStats2(attendanceRaw);
 });
 searchAttendance.addEventListener("input", applyAttendanceFilter);
 filterClass.addEventListener("change", applyAttendanceFilter);
@@ -1612,51 +1872,8 @@ dateFrom.addEventListener("change", applyAttendanceFilter);
 dateTo.addEventListener("change", applyAttendanceFilter);
 
 /* =========================
-   PAJSK LOGIC (NEW)
-========================= */
-function renderPajsk(list){
-  if(!list.length){
-    pajskHead.innerHTML = "<th>Tiada Data</th>";
-    pajskBody.innerHTML = "<tr><td>Sila semak URL CSV PAJSK di Tetapan.</td></tr>";
-    pajskMeta.textContent = "0 rekod";
-    return;
-  }
-  // Auto detect columns
-  const cols = Object.keys(list[0]);
-  pajskHead.innerHTML = cols.map(c=>`<th>${escapeHtml(c)}</th>`).join("");
-
-  pajskBody.innerHTML = list.map(r=>{
-    return `<tr>${cols.map(c=>`<td>${escapeHtml(r[c]||"")}</td>`).join("")}</tr>`;
-  }).join("");
-
-  pajskMeta.textContent = `Paparan: ${list.length} rekod`;
-}
-
-function applyPajskSearch(){
-  const q = (searchPajsk.value||"").trim().toLowerCase();
-  if(!q){
-    renderPajsk(pajskRaw);
-    return;
-  }
-  const filtered = pajskRaw.filter(r => {
-    // Search in all values of the row
-    return Object.values(r).some(val => String(val).toLowerCase().includes(q));
-  });
-  renderPajsk(filtered);
-}
-searchPajsk.addEventListener("input", applyPajskSearch);
-
-/* =========================
    ANNOUNCEMENTS UI
 ========================= */
-function openInfoModal(title, html){
-  infoTitle.textContent = title || "Butiran";
-  infoBody.innerHTML = html;
-  overlayInfo.classList.add("show");
-}
-btnCloseInfo.addEventListener("click", ()=> overlayInfo.classList.remove("show"));
-overlayInfo.addEventListener("click",(e)=>{ if(e.target===overlayInfo) overlayInfo.classList.remove("show"); });
-
 function renderAnnouncements(){
   const active = announcementsRaw.filter(a=>a.active);
   annCount.textContent = `${active.length} aktif`;
@@ -1678,10 +1895,10 @@ function renderAnnouncements(){
         openInfoModal(a.title, `
           <div class="card" style="box-shadow:none">
             <div class="row" style="justify-content:space-between">
-              <div class="sub" style="font-weight:1000">Tarikh Mula: ${escapeHtml(a.startText || (a.start?formatDMY(a.start):"-"))}</div>
-              <div class="sub" style="font-weight:1000">Keutamaan: ${escapeHtml(a.pri||"-")}</div>
+              <div class="sub" style="font-weight:900">Tarikh Mula: ${escapeHtml(a.startText || (a.start?formatDMY(a.start):"-"))}</div>
+              <div class="sub" style="font-weight:900">Keutamaan: ${escapeHtml(a.pri||"-")}</div>
             </div>
-            <div style="margin-top:10px;white-space:pre-wrap;line-height:1.6">${escapeHtml(a.body||"-")}</div>
+            <div style="margin-top:12px;white-space:pre-wrap;line-height:1.75">${escapeHtml(a.body||"-")}</div>
             ${a.url ? `<div style="margin-top:12px"><a class="btn btnPrimary" href="${escapeAttr(a.url)}" target="_blank" rel="noopener">Buka Pautan</a></div>` : ""}
           </div>
         `);
@@ -1710,14 +1927,14 @@ function renderAnnouncements(){
         </div>
         <div>${priBadge}</div>
       </div>
-      <div class="sub" style="white-space:pre-wrap;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">
+      <div class="sub" style="white-space:pre-wrap;line-height:1.75;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">
         ${escapeHtml(a.body||"")}
       </div>
     `;
     el.addEventListener("click", ()=>{
       openInfoModal(a.title, `
         <div class="card" style="box-shadow:none">
-          <div style="white-space:pre-wrap;line-height:1.6">${escapeHtml(a.body||"-")}</div>
+          <div style="white-space:pre-wrap;line-height:1.75">${escapeHtml(a.body||"-")}</div>
           ${a.url ? `<div style="margin-top:12px"><a class="btn btnPrimary" href="${escapeAttr(a.url)}" target="_blank" rel="noopener">Buka Pautan</a></div>` : ""}
         </div>
       `);
@@ -1745,7 +1962,7 @@ function renderParents(){
         <div><h2 style="margin:0">${escapeHtml(item.title)}</h2></div>
         ${badge}
       </div>
-      <div class="sub" style="white-space:pre-wrap;line-height:1.6">${escapeHtml(item.body||"")}</div>
+      <div class="sub" style="white-space:pre-wrap;line-height:1.75">${escapeHtml(item.body||"")}</div>
     `;
     el.addEventListener("click", ()=>{
       if(item.url && item.mode==="TAB"){
@@ -1754,7 +1971,7 @@ function renderParents(){
       }
       openInfoModal(item.title, `
         <div class="card" style="box-shadow:none">
-          <div style="white-space:pre-wrap;line-height:1.6">${escapeHtml(item.body||"-")}</div>
+          <div style="white-space:pre-wrap;line-height:1.75">${escapeHtml(item.body||"-")}</div>
           ${item.url ? `<div style="margin-top:12px"><a class="btn btnPrimary" href="${escapeAttr(item.url)}" target="_blank" rel="noopener">Buka Pautan</a></div>` : ""}
         </div>
       `);
@@ -1764,31 +1981,112 @@ function renderParents(){
 }
 
 /* =========================
-   CALENDAR UI (simple)
+   GENERIC DATA CSV PAGE
 ========================= */
-function renderCalendar(){
-  if(!SETTINGS.urls.calendar){
-    calendarArea.textContent = "Belum disambungkan.";
+async function openDataMenu(menu){
+  currentDataMenu = menu;
+  currentSimplePage = null;
+  dataTitle.textContent = menu.title || "Data CSV";
+  dataSub.textContent = "Paparan data daripada CSV menu ini. Anda boleh tapis & cari.";
+
+  if(!menu.csvUrl){
+    currentDataHeaders = [];
+    currentDataRows = [];
+    filteredDataRows = [];
+    dataHead.innerHTML = "";
+    dataBody.innerHTML = "";
+    dataMeta.textContent = "Tiada URL CSV untuk menu ini.";
     return;
   }
-  if(!calendarRaw.length){
-    calendarArea.textContent = "Tiada data.";
-    return;
+
+  try{
+    const parsed = await fetchCSV(menu.csvUrl);
+    currentDataHeaders = parsed.headers || [];
+    currentDataRows = parsed.data || [];
+    filteredDataRows = [...currentDataRows];
+
+    // fill dropdown columns
+    dataColFilter.innerHTML = `<option value="">Filter Kolum: (pilih)</option>` +
+      currentDataHeaders.map(h=>`<option value="${escapeAttr(h)}">${escapeHtml(h)}</option>`).join("");
+
+    renderDataTable(filteredDataRows);
+  }catch(e){
+    console.error(e);
+    dataMeta.textContent = "Gagal load CSV. Sila semak URL CSV.";
+    dataHead.innerHTML = "";
+    dataBody.innerHTML = "";
   }
-  const cols = Object.keys(calendarRaw[0]||{});
-  calendarArea.innerHTML = `
-    <div class="tableWrap">
-      <table>
-        <thead><tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join("")}</tr></thead>
-        <tbody>
-          ${calendarRaw.slice(0,50).map(r=>`
-            <tr>${cols.map(c=>`<td>${escapeHtml(r[c]||"")}</td>`).join("")}</tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
-    <p class="sub" style="margin-top:10px">Paparan ringkas (maks 50 rekod).</p>
+}
+
+function renderDataTable(rows){
+  const headers = currentDataHeaders.slice(0, 30); // keep practical
+  dataHead.innerHTML = headers.map(h=>`<th>${escapeHtml(h)}</th>`).join("");
+  dataBody.innerHTML = rows.slice(0, 500).map(r=>{
+    return `<tr>${headers.map(h=>`<td>${escapeHtml(r[h]||"")}</td>`).join("")}</tr>`;
+  }).join("");
+  dataMeta.textContent = `Paparan: ${rows.length} rekod (papar maks 500 row untuk laju).`;
+}
+
+function applyDataFilter(){
+  const q = (dataSearch.value||"").trim().toLowerCase();
+  const col = dataColFilter.value;
+  const val = (dataColValue.value||"").trim().toLowerCase();
+
+  filteredDataRows = currentDataRows.filter(r=>{
+    if(q){
+      const hay = currentDataHeaders.map(h=>String(r[h]||"")).join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    if(col && val){
+      const cell = String(r[col]||"").toLowerCase();
+      if(!cell.includes(val)) return false;
+    }
+    return true;
+  });
+  renderDataTable(filteredDataRows);
+}
+
+btnApplyDataFilter.addEventListener("click", applyDataFilter);
+btnResetDataFilter.addEventListener("click", ()=>{
+  dataSearch.value="";
+  dataColFilter.value="";
+  dataColValue.value="";
+  filteredDataRows = [...currentDataRows];
+  renderDataTable(filteredDataRows);
+});
+dataSearch.addEventListener("input", applyDataFilter);
+
+btnReloadData.addEventListener("click", ()=>{
+  if(currentDataMenu) openDataMenu(currentDataMenu);
+});
+
+/* Simple page content uses Data page (card only) */
+function openSimplePage(menu){
+  currentSimplePage = menu;
+  currentDataMenu = null;
+  showPage("data",{menu:null, mid:menu.id});
+
+  dataTitle.textContent = menu.title || "Halaman";
+  dataSub.textContent = "Halaman ringkas (boleh edit dalam Tetapan → Pengurusan Menu).";
+
+  // render as 1 card (reuse table area as content)
+  currentDataHeaders = [];
+  currentDataRows = [];
+  filteredDataRows = [];
+
+  dataColFilter.innerHTML = `<option value="">Filter Kolum: (pilih)</option>`;
+  dataHead.innerHTML = "";
+  dataBody.innerHTML = `
+    <tr><td style="padding:0;border-bottom:none">
+      <div class="card" style="box-shadow:none;margin:10px">
+        <div style="white-space:pre-wrap;line-height:1.75;font-weight:600">
+          ${escapeHtml(menu.content || "Tiada kandungan.")}
+        </div>
+      </div>
+    </td></tr>
   `;
+  dataMeta.textContent = "";
+  highlightActiveSidebar();
 }
 
 /* =========================
@@ -1798,18 +2096,19 @@ async function loadAttendance(){
   try{
     const parsed = await fetchCSV(SETTINGS.urls.attendance);
     attendanceRaw = normalizeAttendance(parsed);
+
     populateClassOptions();
-    setHomeStats(computeStats(attendanceRaw));
-    setAttendanceStats(computeStats(attendanceRaw));
+    setHomeStats2(attendanceRaw);
+    setAttendanceStats2(attendanceRaw);
+
     renderAttendanceTable(attendanceRaw);
-    attendanceMeta.textContent = `Paparan: ${attendanceRaw.length} rekod`;
     renderTrend();
   }catch(e){
     console.error(e);
     attendanceRaw = [];
+    setHomeStats2([]);
+    setAttendanceStats2([]);
     renderAttendanceTable([]);
-    setHomeStats({todayHadir:0,todayTotal:0,weekHadir:0,weekTotal:0,monthHadir:0,monthTotal:0,pct:0});
-    setAttendanceStats({todayHadir:0,todayTotal:0,weekHadir:0,weekTotal:0,monthHadir:0,monthTotal:0,pct:0});
     trendChart.innerHTML = renderLineChartSVG({data:[],mode:"hadir"});
   }
 }
@@ -1843,35 +2142,17 @@ async function loadParents(){
 async function loadCalendar(){
   if(!SETTINGS.urls.calendar){
     calendarRaw = [];
-    renderCalendar();
+    calendarArea.textContent = "Belum disambungkan.";
     return;
   }
   try{
     const parsed = await fetchCSV(SETTINGS.urls.calendar);
     calendarRaw = parsed.data || [];
-    renderCalendar();
+    calendarArea.textContent = `Loaded: ${calendarRaw.length} rekod (paparan ringkas belum diaktifkan).`;
   }catch(e){
     console.error(e);
     calendarRaw = [];
-    renderCalendar();
-  }
-}
-
-async function loadPajsk(){
-  if(!SETTINGS.urls.pajsk){
-    pajskRaw = [];
-    renderPajsk([]);
-    pajskBody.innerHTML = "<tr><td>URL PAJSK belum ditetapkan. Sila ke Tetapan.</td></tr>";
-    return;
-  }
-  try{
-    const parsed = await fetchCSV(SETTINGS.urls.pajsk);
-    pajskRaw = parsed.data || [];
-    renderPajsk(pajskRaw);
-  }catch(e){
-    console.error(e);
-    pajskRaw = [];
-    pajskBody.innerHTML = "<tr><td>Gagal load PAJSK. Semak URL CSV.</td></tr>";
+    calendarArea.textContent = "Gagal load. Semak URL CSV takwim.";
   }
 }
 
@@ -1880,13 +2161,22 @@ async function loadAll(){
     loadAttendance(),
     loadAnnouncements(),
     loadParents(),
-    loadCalendar(),
-    loadPajsk() // NEW
+    loadCalendar()
   ]);
 }
 
 /* =========================
-   SETTINGS MODAL
+   BUTTONS
+========================= */
+btnReload.addEventListener("click", loadAll);
+btnReloadAttendance.addEventListener("click", loadAttendance);
+btnReloadAnnouncements.addEventListener("click", loadAnnouncements);
+btnReloadParents.addEventListener("click", loadParents);
+
+btnToAnnouncements.addEventListener("click", ()=> showPage("announcements"));
+
+/* =========================
+   SETTINGS MODAL + PIN
 ========================= */
 let settingsUnlocked = false;
 
@@ -1902,8 +2192,7 @@ function closeSettings(){
   overlaySettings.classList.remove("show");
 }
 btnSettings.addEventListener("click", openSettings);
-railSettings.addEventListener("click", openSettings);
-document.getElementById("btnCloseSettings").addEventListener("click", closeSettings);
+btnCloseSettings.addEventListener("click", closeSettings);
 overlaySettings.addEventListener("click",(e)=>{ if(e.target===overlaySettings) closeSettings(); });
 
 btnPinOk.addEventListener("click", ()=>{
@@ -1917,6 +2206,7 @@ btnPinOk.addEventListener("click", ()=>{
   pinStep.style.display="none";
   settingsStep.style.display="block";
 
+  // fill values
   setSchoolName.value = SETTINGS.schoolName;
   setSchoolMotto.value = SETTINGS.schoolMotto;
   setFooter1.value = SETTINGS.footer1;
@@ -1926,12 +2216,13 @@ btnPinOk.addEventListener("click", ()=>{
   setUrlAnnouncements.value = SETTINGS.urls.announcements;
   setUrlParents.value = SETTINGS.urls.parents;
   setUrlCalendar.value = SETTINGS.urls.calendar || "";
-  setUrlPajsk.value = SETTINGS.urls.pajsk || ""; // NEW
 
   mapTarikh.value = SETTINGS.attendanceMap.tarikh;
   mapKelas.value = SETTINGS.attendanceMap.kelas;
   mapNama.value = SETTINGS.attendanceMap.nama;
   mapStatus.value = SETTINGS.attendanceMap.status;
+
+  renderMenuManager();
 });
 pinInput.addEventListener("keydown",(e)=>{ if(e.key==="Enter") btnPinOk.click(); });
 
@@ -1947,38 +2238,23 @@ btnSaveSettings.addEventListener("click", async ()=>{
   SETTINGS.urls.announcements = setUrlAnnouncements.value.trim() || DEFAULTS.urls.announcements;
   SETTINGS.urls.parents = setUrlParents.value.trim() || DEFAULTS.urls.parents;
   SETTINGS.urls.calendar = setUrlCalendar.value.trim();
-  SETTINGS.urls.pajsk = setUrlPajsk.value.trim(); // NEW
 
   saveSettings(SETTINGS);
   applyIdentity();
+  renderSidebarMenus();
   await loadAll();
   alert("Tetapan berjaya disimpan.");
 });
 
 btnResetSettings.addEventListener("click", ()=>{
   if(!settingsUnlocked) return;
-  SETTINGS = loadSettings();
+  SETTINGS = structuredClone(DEFAULTS);
   saveSettings(SETTINGS);
   applyMode();
   applyIdentity();
-
-  setSchoolName.value = SETTINGS.schoolName;
-  setSchoolMotto.value = SETTINGS.schoolMotto;
-  setFooter1.value = SETTINGS.footer1;
-  setFooter2.value = SETTINGS.footer2;
-
-  setUrlAttendance.value = SETTINGS.urls.attendance;
-  setUrlAnnouncements.value = SETTINGS.urls.announcements;
-  setUrlParents.value = SETTINGS.urls.parents;
-  setUrlCalendar.value = SETTINGS.urls.calendar || "";
-  setUrlPajsk.value = SETTINGS.urls.pajsk || ""; // NEW
-
-  mapTarikh.value = SETTINGS.attendanceMap.tarikh;
-  mapKelas.value = SETTINGS.attendanceMap.kelas;
-  mapNama.value = SETTINGS.attendanceMap.nama;
-  mapStatus.value = SETTINGS.attendanceMap.status;
-
-  alert("Tetapan disegar semula.");
+  applySidebarDefault();
+  renderSidebarMenus();
+  alert("Tetapan telah reset.");
 });
 
 btnLockSettings.addEventListener("click", ()=>{
@@ -2007,35 +2283,215 @@ btnSaveMapping.addEventListener("click", ()=>{
     status: mapStatus.value.trim() || DEFAULTS.attendanceMap.status
   };
   saveSettings(SETTINGS);
-  alert("Pemetaan disimpan. Data akan dikira ikut kolum ini.");
+  alert("Pemetaan disimpan. Data kehadiran akan ikut kolum ini.");
   loadAttendance();
 });
 
-/* =========================
-   LOGO click
-========================= */
-railSettings.addEventListener("click", openSettings);
+/* Sidebar default open/close */
+btnSidebarOpen.addEventListener("click", ()=>{
+  SETTINGS.sidebarDefault="open";
+  saveSettings(SETTINGS);
+  document.body.classList.remove("sb-closed");
+  alert("Sidebar desktop: Buka (default).");
+});
+btnSidebarClose.addEventListener("click", ()=>{
+  SETTINGS.sidebarDefault="closed";
+  saveSettings(SETTINGS);
+  document.body.classList.add("sb-closed");
+  alert("Sidebar desktop: Tutup (icon sahaja) default.");
+});
 
 /* =========================
-   BUTTONS
+   MENU MANAGER (add/edit/delete)
+========================= */
+function renderMenuManager(){
+  menuManagerList.innerHTML = "";
+
+  const list = sortMenus(SETTINGS.menus||[]).filter(m=>m.type!=="built"); // only custom
+  if(!list.length){
+    menuManagerList.innerHTML = `<div class="sub">Belum ada menu custom. Tekan “+ Tambah Menu”.</div>`;
+    return;
+  }
+
+  list.forEach(m=>{
+    const el = document.createElement("div");
+    el.className = "menuCard";
+    el.innerHTML = `
+      <div class="menuLeft">
+        <div class="menuIcon">${escapeHtml(m.icon||"📄")}</div>
+        <div class="menuText">
+          <div class="menuTitle">${escapeHtml(m.title||"Menu")}</div>
+          <div class="menuMeta">${escapeHtml(menuMetaText(m))} · Urutan: ${escapeHtml(String(m.order||""))}</div>
+        </div>
+      </div>
+      <div class="menuActions">
+        <button class="btn" data-act="edit">Edit</button>
+        <button class="btn" data-act="del">Padam</button>
+      </div>
+    `;
+    el.querySelector('[data-act="edit"]').addEventListener("click", ()=> openMenuEdit(m));
+    el.querySelector('[data-act="del"]').addEventListener("click", ()=>{
+      if(!confirm(`Padam menu: ${m.title}?`)) return;
+      SETTINGS.menus = (SETTINGS.menus||[]).filter(x=>x.id!==m.id);
+      saveSettings(SETTINGS);
+      renderMenuManager();
+      renderSidebarMenus();
+    });
+
+    menuManagerList.appendChild(el);
+  });
+}
+
+btnAddMenu.addEventListener("click", ()=> openMenuEdit(null));
+
+let editingMenuId = null;
+
+function openMenuEdit(menu){
+  overlayMenuEdit.classList.add("show");
+  editingMenuId = menu ? menu.id : null;
+
+  menuEditTitle.textContent = menu ? "Edit Menu" : "Tambah Menu";
+  mTitle.value = menu?.title || "";
+  mIcon.value = menu?.icon || "";
+  mType.value = menu?.type || "page";
+  mOrder.value = menu?.order || (sortMenus(SETTINGS.menus||[]).length + 1);
+
+  mPageContent.value = menu?.content || "";
+  mCsvUrl.value = menu?.csvUrl || "";
+  mLinkUrl.value = menu?.url || "";
+
+  updateMenuEditUI();
+}
+
+function closeMenuEdit(){
+  overlayMenuEdit.classList.remove("show");
+  editingMenuId = null;
+}
+btnCloseMenuEdit.addEventListener("click", closeMenuEdit);
+btnCancelMenuEdit.addEventListener("click", closeMenuEdit);
+overlayMenuEdit.addEventListener("click",(e)=>{ if(e.target===overlayMenuEdit) closeMenuEdit(); });
+
+function updateMenuEditUI(){
+  const t = mType.value;
+  mPageWrap.style.display = (t==="page") ? "block" : "none";
+  mDataWrap.style.display = (t==="data") ? "block" : "none";
+  mLinkWrap.style.display = (t==="link") ? "block" : "none";
+}
+mType.addEventListener("change", updateMenuEditUI);
+
+btnSaveMenuEdit.addEventListener("click", ()=>{
+  if(!settingsUnlocked) return;
+
+  const title = (mTitle.value||"").trim();
+  if(!title){
+    alert("Sila isi tajuk menu.");
+    return;
+  }
+
+  const icon = (mIcon.value||"").trim() || "📄";
+  const type = mType.value;
+  const order = Number(mOrder.value||"999");
+
+  const obj = {
+    id: editingMenuId || uid(),
+    title, icon, type, order
+  };
+
+  if(type==="page"){
+    obj.content = (mPageContent.value||"").trim();
+  }
+  if(type==="data"){
+    obj.csvUrl = (mCsvUrl.value||"").trim();
+    if(!obj.csvUrl){
+      alert("Sila isi URL CSV untuk menu Data CSV.");
+      return;
+    }
+  }
+  if(type==="link"){
+    obj.url = (mLinkUrl.value||"").trim();
+    if(!obj.url){
+      alert("Sila isi URL untuk Pautan Luar.");
+      return;
+    }
+  }
+
+  // Prevent editing built menu types here
+  const builtIds = new Set((DEFAULTS.menus||[]).filter(m=>m.type==="built").map(m=>m.id));
+  if(builtIds.has(obj.id)){
+    alert("Menu sistem (built-in) tidak boleh diubah di sini.");
+    return;
+  }
+
+  const menus = [...(SETTINGS.menus||[])];
+  const idx = menus.findIndex(x=>x.id===obj.id);
+  if(idx>=0) menus[idx] = obj;
+  else menus.push(obj);
+
+  SETTINGS.menus = menus;
+  saveSettings(SETTINGS);
+
+  renderMenuManager();
+  renderSidebarMenus();
+  closeMenuEdit();
+});
+
+/* =========================
+   NAV HELPERS
+========================= */
+function showBuiltHome(){ showPage("home"); }
+function showBuiltAttendance(){ showPage("attendance"); }
+function showBuiltAnnouncements(){ showPage("announcements"); }
+function showBuiltCalendar(){ showPage("calendar"); }
+function showBuiltParents(){ showPage("parents"); }
+
+/* =========================
+   INIT MENU
+========================= */
+function ensureBuiltMenus(){
+  const built = structuredClone(DEFAULTS.menus);
+  const existing = SETTINGS.menus || [];
+
+  // ensure built exist
+  built.forEach(b=>{
+    if(!existing.some(x=>x.id===b.id)){
+      existing.push(b);
+    }else{
+      // keep built type always "built"
+      const i = existing.findIndex(x=>x.id===b.id);
+      existing[i] = {...b, ...existing[i], type:"built"};
+    }
+  });
+
+  SETTINGS.menus = existing;
+  saveSettings(SETTINGS);
+}
+
+/* =========================
+   LOAD ALL + PAGE ACTIONS
 ========================= */
 btnReload.addEventListener("click", loadAll);
+btnToAnnouncements.addEventListener("click", ()=> showBuiltAnnouncements());
+
 btnReloadAttendance.addEventListener("click", loadAttendance);
 btnReloadAnnouncements.addEventListener("click", loadAnnouncements);
 btnReloadParents.addEventListener("click", loadParents);
-btnReloadPajsk.addEventListener("click", loadPajsk); // NEW
-btnToAnnouncements.addEventListener("click", ()=> showPage("announcements"));
-
-document.getElementById("btnCloseInfo").addEventListener("click", ()=> overlayInfo.classList.remove("show"));
 
 /* =========================
-   INIT
+   SETTINGS MODAL OPEN/CLOSE
+========================= */
+btnSettings.addEventListener("click", openSettings);
+
+/* =========================
+   STARTUP
 ========================= */
 function init(){
+  ensureBuiltMenus();
   applyMode();
   applyIdentity();
+  applySidebarDefault();
   tickClock();
   setupTrendSelectors();
+  renderSidebarMenus();
   showPage("home");
   loadAll();
 }
