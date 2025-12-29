@@ -174,6 +174,43 @@
     .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
     .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
 
+    /* ===== PRINT STYLES (FORMAL TABLE) ===== */
+    @media print {
+      @page { size: A4; margin: 1cm; }
+      body { background: white; color: black; font-family: serif; }
+      
+      /* Hide Non-Print Elements */
+      .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, .btn, .icon-btn, .backdrop, .modal-overlay, #attCount {
+        display: none !important;
+      }
+
+      /* Reset Container Layout */
+      .app-container, .main-content, .content-area {
+        height: auto; width: 100%; margin: 0; padding: 0; overflow: visible; display: block;
+      }
+
+      /* Card Reset */
+      .card {
+        border: none; box-shadow: none; padding: 0; margin: 0; background: transparent;
+      }
+
+      /* Formal Table */
+      .table-wrap { overflow: visible; border: none; }
+      table { width: 100%; border: 1px solid black; font-size: 11pt; border-collapse: collapse; }
+      th, td { border: 1px solid black; padding: 8px; color: black; font-family: serif; }
+      th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; font-weight: bold; text-align: center; }
+      td { text-align: left; }
+      
+      /* Badges to text */
+      .badge { border: none; padding: 0; font-weight: normal; background: none !important; color: black !important; }
+
+      /* Print Header */
+      .print-header { display: block !important; text-align: center; margin-bottom: 20px; }
+      .print-header h2 { font-size: 16pt; margin: 0; font-weight: bold; text-transform: uppercase; }
+      .print-header p { font-size: 12pt; margin: 5px 0 0; }
+    }
+    .print-header { display: none; } /* Hide on Screen */
+
     @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 768px) { 
       .dashboard-grid { grid-template-columns: 1fr; }
@@ -318,6 +355,11 @@
             </div>
           </div>
 
+          <div class="print-header">
+            <h2>LAPORAN KEHADIRAN MURID PPKI</h2>
+            <p>SK PAYA RESAK</p>
+          </div>
+
           <div class="table-wrap">
             <table>
               <thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Status</th></tr></thead>
@@ -361,6 +403,11 @@
               <button class="btn btn-outline" onclick="resetPajskFilters()">Reset Filter</button>
               <button class="btn btn-primary" onclick="renderPajskTable()">Terapkan</button>
             </div>
+          </div>
+
+          <div class="print-header">
+            <h2>LAPORAN PAJSK PPKI</h2>
+            <p>SK PAYA RESAK</p>
           </div>
 
           <div class="table-wrap">
@@ -538,11 +585,8 @@ function getVal(row, keyPart) {
   return key ? row[key] : "";
 }
 
-// Convert DD/MM/YYYY to YYYY-MM-DD (ISO)
 function parseDateStr(dStr) {
   if(!dStr) return null;
-  dStr = dStr.trim();
-  // Match DD/MM/YYYY
   if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
     const p = dStr.split('/');
     const day = p[0].padStart(2, '0');
@@ -589,7 +633,7 @@ function processAttendance() {
 
   DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
 
-  // Global Stats (Today)
+  // Global Stats
   const todayStr = new Date().toISOString().split('T')[0];
   const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
   const present = todayRecs.filter(r => r.status === 'HADIR').length;
@@ -667,7 +711,6 @@ function populateAttSelectors() {
 
 /* ================= PAJSK ================= */
 function initPajsk() {
-  // Clean empty rows first
   const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
   DATA.pajsk = cleanPajsk;
 
@@ -696,10 +739,7 @@ function renderPajskTable() {
     const name = (getVal(r, 'NAMA')||"").toLowerCase();
     const acara = (getVal(r, 'ACARA')||"").toLowerCase();
     const searchMatch = !q || name.includes(q) || acara.includes(q);
-    
-    // Parse CSV Date
-    const dStr = getVal(r, 'TARIKH');
-    const iso = parseDateStr(dStr); 
+    const iso = parseDateStr(getVal(r, 'TARIKH'));
     
     return searchMatch &&
            (!fDate || iso === fDate) &&
@@ -733,13 +773,10 @@ function resetPajskFilters() {
 function renderAnn() {
   const today = new Date().toISOString().split('T')[0];
   const list = DATA.ann.filter(a => {
-    // If user inputs 28/12/2025, convert to 2025-12-28
     const start = parseDateStr(getVal(a, 'MULA'));
     const end = parseDateStr(getVal(a, 'TAMAT'));
     const title = getVal(a, 'TAJUK');
     if(!title) return false;
-    
-    // Logic: Active if today >= start AND (no end date OR today <= end)
     if(start && today < start) return false;
     if(end && today > end) return false;
     return true;
