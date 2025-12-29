@@ -11,28 +11,6 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS LOGIN SCREEN (TAMBAHAN) === */
-    #login-screen {
-        position: fixed; inset: 0; z-index: 9999;
-        background: #F2F4F7;
-        display: flex; flex-direction: column;
-        justify-content: center; align-items: center;
-        transition: opacity 0.5s ease;
-    }
-    .login-box {
-        background: white; padding: 40px; border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;
-        max-width: 400px; width: 90%;
-    }
-    .login-btn-google {
-        background: #4285F4; color: white; border: none;
-        padding: 12px 24px; border-radius: 8px; font-size: 16px;
-        cursor: pointer; font-family: 'Poppins', sans-serif;
-        display: flex; align-items: center; gap: 10px; margin: 20px auto 0;
-    }
-    .login-btn-google:hover { background: #3367d6; }
-    
-    /* === CSS ASAL CIKGU (KEKAL) === */
     :root {
       --font-main: 'Poppins', sans-serif;
       --bg-body: #F2F4F7;
@@ -113,6 +91,14 @@
     .nav-icon { font-size: 22px; display: flex; align-items: center; justify-content: center; }
 
     .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; padding-top: 20px; line-height: 1.4; }
+    
+    /* LOGIN BUTTON IN SIDEBAR */
+    .btn-login-sidebar {
+        width: 100%; background: var(--primary); color: white; border: none; padding: 10px;
+        border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;
+        margin-bottom: 10px;
+    }
+    .btn-login-sidebar:hover { background: #145c3c; }
 
     /* ===== MAIN ===== */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -196,6 +182,12 @@
 
     .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
     .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
+    
+    .login-btn-google {
+        background: #4285F4; color: white; border: none;
+        padding: 12px 24px; border-radius: 8px; font-size: 16px;
+        cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
 
     /* ===== PRINT STYLES (FORMAL) ===== */
     @media print {
@@ -246,24 +238,11 @@
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="login-box">
-        <div style="width:60px; height:60px; background:var(--primary); border-radius:12px; margin:0 auto 20px; display:grid; place-items:center;">
-             <span class="material-icons-round" style="color:white; font-size:32px;">school</span>
-        </div>
-        <h2 style="margin:0 0 10px; color:var(--text-main);">Selamat Datang</h2>
-        <p style="color:var(--text-muted); font-size:14px; margin:0 0 20px;">Portal Rasmi PPKI SK Paya Resak</p>
-        
-        <button id="btnLoginGoogle" class="login-btn-google">
-            <span class="material-icons-round">login</span> Masuk dengan Google
-        </button>
-        <p id="loginStatus" style="font-size:12px; margin-top:20px; color:var(--text-muted);"></p>
-    </div>
-</div>
-
 <div class="backdrop" onclick="toggleSidebar()"></div>
 
-<div class="app-container" id="appContainer" style="display:none;"> <aside class="sidebar" id="sidebar">
+<div class="app-container" id="appContainer">
+  
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-logo">
         <img src="https://i.ibb.co/Y7sp2wZg/SKPR-1.png" alt="Logo">
@@ -275,10 +254,11 @@
     </div>
     
     <nav class="nav-menu" id="sidebarMenu">
-      </nav>
+    </nav>
 
     <div class="sidebar-footer">
-      <div id="userDisplay" style="font-weight:600; margin-bottom:5px;"></div> <button onclick="doLogout()" style="background:none; border:none; color:#B42318; cursor:pointer; font-size:12px;">Log Keluar</button>
+      <div id="authSection">
+          </div>
       <div style="margin-top:10px;">© 2025 NK.</div>
     </div>
   </aside>
@@ -503,6 +483,22 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-content" style="max-width:350px; text-align:center;">
+    <div style="display:flex; justify-content:flex-end;">
+      <button class="icon-btn" onclick="document.getElementById('loginModal').classList.remove('active')"><span class="material-icons-round">close</span></button>
+    </div>
+    <div style="margin-bottom:20px;">
+        <span class="material-icons-round" style="font-size:48px; color:var(--primary);">account_circle</span>
+        <h3>Log Masuk</h3>
+        <p style="color:var(--text-muted); font-size:13px;">Khas untuk Guru & Ibu Bapa</p>
+    </div>
+    <button id="btnLoginGoogle" class="login-btn-google">
+        <span class="material-icons-round">login</span> Masuk dengan Google
+    </button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="settingsModal">
   <div class="modal-content">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -559,69 +555,73 @@
       "guru_besar3232@moe.gov.my" 
   ];
 
-  // ================= HANDLE LOGIN =================
-  const btnLogin = document.getElementById('btnLoginGoogle');
-  const loginScreen = document.getElementById('login-screen');
-  const appContainer = document.getElementById('appContainer');
-  const userDisplay = document.getElementById('userDisplay');
+  // ================= HANDLE LOGIN LOGIC =================
   const btnSettings = document.getElementById('btnSettings');
-  const loginStatus = document.getElementById('loginStatus');
+  const authSection = document.getElementById('authSection');
+  const loginModal = document.getElementById('loginModal');
 
-  // Check Login State Automatik
+  // Check Login State Automatik (Hanya ubah UI Sidebar & Settings)
   onAuthStateChanged(auth, (user) => {
     if (user) {
-        // User dah login
+        // --- JIKA DAH LOGIN ---
         console.log('User logged in:', user.email);
-        loginScreen.style.opacity = '0';
-        setTimeout(() => {
-            loginScreen.style.display = 'none';
-            appContainer.style.display = 'flex'; // Tunjuk Dashboard
-            init(); // LOAD DATA DASHBOARD
-        }, 500);
+        
+        // 1. Update Sidebar Footer
+        authSection.innerHTML = `
+            <div style="font-weight:600; margin-bottom:5px;">Hai, ${user.displayName.split(' ')[0]}</div>
+            <button onclick="doLogout()" style="background:none; border:none; color:#B42318; cursor:pointer; font-size:12px;">Log Keluar</button>
+        `;
 
-        userDisplay.innerText = user.displayName;
-
-        // Check Admin
+        // 2. Check Admin (Tunjuk Gear Settings)
         if (adminEmails.includes(user.email)) {
-            btnSettings.style.display = 'grid'; // Tunjuk Gear
+            btnSettings.style.display = 'grid'; 
         } else {
-            btnSettings.style.display = 'none'; // Sorok Gear
+            btnSettings.style.display = 'none'; 
         }
+
+        // Tutup modal login kalau terbuka
+        loginModal.classList.remove('active');
+
     } else {
-        // User belum login
-        console.log('No user logged in');
-        appContainer.style.display = 'none';
-        loginScreen.style.display = 'flex';
-        loginScreen.style.opacity = '1';
+        // --- JIKA TETAMU (BELUM LOGIN) ---
+        console.log('Guest Mode');
+        
+        // 1. Tunjuk butang Login di Sidebar
+        authSection.innerHTML = `
+            <button class="btn-login-sidebar" onclick="openLoginModal()">
+                <span class="material-icons-round" style="font-size:18px">login</span> Log Masuk
+            </button>
+        `;
+
+        // 2. Sorok Gear Settings
+        btnSettings.style.display = 'none';
     }
   });
 
-  // Butang Login
-  btnLogin.addEventListener('click', () => {
-    loginStatus.innerText = "Sedang menghubungi Google...";
-    signInWithPopup(auth, provider)
-    .catch((error) => {
-        console.error(error);
-        loginStatus.innerText = "Gagal Login: " + error.message;
+  // Login Function
+  document.getElementById('btnLoginGoogle').addEventListener('click', () => {
+    signInWithPopup(auth, provider).catch((error) => {
+        alert("Gagal Login: " + error.message);
     });
   });
 
-  // Fungsi Logout (Global Scope)
+  // Export Global Functions for HTML onClick
+  window.openLoginModal = function() {
+      document.getElementById('loginModal').classList.add('active');
+  }
+
   window.doLogout = function() {
       const confirmLogout = confirm("Anda pasti mahu log keluar?");
       if(confirmLogout) {
           signOut(auth).then(() => {
               alert("Berjaya Log Keluar");
               location.reload();
-          }).catch((error) => {
-              console.error(error);
           });
       }
   }
 
 
   /* ================= CONFIG DASHBOARD ASAL ================= */
-  // (Nota: Semua variable di bawah ditukar kepada 'let' jika perlu atau kekal const)
   const DEFAULTS = {
     schoolName: "SK Paya Resak",
     pin: "5235", 
@@ -646,7 +646,7 @@
   let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [] };
   let DATA_ATT_CLEAN = [];
 
-  // PENTING: Function ini dipanggil selepas Login Berjaya
+  // PENTING: Function ini dipanggil TERUS bila page load (Tak perlu tunggu login)
   function init() {
     applyTheme();
     renderSidebar();
@@ -656,8 +656,6 @@
   }
 
   /* ================= UI LOGIC (GLOBAL EXPORT) ================= */
-  // Oleh sebab guna type="module", kita kena attach function ke window supaya HTML onclick boleh baca
-
   window.toggleSidebar = function() {
     const body = document.body;
     if (window.innerWidth > 768) body.classList.toggle('desktop-mini');
@@ -673,7 +671,7 @@
       a.className = `nav-item ${m.id==='home'?'active':''}`;
       a.id = `nav-${m.id}`;
       a.innerHTML = `<span class="nav-icon material-icons-round">${m.icon}</span> <span class="nav-text">${m.label}</span>`;
-      a.onclick = () => window.navTo(m.id); // Update call
+      a.onclick = () => window.navTo(m.id);
       nav.appendChild(a);
     });
   }
@@ -1056,7 +1054,8 @@
   function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
   function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 
-  // Init tidak dipanggil di sini. Ia dipanggil selepas LOGIN BERJAYA di atas.
+  // LOAD DATA TERUS (Tanpa Tunggu Login)
+  init();
 </script>
 </body>
 </html>
