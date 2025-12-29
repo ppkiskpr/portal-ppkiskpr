@@ -169,6 +169,7 @@
     .link-card { cursor: pointer; transition: transform 0.2s; height: 100%; }
     .link-card:hover { transform: translateY(-4px); border-color: var(--primary); }
 
+    /* Modals */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100;
       display: none; place-items: center; backdrop-filter: blur(2px);
@@ -193,36 +194,24 @@
     @media print {
       @page { size: A4; margin: 1cm; }
       body { background: white; color: black; font-family: serif; }
-      #login-screen { display: none !important; } /* Hide Login Screen on Print */
       
       /* Hide Non-Print Elements */
       .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, 
       .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, 
-      .search-bar-container { /* NEW: Hides Search Input */
-        display: none !important;
-      }
+      .search-bar-container { display: none !important; }
 
       /* Reset Container Layout */
       .app-container, .main-content, .content-area {
         height: auto; width: 100%; margin: 0; padding: 0; overflow: visible; display: block;
       }
-
-      /* Card Reset */
-      .card {
-        border: none; box-shadow: none; padding: 0; margin: 0; background: transparent;
-      }
-
-      /* Formal Table */
+      .card { border: none; box-shadow: none; padding: 0; margin: 0; background: transparent; }
       .table-wrap { overflow: visible; border: none; }
       table { width: 100%; border: 1px solid black; font-size: 11pt; border-collapse: collapse; }
       th, td { border: 1px solid black; padding: 8px; color: black; font-family: serif; }
       th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; font-weight: bold; text-align: center; }
       td { text-align: left; }
-      
-      /* Badges to text */
       .badge { border: none; padding: 0; font-weight: normal; background: none !important; color: black !important; }
 
-      /* Print Header */
       .print-header { display: block !important; text-align: center; margin-bottom: 20px; }
       .print-header h2 { font-size: 16pt; margin: 0; font-weight: bold; text-transform: uppercase; }
       .print-header p { font-size: 12pt; margin: 5px 0 0; }
@@ -257,8 +246,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <div id="authSection">
-          </div>
+      <div id="authSection"></div>
       <div style="margin-top:10px;">© 2025 NK.</div>
     </div>
   </aside>
@@ -543,85 +531,69 @@
     appId: "1:643002702082:web:7bac296fa189fa2f41ca1b"
   };
 
-  // 3. INITIALIZE FIREBASE
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // 4. SENARAI ADMIN
+  // 3. SENARAI ADMIN
   const adminEmails = [
       "naimullahkhalid@gmail.com", 
       "cikgu_disiplin232@gmail.com", 
       "guru_besar3232@moe.gov.my" 
   ];
 
+  let currentUserRole = 'public'; 
+
   // ================= HANDLE LOGIN LOGIC =================
   const btnSettings = document.getElementById('btnSettings');
   const authSection = document.getElementById('authSection');
   const loginModal = document.getElementById('loginModal');
 
-  // Check Login State Automatik (Hanya ubah UI Sidebar & Settings)
   onAuthStateChanged(auth, (user) => {
     if (user) {
         // --- JIKA DAH LOGIN ---
-        console.log('User logged in:', user.email);
+        console.log('User:', user.email);
         
-        // 1. Update Sidebar Footer
-        authSection.innerHTML = `
-            <div style="font-weight:600; margin-bottom:5px;">Hai, ${user.displayName.split(' ')[0]}</div>
-            <button onclick="doLogout()" style="background:none; border:none; color:#B42318; cursor:pointer; font-size:12px;">Log Keluar</button>
-        `;
-
-        // 2. Check Admin (Tunjuk Gear Settings)
+        // Tentukan Role
         if (adminEmails.includes(user.email)) {
+            currentUserRole = 'admin';
             btnSettings.style.display = 'grid'; 
         } else {
+            currentUserRole = 'parent';
             btnSettings.style.display = 'none'; 
         }
 
-        // Tutup modal login kalau terbuka
+        authSection.innerHTML = `
+            <div style="font-weight:600; margin-bottom:5px; font-size:12px;">Hai, ${user.displayName.split(' ')[0]}</div>
+            <div style="font-size:11px; color:var(--primary); margin-bottom:5px;">Akses: ${currentUserRole.toUpperCase()}</div>
+            <button onclick="doLogout()" style="background:none; border:none; color:#B42318; cursor:pointer; font-size:12px;">Log Keluar</button>
+        `;
         loginModal.classList.remove('active');
 
     } else {
-        // --- JIKA TETAMU (BELUM LOGIN) ---
-        console.log('Guest Mode');
-        
-        // 1. Tunjuk butang Login di Sidebar
+        // --- JIKA TETAMU (PUBLIC) ---
+        console.log('Mode: Public');
+        currentUserRole = 'public';
+
         authSection.innerHTML = `
             <button class="btn-login-sidebar" onclick="openLoginModal()">
                 <span class="material-icons-round" style="font-size:18px">login</span> Log Masuk
             </button>
         `;
-
-        // 2. Sorok Gear Settings
         btnSettings.style.display = 'none';
     }
+    renderSidebar();
+    if(currentUserRole === 'public') { window.navTo('home'); }
   });
 
-  // Login Function
   document.getElementById('btnLoginGoogle').addEventListener('click', () => {
-    signInWithPopup(auth, provider).catch((error) => {
-        alert("Gagal Login: " + error.message);
-    });
+    signInWithPopup(auth, provider).catch((error) => { alert("Gagal Login: " + error.message); });
   });
 
-  // Export Global Functions for HTML onClick
-  window.openLoginModal = function() {
-      document.getElementById('loginModal').classList.add('active');
-  }
+  window.openLoginModal = function() { document.getElementById('loginModal').classList.add('active'); }
+  window.doLogout = function() { if(confirm("Log keluar?")) { signOut(auth).then(() => { location.reload(); }); } }
 
-  window.doLogout = function() {
-      const confirmLogout = confirm("Anda pasti mahu log keluar?");
-      if(confirmLogout) {
-          signOut(auth).then(() => {
-              alert("Berjaya Log Keluar");
-              location.reload();
-          });
-      }
-  }
-
-
-  /* ================= CONFIG DASHBOARD ASAL ================= */
+  /* ================= CONFIG DASHBOARD ================= */
   const DEFAULTS = {
     schoolName: "SK Paya Resak",
     pin: "5235", 
@@ -633,12 +605,12 @@
       calendar: ""
     },
     menus: [
-      {id:'home', label:'Dashboard', icon:'dashboard', hidden:false},
-      {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false},
-      {id:'pajsk', label:'PAJSK', icon:'emoji_events', hidden:false},
-      {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false},
-      {id:'calendar', label:'Takwim', icon:'calendar_month', hidden:false},
-      {id:'parents', label:'Ibu Bapa', icon:'diversity_3', hidden:false}
+      {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, roles:['public', 'parent', 'admin']},
+      {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, roles:['parent', 'admin']}, // Khas Parent/Admin
+      {id:'pajsk', label:'PAJSK', icon:'emoji_events', hidden:false, roles:['parent', 'admin']}, // Khas Parent/Admin
+      {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, roles:['public', 'parent', 'admin']},
+      {id:'calendar', label:'Takwim', icon:'calendar_month', hidden:false, roles:['public', 'parent', 'admin']},
+      {id:'parents', label:'Ibu Bapa', icon:'diversity_3', hidden:false, roles:['parent', 'admin']} // Khas Parent/Admin
     ]
   };
 
@@ -646,16 +618,14 @@
   let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [] };
   let DATA_ATT_CLEAN = [];
 
-  // PENTING: Function ini dipanggil TERUS bila page load (Tak perlu tunggu login)
   function init() {
     applyTheme();
-    renderSidebar();
     setupTrendSelectors();
     loadAllData();
     document.querySelector('.brand-text h1').textContent = CONFIG.schoolName;
   }
 
-  /* ================= UI LOGIC (GLOBAL EXPORT) ================= */
+  /* ================= UI LOGIC ================= */
   window.toggleSidebar = function() {
     const body = document.body;
     if (window.innerWidth > 768) body.classList.toggle('desktop-mini');
@@ -665,8 +635,18 @@
   function renderSidebar() {
     const nav = document.getElementById('sidebarMenu');
     nav.innerHTML = '';
+    
     CONFIG.menus.forEach(m => {
       if(m.hidden) return;
+
+      // FILTER ROLE
+      let allowed = false;
+      if (currentUserRole === 'admin') allowed = true; 
+      else if (currentUserRole === 'parent' && (m.roles.includes('parent') || m.roles.includes('public'))) allowed = true;
+      else if (currentUserRole === 'public' && m.roles.includes('public')) allowed = true;
+
+      if(!allowed) return;
+
       const a = document.createElement('a');
       a.className = `nav-item ${m.id==='home'?'active':''}`;
       a.id = `nav-${m.id}`;
@@ -678,383 +658,146 @@
 
   window.navTo = function(id) {
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-    document.getElementById(`nav-${id}`).classList.add('active');
+    const activeItem = document.getElementById(`nav-${id}`);
+    if(activeItem) activeItem.classList.add('active'); 
+
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
-    document.getElementById(`page-${id}`).style.display='block';
+    
+    const targetPage = document.getElementById(`page-${id}`);
+    if(targetPage) targetPage.style.display='block';
+    
     if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
   }
 
-  window.toggleFilterPanel = function(id) {
-    document.getElementById(id).classList.toggle('open');
-  }
+  window.toggleFilterPanel = function(id) { document.getElementById(id).classList.toggle('open'); }
 
-  /* ================= DATA PARSING ================= */
+  /* ================= DATA & HELPER FUNCTIONS ================= */
   async function fetchCSV(url) {
     if(!url) return [];
-    try {
-      const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now());
-      const text = await res.text();
-      return parseCSV(text);
-    } catch(e) { console.error(e); return []; }
+    try { const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now()); const text = await res.text(); return parseCSV(text); } catch(e) { console.error(e); return []; }
   }
-
   function parseCSV(text) {
-    const rows = text.split('\n').map(r => r.split(','));
-    const headers = rows[0].map(h => h.trim().toUpperCase());
-    return rows.slice(1).filter(r => r.length === headers.length).map(row => {
-      let obj = {};
-      headers.forEach((h, i) => obj[h] = row[i]?.trim());
-      return obj;
-    });
+    const rows = text.split('\n').map(r => r.split(',')); const headers = rows[0].map(h => h.trim().toUpperCase());
+    return rows.slice(1).filter(r => r.length === headers.length).map(row => { let obj = {}; headers.forEach((h, i) => obj[h] = row[i]?.trim()); return obj; });
   }
-
-  function getVal(row, keyPart) {
-    const key = Object.keys(row).find(k => k.includes(keyPart.toUpperCase()));
-    return key ? row[key] : "";
-  }
-
+  function getVal(row, keyPart) { const key = Object.keys(row).find(k => k.includes(keyPart.toUpperCase())); return key ? row[key] : ""; }
   function parseDateStr(dStr) {
-    if(!dStr) return null;
-    dStr = dStr.trim();
-    if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
-      const p = dStr.split('/');
-      const day = p[0].padStart(2, '0');
-      const month = p[1].padStart(2, '0');
-      return `${p[2]}-${month}-${day}`; 
-    }
-    return dStr;
+    if(!dStr) return null; dStr = dStr.trim();
+    if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) { const p = dStr.split('/'); return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`; } return dStr;
   }
-
   async function loadAllData() {
     const [att, pajsk, ann, cal, par] = await Promise.all([
-      fetchCSV(CONFIG.urls.attendance),
-      fetchCSV(CONFIG.urls.pajsk),
-      fetchCSV(CONFIG.urls.announcements),
-      fetchCSV(CONFIG.urls.calendar),
-      fetchCSV(CONFIG.urls.parents)
+      fetchCSV(CONFIG.urls.attendance), fetchCSV(CONFIG.urls.pajsk), fetchCSV(CONFIG.urls.announcements), fetchCSV(CONFIG.urls.calendar), fetchCSV(CONFIG.urls.parents)
     ]);
     DATA = { att, pajsk, ann, cal, par };
-    processAttendance();
-    renderAnn();
-    initPajsk();
-    renderParents();
-    renderCalendar();
+    processAttendance(); renderAnn(); initPajsk(); renderParents(); renderCalendar();
   }
-
-  /* ================= ATTENDANCE ================= */
   function processAttendance() {
     if(!DATA.att.length) return;
-    
     DATA_ATT_CLEAN = DATA.att.map(r => {
-      const dStr = getVal(r, 'TARIKH');
-      const isoDate = parseDateStr(dStr);
-      
-      return {
-        date: dStr, 
-        isoDate: isoDate, // YYYY-MM-DD
-        rawDate: new Date(isoDate),
-        name: getVal(r, 'NAMA'),
-        kelas: getVal(r, 'KELAS'),
-        gender: getVal(r, 'JANTINA') || '-',
-        status: getVal(r, 'STATUS').toUpperCase()
-      };
+      const dStr = getVal(r, 'TARIKH'); const isoDate = parseDateStr(dStr);
+      return { date: dStr, isoDate: isoDate, rawDate: new Date(isoDate), name: getVal(r, 'NAMA'), kelas: getVal(r, 'KELAS'), gender: getVal(r, 'JANTINA') || '-', status: getVal(r, 'STATUS').toUpperCase() };
     }).filter(r => r.isoDate && !isNaN(r.rawDate));
-
     DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
-
-    // Global Stats (Today)
-    const todayStr = new Date().toISOString().split('T')[0];
-    const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
-    const present = todayRecs.filter(r => r.status === 'HADIR').length;
-    const absent = todayRecs.filter(r => r.status.includes('TIDAK')).length;
-    
-    document.getElementById('dToday').innerText = present;
-    document.getElementById('dAbsent').innerText = `${absent} Tidak Hadir`;
-    document.getElementById('dWeek').innerText = DATA_ATT_CLEAN.length;
-    document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(todayRecs.length||1))*100) + "%" : "0%";
-
-    populateAttSelectors();
-    renderAttTable(DATA_ATT_CLEAN);
-    updateAttStats(DATA_ATT_CLEAN);
-    renderTrend();
+    const todayStr = new Date().toISOString().split('T')[0]; const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
+    const present = todayRecs.filter(r => r.status === 'HADIR').length; const absent = todayRecs.filter(r => r.status.includes('TIDAK')).length;
+    document.getElementById('dToday').innerText = present; document.getElementById('dAbsent').innerText = `${absent} Tidak Hadir`;
+    document.getElementById('dWeek').innerText = DATA_ATT_CLEAN.length; document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(todayRecs.length||1))*100) + "%" : "0%";
+    populateAttSelectors(); renderAttTable(DATA_ATT_CLEAN); updateAttStats(DATA_ATT_CLEAN); renderTrend();
   }
-
   function renderAttTable(data) {
-    const tb = document.getElementById('attBody');
-    tb.innerHTML = data.slice(0,100).map(r => `
-      <tr>
-        <td>${r.date}</td><td><strong>${r.name}</strong></td><td>${r.kelas}</td><td>${r.gender}</td>
-        <td><span class="badge ${r.status==='HADIR'?'b-green':'b-red'}">${r.status}</span></td>
-      </tr>`).join('');
+    const tb = document.getElementById('attBody'); tb.innerHTML = data.slice(0,100).map(r => `<tr><td>${r.date}</td><td><strong>${r.name}</strong></td><td>${r.kelas}</td><td>${r.gender}</td><td><span class="badge ${r.status==='HADIR'?'b-green':'b-red'}">${r.status}</span></td></tr>`).join('');
     document.getElementById('attCount').innerText = `Papar: ${Math.min(data.length,100)} / ${data.length} rekod.`;
   }
-
   function updateAttStats(data) {
-    const p = data.filter(r => r.status==='HADIR').length;
-    const a = data.filter(r => r.status.includes('TIDAK')).length;
-    const t = data.length;
-    document.getElementById('attStatHadir').innerText = p;
-    document.getElementById('attStatTidak').innerText = a;
-    document.getElementById('attStatTotal').innerText = t;
-    document.getElementById('attStatPct').innerText = t ? Math.round((p/t)*100)+"%" : "0%";
+    const p = data.filter(r => r.status==='HADIR').length; const a = data.filter(r => r.status.includes('TIDAK')).length; const t = data.length;
+    document.getElementById('attStatHadir').innerText = p; document.getElementById('attStatTidak').innerText = a; document.getElementById('attStatTotal').innerText = t; document.getElementById('attStatPct').innerText = t ? Math.round((p/t)*100)+"%" : "0%";
   }
-
   window.applyFilterAtt = function() {
-    const q = document.getElementById('searchAtt').value.toLowerCase();
-    const c = document.getElementById('filterClassAtt').value;
-    const s = document.getElementById('filterStatusAtt').value;
-    const g = document.getElementById('filterGenderAtt').value;
-    const start = document.getElementById('filterDateStart').value;
-    const end = document.getElementById('filterDateEnd').value;
-
+    const q = document.getElementById('searchAtt').value.toLowerCase(); const c = document.getElementById('filterClassAtt').value; const s = document.getElementById('filterStatusAtt').value;
+    const g = document.getElementById('filterGenderAtt').value; const start = document.getElementById('filterDateStart').value; const end = document.getElementById('filterDateEnd').value;
     const filtered = DATA_ATT_CLEAN.filter(r => {
-      let dOk = true;
-      if(start && end) {
-        dOk = r.isoDate >= start && r.isoDate <= end;
-      }
-      return dOk && (!q || r.name.toLowerCase().includes(q)) &&
-             (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) &&
-             (!s || (s==='HADIR'?r.status==='HADIR':r.status.includes('TIDAK')));
-    });
-    renderAttTable(filtered);
-    updateAttStats(filtered);
+      let dOk = true; if(start && end) { dOk = r.isoDate >= start && r.isoDate <= end; }
+      return dOk && (!q || r.name.toLowerCase().includes(q)) && (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) && (!s || (s==='HADIR'?r.status==='HADIR':r.status.includes('TIDAK')));
+    }); renderAttTable(filtered); updateAttStats(filtered);
   }
-
   window.resetFilterAtt = function() {
-    document.getElementById('searchAtt').value = '';
-    document.getElementById('filterClassAtt').value = '';
-    document.getElementById('filterStatusAtt').value = '';
-    document.getElementById('filterGenderAtt').value = '';
-    document.getElementById('filterDateStart').value = '';
-    document.getElementById('filterDateEnd').value = '';
-    renderAttTable(DATA_ATT_CLEAN);
-    updateAttStats(DATA_ATT_CLEAN);
+    document.getElementById('searchAtt').value = ''; document.getElementById('filterClassAtt').value = ''; document.getElementById('filterStatusAtt').value = '';
+    document.getElementById('filterGenderAtt').value = ''; document.getElementById('filterDateStart').value = ''; document.getElementById('filterDateEnd').value = '';
+    renderAttTable(DATA_ATT_CLEAN); updateAttStats(DATA_ATT_CLEAN);
   }
-
   function populateAttSelectors() {
-    const classes = [...new Set(DATA_ATT_CLEAN.map(r => r.kelas))].sort();
-    const opts = '<option value="">Semua Kelas</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
-    document.getElementById('filterClassAtt').innerHTML = opts;
-    document.getElementById('trendClass').innerHTML = opts;
+    const classes = [...new Set(DATA_ATT_CLEAN.map(r => r.kelas))].sort(); const opts = '<option value="">Semua Kelas</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
+    document.getElementById('filterClassAtt').innerHTML = opts; document.getElementById('trendClass').innerHTML = opts;
   }
-
-  /* ================= PAJSK ================= */
   function initPajsk() {
-    const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
-    DATA.pajsk = cleanPajsk;
-
-    const pop = (id, key) => {
-      const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
-      document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
-    };
-    pop('fPajskUnit', 'UNIT');
-    pop('fPajskKelas', 'KELAS');
-    pop('fPajskLibat', 'PENGLIBATAN');
-    pop('fPajskCapai', 'PENCAPAIAN');
-    renderPajskTable();
+    const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH')); DATA.pajsk = cleanPajsk;
+    const pop = (id, key) => { const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort(); document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join(''); };
+    pop('fPajskUnit', 'UNIT'); pop('fPajskKelas', 'KELAS'); pop('fPajskLibat', 'PENGLIBATAN'); pop('fPajskCapai', 'PENCAPAIAN'); renderPajskTable();
   }
-
   window.renderPajskTable = function() {
     if(!DATA.pajsk.length) { document.getElementById('pajskBody').innerHTML='<tr><td colspan="7">Tiada Data.</td></tr>'; return; }
-    
-    const q = document.getElementById('searchPajsk').value.toLowerCase();
-    const fDate = document.getElementById('fPajskDate').value;
-    const fUnit = document.getElementById('fPajskUnit').value;
-    const fKelas = document.getElementById('fPajskKelas').value;
-    const fLibat = document.getElementById('fPajskLibat').value;
-    const fCapai = document.getElementById('fPajskCapai').value;
-
+    const q = document.getElementById('searchPajsk').value.toLowerCase(); const fDate = document.getElementById('fPajskDate').value; const fUnit = document.getElementById('fPajskUnit').value;
+    const fKelas = document.getElementById('fPajskKelas').value; const fLibat = document.getElementById('fPajskLibat').value; const fCapai = document.getElementById('fPajskCapai').value;
     const filtered = DATA.pajsk.filter(r => {
-      const name = (getVal(r, 'NAMA')||"").toLowerCase();
-      const acara = (getVal(r, 'ACARA')||"").toLowerCase();
-      const searchMatch = !q || name.includes(q) || acara.includes(q);
-      const iso = parseDateStr(getVal(r, 'TARIKH'));
-      
-      return searchMatch &&
-             (!fDate || iso === fDate) &&
-             (!fUnit || getVal(r,'UNIT') === fUnit) &&
-             (!fKelas || getVal(r,'KELAS') === fKelas) &&
-             (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
-             (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
+      const name = (getVal(r, 'NAMA')||"").toLowerCase(); const acara = (getVal(r, 'ACARA')||"").toLowerCase();
+      return (!q || name.includes(q) || acara.includes(q)) && (!fDate || parseDateStr(getVal(r, 'TARIKH')) === fDate) && (!fUnit || getVal(r,'UNIT') === fUnit) &&
+             (!fKelas || getVal(r,'KELAS') === fKelas) && (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) && (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
     });
-
-    document.getElementById('pajskBody').innerHTML = filtered.map(r => `
-      <tr>
-        <td>${getVal(r,'TARIKH')}</td>
-        <td>${getVal(r,'UNIT')}</td>
-        <td>${getVal(r,'KELAS')}</td>
-        <td><strong>${getVal(r,'NAMA')}</strong></td>
-        <td>${getVal(r,'ACARA')}</td>
-        <td>${getVal(r,'PENGLIBATAN')}</td>
-        <td><span class="badge b-green">${getVal(r,'PENCAPAIAN')}</span></td>
-      </tr>
-    `).join('');
+    document.getElementById('pajskBody').innerHTML = filtered.map(r => `<tr><td>${getVal(r,'TARIKH')}</td><td>${getVal(r,'UNIT')}</td><td>${getVal(r,'KELAS')}</td><td><strong>${getVal(r,'NAMA')}</strong></td><td>${getVal(r,'ACARA')}</td><td>${getVal(r,'PENGLIBATAN')}</td><td><span class="badge b-green">${getVal(r,'PENCAPAIAN')}</span></td></tr>`).join('');
   }
-
   window.resetPajskFilters = function() {
-    document.getElementById('searchPajsk').value = '';
-    document.getElementById('fPajskDate').value = '';
-    document.querySelectorAll('#pajskFilters select').forEach(s => s.value='');
-    renderPajskTable();
+    document.getElementById('searchPajsk').value = ''; document.getElementById('fPajskDate').value = ''; document.querySelectorAll('#pajskFilters select').forEach(s => s.value=''); renderPajskTable();
   }
-
-  /* ================= ANNOUNCEMENT & DASHBOARD ================= */
   function renderAnn() {
     const today = new Date().toISOString().split('T')[0];
-    const list = DATA.ann.filter(a => {
-      const start = parseDateStr(getVal(a, 'MULA'));
-      const end = parseDateStr(getVal(a, 'TAMAT'));
-      const title = getVal(a, 'TAJUK');
-      if(!title) return false;
-      if(start && today < start) return false;
-      if(end && today > end) return false;
-      return true;
-    });
-
+    const list = DATA.ann.filter(a => { const s = parseDateStr(getVal(a, 'MULA')); const e = parseDateStr(getVal(a, 'TAMAT')); const t = getVal(a, 'TAJUK'); return t && (!s || today >= s) && (!e || today <= e); });
     document.getElementById('dAnn').innerText = list.length;
-
-    document.getElementById('annGrid').innerHTML = list.map(a => {
-      const t = getVal(a, 'TAJUK') || 'Info';
-      const c = getVal(a, 'KANDUNGAN') || '-';
-      const date = getVal(a, 'TARIKH') || getVal(a, 'MULA') || '';
-      
-      return `<div class="card clickable" onclick="openInfoModal('${escapeHtml(t)}', '${escapeHtml(c)}')">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-          <span class="badge b-blue">INFO</span>
-          <span style="font-size:11px; color:var(--text-muted)">${date}</span>
-        </div>
-        <h4 style="margin:0 0 10px;">${t}</h4>
-        <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${c}</p>
-      </div>`;
-    }).join('');
+    document.getElementById('annGrid').innerHTML = list.map(a => `<div class="card clickable" onclick="openInfoModal('${escapeHtml(getVal(a,'TAJUK'))}', '${escapeHtml(getVal(a,'KANDUNGAN')))}')"><div style="display:flex; justify-content:space-between; margin-bottom:10px"><span class="badge b-blue">INFO</span><span style="font-size:11px; color:var(--text-muted)">${getVal(a,'TARIKH')||''}</span></div><h4 style="margin:0 0 10px;">${getVal(a,'TAJUK')}</h4><p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${getVal(a,'KANDUNGAN')}</p></div>`).join('');
   }
-
-  /* ================= PARENTS & OTHERS ================= */
   function renderParents() {
-    document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
-      const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
-      return `<div class="card clickable" onclick="window.open('${url||'#'}', '_blank')">
-        <h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4>
-        <p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>
-        ${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}
-      </div>`;
-    }).join('');
+    document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => { const url = getVal(p, 'PAUTAN') || getVal(p, 'URL'); return `<div class="card clickable" onclick="window.open('${url||'#'}', '_blank')"><h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4><p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}</div>`; }).join('');
   }
-
   function renderCalendar() {
-    if(!DATA.cal.length) return;
-    const k=Object.keys(DATA.cal[0]);
-    document.getElementById('calHead').innerHTML=`<tr>${k.map(x=>`<th>${x}</th>`).join('')}</tr>`;
-    document.getElementById('calBody').innerHTML=DATA.cal.map(r=>`<tr>${k.map(x=>`<td>${r[x]}</td>`).join('')}</tr>`).join('');
+    if(!DATA.cal.length) return; const k=Object.keys(DATA.cal[0]); document.getElementById('calHead').innerHTML=`<tr>${k.map(x=>`<th>${x}</th>`).join('')}</tr>`; document.getElementById('calBody').innerHTML=DATA.cal.map(r=>`<tr>${k.map(x=>`<td>${r[x]}</td>`).join('')}</tr>`).join('');
   }
-
   window.renderTrend = function() {
-    if(!DATA_ATT_CLEAN.length) return;
-    const mode = document.getElementById('trendType').value;
-    const mo = parseInt(document.getElementById('trendMonth').value);
-    const yr = parseInt(document.getElementById('trendYear').value);
-    const cl = document.getElementById('trendClass').value;
-
+    if(!DATA_ATT_CLEAN.length) return; const mode = document.getElementById('trendType').value; const mo = parseInt(document.getElementById('trendMonth').value); const yr = parseInt(document.getElementById('trendYear').value); const cl = document.getElementById('trendClass').value;
     const filtered = DATA_ATT_CLEAN.filter(r => r.rawDate.getMonth()===mo && r.rawDate.getFullYear()===yr && (!cl || r.kelas===cl));
-    const daysInMonth = new Date(yr, mo+1, 0).getDate();
-    let points = [];
-    let maxVal = 0;
-
+    const daysInMonth = new Date(yr, mo+1, 0).getDate(); let points = []; let maxVal = 0;
     for(let d=1; d<=daysInMonth; d++) {
-      const dayRecs = filtered.filter(r => r.rawDate.getDate()===d);
-      let val = 0;
-      if(mode==='hadir') val = dayRecs.filter(r=>r.status==='HADIR').length;
-      else if(mode==='tidak') val = dayRecs.filter(r=>r.status.includes('TIDAK')).length;
-      else { if(dayRecs.length) val = (dayRecs.filter(r=>r.status==='HADIR').length / dayRecs.length) * 100; }
-      if(val > maxVal) maxVal = val;
-      points.push({x:d, y:val});
+      const dayRecs = filtered.filter(r => r.rawDate.getDate()===d); let val = 0;
+      if(mode==='hadir') val = dayRecs.filter(r=>r.status==='HADIR').length; else if(mode==='tidak') val = dayRecs.filter(r=>r.status.includes('TIDAK')).length; else { if(dayRecs.length) val = (dayRecs.filter(r=>r.status==='HADIR').length / dayRecs.length) * 100; }
+      if(val > maxVal) maxVal = val; points.push({x:d, y:val});
     }
-    if(mode==='pct') maxVal = 100;
-    if(maxVal===0) maxVal = 10;
-
-    const W=900, H=280, Pad=30;
-    const innerW = W - Pad*2;
-    const innerH = H - Pad*2;
-    const path = points.map((p,i) => {
-      const px = Pad + (i * (innerW / (daysInMonth-1)));
-      const py = (H - Pad) - (p.y / maxVal) * innerH;
-      return `${px},${py}`;
-    }).join(' ');
-
-    document.getElementById('chartContainer').innerHTML = `
-      <svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="background:var(--bg-card); border-radius:12px;">
-        <polyline points="${path}" fill="none" stroke="var(--primary)" stroke-width="3" />
-        <text x="${Pad}" y="20" fill="var(--text-muted)" font-size="12">Max: ${Math.round(maxVal)}</text>
-      </svg>`;
+    if(mode==='pct') maxVal = 100; if(maxVal===0) maxVal = 10;
+    const W=900, H=280, Pad=30; const innerW = W - Pad*2; const innerH = H - Pad*2;
+    const path = points.map((p,i) => { const px = Pad + (i * (innerW / (daysInMonth-1))); const py = (H - Pad) - (p.y / maxVal) * innerH; return `${px},${py}`; }).join(' ');
+    document.getElementById('chartContainer').innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="background:var(--bg-card); border-radius:12px;"><polyline points="${path}" fill="none" stroke="var(--primary)" stroke-width="3" /><text x="${Pad}" y="20" fill="var(--text-muted)" font-size="12">Max: ${Math.round(maxVal)}</text></svg>`;
   }
-
   function setupTrendSelectors() {
-    const m = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"];
-    document.getElementById('trendMonth').innerHTML = m.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
-    document.getElementById('trendMonth').value = new Date().getMonth();
-    const y = new Date().getFullYear();
-    document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
+    const m = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"]; document.getElementById('trendMonth').innerHTML = m.map((n,i)=>`<option value="${i}">${n}</option>`).join(''); document.getElementById('trendMonth').value = new Date().getMonth();
+    const y = new Date().getFullYear(); document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
   }
-
-  /* ================= MODAL & SETTINGS ================= */
-  window.openInfoModal = function(title, body) {
-    document.getElementById('infoTitle').innerText = title;
-    document.getElementById('infoBody').innerText = body;
-    document.getElementById('infoModal').classList.add('active');
-  }
-
-  window.openSettings = function() {
-    document.getElementById('settingsModal').classList.add('active');
-    document.getElementById('pinInput').value = '';
-    document.getElementById('pinStep').style.display = 'block';
-    document.getElementById('settingStep').style.display = 'none';
-  }
+  window.openInfoModal = function(title, body) { document.getElementById('infoTitle').innerText = title; document.getElementById('infoBody').innerText = body; document.getElementById('infoModal').classList.add('active'); }
+  window.openSettings = function() { document.getElementById('settingsModal').classList.add('active'); document.getElementById('pinInput').value = ''; document.getElementById('pinStep').style.display = 'block'; document.getElementById('settingStep').style.display = 'none'; }
   window.closeSettings = function() { document.getElementById('settingsModal').classList.remove('active'); }
-  
-  window.checkPin = function() {
-    if(document.getElementById('pinInput').value === CONFIG.pin) {
-      document.getElementById('pinStep').style.display = 'none';
-      document.getElementById('settingStep').style.display = 'block';
-      populateSettings();
-    } else alert('Salah PIN');
-  }
+  window.checkPin = function() { if(document.getElementById('pinInput').value === CONFIG.pin) { document.getElementById('pinStep').style.display = 'none'; document.getElementById('settingStep').style.display = 'block'; populateSettings(); } else alert('Salah PIN'); }
   function populateSettings() {
-    document.getElementById('setName').value = CONFIG.schoolName;
-    document.getElementById('setUrlAtt').value = CONFIG.urls.attendance;
-    document.getElementById('setUrlPajsk').value = CONFIG.urls.pajsk;
-    document.getElementById('setUrlAnn').value = CONFIG.urls.announcements;
-    document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `
-      <div class="menu-toggle-item">
-        <span>${m.label}</span>
-        <input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}">
-      </div>
-    `).join('');
+    document.getElementById('setName').value = CONFIG.schoolName; document.getElementById('setUrlAtt').value = CONFIG.urls.attendance; document.getElementById('setUrlPajsk').value = CONFIG.urls.pajsk; document.getElementById('setUrlAnn').value = CONFIG.urls.announcements;
+    document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `<div class="menu-toggle-item"><span>${m.label} (${m.roles.join('/')})</span><input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}"></div>`).join('');
   }
   window.saveSettings = function() {
-    CONFIG.schoolName = document.getElementById('setName').value;
-    CONFIG.urls.attendance = document.getElementById('setUrlAtt').value;
-    CONFIG.urls.pajsk = document.getElementById('setUrlPajsk').value;
-    CONFIG.urls.announcements = document.getElementById('setUrlAnn').value;
-    CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked);
-    localStorage.setItem('portalConfig', JSON.stringify(CONFIG));
-    location.reload();
+    CONFIG.schoolName = document.getElementById('setName').value; CONFIG.urls.attendance = document.getElementById('setUrlAtt').value; CONFIG.urls.pajsk = document.getElementById('setUrlPajsk').value; CONFIG.urls.announcements = document.getElementById('setUrlAnn').value;
+    CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked); localStorage.setItem('portalConfig', JSON.stringify(CONFIG)); location.reload();
   }
-
-  // EXPORT FUNCTIONS UNTUK BUTTON REFRESH
   window.loadAttendance = function(m){ if(m)alert('Loading...'); fetchCSV(CONFIG.urls.attendance).then(d=>{DATA.att=d;processAttendance();}); }
   window.loadPajsk = function(m){ if(m)alert('Loading...'); fetchCSV(CONFIG.urls.pajsk).then(d=>{DATA.pajsk=d;initPajsk();}); }
   window.loadAnnouncements = function(m){ if(m)alert('Loading...'); fetchCSV(CONFIG.urls.announcements).then(d=>{DATA.ann=d;renderAnn();}); }
-
-  window.toggleTheme = function() {
-    const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark';
-    document.documentElement.setAttribute('data-mode', n);
-    localStorage.setItem('theme', n);
-    renderTrend();
-  }
+  window.toggleTheme = function() { const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-mode', n); localStorage.setItem('theme', n); renderTrend(); }
   function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
   function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-
-  // LOAD DATA TERUS (Tanpa Tunggu Login)
+  
   init();
 </script>
 </body>
