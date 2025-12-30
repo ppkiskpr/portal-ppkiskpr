@@ -151,6 +151,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 25.1</div>
     </div>
   </aside>
 
@@ -843,6 +844,9 @@
   window.checkPin = function() { if(document.getElementById('pinInput').value === CONFIG.pin) { document.getElementById('pinStep').style.display = 'none'; document.getElementById('settingStep').style.display = 'block'; populateSettings(); } else alert('Salah PIN'); }
   function populateSettings() { document.getElementById('setName').value = CONFIG.schoolName; document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `<div class="menu-toggle-item"><span>${m.label} (${m.role})</span><input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}"></div>`).join(''); }
   window.saveSettings = function() { CONFIG.schoolName = document.getElementById('setName').value; CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked); localStorage.setItem('portalConfig', JSON.stringify(CONFIG)); location.reload(); }
+  window.loadAttendance = function(m){ loadAllData(); }
+  window.loadPajsk = function(m){ loadAllData(); }
+  window.loadAnnouncements = function(m){ loadAllData(); }
   window.toggleTheme = function() { const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-mode', n); localStorage.setItem('theme', n); renderTrend(); }
   function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
   function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
