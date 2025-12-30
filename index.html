@@ -17,6 +17,11 @@
     .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 10px; margin: 20px auto 0; }
     .login-btn-google:hover { background: #3367d6; }
     
+    /* LOADING SPINNER */
+    #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(2px); }
+    .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* === CSS UTAMA === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
@@ -83,11 +88,6 @@
     .modal-content { width: 90%; max-width: 500px; background: var(--bg-card); border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
     .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
     .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
-
-    /* LOADING SPINNER */
-    #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(2px); }
-    .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* SEMAKAN ID BOX (WITH COPY) */
     .id-result-box { display:none; background: var(--bg-element); padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid var(--border-color); }
@@ -342,7 +342,7 @@
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
-      database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1752164570&single=true&output=csv"
+      database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRD7_23mP7_2c-74a9p0o_599h69e88j40h07p96-29177a499119h9e6924b179k3976e1088/pub?gid=0&single=true&output=csv"
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
@@ -564,7 +564,10 @@
         gender: getVal(r, 'JANTINA') || '-', status: getVal(r, 'STATUS').toUpperCase()
       };
     }).filter(r => r.isoDate && !isNaN(r.rawDate));
+    
+    // Sort Descending (Newest First)
     DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
+    
     const todayStr = new Date().toISOString().split('T')[0];
     const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
     const present = todayRecs.filter(r => r.status === 'HADIR').length;
@@ -631,15 +634,23 @@
     document.getElementById('trendClass').innerHTML = opts;
   }
 
-  /* ================= PAJSK (UPDATED WITH YEAR) ================= */
+  /* ================= PAJSK (UPDATED WITH YEAR & AUTO SELECT) ================= */
   function initPajsk() {
     const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
+    // Sort Descending by Date
+    cleanPajsk.sort((a,b) => {
+        const dA = parseDateStr(getVal(a,'TARIKH'));
+        const dB = parseDateStr(getVal(b,'TARIKH'));
+        return new Date(dB) - new Date(dA);
+    });
     DATA.pajsk = cleanPajsk;
+    
     const pop = (id, key) => {
       const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
       document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
     };
-    // Auto detect Year from TAHUN column, fallback to extracting from date
+    
+    // Auto detect Year & Set Default to Current Year
     let years = [...new Set(DATA.pajsk.map(r => {
         let y = getVal(r, 'TAHUN');
         if(!y) {
@@ -647,8 +658,15 @@
             if(d) y = d.split('-')[0];
         }
         return y;
-    }))].filter(Boolean).sort();
+    }))].filter(Boolean).sort().reverse();
+    
     document.getElementById('fPajskTahun').innerHTML = '<option value="">Semua</option>' + years.map(y=>`<option>${y}</option>`).join('');
+    
+    // Set default year
+    const currentYear = new Date().getFullYear().toString();
+    if(years.includes(currentYear)) {
+        document.getElementById('fPajskTahun').value = currentYear;
+    }
 
     pop('fPajskUnit', 'UNIT');
     pop('fPajskKelas', 'KELAS');
@@ -702,9 +720,15 @@
 
   window.resetPajskFilters = function() {
     document.getElementById('searchPajsk').value = '';
-    document.getElementById('fPajskTahun').value = '';
+    document.getElementById('fPajskTahun').value = ''; // Reset to empty or current year? usually empty means 'All'
     document.getElementById('fPajskDate').value = '';
     document.querySelectorAll('#pajskFilters select').forEach(s => s.value='');
+    
+    // Optional: Reset to current year again
+    const currentYear = new Date().getFullYear().toString();
+    const options = Array.from(document.getElementById('fPajskTahun').options).map(o => o.value);
+    if(options.includes(currentYear)) document.getElementById('fPajskTahun').value = currentYear;
+
     renderPajskTable();
   }
 
