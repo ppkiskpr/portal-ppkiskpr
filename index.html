@@ -16,7 +16,7 @@
     .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
     .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 10px; margin: 20px auto 0; }
     .login-btn-google:hover { background: #3367d6; }
-    
+
     /* LOADING SPINNER */
     #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(2px); }
     .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -63,7 +63,7 @@
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
-    .banner-actions { display: flex; gap: 10px; } 
+    .banner-actions { display: flex; gap: 10px; }
     .btn-action { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
     .btn-action:hover { background: rgba(255,255,255,0.3); }
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
@@ -204,7 +204,7 @@
                 <input id="inputIC" class="form-input" placeholder="Contoh: 123456789012" style="flex:1; text-align:center; letter-spacing:1px;">
                 <button class="btn btn-primary" onclick="checkEmail()">Semak</button>
             </div>
-            
+
             <div id="idResultContainer" class="id-result-box">
                 <div class="id-result-item"><span class="id-label">NAMA MURID</span><span class="id-value" id="resNama">-</span></div>
                 <div class="id-result-item"><span class="id-label">EMEL DELIMA</span><div class="id-value-group"><span class="id-value" id="resEmail" style="color:var(--primary);">-</span><button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
@@ -325,7 +325,7 @@
 
   const DEFAULTS = {
     schoolName: "SK Paya Resak",
-    pin: "5235", 
+    pin: "5235",
     urls: {
       attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWi_5VfDz43sMFydp926q062CCPLyRnNUZyAGtlSk_9xv3gI0Xo0I7VMGSlj-llcpYCFHggVP289Ja/pub?gid=944218320&single=true&output=csv",
       pajsk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQoRKdkGyefQ6iSz1HVsXTEenUDbSKjC_XXlq8qQLFYg6IjnSkaixKsg0ajT88VvfnnjkGaDNtxvvD7/pub?gid=1208025171&single=true&output=csv",
@@ -388,11 +388,11 @@
       btn.style.background = "var(--primary)";
       info.style.display = "none";
       gear.style.display = "none";
-      loginScreen.style.display = 'none'; 
+      loginScreen.style.display = 'none';
       appContainer.style.display = 'flex';
       init();
     }
-    renderSidebar(); 
+    renderSidebar();
     const activePage = document.querySelector('.page-section[style*="block"]');
     if (activePage && activePage.id !== 'page-home') {
        const menu = CONFIG.menus.find(m => 'page-'+m.id === activePage.id);
@@ -441,21 +441,63 @@
       const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now() + Math.random());
       const text = await res.text();
       return parseCSV(text);
-    } catch(e) { 
-        console.error("Gagal muat data:", e); 
-        return null; 
+    } catch(e) {
+        console.error("Gagal muat data:", e);
+        return null;
     }
   }
 
+  /* =======================
+     ✅ PARSE CSV (QUOTE-SAFE)
+     ======================= */
   function parseCSV(text) {
-    if(!text) return [];
-    const rows = text.split('\n').map(r => r.split(','));
-    const headers = rows[0].map(h => h.trim().toUpperCase());
-    return rows.slice(1).filter(r => r.length === headers.length).map(row => {
-      let obj = {};
-      headers.forEach((h, i) => obj[h] = row[i]?.trim());
-      return obj;
-    });
+    if (!text) return [];
+
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const next = text[i + 1];
+
+      if (ch === '"') {
+        if (inQuotes && next === '"') { // escaped quote
+          cur += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === "," && !inQuotes) {
+        row.push(cur);
+        cur = "";
+      } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
+        if (ch === "\r" && next === "\n") i++; // CRLF
+        row.push(cur);
+        rows.push(row);
+        row = [];
+        cur = "";
+      } else {
+        cur += ch;
+      }
+    }
+
+    row.push(cur);
+    rows.push(row);
+
+    const cleaned = rows.filter(r => r.some(c => (c || "").trim() !== ""));
+    if (!cleaned.length) return [];
+
+    const headers = cleaned[0].map(h => (h || "").trim().toUpperCase());
+
+    return cleaned.slice(1)
+      .map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => obj[h] = (r[idx] || "").trim());
+        return obj;
+      })
+      .filter(obj => Object.values(obj).some(v => (v || "").trim() !== ""));
   }
 
   function getVal(row, keyPart) {
@@ -468,7 +510,7 @@
     dStr = dStr.trim();
     if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
       const p = dStr.split('/');
-      return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`; 
+      return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
     }
     return dStr;
   }
@@ -504,7 +546,7 @@
     document.getElementById('loading-overlay').style.display = 'grid';
     let url = '';
     if(type === 'all') { await loadAllData(); return; }
-    
+
     if(type === 'att') url = CONFIG.urls.attendance;
     else if(type === 'pajsk') url = CONFIG.urls.pajsk;
     else if(type === 'ann') url = CONFIG.urls.announcements;
@@ -564,13 +606,13 @@
       return {
         date: dStr, isoDate: isoDate, rawDate: new Date(isoDate),
         name: getVal(r, 'NAMA'), kelas: getVal(r, 'KELAS'),
-        gender: getVal(r, 'JANTINA') || '-', status: getVal(r, 'STATUS').toUpperCase()
+        gender: getVal(r, 'JANTINA') || '-', status: (getVal(r, 'STATUS')||"").toUpperCase()
       };
     }).filter(r => r.isoDate && !isNaN(r.rawDate));
-    
+
     // Sort Descending (Terkini di Atas)
     DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
-    
+
     const todayStr = new Date().toISOString().split('T')[0];
     const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
     const present = todayRecs.filter(r => r.status === 'HADIR').length;
@@ -647,12 +689,12 @@
         return new Date(dB) - new Date(dA);
     });
     DATA.pajsk = cleanPajsk;
-    
+
     const pop = (id, key) => {
       const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
       document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
     };
-    
+
     // Auto detect Year & Set Default to Current Year
     let years = [...new Set(DATA.pajsk.map(r => {
         let y = getVal(r, 'TAHUN');
@@ -662,9 +704,9 @@
         }
         return y;
     }))].filter(Boolean).sort().reverse();
-    
+
     document.getElementById('fPajskTahun').innerHTML = '<option value="">Semua</option>' + years.map(y=>`<option>${y}</option>`).join('');
-    
+
     // Set default year
     const currentYear = new Date().getFullYear().toString();
     if(years.includes(currentYear)) {
@@ -693,15 +735,15 @@
       const acara = (getVal(r, 'ACARA')||"").toLowerCase();
       const searchMatch = !q || name.includes(q) || acara.includes(q);
       const iso = parseDateStr(getVal(r, 'TARIKH'));
-      
+
       let year = getVal(r, 'TAHUN');
       if(!year && iso) year = iso.split('-')[0];
 
-      return searchMatch && 
+      return searchMatch &&
              (!fTahun || year == fTahun) &&
-             (!fDate || iso === fDate) && 
+             (!fDate || iso === fDate) &&
              (!fUnit || getVal(r,'UNIT') === fUnit) &&
-             (!fKelas || getVal(r,'KELAS') === fKelas) && 
+             (!fKelas || getVal(r,'KELAS') === fKelas) &&
              (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
              (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
     });
@@ -723,11 +765,10 @@
 
   window.resetPajskFilters = function() {
     document.getElementById('searchPajsk').value = '';
-    document.getElementById('fPajskTahun').value = ''; // Reset to empty or current year? usually empty means 'All'
+    document.getElementById('fPajskTahun').value = '';
     document.getElementById('fPajskDate').value = '';
     document.querySelectorAll('#pajskFilters select').forEach(s => s.value='');
-    
-    // Optional: Reset to current year again
+
     const currentYear = new Date().getFullYear().toString();
     const options = Array.from(document.getElementById('fPajskTahun').options).map(o => o.value);
     if(options.includes(currentYear)) document.getElementById('fPajskTahun').value = currentYear;
@@ -778,30 +819,62 @@
 
   /* ================= DASHBOARD & OTHERS ================= */
   function renderAnn() {
-    // UPDATED: Logic Date (Ignoring Time)
     const today = new Date();
-    today.setHours(0,0,0,0); // Reset jam jadi 00:00
+    today.setHours(0,0,0,0);
 
-    const list = DATA.ann.filter(a => {
-      const startStr = parseDateStr(getVal(a, 'MULA'));
-      const endStr = parseDateStr(getVal(a, 'TAMAT'));
-      const title = getVal(a, 'TAJUK');
+    const readStart = (a) =>
+      parseDateStr(getVal(a,'MULA') || getVal(a,'TARIKH MULA') || getVal(a,'START') || getVal(a,'MULA TARIKH'));
 
+    const readEnd = (a) =>
+      parseDateStr(getVal(a,'TAMAT') || getVal(a,'TARIKH TAMAT') || getVal(a,'END') || getVal(a,'TAMAT TARIKH'));
+
+    const list = (DATA.ann || []).filter(a => {
+      const title = getVal(a, 'TAJUK') || getVal(a,'TITLE');
       if(!title) return false;
-      
-      const start = new Date(startStr); start.setHours(0,0,0,0);
-      const end = new Date(endStr); end.setHours(23,59,59,999); // Akhir hari
 
-      // Logic: Hari ini mesti >= Start DAN <= End
-      return today >= start && today <= end;
+      const startStr = readStart(a);
+      const endStr = readEnd(a);
+
+      // kalau tak ada tarikh, tetap paparkan (lebih selamat)
+      if(!startStr && !endStr) return true;
+
+      const start = startStr ? new Date(startStr) : null;
+      const end = endStr ? new Date(endStr) : null;
+
+      if(start) start.setHours(0,0,0,0);
+      if(end) end.setHours(23,59,59,999);
+
+      if(start && end) return today >= start && today <= end;
+      if(start && !end) return today >= start;
+      if(!start && end) return today <= end;
+      return true;
     });
 
     document.getElementById('dAnn').innerText = list.length;
-    document.getElementById('annGrid').innerHTML = list.map(a => `<div class="card clickable" onclick="openInfoModal('${escapeHtml(getVal(a,'TAJUK'))}', '${escapeHtml(getVal(a,'KANDUNGAN'))}')"><div style="display:flex; justify-content:space-between; margin-bottom:10px"><span class="badge b-blue">INFO</span><span style="font-size:11px; color:var(--text-muted)">${getVal(a,'TARIKH MULA')}</span></div><h4 style="margin:0 0 10px;">${getVal(a,'TAJUK')}</h4><p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${getVal(a,'KANDUNGAN')}</p></div>`).join('');
+
+    const grid = document.getElementById('annGrid');
+    grid.innerHTML = list.map(a => {
+      const tajuk = getVal(a,'TAJUK') || '';
+      const kandungan = getVal(a,'KANDUNGAN') || getVal(a,'CATATAN') || '';
+      const startDisp = getVal(a,'TARIKH MULA') || getVal(a,'MULA') || '';
+
+      // JSON.stringify supaya onclick tak pecah bila ada ' / newline
+      const tJS = JSON.stringify(tajuk);
+      const bJS = JSON.stringify(kandungan);
+
+      return `<div class="card clickable" onclick="openInfoModal(${tJS}, ${bJS})">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+          <span class="badge b-blue">INFO</span>
+          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(startDisp)}</span>
+        </div>
+        <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
+        <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${escapeHtml(kandungan)}</p>
+      </div>`;
+    }).join('');
   }
 
   function renderParents() {
-    document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
+    document.getElementById('parentsGrid').innerHTML = (DATA.par || []).map(p => {
       const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
       return `<div class="card clickable" onclick="window.open('${url||'#'}', '_blank')"><h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4><p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}</div>`;
     }).join('');
@@ -855,7 +928,7 @@
   window.toggleTheme = function() { const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-mode', n); localStorage.setItem('theme', n); renderTrend(); }
   function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
   function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-  
+
   init();
 </script>
 </body>
