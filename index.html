@@ -836,63 +836,83 @@ function parseCSV(text) {
 
   /* ================= DASHBOARD & OTHERS ================= */
   // REVISED RENDER ANN FUNCTION
+// ✅ BAHAJUAN: RENDER PENGUMUMAN (AUTO MULA/TAMAT, FAIL-SAFE)
 function renderAnn() {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setHours(0,0,0,0);
+
+  // Ambil tarikh mula/tamat dari pelbagai kemungkinan header
+  const getStart = (a) =>
+    parseDateStr(
+      getVal(a, 'TARIKH MULA') ||
+      getVal(a, 'MULA') ||
+      getVal(a, 'START') ||
+      getVal(a, 'MULA TARIKH')
+    );
+
+  const getEnd = (a) =>
+    parseDateStr(
+      getVal(a, 'TARIKH TAMAT') ||
+      getVal(a, 'TAMAT') ||
+      getVal(a, 'END') ||
+      getVal(a, 'TAMAT TARIKH')
+    );
 
   const list = (DATA.ann || []).filter(a => {
-    const tajuk = getVal(a, 'TAJUK');
-    if (!tajuk) return false;
+    const title = (getVal(a, 'TAJUK') || '').trim();
+    const content = (getVal(a, 'KANDUNGAN') || '').trim();
+    if (!title && !content) return false;
 
-    const startStr = parseDateStr(getVal(a, 'TARIKH MULA'));
-    const endStr   = parseDateStr(getVal(a, 'TARIKH TAMAT'));
-    if (!startStr || !endStr) return false;
+    const startStr = getStart(a);
+    const endStr = getEnd(a);
 
-    const start = new Date(startStr); start.setHours(0, 0, 0, 0);
-    const end   = new Date(endStr);   end.setHours(23, 59, 59, 999);
+    // ✅ Jika tiada tarikh langsung → tetap papar (fail-safe)
+    if (!startStr && !endStr) return true;
+
+    // ✅ Jika ada mula tapi tiada tamat → papar dari mula hingga bila-bila
+    if (startStr && !endStr) {
+      const start = new Date(startStr); start.setHours(0,0,0,0);
+      if (isNaN(start.getTime())) return true;
+      return today >= start;
+    }
+
+    // ✅ Jika tiada mula tapi ada tamat → papar sampai tamat
+    if (!startStr && endStr) {
+      const end = new Date(endStr); end.setHours(23,59,59,999);
+      if (isNaN(end.getTime())) return true;
+      return today <= end;
+    }
+
+    // ✅ Jika ada mula & tamat → papar dalam range
+    const start = new Date(startStr); start.setHours(0,0,0,0);
+    const end = new Date(endStr); end.setHours(23,59,59,999);
+
+    // Fail-safe kalau format tarikh rosak
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return true;
 
     return today >= start && today <= end;
   });
 
+  // Dashboard kad "Pengumuman"
   document.getElementById('dAnn').innerText = list.length;
 
-  const grid = document.getElementById('annGrid');
-  grid.innerHTML = list.map(a => {
-    const tajuk = getVal(a, 'TAJUK') || '';
-    const isi = getVal(a, 'ISI KANDUNGAN') || '';
-    const tindakan = (getVal(a, 'TINDAKAN') || '').toUpperCase();
-    const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
-    const url = getVal(a, 'URL') || '';
-
-    const badgeClass =
-      (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
-      (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' :
-      'b-blue';
-
-    const onClick = url
-      ? `window.open('${String(url).replace(/'/g, "\\'")}', '_blank')`
-      : `openInfoModal(${JSON.stringify(tajuk)}, ${JSON.stringify(isi)})`;
+  // Paparan grid di halaman Pengumuman
+  document.getElementById('annGrid').innerHTML = list.map(a => {
+    const tajuk = getVal(a,'TAJUK') || 'Pengumuman';
+    const kandungan = getVal(a,'KANDUNGAN') || '';
+    const tarikhPapar = getVal(a,'TARIKH MULA') || getVal(a,'MULA') || '';
 
     return `
-      <div class="card clickable" onclick="${onClick}">
+      <div class="card clickable"
+           onclick="openInfoModal('${escapeHtml(tajuk)}', '${escapeHtml(kandungan)}')">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-          <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
-          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
+          <span class="badge b-blue">INFO</span>
+          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(tarikhPapar)}</span>
         </div>
-
         <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
-
-        <p style="font-size:13px; color:var(--text-muted);
-                  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
-                  overflow:hidden; margin:0;">
-          ${escapeHtml(isi)}
+        <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">
+          ${escapeHtml(kandungan)}
         </p>
-
-        ${(tindakan || url) ? `
-          <div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">
-            ${escapeHtml(tindakan || (url ? 'BUKA PAUTAN' : ''))} ${url ? '&nearr;' : ''}
-          </div>
-        ` : ''}
       </div>
     `;
   }).join('');
