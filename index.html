@@ -4,19 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Portal Rasmi PPKI SK Paya Resak</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* ... (Style V25.1 kekal) ... */
     /* === CSS LOGIN SCREEN === */
     #login-screen { position: fixed; inset: 0; z-index: 9999; background: #F2F4F7; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
     .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
     .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 10px; margin: 20px auto 0; }
     .login-btn-google:hover { background: #3367d6; }
-
+    
     /* LOADING SPINNER */
     #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(2px); }
     .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -63,7 +63,7 @@
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
-    .banner-actions { display: flex; gap: 10px; }
+    .banner-actions { display: flex; gap: 10px; } 
     .btn-action { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
     .btn-action:hover { background: rgba(255,255,255,0.3); }
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
@@ -151,7 +151,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 26.0</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.0</div>
     </div>
   </aside>
 
@@ -204,7 +204,7 @@
                 <input id="inputIC" class="form-input" placeholder="Contoh: 123456789012" style="flex:1; text-align:center; letter-spacing:1px;">
                 <button class="btn btn-primary" onclick="checkEmail()">Semak</button>
             </div>
-
+            
             <div id="idResultContainer" class="id-result-box">
                 <div class="id-result-item"><span class="id-label">NAMA MURID</span><span class="id-value" id="resNama">-</span></div>
                 <div class="id-result-item"><span class="id-label">EMEL DELIMA</span><div class="id-value-group"><span class="id-value" id="resEmail" style="color:var(--primary);">-</span><button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
@@ -268,6 +268,29 @@
         </div>
       </div>
 
+      <div id="page-opr" class="page-section" style="display:none;">
+        <div class="page-banner">
+          <div class="banner-text"><h2>One Page Report (OPR)</h2><p>Laporan Tahunan & Dokumentasi</p></div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="card clickable" onclick="window.open('#MASUKKAN_LINK_2025_DISINI', '_blank')">
+            <div style="display:flex; justify-content:center; align-items:center; height:100px; background:var(--primary-light); border-radius:12px; margin-bottom:15px;">
+               <span class="material-icons-round" style="font-size:48px; color:var(--primary);">folder_open</span>
+            </div>
+            <h4 style="text-align:center; margin:0;">OPR 2025</h4>
+            <p style="text-align:center; color:var(--text-muted); font-size:12px;">Klik untuk buka folder</p>
+          </div>
+
+          <div class="card clickable" onclick="window.open('#MASUKKAN_LINK_2026_DISINI', '_blank')">
+            <div style="display:flex; justify-content:center; align-items:center; height:100px; background:var(--bg-element); border-radius:12px; margin-bottom:15px;">
+               <span class="material-icons-round" style="font-size:48px; color:var(--text-muted);">folder_off</span>
+            </div>
+            <h4 style="text-align:center; margin:0;">OPR 2026</h4>
+            <p style="text-align:center; color:var(--text-muted); font-size:12px;">Akan Datang</p>
+          </div>
+        </div>
+      </div>
+
       <div id="page-announcements" class="page-section" style="display:none;">
         <div class="page-banner"><div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('ann')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
         <div class="dashboard-grid" id="annGrid" style="grid-template-columns: 1fr 1fr;"></div>
@@ -325,7 +348,7 @@
 
   const DEFAULTS = {
     schoolName: "SK Paya Resak",
-    pin: "5235",
+    pin: "5235", 
     urls: {
       attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWi_5VfDz43sMFydp926q062CCPLyRnNUZyAGtlSk_9xv3gI0Xo0I7VMGSlj-llcpYCFHggVP289Ja/pub?gid=944218320&single=true&output=csv",
       pajsk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQoRKdkGyefQ6iSz1HVsXTEenUDbSKjC_XXlq8qQLFYg6IjnSkaixKsg0ajT88VvfnnjkGaDNtxvvD7/pub?gid=1208025171&single=true&output=csv",
@@ -339,6 +362,7 @@
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
       {id:'pajsk', label:'PAJSK', icon:'emoji_events', hidden:false, role:'admin'},
       {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'public'},
+      {id:'opr', label:'OPR', icon:'description', hidden:false, role:'public'},
       {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'},
       {id:'calendar', label:'Takwim', icon:'calendar_month', hidden:false, role:'public'},
       {id:'parents', label:'Ibu Bapa', icon:'diversity_3', hidden:false, role:'family'}
@@ -388,11 +412,11 @@
       btn.style.background = "var(--primary)";
       info.style.display = "none";
       gear.style.display = "none";
-      loginScreen.style.display = 'none';
+      loginScreen.style.display = 'none'; 
       appContainer.style.display = 'flex';
       init();
     }
-    renderSidebar();
+    renderSidebar(); 
     const activePage = document.querySelector('.page-section[style*="block"]');
     if (activePage && activePage.id !== 'page-home') {
        const menu = CONFIG.menus.find(m => 'page-'+m.id === activePage.id);
@@ -441,80 +465,22 @@
       const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now() + Math.random());
       const text = await res.text();
       return parseCSV(text);
-    } catch(e) {
-        console.error("Gagal muat data:", e);
-        return null;
+    } catch(e) { 
+        console.error("Gagal muat data:", e); 
+        return null; 
     }
   }
 
-  /* =======================
-     ✅ PARSE CSV (QUOTE-SAFE)
-     ======================= */
-function parseCSV(text) {
-  if (!text) return [];
-  // normalize line endings
-  text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-
-  const rows = [];
-  let row = [];
-  let cur = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    const next = text[i + 1];
-
-    if (ch === '"') {
-      // escaped quote ""
-      if (inQuotes && next === '"') {
-        cur += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
-      continue;
-    }
-
-    if (ch === "," && !inQuotes) {
-      row.push(cur);
-      cur = "";
-      continue;
-    }
-
-    if (ch === "\n" && !inQuotes) {
-      row.push(cur);
-      rows.push(row);
-      row = [];
-      cur = "";
-      continue;
-    }
-
-    cur += ch;
-  }
-
-  // last cell
-  row.push(cur);
-  rows.push(row);
-
-  // buang row kosong hujung
-  while (rows.length && rows[rows.length - 1].every(c => (c || "").trim() === "")) {
-    rows.pop();
-  }
-
-  if (!rows.length) return [];
-
-  const headers = rows[0].map(h => (h || "").trim().toUpperCase());
-  const dataRows = rows.slice(1).filter(r => r.some(c => (c || "").trim() !== ""));
-
-  return dataRows.map(r => {
-    const obj = {};
-    headers.forEach((h, idx) => {
-      obj[h] = (r[idx] ?? "").trim();
+  function parseCSV(text) {
+    if(!text) return [];
+    const rows = text.split('\n').map(r => r.split(','));
+    const headers = rows[0].map(h => h.trim().toUpperCase());
+    return rows.slice(1).filter(r => r.length === headers.length).map(row => {
+      let obj = {};
+      headers.forEach((h, i) => obj[h] = row[i]?.trim().replace(/^"|"$/g, ''));
+      return obj;
     });
-    return obj;
-  });
-}
-
+  }
 
   function getVal(row, keyPart) {
     const key = Object.keys(row).find(k => k.includes(keyPart.toUpperCase()));
@@ -523,10 +489,10 @@ function parseCSV(text) {
 
   function parseDateStr(dStr) {
     if(!dStr) return null;
-    dStr = dStr.trim();
+    dStr = dStr.trim().replace(/^"|"$/g, ''); // Buang quote kalau ada
     if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
       const p = dStr.split('/');
-      return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+      return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`; 
     }
     return dStr;
   }
@@ -557,12 +523,10 @@ function parseCSV(text) {
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
-  // FORCE RELOAD SPECIFIC
   window.forceReload = async function(type) {
     document.getElementById('loading-overlay').style.display = 'grid';
     let url = '';
     if(type === 'all') { await loadAllData(); return; }
-
     if(type === 'att') url = CONFIG.urls.attendance;
     else if(type === 'pajsk') url = CONFIG.urls.pajsk;
     else if(type === 'ann') url = CONFIG.urls.announcements;
@@ -582,18 +546,15 @@ function parseCSV(text) {
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
-  /* ================= EMAIL CHECK LOGIC WITH COPY ================= */
   window.checkEmail = function() {
       const ic = document.getElementById('inputIC').value.trim();
       const resBox = document.getElementById('idResultContainer');
       const errBox = document.getElementById('idError');
       if(!DATA.db || DATA.db.length === 0) { alert('Data belum sedia. Sila tekan Reload.'); return; }
-
       const student = DATA.db.find(r => {
           const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO');
           return kp && kp.replace(/[^0-9]/g, '') === ic.replace(/[^0-9]/g, '');
       });
-
       if(student) {
           document.getElementById('resNama').innerText = getVal(student, 'NAMA');
           document.getElementById('resEmail').innerText = getVal(student, 'DELIMA') || getVal(student, 'EMEL') || '-';
@@ -613,7 +574,6 @@ function parseCSV(text) {
     navigator.clipboard.writeText(text).then(() => { alert("Disalin: " + text); });
   }
 
-  /* ================= ATTENDANCE ================= */
   function processAttendance() {
     if(!DATA.att.length) return;
     DATA_ATT_CLEAN = DATA.att.map(r => {
@@ -622,13 +582,10 @@ function parseCSV(text) {
       return {
         date: dStr, isoDate: isoDate, rawDate: new Date(isoDate),
         name: getVal(r, 'NAMA'), kelas: getVal(r, 'KELAS'),
-        gender: getVal(r, 'JANTINA') || '-', status: (getVal(r, 'STATUS')||"").toUpperCase()
+        gender: getVal(r, 'JANTINA') || '-', status: getVal(r, 'STATUS').toUpperCase()
       };
     }).filter(r => r.isoDate && !isNaN(r.rawDate));
-
-    // Sort Descending (Terkini di Atas)
     DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
-
     const todayStr = new Date().toISOString().split('T')[0];
     const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
     const present = todayRecs.filter(r => r.status === 'HADIR').length;
@@ -695,23 +652,20 @@ function parseCSV(text) {
     document.getElementById('trendClass').innerHTML = opts;
   }
 
-  /* ================= PAJSK (UPDATED WITH YEAR & AUTO SELECT) ================= */
   function initPajsk() {
     const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
-    // Sort Descending by Date
     cleanPajsk.sort((a,b) => {
         const dA = parseDateStr(getVal(a,'TARIKH'));
         const dB = parseDateStr(getVal(b,'TARIKH'));
         return new Date(dB) - new Date(dA);
     });
     DATA.pajsk = cleanPajsk;
-
+    
     const pop = (id, key) => {
       const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
       document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
     };
-
-    // Auto detect Year & Set Default to Current Year
+    
     let years = [...new Set(DATA.pajsk.map(r => {
         let y = getVal(r, 'TAHUN');
         if(!y) {
@@ -720,19 +674,11 @@ function parseCSV(text) {
         }
         return y;
     }))].filter(Boolean).sort().reverse();
-
+    
     document.getElementById('fPajskTahun').innerHTML = '<option value="">Semua</option>' + years.map(y=>`<option>${y}</option>`).join('');
-
-    // Set default year
     const currentYear = new Date().getFullYear().toString();
-    if(years.includes(currentYear)) {
-        document.getElementById('fPajskTahun').value = currentYear;
-    }
-
-    pop('fPajskUnit', 'UNIT');
-    pop('fPajskKelas', 'KELAS');
-    pop('fPajskLibat', 'PENGLIBATAN');
-    pop('fPajskCapai', 'PENCAPAIAN');
+    if(years.includes(currentYear)) { document.getElementById('fPajskTahun').value = currentYear; }
+    pop('fPajskUnit', 'UNIT'); pop('fPajskKelas', 'KELAS'); pop('fPajskLibat', 'PENGLIBATAN'); pop('fPajskCapai', 'PENCAPAIAN');
     renderPajskTable();
   }
 
@@ -745,54 +691,35 @@ function parseCSV(text) {
     const fKelas = document.getElementById('fPajskKelas').value;
     const fLibat = document.getElementById('fPajskLibat').value;
     const fCapai = document.getElementById('fPajskCapai').value;
-
     const filtered = DATA.pajsk.filter(r => {
       const name = (getVal(r, 'NAMA')||"").toLowerCase();
       const acara = (getVal(r, 'ACARA')||"").toLowerCase();
       const searchMatch = !q || name.includes(q) || acara.includes(q);
       const iso = parseDateStr(getVal(r, 'TARIKH'));
-
       let year = getVal(r, 'TAHUN');
       if(!year && iso) year = iso.split('-')[0];
-
-      return searchMatch &&
-             (!fTahun || year == fTahun) &&
-             (!fDate || iso === fDate) &&
-             (!fUnit || getVal(r,'UNIT') === fUnit) &&
-             (!fKelas || getVal(r,'KELAS') === fKelas) &&
-             (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
-             (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
+      return searchMatch && (!fTahun || year == fTahun) && (!fDate || iso === fDate) && 
+             (!fUnit || getVal(r,'UNIT') === fUnit) && (!fKelas || getVal(r,'KELAS') === fKelas) && 
+             (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) && (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
     });
-
     document.getElementById('pajskBody').innerHTML = filtered.map(r => {
         let displayYear = getVal(r, 'TAHUN');
-        if(!displayYear) {
-             let d = parseDateStr(getVal(r,'TARIKH'));
-             if(d) displayYear = d.split('-')[0];
-        }
-        return `<tr>
-        <td>${displayYear}</td>
-        <td>${getVal(r,'TARIKH')}</td><td>${getVal(r,'UNIT')}</td><td>${getVal(r,'KELAS')}</td>
-        <td><strong>${getVal(r,'NAMA')}</strong></td><td>${getVal(r,'ACARA')}</td>
-        <td>${getVal(r,'PENGLIBATAN')}</td><td><span class="badge b-green">${getVal(r,'PENCAPAIAN')}</span></td>
-      </tr>`;
+        if(!displayYear) { let d = parseDateStr(getVal(r,'TARIKH')); if(d) displayYear = d.split('-')[0]; }
+        return `<tr><td>${displayYear}</td><td>${getVal(r,'TARIKH')}</td><td>${getVal(r,'UNIT')}</td><td>${getVal(r,'KELAS')}</td><td><strong>${getVal(r,'NAMA')}</strong></td><td>${getVal(r,'ACARA')}</td><td>${getVal(r,'PENGLIBATAN')}</td><td><span class="badge b-green">${getVal(r,'PENCAPAIAN')}</span></td></tr>`;
     }).join('');
   }
 
   window.resetPajskFilters = function() {
     document.getElementById('searchPajsk').value = '';
-    document.getElementById('fPajskTahun').value = '';
+    document.getElementById('fPajskTahun').value = ''; 
     document.getElementById('fPajskDate').value = '';
     document.querySelectorAll('#pajskFilters select').forEach(s => s.value='');
-
     const currentYear = new Date().getFullYear().toString();
     const options = Array.from(document.getElementById('fPajskTahun').options).map(o => o.value);
     if(options.includes(currentYear)) document.getElementById('fPajskTahun').value = currentYear;
-
     renderPajskTable();
   }
 
-  /* ================= TAKWIM ================= */
   window.initCalendar = function() {
      const monthOrder = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
      const pop = (id, key) => {
@@ -801,9 +728,7 @@ function parseCSV(text) {
         else vals.sort();
         document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${v}</option>`).join('');
      };
-     pop('fCalBulan', 'BULAN 2');
-     pop('fCalKategori', 'KATEGORI');
-     pop('fCalTindakan', 'TINDAKAN');
+     pop('fCalBulan', 'BULAN 2'); pop('fCalKategori', 'KATEGORI'); pop('fCalTindakan', 'TINDAKAN');
   }
 
   window.renderCalendarTable = function() {
@@ -815,7 +740,6 @@ function parseCSV(text) {
       const fTin = document.getElementById('fCalTindakan').value;
       let fTarikh = "";
       if(fTarikhRaw) { const p = fTarikhRaw.split('-'); fTarikh = `${p[2]}/${p[1]}/${p[0]}`; }
-
       const filtered = DATA.cal.filter(r => {
          const act = (getVal(r, 'AKTIVITI')||"").toLowerCase();
          const dateCol = (getVal(r, 'TARIKH')||getVal(r,'TEMPOH')||"");
@@ -833,72 +757,44 @@ function parseCSV(text) {
      renderCalendarTable();
   }
 
-  /* ================= DASHBOARD & OTHERS ================= */
+  // === UPDATED ANNOUNCEMENT RENDER LOGIC ===
   function renderAnn() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    
+    // DEBUG: Paparkan info debug jika tiada data
+    //const debugEl = document.getElementById('annDebug');
+    //debugEl.innerText = `Jumlah Rekod Asal: ${DATA.ann.length}`;
 
-  const list = (DATA.ann || []).filter(a => {
-    const tajuk = getVal(a, 'TAJUK');
-    if (!tajuk) return false;
+    const list = DATA.ann.filter(a => {
+      const startStr = parseDateStr(getVal(a, 'MULA'));
+      const endStr = parseDateStr(getVal(a, 'TAMAT'));
+      const title = getVal(a, 'TAJUK');
 
-    const startStr = parseDateStr(getVal(a, 'TARIKH MULA'));
-    const endStr   = parseDateStr(getVal(a, 'TARIKH TAMAT'));
-    if (!startStr || !endStr) return false;
+      if(!title) return false;
+      
+      // FAIL-SAFE: Jika tarikh tak boleh baca, tunjuk sahaja (Jgn sorok)
+      if(!startStr || !endStr) return true;
 
-    const start = new Date(startStr); start.setHours(0, 0, 0, 0);
-    const end   = new Date(endStr);   end.setHours(23, 59, 59, 999);
+      const start = new Date(startStr); start.setHours(0,0,0,0);
+      const end = new Date(endStr); end.setHours(23,59,59,999);
+      
+      // Jika tarikh tak valid (contoh format salah), tunjuk juga
+      if(isNaN(start.getTime()) || isNaN(end.getTime())) return true;
 
-    return today >= start && today <= end;
-  });
+      return today >= start && today <= end;
+    });
 
-  document.getElementById('dAnn').innerText = list.length;
-
-  const grid = document.getElementById('annGrid');
-  grid.innerHTML = list.map(a => {
-    const tajuk = getVal(a, 'TAJUK') || '';
-    const isi = getVal(a, 'ISI KANDUNGAN') || '';
-    const tindakan = (getVal(a, 'TINDAKAN') || '').toUpperCase();
-    const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
-    const url = getVal(a, 'URL') || '';
-
-    const badgeClass =
-      (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
-      (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' :
-      'b-blue';
-
-    // Klik kad: kalau ada URL -> buka URL, kalau tiada -> buka modal
-    const onClick = url
-      ? `window.open('${String(url).replace(/'/g, "\\'")}', '_blank')`
-      : `openInfoModal(${JSON.stringify(tajuk)}, ${JSON.stringify(isi)})`;
-
-    return `
-      <div class="card clickable" onclick="${onClick}">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-          <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
-          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
-        </div>
-
-        <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
-
-        <p style="font-size:13px; color:var(--text-muted);
-                  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
-                  overflow:hidden; margin:0;">
-          ${escapeHtml(isi)}
-        </p>
-
-        ${(tindakan || url) ? `
-          <div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">
-            ${escapeHtml(tindakan || (url ? 'BUKA PAUTAN' : ''))} ${url ? '&nearr;' : ''}
-          </div>
-        ` : ''}
-      </div>
-    `;
-  }).join('');
-}
+    document.getElementById('dAnn').innerText = list.length;
+    document.getElementById('annGrid').innerHTML = list.map(a => `<div class="card clickable" onclick="openInfoModal('${escapeHtml(getVal(a,'TAJUK'))}', '${escapeHtml(getVal(a,'KANDUNGAN'))}')"><div style="display:flex; justify-content:space-between; margin-bottom:10px"><span class="badge b-blue">INFO</span><span style="font-size:11px; color:var(--text-muted)">${getVal(a,'TARIKH MULA')}</span></div><h4 style="margin:0 0 10px;">${getVal(a,'TAJUK')}</h4><p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${getVal(a,'KANDUNGAN')}</p></div>`).join('');
+    
+    if(list.length === 0) {
+        document.getElementById('annGrid').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--text-muted);">Tiada pengumuman aktif buat masa ini.</div>`;
+    }
+  }
 
   function renderParents() {
-    document.getElementById('parentsGrid').innerHTML = (DATA.par || []).map(p => {
+    document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
       const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
       return `<div class="card clickable" onclick="window.open('${url||'#'}', '_blank')"><h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4><p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}</div>`;
     }).join('');
@@ -952,7 +848,7 @@ function parseCSV(text) {
   window.toggleTheme = function() { const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-mode', n); localStorage.setItem('theme', n); renderTrend(); }
   function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
   function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-
+  
   init();
 </script>
 </body>
