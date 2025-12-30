@@ -819,59 +819,67 @@
 
   /* ================= DASHBOARD & OTHERS ================= */
   function renderAnn() {
-    const today = new Date();
-    today.setHours(0,0,0,0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    const readStart = (a) =>
-      parseDateStr(getVal(a,'MULA') || getVal(a,'TARIKH MULA') || getVal(a,'START') || getVal(a,'MULA TARIKH'));
+  const list = (DATA.ann || []).filter(a => {
+    const tajuk = getVal(a, 'TAJUK');
+    if (!tajuk) return false;
 
-    const readEnd = (a) =>
-      parseDateStr(getVal(a,'TAMAT') || getVal(a,'TARIKH TAMAT') || getVal(a,'END') || getVal(a,'TAMAT TARIKH'));
+    const startStr = parseDateStr(getVal(a, 'TARIKH MULA'));
+    const endStr   = parseDateStr(getVal(a, 'TARIKH TAMAT'));
+    if (!startStr || !endStr) return false;
 
-    const list = (DATA.ann || []).filter(a => {
-      const title = getVal(a, 'TAJUK') || getVal(a,'TITLE');
-      if(!title) return false;
+    const start = new Date(startStr); start.setHours(0, 0, 0, 0);
+    const end   = new Date(endStr);   end.setHours(23, 59, 59, 999);
 
-      const startStr = readStart(a);
-      const endStr = readEnd(a);
+    return today >= start && today <= end;
+  });
 
-      // kalau tak ada tarikh, tetap paparkan (lebih selamat)
-      if(!startStr && !endStr) return true;
+  document.getElementById('dAnn').innerText = list.length;
 
-      const start = startStr ? new Date(startStr) : null;
-      const end = endStr ? new Date(endStr) : null;
+  const grid = document.getElementById('annGrid');
+  grid.innerHTML = list.map(a => {
+    const tajuk = getVal(a, 'TAJUK') || '';
+    const isi = getVal(a, 'ISI KANDUNGAN') || '';
+    const tindakan = (getVal(a, 'TINDAKAN') || '').toUpperCase();
+    const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
+    const url = getVal(a, 'URL') || '';
 
-      if(start) start.setHours(0,0,0,0);
-      if(end) end.setHours(23,59,59,999);
+    const badgeClass =
+      (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
+      (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' :
+      'b-blue';
 
-      if(start && end) return today >= start && today <= end;
-      if(start && !end) return today >= start;
-      if(!start && end) return today <= end;
-      return true;
-    });
+    // Klik kad: kalau ada URL -> buka URL, kalau tiada -> buka modal
+    const onClick = url
+      ? `window.open('${String(url).replace(/'/g, "\\'")}', '_blank')`
+      : `openInfoModal(${JSON.stringify(tajuk)}, ${JSON.stringify(isi)})`;
 
-    document.getElementById('dAnn').innerText = list.length;
-
-    const grid = document.getElementById('annGrid');
-    grid.innerHTML = list.map(a => {
-      const tajuk = getVal(a,'TAJUK') || '';
-      const kandungan = getVal(a,'KANDUNGAN') || getVal(a,'CATATAN') || '';
-      const startDisp = getVal(a,'TARIKH MULA') || getVal(a,'MULA') || '';
-
-      // JSON.stringify supaya onclick tak pecah bila ada ' / newline
-      const tJS = JSON.stringify(tajuk);
-      const bJS = JSON.stringify(kandungan);
-
-      return `<div class="card clickable" onclick="openInfoModal(${tJS}, ${bJS})">
+    return `
+      <div class="card clickable" onclick="${onClick}">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-          <span class="badge b-blue">INFO</span>
-          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(startDisp)}</span>
+          <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
+          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
         </div>
+
         <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
-        <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${escapeHtml(kandungan)}</p>
-      </div>`;
-    }).join('');
-  }
+
+        <p style="font-size:13px; color:var(--text-muted);
+                  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+                  overflow:hidden; margin:0;">
+          ${escapeHtml(isi)}
+        </p>
+
+        ${(tindakan || url) ? `
+          <div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">
+            ${escapeHtml(tindakan || (url ? 'BUKA PAUTAN' : ''))} ${url ? '&nearr;' : ''}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
 
   function renderParents() {
     document.getElementById('parentsGrid').innerHTML = (DATA.par || []).map(p => {
