@@ -11,28 +11,6 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS LOGIN SCREEN (TAMBAHAN) === */
-    #login-screen {
-        position: fixed; inset: 0; z-index: 9999;
-        background: #F2F4F7;
-        display: flex; flex-direction: column;
-        justify-content: center; align-items: center;
-        transition: opacity 0.5s ease;
-    }
-    .login-box {
-        background: white; padding: 40px; border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;
-        max-width: 400px; width: 90%;
-    }
-    .login-btn-google {
-        background: #4285F4; color: white; border: none;
-        padding: 12px 24px; border-radius: 8px; font-size: 16px;
-        cursor: pointer; font-family: 'Poppins', sans-serif;
-        display: flex; align-items: center; gap: 10px; margin: 20px auto 0;
-    }
-    .login-btn-google:hover { background: #3367d6; }
-    
-    /* === CSS ASAL CIKGU (KEKAL) === */
     :root {
       --font-main: 'Poppins', sans-serif;
       --bg-body: #F2F4F7;
@@ -42,14 +20,11 @@
       --border-color: #EAECF0;
       --text-main: #101828;
       --text-muted: #667085;
-      
       --primary: #1F6F4A; 
       --primary-light: #E8F5E9;
       --accent: #F79009;
-      
       --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
       --radius-card: 16px;
-      
       --sidebar-w-full: 260px;
       --sidebar-w-mini: 74px;
     }
@@ -112,7 +87,7 @@
     .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
     .nav-icon { font-size: 22px; display: flex; align-items: center; justify-content: center; }
 
-    .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; padding-top: 20px; line-height: 1.4; }
+    .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; padding-top: 20px; line-height: 1.4; border-top: 1px solid var(--border-color); }
 
     /* ===== MAIN ===== */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -197,45 +172,24 @@
     .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
     .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
 
-    /* ===== PRINT STYLES (FORMAL) ===== */
+    /* ===== PRINT STYLES ===== */
     @media print {
       @page { size: A4; margin: 1cm; }
       body { background: white; color: black; font-family: serif; }
-      #login-screen { display: none !important; } /* Hide Login Screen on Print */
-      
-      /* Hide Non-Print Elements */
-      .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, 
-      .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, 
-      .search-bar-container { /* NEW: Hides Search Input */
-        display: none !important;
-      }
-
-      /* Reset Container Layout */
-      .app-container, .main-content, .content-area {
-        height: auto; width: 100%; margin: 0; padding: 0; overflow: visible; display: block;
-      }
-
-      /* Card Reset */
-      .card {
-        border: none; box-shadow: none; padding: 0; margin: 0; background: transparent;
-      }
-
-      /* Formal Table */
+      .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, .search-bar-container { display: none !important; }
+      .app-container, .main-content, .content-area { height: auto; width: 100%; margin: 0; padding: 0; overflow: visible; display: block; }
+      .card { border: none; box-shadow: none; padding: 0; margin: 0; background: transparent; }
       .table-wrap { overflow: visible; border: none; }
       table { width: 100%; border: 1px solid black; font-size: 11pt; border-collapse: collapse; }
       th, td { border: 1px solid black; padding: 8px; color: black; font-family: serif; }
       th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; font-weight: bold; text-align: center; }
       td { text-align: left; }
-      
-      /* Badges to text */
       .badge { border: none; padding: 0; font-weight: normal; background: none !important; color: black !important; }
-
-      /* Print Header */
       .print-header { display: block !important; text-align: center; margin-bottom: 20px; }
       .print-header h2 { font-size: 16pt; margin: 0; font-weight: bold; text-transform: uppercase; }
       .print-header p { font-size: 12pt; margin: 5px 0 0; }
     }
-    .print-header { display: none; } /* Hide on Screen */
+    .print-header { display: none; }
 
     @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 768px) { 
@@ -246,24 +200,11 @@
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="login-box">
-        <div style="width:60px; height:60px; background:var(--primary); border-radius:12px; margin:0 auto 20px; display:grid; place-items:center;">
-             <span class="material-icons-round" style="color:white; font-size:32px;">school</span>
-        </div>
-        <h2 style="margin:0 0 10px; color:var(--text-main);">Selamat Datang</h2>
-        <p style="color:var(--text-muted); font-size:14px; margin:0 0 20px;">Portal Rasmi PPKI SK Paya Resak</p>
-        
-        <button id="btnLoginGoogle" class="login-btn-google">
-            <span class="material-icons-round">login</span> Masuk dengan Google
-        </button>
-        <p id="loginStatus" style="font-size:12px; margin-top:20px; color:var(--text-muted);"></p>
-    </div>
-</div>
-
 <div class="backdrop" onclick="toggleSidebar()"></div>
 
-<div class="app-container" id="appContainer" style="display:none;"> <aside class="sidebar" id="sidebar">
+<div class="app-container">
+  
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-logo">
         <img src="https://i.ibb.co/Y7sp2wZg/SKPR-1.png" alt="Logo">
@@ -278,8 +219,14 @@
       </nav>
 
     <div class="sidebar-footer">
-      <div id="userDisplay" style="font-weight:600; margin-bottom:5px;"></div> <button onclick="doLogout()" style="background:none; border:none; color:#B42318; cursor:pointer; font-size:12px;">Log Keluar</button>
-      <div style="margin-top:10px;">© 2025 NK.</div>
+      <div id="userInfo" style="margin-bottom:10px; font-weight:600; font-size:12px; display:none;"></div>
+      
+      <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">
+        Log Masuk
+      </button>
+
+      <div>© 2025 NK.</div>
+      <div>Hak Cipta Terpelihara.</div>
     </div>
   </aside>
 
@@ -300,7 +247,6 @@
     </header>
 
     <div class="content-area">
-      
       <div id="page-home" class="page-section">
         <div class="page-banner">
           <div class="banner-text">
@@ -310,22 +256,22 @@
         </div>
 
         <div class="dashboard-grid">
-          <div class="card stat-card clickable" onclick="navTo('attendance')">
+          <div class="card stat-card">
             <div class="stat-label">Kehadiran Hari Ini</div>
             <div class="stat-val" id="dToday">-</div>
             <div class="stat-sub red" id="dAbsent">- Tidak Hadir</div>
           </div>
-          <div class="card stat-card clickable" onclick="navTo('attendance')">
+          <div class="card stat-card">
             <div class="stat-label">Minggu Ini</div>
             <div class="stat-val" id="dWeek">-</div>
             <div class="stat-sub">Rekod Kehadiran</div>
           </div>
-          <div class="card stat-card clickable" onclick="navTo('attendance')">
+          <div class="card stat-card">
             <div class="stat-label">Bulan Ini</div>
             <div class="stat-val" id="dPct">-</div>
             <div class="stat-sub">Peratus Kehadiran</div>
           </div>
-          <div class="card stat-card clickable" onclick="navTo('announcements')">
+          <div class="card stat-card">
             <div class="stat-label">Pengumuman</div>
             <div class="stat-val" id="dAnn">-</div>
             <div class="stat-sub">Aktif</div>
@@ -350,23 +296,18 @@
 
       <div id="page-attendance" class="page-section" style="display:none;">
         <div class="page-banner">
-          <div class="banner-text">
-            <h2>Analisis Kehadiran</h2>
-            <p>Rekod kehadiran & statistik</p>
-          </div>
+          <div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div>
           <div class="banner-actions">
             <button class="btn-action" onclick="loadAttendance(true)"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
             <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
           </div>
         </div>
-
         <div class="dashboard-grid">
           <div class="card"><div class="stat-label">Hadir (Tapis)</div><div class="stat-val" id="attStatHadir">-</div></div>
           <div class="card"><div class="stat-label">Tidak Hadir (Tapis)</div><div class="stat-val" id="attStatTidak">-</div></div>
           <div class="card"><div class="stat-label">Peratus (Tapis)</div><div class="stat-val" id="attStatPct">-</div></div>
           <div class="card"><div class="stat-label">Jumlah Rekod</div><div class="stat-val" id="attStatTotal">-</div></div>
         </div>
-
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input class="form-input" id="searchAtt" placeholder="Cari Nama Murid..." style="flex:1;">
@@ -375,52 +316,30 @@
             </button>
             <button class="btn btn-primary" onclick="applyFilterAtt()">Cari</button>
           </div>
-
           <div id="attFilters" class="filter-panel">
             <div class="filter-grid">
               <div><label class="filter-label">Tarikh Mula</label><input type="date" class="form-input" id="filterDateStart"></div>
               <div><label class="filter-label">Tarikh Akhir</label><input type="date" class="form-input" id="filterDateEnd"></div>
               <div><label class="filter-label">Kelas</label><select class="form-select" id="filterClassAtt"><option value="">Semua Kelas</option></select></div>
-              <div><label class="filter-label">Jantina</label><select class="form-select" id="filterGenderAtt">
-                <option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option>
-              </select></div>
-              <div><label class="filter-label">Status</label><select class="form-select" id="filterStatusAtt">
-                <option value="">Semua</option><option value="HADIR">Hadir</option><option value="TIDAK">Tidak Hadir</option>
-              </select></div>
+              <div><label class="filter-label">Jantina</label><select class="form-select" id="filterGenderAtt"><option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option></select></div>
+              <div><label class="filter-label">Status</label><select class="form-select" id="filterStatusAtt"><option value="">Semua</option><option value="HADIR">Hadir</option><option value="TIDAK">Tidak Hadir</option></select></div>
             </div>
-            <div style="text-align:right">
-              <button class="btn btn-outline" onclick="resetFilterAtt()">Reset Filter</button>
-              <button class="btn btn-primary" onclick="applyFilterAtt()">Terapkan</button>
-            </div>
+            <div style="text-align:right"><button class="btn btn-outline" onclick="resetFilterAtt()">Reset</button> <button class="btn btn-primary" onclick="applyFilterAtt()">Terapkan</button></div>
           </div>
-
-          <div class="print-header">
-            <h2>LAPORAN KEHADIRAN MURID PPKI</h2>
-            <p>SK PAYA RESAK</p>
-          </div>
-
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Status</th></tr></thead>
-              <tbody id="attBody"></tbody>
-            </table>
-          </div>
+          <div class="print-header"><h2>LAPORAN KEHADIRAN MURID PPKI</h2><p>SK PAYA RESAK</p></div>
+          <div class="table-wrap"><table><thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Status</th></tr></thead><tbody id="attBody"></tbody></table></div>
           <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="attCount"></div>
         </div>
       </div>
 
       <div id="page-pajsk" class="page-section" style="display:none;">
         <div class="page-banner">
-          <div class="banner-text">
-            <h2>Rekod PAJSK</h2>
-            <p>Pencapaian Kokurikulum</p>
-          </div>
+          <div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div>
           <div class="banner-actions">
             <button class="btn-action" onclick="loadPajsk(true)"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
             <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
           </div>
         </div>
-
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input class="form-input" id="searchPajsk" placeholder="Cari Nama / Acara..." style="flex:1;">
@@ -429,7 +348,6 @@
             </button>
             <button class="btn btn-primary" onclick="renderPajskTable()">Cari</button>
           </div>
-
           <div id="pajskFilters" class="filter-panel">
             <div class="filter-grid">
               <div><label class="filter-label">Tarikh (Single)</label><input type="date" class="form-input" id="fPajskDate"></div>
@@ -438,28 +356,10 @@
               <div><label class="filter-label">Penglibatan</label><select class="form-select" id="fPajskLibat"><option value="">Semua</option></select></div>
               <div><label class="filter-label">Pencapaian</label><select class="form-select" id="fPajskCapai"><option value="">Semua</option></select></div>
             </div>
-            <div style="text-align:right">
-              <button class="btn btn-outline" onclick="resetPajskFilters()">Reset Filter</button>
-              <button class="btn btn-primary" onclick="renderPajskTable()">Terapkan</button>
-            </div>
+            <div style="text-align:right"><button class="btn btn-outline" onclick="resetPajskFilters()">Reset</button> <button class="btn btn-primary" onclick="renderPajskTable()">Terapkan</button></div>
           </div>
-
-          <div class="print-header">
-            <h2>LAPORAN PAJSK PPKI</h2>
-            <p>SK PAYA RESAK</p>
-          </div>
-
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Tarikh</th><th>Unit</th><th>Kelas</th><th>Nama Murid</th>
-                  <th>Acara</th><th>Penglibatan</th><th>Pencapaian</th>
-                </tr>
-              </thead>
-              <tbody id="pajskBody"></tbody>
-            </table>
-          </div>
+          <div class="print-header"><h2>LAPORAN PAJSK PPKI</h2><p>SK PAYA RESAK</p></div>
+          <div class="table-wrap"><table><thead><tr><th>Tarikh</th><th>Unit</th><th>Kelas</th><th>Nama Murid</th><th>Acara</th><th>Penglibatan</th><th>Pencapaian</th></tr></thead><tbody id="pajskBody"></tbody></table></div>
         </div>
       </div>
 
@@ -509,35 +409,32 @@
       <h3 style="margin:0">Tetapan Portal</h3>
       <button class="icon-btn" onclick="closeSettings()"><span class="material-icons-round">close</span></button>
     </div>
-
     <div id="pinStep">
       <input type="password" id="pinInput" class="form-input" placeholder="PIN Keselamatan" style="width:100%; text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:15px;">
       <button class="btn btn-primary" onclick="checkPin()" style="width:100%">Sahkan</button>
     </div>
-
     <div id="settingStep" style="display:none;">
       <label style="font-weight:600; font-size:12px; display:block; margin-top:10px;">Nama Sekolah</label>
       <input id="setName" class="form-input" style="width:100%">
-
       <div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); font-weight:700; font-size:13px;">Paparan Menu</div>
       <div id="menuManagerList"></div>
-
-      <div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); font-weight:700; font-size:13px;">Pautan CSV</div>
-      <input id="setUrlAtt" class="form-input" style="width:100%; margin-bottom:8px;" placeholder="URL Kehadiran">
-      <input id="setUrlPajsk" class="form-input" style="width:100%; margin-bottom:8px;" placeholder="URL PAJSK">
-      <input id="setUrlAnn" class="form-input" style="width:100%; margin-bottom:8px;" placeholder="URL Pengumuman">
-
       <button class="btn btn-primary" onclick="saveSettings()" style="width:100%; margin-top:20px;">Simpan Perubahan</button>
     </div>
   </div>
 </div>
 
 <script type="module">
-  // 1. IMPORT FIREBASE
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  // 2. CONFIG FIREBASE ANDA
+  // CONFIG ADMIN
+  const ADMIN_EMAILS = [
+      "naimullahkhalid@gmail.com", 
+      "cikgu_disiplin232@gmail.com", 
+      "guru_besar3232@moe.gov.my" 
+  ];
+
+  // FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyDdDlLNMjcOfi-6tfeaS_PcicQcnsqxaOk",
     authDomain: "portalppkiskpr-ecd1c.firebaseapp.com",
@@ -547,81 +444,11 @@
     appId: "1:643002702082:web:7bac296fa189fa2f41ca1b"
   };
 
-  // 3. INITIALIZE FIREBASE
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // 4. SENARAI ADMIN
-  const adminEmails = [
-      "naimullahkhalid@gmail.com", 
-      "cikgu_disiplin232@gmail.com", 
-      "guru_besar3232@moe.gov.my" 
-  ];
-
-  // ================= HANDLE LOGIN =================
-  const btnLogin = document.getElementById('btnLoginGoogle');
-  const loginScreen = document.getElementById('login-screen');
-  const appContainer = document.getElementById('appContainer');
-  const userDisplay = document.getElementById('userDisplay');
-  const btnSettings = document.getElementById('btnSettings');
-  const loginStatus = document.getElementById('loginStatus');
-
-  // Check Login State Automatik
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // User dah login
-        console.log('User logged in:', user.email);
-        loginScreen.style.opacity = '0';
-        setTimeout(() => {
-            loginScreen.style.display = 'none';
-            appContainer.style.display = 'flex'; // Tunjuk Dashboard
-            init(); // LOAD DATA DASHBOARD
-        }, 500);
-
-        userDisplay.innerText = user.displayName;
-
-        // Check Admin
-        if (adminEmails.includes(user.email)) {
-            btnSettings.style.display = 'grid'; // Tunjuk Gear
-        } else {
-            btnSettings.style.display = 'none'; // Sorok Gear
-        }
-    } else {
-        // User belum login
-        console.log('No user logged in');
-        appContainer.style.display = 'none';
-        loginScreen.style.display = 'flex';
-        loginScreen.style.opacity = '1';
-    }
-  });
-
-  // Butang Login
-  btnLogin.addEventListener('click', () => {
-    loginStatus.innerText = "Sedang menghubungi Google...";
-    signInWithPopup(auth, provider)
-    .catch((error) => {
-        console.error(error);
-        loginStatus.innerText = "Gagal Login: " + error.message;
-    });
-  });
-
-  // Fungsi Logout (Global Scope)
-  window.doLogout = function() {
-      const confirmLogout = confirm("Anda pasti mahu log keluar?");
-      if(confirmLogout) {
-          signOut(auth).then(() => {
-              alert("Berjaya Log Keluar");
-              location.reload();
-          }).catch((error) => {
-              console.error(error);
-          });
-      }
-  }
-
-
-  /* ================= CONFIG DASHBOARD ASAL ================= */
-  // (Nota: Semua variable di bawah ditukar kepada 'let' jika perlu atau kekal const)
+  // APP STATE
   const DEFAULTS = {
     schoolName: "SK Paya Resak",
     pin: "5235", 
@@ -630,57 +457,108 @@
       pajsk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGcqw1v5SRbEL_2LMhX9I_X8uIo5CTQRzOpY5nTlbSc8_6Q4cx56LWtTI3-I5D9pJYeS20nEgADikT/pub?gid=0&single=true&output=csv",
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
-      calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv"
+      calendar: ""
     },
     menus: [
-      {id:'home', label:'Dashboard', icon:'dashboard', hidden:false},
-      {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false},
-      {id:'pajsk', label:'PAJSK', icon:'emoji_events', hidden:false},
-      {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false},
-      {id:'calendar', label:'Takwim', icon:'calendar_month', hidden:false},
-      {id:'parents', label:'Ibu Bapa', icon:'diversity_3', hidden:false}
+      {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
+      {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
+      {id:'pajsk', label:'PAJSK', icon:'emoji_events', hidden:false, role:'admin'},
+      {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'},
+      {id:'calendar', label:'Takwim', icon:'calendar_month', hidden:false, role:'public'},
+      {id:'parents', label:'Ibu Bapa', icon:'diversity_3', hidden:false, role:'family'}
     ]
   };
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [] };
   let DATA_ATT_CLEAN = [];
+  let USER_ROLE = 'public'; // public, family, admin
 
-  // PENTING: Function ini dipanggil selepas Login Berjaya
-  function init() {
+  // GLOBAL FUNCTIONS
+  window.init = function() {
     applyTheme();
-    renderSidebar();
     setupTrendSelectors();
     loadAllData();
     document.querySelector('.brand-text h1').textContent = CONFIG.schoolName;
   }
 
-  /* ================= UI LOGIC (GLOBAL EXPORT) ================= */
-  // Oleh sebab guna type="module", kita kena attach function ke window supaya HTML onclick boleh baca
+  window.handleAuth = function() {
+    if (auth.currentUser) {
+      signOut(auth).then(() => {
+        alert("Berjaya Log Keluar");
+        location.reload();
+      });
+    } else {
+      signInWithPopup(auth, provider).catch(e => alert(e.message));
+    }
+  }
 
+  // FIREBASE LISTENER
+  onAuthStateChanged(auth, (user) => {
+    const btn = document.getElementById('authBtn');
+    const info = document.getElementById('userInfo');
+    const gear = document.getElementById('btnSettings');
+
+    if (user) {
+      // Determine Role
+      if (ADMIN_EMAILS.includes(user.email)) USER_ROLE = 'admin';
+      else USER_ROLE = 'family';
+
+      // UI Updates
+      btn.textContent = "Log Keluar";
+      btn.style.background = "#B42318";
+      info.style.display = "block";
+      info.innerHTML = `<div>${user.displayName}</div><div style="color:var(--primary); font-size:10px">${USER_ROLE.toUpperCase()}</div>`;
+      
+      if(USER_ROLE === 'admin') gear.style.display = 'grid';
+      
+    } else {
+      USER_ROLE = 'public';
+      btn.textContent = "Log Masuk";
+      btn.style.background = "var(--primary)";
+      info.style.display = "none";
+      gear.style.display = "none";
+    }
+
+    renderSidebar(); // Refresh menu based on role
+    // Redirect if on forbidden page
+    const activePage = document.querySelector('.page-section[style*="block"]');
+    if (activePage && activePage.id !== 'page-home') {
+       // Simple check: if not public and user is public -> home
+       if(USER_ROLE === 'public') window.navTo('home');
+    }
+  });
+
+  /* ================= UI LOGIC ================= */
   window.toggleSidebar = function() {
     const body = document.body;
     if (window.innerWidth > 768) body.classList.toggle('desktop-mini');
     else body.classList.toggle('mobile-active');
   }
 
-  function renderSidebar() {
+  window.renderSidebar = function() {
     const nav = document.getElementById('sidebarMenu');
     nav.innerHTML = '';
+    
     CONFIG.menus.forEach(m => {
       if(m.hidden) return;
+      // Role Check
+      if (m.role === 'admin' && USER_ROLE !== 'admin') return;
+      if (m.role === 'family' && USER_ROLE === 'public') return;
+
       const a = document.createElement('a');
       a.className = `nav-item ${m.id==='home'?'active':''}`;
       a.id = `nav-${m.id}`;
       a.innerHTML = `<span class="nav-icon material-icons-round">${m.icon}</span> <span class="nav-text">${m.label}</span>`;
-      a.onclick = () => window.navTo(m.id); // Update call
+      a.onclick = () => window.navTo(m.id);
       nav.appendChild(a);
     });
   }
 
   window.navTo = function(id) {
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-    document.getElementById(`nav-${id}`).classList.add('active');
+    const el = document.getElementById(`nav-${id}`);
+    if(el) el.classList.add('active');
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
     document.getElementById(`page-${id}`).style.display='block';
     if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
@@ -690,7 +568,7 @@
     document.getElementById(id).classList.toggle('open');
   }
 
-  /* ================= DATA PARSING ================= */
+  /* ================= DATA ================= */
   async function fetchCSV(url) {
     if(!url) return [];
     try {
@@ -746,25 +624,18 @@
   /* ================= ATTENDANCE ================= */
   function processAttendance() {
     if(!DATA.att.length) return;
-    
     DATA_ATT_CLEAN = DATA.att.map(r => {
       const dStr = getVal(r, 'TARIKH');
       const isoDate = parseDateStr(dStr);
-      
       return {
-        date: dStr, 
-        isoDate: isoDate, // YYYY-MM-DD
-        rawDate: new Date(isoDate),
-        name: getVal(r, 'NAMA'),
-        kelas: getVal(r, 'KELAS'),
-        gender: getVal(r, 'JANTINA') || '-',
-        status: getVal(r, 'STATUS').toUpperCase()
+        date: dStr, isoDate: isoDate, rawDate: new Date(isoDate),
+        name: getVal(r, 'NAMA'), kelas: getVal(r, 'KELAS'),
+        gender: getVal(r, 'JANTINA') || '-', status: getVal(r, 'STATUS').toUpperCase()
       };
     }).filter(r => r.isoDate && !isNaN(r.rawDate));
-
     DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
 
-    // Global Stats (Today)
+    // Global Stats
     const todayStr = new Date().toISOString().split('T')[0];
     const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
     const present = todayRecs.filter(r => r.status === 'HADIR').length;
@@ -784,10 +655,7 @@
   function renderAttTable(data) {
     const tb = document.getElementById('attBody');
     tb.innerHTML = data.slice(0,100).map(r => `
-      <tr>
-        <td>${r.date}</td><td><strong>${r.name}</strong></td><td>${r.kelas}</td><td>${r.gender}</td>
-        <td><span class="badge ${r.status==='HADIR'?'b-green':'b-red'}">${r.status}</span></td>
-      </tr>`).join('');
+      <tr><td>${r.date}</td><td><strong>${r.name}</strong></td><td>${r.kelas}</td><td>${r.gender}</td><td><span class="badge ${r.status==='HADIR'?'b-green':'b-red'}">${r.status}</span></td></tr>`).join('');
     document.getElementById('attCount').innerText = `Papar: ${Math.min(data.length,100)} / ${data.length} rekod.`;
   }
 
@@ -811,9 +679,7 @@
 
     const filtered = DATA_ATT_CLEAN.filter(r => {
       let dOk = true;
-      if(start && end) {
-        dOk = r.isoDate >= start && r.isoDate <= end;
-      }
+      if(start && end) dOk = r.isoDate >= start && r.isoDate <= end;
       return dOk && (!q || r.name.toLowerCase().includes(q)) &&
              (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) &&
              (!s || (s==='HADIR'?r.status==='HADIR':r.status.includes('TIDAK')));
@@ -844,7 +710,6 @@
   function initPajsk() {
     const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
     DATA.pajsk = cleanPajsk;
-
     const pop = (id, key) => {
       const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
       document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
@@ -858,7 +723,6 @@
 
   window.renderPajskTable = function() {
     if(!DATA.pajsk.length) { document.getElementById('pajskBody').innerHTML='<tr><td colspan="7">Tiada Data.</td></tr>'; return; }
-    
     const q = document.getElementById('searchPajsk').value.toLowerCase();
     const fDate = document.getElementById('fPajskDate').value;
     const fUnit = document.getElementById('fPajskUnit').value;
@@ -871,26 +735,17 @@
       const acara = (getVal(r, 'ACARA')||"").toLowerCase();
       const searchMatch = !q || name.includes(q) || acara.includes(q);
       const iso = parseDateStr(getVal(r, 'TARIKH'));
-      
-      return searchMatch &&
-             (!fDate || iso === fDate) &&
-             (!fUnit || getVal(r,'UNIT') === fUnit) &&
-             (!fKelas || getVal(r,'KELAS') === fKelas) &&
-             (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
+      return searchMatch && (!fDate || iso === fDate) && (!fUnit || getVal(r,'UNIT') === fUnit) &&
+             (!fKelas || getVal(r,'KELAS') === fKelas) && (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
              (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
     });
 
     document.getElementById('pajskBody').innerHTML = filtered.map(r => `
       <tr>
-        <td>${getVal(r,'TARIKH')}</td>
-        <td>${getVal(r,'UNIT')}</td>
-        <td>${getVal(r,'KELAS')}</td>
-        <td><strong>${getVal(r,'NAMA')}</strong></td>
-        <td>${getVal(r,'ACARA')}</td>
-        <td>${getVal(r,'PENGLIBATAN')}</td>
-        <td><span class="badge b-green">${getVal(r,'PENCAPAIAN')}</span></td>
-      </tr>
-    `).join('');
+        <td>${getVal(r,'TARIKH')}</td><td>${getVal(r,'UNIT')}</td><td>${getVal(r,'KELAS')}</td>
+        <td><strong>${getVal(r,'NAMA')}</strong></td><td>${getVal(r,'ACARA')}</td>
+        <td>${getVal(r,'PENGLIBATAN')}</td><td><span class="badge b-green">${getVal(r,'PENCAPAIAN')}</span></td>
+      </tr>`).join('');
   }
 
   window.resetPajskFilters = function() {
@@ -900,7 +755,7 @@
     renderPajskTable();
   }
 
-  /* ================= ANNOUNCEMENT & DASHBOARD ================= */
+  /* ================= OTHERS ================= */
   function renderAnn() {
     const today = new Date().toISOString().split('T')[0];
     const list = DATA.ann.filter(a => {
@@ -912,26 +767,17 @@
       if(end && today > end) return false;
       return true;
     });
-
     document.getElementById('dAnn').innerText = list.length;
-
-    document.getElementById('annGrid').innerHTML = list.map(a => {
-      const t = getVal(a, 'TAJUK') || 'Info';
-      const c = getVal(a, 'KANDUNGAN') || '-';
-      const date = getVal(a, 'TARIKH') || getVal(a, 'MULA') || '';
-      
-      return `<div class="card clickable" onclick="openInfoModal('${escapeHtml(t)}', '${escapeHtml(c)}')">
+    document.getElementById('annGrid').innerHTML = list.map(a => `
+      <div class="card clickable" onclick="openInfoModal('${escapeHtml(getVal(a,'TAJUK'))}', '${escapeHtml(getVal(a,'KANDUNGAN'))}')">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-          <span class="badge b-blue">INFO</span>
-          <span style="font-size:11px; color:var(--text-muted)">${date}</span>
+          <span class="badge b-blue">INFO</span><span style="font-size:11px; color:var(--text-muted)">${getVal(a,'TARIKH')}</span>
         </div>
-        <h4 style="margin:0 0 10px;">${t}</h4>
-        <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${c}</p>
-      </div>`;
-    }).join('');
+        <h4 style="margin:0 0 10px;">${getVal(a,'TAJUK')}</h4>
+        <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${getVal(a,'KANDUNGAN')}</p>
+      </div>`).join('');
   }
 
-  /* ================= PARENTS & OTHERS ================= */
   function renderParents() {
     document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
       const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
@@ -956,12 +802,9 @@
     const mo = parseInt(document.getElementById('trendMonth').value);
     const yr = parseInt(document.getElementById('trendYear').value);
     const cl = document.getElementById('trendClass').value;
-
     const filtered = DATA_ATT_CLEAN.filter(r => r.rawDate.getMonth()===mo && r.rawDate.getFullYear()===yr && (!cl || r.kelas===cl));
     const daysInMonth = new Date(yr, mo+1, 0).getDate();
-    let points = [];
-    let maxVal = 0;
-
+    let points = []; let maxVal = 0;
     for(let d=1; d<=daysInMonth; d++) {
       const dayRecs = filtered.filter(r => r.rawDate.getDate()===d);
       let val = 0;
@@ -973,7 +816,6 @@
     }
     if(mode==='pct') maxVal = 100;
     if(maxVal===0) maxVal = 10;
-
     const W=900, H=280, Pad=30;
     const innerW = W - Pad*2;
     const innerH = H - Pad*2;
@@ -982,12 +824,7 @@
       const py = (H - Pad) - (p.y / maxVal) * innerH;
       return `${px},${py}`;
     }).join(' ');
-
-    document.getElementById('chartContainer').innerHTML = `
-      <svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="background:var(--bg-card); border-radius:12px;">
-        <polyline points="${path}" fill="none" stroke="var(--primary)" stroke-width="3" />
-        <text x="${Pad}" y="20" fill="var(--text-muted)" font-size="12">Max: ${Math.round(maxVal)}</text>
-      </svg>`;
+    document.getElementById('chartContainer').innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="background:var(--bg-card); border-radius:12px;"><polyline points="${path}" fill="none" stroke="var(--primary)" stroke-width="3" /><text x="${Pad}" y="20" fill="var(--text-muted)" font-size="12">Max: ${Math.round(maxVal)}</text></svg>`;
   }
 
   function setupTrendSelectors() {
@@ -998,7 +835,7 @@
     document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
   }
 
-  /* ================= MODAL & SETTINGS ================= */
+  /* ================= SETTINGS ================= */
   window.openInfoModal = function(title, body) {
     document.getElementById('infoTitle').innerText = title;
     document.getElementById('infoBody').innerText = body;
@@ -1022,27 +859,19 @@
   }
   function populateSettings() {
     document.getElementById('setName').value = CONFIG.schoolName;
-    document.getElementById('setUrlAtt').value = CONFIG.urls.attendance;
-    document.getElementById('setUrlPajsk').value = CONFIG.urls.pajsk;
-    document.getElementById('setUrlAnn').value = CONFIG.urls.announcements;
     document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `
       <div class="menu-toggle-item">
-        <span>${m.label}</span>
+        <span>${m.label} (${m.role})</span>
         <input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}">
-      </div>
-    `).join('');
+      </div>`).join('');
   }
   window.saveSettings = function() {
     CONFIG.schoolName = document.getElementById('setName').value;
-    CONFIG.urls.attendance = document.getElementById('setUrlAtt').value;
-    CONFIG.urls.pajsk = document.getElementById('setUrlPajsk').value;
-    CONFIG.urls.announcements = document.getElementById('setUrlAnn').value;
     CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked);
     localStorage.setItem('portalConfig', JSON.stringify(CONFIG));
     location.reload();
   }
 
-  // EXPORT FUNCTIONS UNTUK BUTTON REFRESH
   window.loadAttendance = function(m){ if(m)alert('Loading...'); fetchCSV(CONFIG.urls.attendance).then(d=>{DATA.att=d;processAttendance();}); }
   window.loadPajsk = function(m){ if(m)alert('Loading...'); fetchCSV(CONFIG.urls.pajsk).then(d=>{DATA.pajsk=d;initPajsk();}); }
   window.loadAnnouncements = function(m){ if(m)alert('Loading...'); fetchCSV(CONFIG.urls.announcements).then(d=>{DATA.ann=d;renderAnn();}); }
@@ -1055,8 +884,8 @@
   }
   function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
   function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-
-  // Init tidak dipanggil di sini. Ia dipanggil selepas LOGIN BERJAYA di atas.
+  
+  init(); // Initial Load
 </script>
 </body>
 </html>
