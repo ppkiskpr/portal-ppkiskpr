@@ -837,87 +837,79 @@ function parseCSV(text) {
   /* ================= DASHBOARD & OTHERS ================= */
   // REVISED RENDER ANN FUNCTION
 // ✅ BAHAJUAN: RENDER PENGUMUMAN (AUTO MULA/TAMAT, FAIL-SAFE)
+// ✅ RENDER PENGUMUMAN – POP OUT + PAUTAN DALAM MODAL
 function renderAnn() {
   const today = new Date();
   today.setHours(0,0,0,0);
 
-  // Ambil tarikh mula/tamat dari pelbagai kemungkinan header
   const getStart = (a) =>
     parseDateStr(
-      getVal(a, 'TARIKH MULA') ||
-      getVal(a, 'MULA') ||
-      getVal(a, 'START') ||
-      getVal(a, 'MULA TARIKH')
+      getVal(a,'TARIKH MULA') ||
+      getVal(a,'MULA')
     );
 
   const getEnd = (a) =>
     parseDateStr(
-      getVal(a, 'TARIKH TAMAT') ||
-      getVal(a, 'TAMAT') ||
-      getVal(a, 'END') ||
-      getVal(a, 'TAMAT TARIKH')
+      getVal(a,'TARIKH TAMAT') ||
+      getVal(a,'TAMAT')
     );
 
   const list = (DATA.ann || []).filter(a => {
-    const title = (getVal(a, 'TAJUK') || '').trim();
-    const content = (getVal(a, 'KANDUNGAN') || '').trim();
-    if (!title && !content) return false;
+    const tajuk = (getVal(a,'TAJUK') || '').trim();
+    if(!tajuk) return false;
 
-    const startStr = getStart(a);
-    const endStr = getEnd(a);
+    const s = getStart(a);
+    const e = getEnd(a);
 
-    // ✅ Jika tiada tarikh langsung → tetap papar (fail-safe)
-    if (!startStr && !endStr) return true;
+    // fail-safe
+    if(!s && !e) return true;
 
-    // ✅ Jika ada mula tapi tiada tamat → papar dari mula hingga bila-bila
-    if (startStr && !endStr) {
-      const start = new Date(startStr); start.setHours(0,0,0,0);
-      if (isNaN(start.getTime())) return true;
-      return today >= start;
+    if(s && !e){
+      const sd = new Date(s); sd.setHours(0,0,0,0);
+      return !isNaN(sd) && today >= sd;
     }
 
-    // ✅ Jika tiada mula tapi ada tamat → papar sampai tamat
-    if (!startStr && endStr) {
-      const end = new Date(endStr); end.setHours(23,59,59,999);
-      if (isNaN(end.getTime())) return true;
-      return today <= end;
+    if(!s && e){
+      const ed = new Date(e); ed.setHours(23,59,59,999);
+      return !isNaN(ed) && today <= ed;
     }
 
-    // ✅ Jika ada mula & tamat → papar dalam range
-    const start = new Date(startStr); start.setHours(0,0,0,0);
-    const end = new Date(endStr); end.setHours(23,59,59,999);
+    const sd = new Date(s); sd.setHours(0,0,0,0);
+    const ed = new Date(e); ed.setHours(23,59,59,999);
+    if(isNaN(sd)||isNaN(ed)) return true;
 
-    // Fail-safe kalau format tarikh rosak
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) return true;
-
-    return today >= start && today <= end;
+    return today >= sd && today <= ed;
   });
 
-  // Dashboard kad "Pengumuman"
   document.getElementById('dAnn').innerText = list.length;
 
-  // Paparan grid di halaman Pengumuman
   document.getElementById('annGrid').innerHTML = list.map(a => {
-    const tajuk = getVal(a,'TAJUK') || 'Pengumuman';
-    const kandungan = getVal(a,'KANDUNGAN') || '';
-    const tarikhPapar = getVal(a,'TARIKH MULA') || getVal(a,'MULA') || '';
+    const tajuk = getVal(a,'TAJUK') || '';
+    const isi = getVal(a,'ISI KANDUNGAN') || getVal(a,'KANDUNGAN') || '';
+    const url = getVal(a,'URL') || '';
+    const mula = getVal(a,'TARIKH MULA') || getVal(a,'MULA') || '';
 
     return `
       <div class="card clickable"
-           onclick="openInfoModal('${escapeHtml(tajuk)}', '${escapeHtml(kandungan)}')">
+        onclick="openAnnModal(
+          ${JSON.stringify(tajuk)},
+          ${JSON.stringify(isi)},
+          ${JSON.stringify(url)}
+        )">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px">
           <span class="badge b-blue">INFO</span>
-          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(tarikhPapar)}</span>
+          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(mula)}</span>
         </div>
         <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
-        <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">
-          ${escapeHtml(kandungan)}
+        <p style="font-size:13px; color:var(--text-muted);
+                  display:-webkit-box; -webkit-line-clamp:3;
+                  -webkit-box-orient:vertical; overflow:hidden;">
+          ${escapeHtml(isi)}
         </p>
       </div>
     `;
   }).join('');
 }
-
 
   window.renderTrend = function() {
     if(!DATA_ATT_CLEAN.length) return;
@@ -958,18 +950,116 @@ function renderAnn() {
     document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
   }
 
-  window.openInfoModal = function(title, body) { document.getElementById('infoTitle').innerText = title; document.getElementById('infoBody').innerText = body; document.getElementById('infoModal').classList.add('active'); }
-  window.openSettings = function() { document.getElementById('settingsModal').classList.add('active'); document.getElementById('pinInput').value = ''; document.getElementById('pinStep').style.display = 'block'; document.getElementById('settingStep').style.display = 'none'; }
-  window.closeSettings = function() { document.getElementById('settingsModal').classList.remove('active'); }
-  window.checkPin = function() { if(document.getElementById('pinInput').value === CONFIG.pin) { document.getElementById('pinStep').style.display = 'none'; document.getElementById('settingStep').style.display = 'block'; populateSettings(); } else alert('Salah PIN'); }
-  function populateSettings() { document.getElementById('setName').value = CONFIG.schoolName; document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `<div class="menu-toggle-item"><span>${m.label} (${m.role})</span><input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}"></div>`).join(''); }
-  window.saveSettings = function() { CONFIG.schoolName = document.getElementById('setName').value; CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked); localStorage.setItem('portalConfig', JSON.stringify(CONFIG)); location.reload(); }
-  window.loadAttendance = function(m){ loadAllData(); }
-  window.loadPajsk = function(m){ loadAllData(); }
-  window.loadAnnouncements = function(m){ loadAllData(); }
-  window.toggleTheme = function() { const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-mode', n); localStorage.setItem('theme', n); renderTrend(); }
-  function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
-  function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+window.openInfoModal = function(title, body) {
+  document.getElementById('infoTitle').innerText = title;
+  document.getElementById('infoBody').innerText = body;
+  document.getElementById('infoModal').classList.add('active');
+}
+
+/* ===========================
+   MODAL KHAS PENGUMUMAN
+   (POP-OUT + KAD PAUTAN)
+   =========================== */
+window.openAnnModal = function(tajuk, isi, url) {
+  document.getElementById('infoTitle').innerText = tajuk;
+
+  let html = `
+    <div style="white-space:pre-line; line-height:1.6; margin-bottom:16px;">
+      ${escapeHtml(isi)}
+    </div>
+  `;
+
+  if (url) {
+    html += `
+      <div class="card clickable"
+           onclick="window.open('${url.replace(/'/g,"\\'")}', '_blank')"
+           style="border:1px dashed var(--border-color); padding:14px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons-round" style="color:var(--accent)">link</span>
+          <div>
+            <div style="font-weight:600; font-size:13px;">
+              Buka Pautan Berkaitan
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); word-break:break-all;">
+              ${escapeHtml(url)}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('infoBody').innerHTML = html;
+  document.getElementById('infoModal').classList.add('active');
+}
+
+window.openSettings = function() {
+  document.getElementById('settingsModal').classList.add('active');
+  document.getElementById('pinInput').value = '';
+  document.getElementById('pinStep').style.display = 'block';
+  document.getElementById('settingStep').style.display = 'none';
+}
+
+window.closeSettings = function() {
+  document.getElementById('settingsModal').classList.remove('active');
+}
+
+window.checkPin = function() {
+  if(document.getElementById('pinInput').value === CONFIG.pin) {
+    document.getElementById('pinStep').style.display = 'none';
+    document.getElementById('settingStep').style.display = 'block';
+    populateSettings();
+  } else alert('Salah PIN');
+}
+
+function populateSettings() {
+  document.getElementById('setName').value = CONFIG.schoolName;
+  document.getElementById('menuManagerList').innerHTML =
+    CONFIG.menus.map((m,i) =>
+      `<div class="menu-toggle-item">
+        <span>${m.label} (${m.role})</span>
+        <input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}">
+      </div>`
+    ).join('');
+}
+
+window.saveSettings = function() {
+  CONFIG.schoolName = document.getElementById('setName').value;
+  CONFIG.menus.forEach((m,i) =>
+    m.hidden = !document.getElementById(`menu_${i}`).checked
+  );
+  localStorage.setItem('portalConfig', JSON.stringify(CONFIG));
+  location.reload();
+}
+
+window.loadAttendance = function(m){ loadAllData(); }
+window.loadPajsk = function(m){ loadAllData(); }
+window.loadAnnouncements = function(m){ loadAllData(); }
+
+window.toggleTheme = function() {
+  const n = document.documentElement.getAttribute('data-mode')==='dark'
+    ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-mode', n);
+  localStorage.setItem('theme', n);
+  renderTrend();
+}
+
+function applyTheme() {
+  document.documentElement.setAttribute(
+    'data-mode',
+    localStorage.getItem('theme') || 'light'
+  );
+}
+
+function escapeHtml(s){
+  return (s||'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
   
   init();
 </script>
