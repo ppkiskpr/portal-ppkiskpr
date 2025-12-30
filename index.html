@@ -12,79 +12,29 @@
 
   <style>
     /* === CSS LOGIN SCREEN === */
-    #login-screen {
-        position: fixed; inset: 0; z-index: 9999;
-        background: #F2F4F7;
-        display: flex; flex-direction: column;
-        justify-content: center; align-items: center;
-        transition: opacity 0.5s ease;
-    }
-    .login-box {
-        background: white; padding: 40px; border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;
-        max-width: 400px; width: 90%;
-    }
-    .login-btn-google {
-        background: #4285F4; color: white; border: none;
-        padding: 12px 24px; border-radius: 8px; font-size: 16px;
-        cursor: pointer; font-family: 'Poppins', sans-serif;
-        display: flex; align-items: center; gap: 10px; margin: 20px auto 0;
-    }
+    #login-screen { position: fixed; inset: 0; z-index: 9999; background: #F2F4F7; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+    .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
+    .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 10px; margin: 20px auto 0; }
     .login-btn-google:hover { background: #3367d6; }
     
     /* === CSS UTAMA === */
-    :root {
-      --font-main: 'Poppins', sans-serif;
-      --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB;
-      --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085;
-      --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009;
-      --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px;
-      --sidebar-w-full: 260px; --sidebar-w-mini: 74px;
-    }
-
-    html[data-mode="dark"] {
-      --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36;
-      --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E;
-      --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15);
-    }
-
+    :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
+    html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; font-family: var(--font-main); background: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; }
     .app-container { display: flex; height: 100%; width: 100%; }
 
     /* SIDEBAR */
-    .sidebar {
-      background: var(--bg-sidebar); border-right: 1px solid var(--border-color);
-      display: flex; flex-direction: column; padding: 20px 12px;
-      transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow-x: hidden;
-    }
-    @media (min-width: 769px) {
-      .sidebar { width: var(--sidebar-w-full); }
-      body.desktop-mini .sidebar { width: var(--sidebar-w-mini); }
-      body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; }
-      body.desktop-mini .brand { justify-content: center; padding-left: 0; }
-      body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; }
-      body.desktop-mini .nav-icon { margin-right: 0; }
-    }
-    @media (max-width: 768px) {
-      .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); }
-      body.mobile-active .sidebar { left: 0; }
-      .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); }
-      body.mobile-active .backdrop { display: block; }
-    }
-
+    .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 12px; transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow-x: hidden; }
+    @media (min-width: 769px) { .sidebar { width: var(--sidebar-w-full); } body.desktop-mini .sidebar { width: var(--sidebar-w-mini); } body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; } body.desktop-mini .brand { justify-content: center; padding-left: 0; } body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; } body.desktop-mini .nav-icon { margin-right: 0; } }
+    @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); } body.mobile-active .sidebar { left: 0; } .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); } body.mobile-active .backdrop { display: block; } }
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-height: 45px; overflow: hidden; white-space: nowrap; }
     .brand-logo { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
     .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
     .brand-text h1 { margin: 0; font-size: 15px; font-weight: 700; }
     .brand-text p { margin: 0; font-size: 11px; color: var(--text-muted); }
-
     .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; overflow-x: hidden; }
-    .nav-item {
-      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
-      border-radius: 10px; cursor: pointer; color: var(--text-muted);
-      text-decoration: none; transition: all 0.2s; white-space: nowrap;
-    }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; cursor: pointer; color: var(--text-muted); text-decoration: none; transition: all 0.2s; white-space: nowrap; }
     .nav-item:hover { background: var(--bg-element); color: var(--text-main); }
     .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
     .nav-icon { font-size: 22px; display: flex; align-items: center; justify-content: center; }
@@ -106,24 +56,20 @@
     .stat-sub.red { color: #D92D20; font-weight: 600; }
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
-
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
     .banner-actions { display: flex; gap: 10px; } 
     .btn-action { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
     .btn-action:hover { background: rgba(255,255,255,0.3); }
-
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; }
     .btn { padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-
     .filter-panel { display: none; padding: 20px; background: var(--bg-element); border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color); }
     .filter-panel.open { display: block; }
     .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
     .filter-label { font-size: 12px; font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-muted); }
-
     .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
     table { width: 100%; border-collapse: collapse; min-width: 800px; font-size: 13px; }
     th { text-align: left; padding: 14px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
@@ -132,19 +78,21 @@
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
     .b-blue { background: #EFF8FF; color: #175CD3; }
-
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: none; place-items: center; backdrop-filter: blur(2px); }
     .modal-overlay.active { display: grid; }
     .modal-content { width: 90%; max-width: 500px; background: var(--bg-card); border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
     .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
     .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
 
-    /* SEMAKAN ID BOX */
+    /* SEMAKAN ID BOX (UPDATED WITH COPY BTN) */
     .id-result-box { display:none; background: var(--bg-element); padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid var(--border-color); }
-    .id-result-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+    .id-result-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
     .id-result-item:last-child { border-bottom: none; }
     .id-label { color: var(--text-muted); font-size: 12px; }
+    .id-value-group { display: flex; align-items: center; gap: 8px; }
     .id-value { font-weight: 600; font-size: 14px; text-align: right; user-select: text; }
+    .copy-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 4px; transition: 0.2s; display: flex; }
+    .copy-btn:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
 
     /* PRINT */
     @media print {
@@ -252,11 +200,17 @@
                 </div>
                 <div class="id-result-item">
                     <span class="id-label">EMEL DELIMA</span>
-                    <span class="id-value" id="resEmail" style="color:var(--primary);">-</span>
+                    <div class="id-value-group">
+                        <span class="id-value" id="resEmail" style="color:var(--primary);">-</span>
+                        <button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
+                    </div>
                 </div>
                 <div class="id-result-item">
                     <span class="id-label">KATA LALUAN</span>
-                    <span class="id-value" id="resPass" style="color:var(--accent);">-</span>
+                    <div class="id-value-group">
+                         <span class="id-value" id="resPass" style="color:var(--accent);">-</span>
+                         <button class="copy-btn" onclick="copyText('resPass')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
+                    </div>
                 </div>
             </div>
             <p id="idError" style="text-align:center; color:#B42318; font-size:13px; display:none; margin-top:10px;"></p>
@@ -381,7 +335,7 @@
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
-      database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1752164570&single=true&output=csv" // LETAK URL CSV DATABASE BARU DI SINI
+      database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRD7_23mP7_2c-74a9p0o_599h69e88j40h07p96-29177a499119h9e6924b179k3976e1088/pub?gid=0&single=true&output=csv"
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
@@ -535,7 +489,7 @@
     renderCalendarTable();
   }
 
-  /* ================= EMAIL CHECK LOGIC ================= */
+  /* ================= EMAIL CHECK LOGIC WITH COPY ================= */
   window.checkEmail = function() {
       const ic = document.getElementById('inputIC').value.trim();
       const resBox = document.getElementById('idResultContainer');
@@ -546,7 +500,6 @@
           return;
       }
 
-      // Cari student based on KP or IC
       const student = DATA.db.find(r => {
           const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO');
           return kp && kp.replace(/[^0-9]/g, '') === ic.replace(/[^0-9]/g, '');
@@ -563,6 +516,14 @@
           errBox.innerText = "Rekod tidak dijumpai. Sila semak nombor kad pengenalan.";
           errBox.style.display = 'block';
       }
+  }
+
+  window.copyText = function(id) {
+    const text = document.getElementById(id).innerText;
+    if(text === '-') return;
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Disalin: " + text);
+    });
   }
 
   /* ================= ATTENDANCE ================= */
