@@ -17,11 +17,6 @@
     .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 10px; margin: 20px auto 0; }
     .login-btn-google:hover { background: #3367d6; }
     
-    /* LOADING SPINNER */
-    #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(2px); }
-    .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
     /* === CSS UTAMA === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
@@ -89,7 +84,12 @@
     .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
     .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
 
-    /* SEMAKAN ID BOX */
+    /* LOADING SPINNER */
+    #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(2px); }
+    .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* SEMAKAN ID BOX (WITH COPY) */
     .id-result-box { display:none; background: var(--bg-element); padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid var(--border-color); }
     .id-result-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
     .id-result-item:last-child { border-bottom: none; }
@@ -187,7 +187,9 @@
       </div>
 
       <div id="page-emailcheck" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Semakan ID Delima</h2><p>Semak Emel & Kata Laluan Murid</p></div></div>
+        <div class="page-banner">
+            <div class="banner-text"><h2>Semakan ID Delima</h2><p>Semak Emel & Kata Laluan Murid</p></div>
+        </div>
         <div class="card" style="max-width:600px; margin:0 auto;">
             <div style="text-align:center; margin-bottom:20px;">
                 <span class="material-icons-round" style="font-size:48px; color:var(--primary);">fingerprint</span>
@@ -197,10 +199,26 @@
                 <input id="inputIC" class="form-input" placeholder="Contoh: 123456789012" style="flex:1; text-align:center; letter-spacing:1px;">
                 <button class="btn btn-primary" onclick="checkEmail()">Semak</button>
             </div>
+            
             <div id="idResultContainer" class="id-result-box">
-                <div class="id-result-item"><span class="id-label">NAMA MURID</span><span class="id-value" id="resNama">-</span></div>
-                <div class="id-result-item"><span class="id-label">EMEL DELIMA</span><div class="id-value-group"><span class="id-value" id="resEmail" style="color:var(--primary);">-</span><button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
-                <div class="id-result-item"><span class="id-label">KATA LALUAN</span><div class="id-value-group"><span class="id-value" id="resPass" style="color:var(--accent);">-</span><button class="copy-btn" onclick="copyText('resPass')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
+                <div class="id-result-item">
+                    <span class="id-label">NAMA MURID</span>
+                    <span class="id-value" id="resNama">-</span>
+                </div>
+                <div class="id-result-item">
+                    <span class="id-label">EMEL DELIMA</span>
+                    <div class="id-value-group">
+                        <span class="id-value" id="resEmail" style="color:var(--primary);">-</span>
+                        <button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
+                    </div>
+                </div>
+                <div class="id-result-item">
+                    <span class="id-label">KATA LALUAN</span>
+                    <div class="id-value-group">
+                         <span class="id-value" id="resPass" style="color:var(--accent);">-</span>
+                         <button class="copy-btn" onclick="copyText('resPass')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
+                    </div>
+                </div>
             </div>
             <p id="idError" style="text-align:center; color:#B42318; font-size:13px; display:none; margin-top:10px;"></p>
         </div>
@@ -324,7 +342,7 @@
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
-      database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRD7_23mP7_2c-74a9p0o_599h69e88j40h07p96-29177a499119h9e6924b179k3976e1088/pub?gid=0&single=true&output=csv"
+      database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1752164570&single=true&output=csv"
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
@@ -429,10 +447,15 @@
   async function fetchCSV(url) {
     if(!url) return [];
     try {
+      // ANTI-CACHE: Tambah timestamp
       const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now());
       const text = await res.text();
       return parseCSV(text);
-    } catch(e) { console.error("Gagal muat data:", e); return null; }
+    } catch(e) { 
+        console.error("Gagal muat data:", e); 
+        // Jangan buang data lama jika fetch gagal, cuma alert
+        return null; 
+    }
   }
 
   function parseCSV(text) {
@@ -474,6 +497,7 @@
       fetchCSV(CONFIG.urls.database)
     ]);
     
+    // Simpan hanya jika data berjaya diambil (tidak null)
     if(results[0]) DATA.att = results[0];
     if(results[1]) DATA.pajsk = results[1];
     if(results[2]) DATA.ann = results[2];
@@ -498,7 +522,7 @@
       const errBox = document.getElementById('idError');
       
       if(!DATA.db || DATA.db.length === 0) {
-          alert('Pangkalan data sedang dimuat turun atau URL belum diset. Sila cuba sebentar lagi.');
+          alert('Data belum sedia. Sila tunggu sebentar.');
           return;
       }
 
