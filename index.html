@@ -489,7 +489,7 @@
     renderCalendarTable();
   }
 
-  /* ================= EMAIL CHECK LOGIC WITH COPY ================= */
+/* ================= EMAIL CHECK LOGIC (DIBETULKAN) ================= */
   window.checkEmail = function() {
       const ic = document.getElementById('inputIC').value.trim();
       const resBox = document.getElementById('idResultContainer');
@@ -500,15 +500,24 @@
           return;
       }
 
+      // Cari murid berdasarkan KP / IC / NO
       const student = DATA.db.find(r => {
           const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO');
+          // Buang sengkang atau ruang kosong untuk perbandingan tepat
           return kp && kp.replace(/[^0-9]/g, '') === ic.replace(/[^0-9]/g, '');
       });
 
       if(student) {
+          // Papar Nama
           document.getElementById('resNama').innerText = getVal(student, 'NAMA');
-          document.getElementById('resEmail').innerText = getVal(student, 'EMEL') || getVal(student, 'ID') || '-';
-          document.getElementById('resPass').innerText = getVal(student, 'PASS') || getVal(student, 'LALUAN') || '-';
+          
+          // Papar Emel (Cari 'DELIMA' dulu, baru 'EMEL')
+          // KITA TUKAR 'ID' KEPADA 'DELIMA' SUPAYA TAK TERSILAP AMBIL NAMA MURID
+          document.getElementById('resEmail').innerText = getVal(student, 'DELIMA') || getVal(student, 'EMEL') || '-';
+          
+          // Papar Password (Cari 'LALUAN' atau 'PASS')
+          document.getElementById('resPass').innerText = getVal(student, 'LALUAN') || getVal(student, 'PASS') || getVal(student, 'KATA') || '-';
+          
           resBox.style.display = 'block';
           errBox.style.display = 'none';
       } else {
