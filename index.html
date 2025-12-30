@@ -158,21 +158,7 @@
     .link-card { cursor: pointer; transition: transform 0.2s; height: 100%; }
     .link-card:hover { transform: translateY(-4px); border-color: var(--primary); }
 
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100;
-      display: none; place-items: center; backdrop-filter: blur(2px);
-    }
-    .modal-overlay.active { display: grid; }
-    .modal-content {
-      width: 90%; max-width: 500px; background: var(--bg-card);
-      border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-      max-height: 85vh; overflow-y: auto;
-    }
-
-    .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
-    .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
-
-    /* ===== CSS LOGIN SCREEN ===== */
+    /* CSS LOGIN */
     #login-screen {
         position: fixed; inset: 0; z-index: 9999;
         background: #F2F4F7;
@@ -192,6 +178,21 @@
         display: flex; align-items: center; gap: 10px; margin: 20px auto 0;
     }
     .login-btn-google:hover { background: #3367d6; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100;
+      display: none; place-items: center; backdrop-filter: blur(2px);
+    }
+    .modal-overlay.active { display: grid; }
+    .modal-content {
+      width: 90%; max-width: 500px; background: var(--bg-card);
+      border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      max-height: 85vh; overflow-y: auto;
+    }
+
+    .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
+    .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
 
     /* ===== PRINT STYLES ===== */
     @media print {
@@ -228,10 +229,7 @@
         </div>
         <h2 style="margin:0 0 10px; color:var(--text-main);">Selamat Datang</h2>
         <p style="color:var(--text-muted); font-size:14px; margin:0 0 20px;">Portal Rasmi PPKI SK Paya Resak</p>
-        
-        <button id="btnLoginGoogle" class="login-btn-google">
-            <span class="material-icons-round">login</span> Masuk dengan Google
-        </button>
+        <button id="btnLoginGoogle" class="login-btn-google"><span class="material-icons-round">login</span> Masuk dengan Google</button>
         <p id="loginStatus" style="font-size:12px; margin-top:20px; color:var(--text-muted);"></p>
     </div>
 </div>
@@ -239,7 +237,6 @@
 <div class="backdrop" onclick="toggleSidebar()"></div>
 
 <div class="app-container" id="appContainer" style="display:none;">
-  
   <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-logo">
@@ -250,17 +247,10 @@
         <p>Moving Forward</p>
       </div>
     </div>
-    
-    <nav class="nav-menu" id="sidebarMenu">
-      </nav>
-
+    <nav class="nav-menu" id="sidebarMenu"></nav>
     <div class="sidebar-footer">
       <div id="userInfo" style="margin-bottom:10px; font-weight:600; font-size:12px; display:none;"></div>
-      
-      <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">
-        Log Masuk
-      </button>
-
+      <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
     </div>
@@ -268,29 +258,18 @@
 
   <main class="main-content">
     <header class="top-bar">
-      <button class="icon-btn" onclick="toggleSidebar()">
-        <span class="material-icons-round">menu</span>
-      </button>
-      
+      <button class="icon-btn" onclick="toggleSidebar()"><span class="material-icons-round">menu</span></button>
       <div style="display:flex; gap:8px;">
-        <button class="icon-btn" onclick="toggleTheme()" title="Tema">
-          <span class="material-icons-round">dark_mode</span>
-        </button>
-        <button class="icon-btn" id="btnSettings" onclick="openSettings()" title="Tetapan" style="display:none;">
-          <span class="material-icons-round">settings</span>
-        </button>
+        <button class="icon-btn" onclick="toggleTheme()" title="Tema"><span class="material-icons-round">dark_mode</span></button>
+        <button class="icon-btn" id="btnSettings" onclick="openSettings()" title="Tetapan" style="display:none;"><span class="material-icons-round">settings</span></button>
       </div>
     </header>
 
     <div class="content-area">
       <div id="page-home" class="page-section">
         <div class="page-banner">
-          <div class="banner-text">
-            <h2>Dashboard</h2>
-            <p>Selamat Datang ke Portal Rasmi PPKI</p>
-          </div>
+          <div class="banner-text"><h2>Dashboard</h2><p>Selamat Datang ke Portal Rasmi PPKI</p></div>
         </div>
-
         <div class="dashboard-grid">
           <div class="card stat-card clickable" onclick="navTo('attendance')">
             <div class="stat-label">Kehadiran Hari Ini</div>
@@ -313,7 +292,6 @@
             <div class="stat-sub">Aktif</div>
           </div>
         </div>
-
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:20px;">
             <h3 style="margin:0; font-size:16px;">📈 Trend Harian</h3>
@@ -347,9 +325,7 @@
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input class="form-input" id="searchAtt" placeholder="Cari Nama Murid..." style="flex:1;">
-            <button class="btn btn-outline" onclick="toggleFilterPanel('attFilters')">
-              <span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan
-            </button>
+            <button class="btn btn-outline" onclick="toggleFilterPanel('attFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan</button>
             <button class="btn btn-primary" onclick="applyFilterAtt()">Cari</button>
           </div>
           <div id="attFilters" class="filter-panel">
@@ -379,9 +355,7 @@
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input class="form-input" id="searchPajsk" placeholder="Cari Nama / Acara..." style="flex:1;">
-            <button class="btn btn-outline" onclick="toggleFilterPanel('pajskFilters')">
-              <span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan
-            </button>
+            <button class="btn btn-outline" onclick="toggleFilterPanel('pajskFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan</button>
             <button class="btn btn-primary" onclick="renderPajskTable()">Cari</button>
           </div>
           <div id="pajskFilters" class="filter-panel">
@@ -402,9 +376,7 @@
       <div id="page-announcements" class="page-section" style="display:none;">
         <div class="page-banner">
           <div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div>
-          <div class="banner-actions">
-            <button class="btn-action" onclick="loadAnnouncements(true)"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
-          </div>
+          <div class="banner-actions"><button class="btn-action" onclick="loadAnnouncements(true)"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
         </div>
         <div class="dashboard-grid" id="annGrid" style="grid-template-columns: 1fr 1fr;"></div>
       </div>
@@ -414,40 +386,22 @@
           <div class="banner-text"><h2>Takwim</h2><p>Jadual Aktiviti</p></div>
         </div>
         <div class="card">
-           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
-               <input id="searchCal" class="form-input" placeholder="Cari Aktiviti..." style="flex:1;">
-               <button class="btn btn-outline" onclick="toggleFilterPanel('calFilters')">
-                  <span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan
-               </button>
-               <button class="btn btn-primary" onclick="renderCalendarTable()">Cari</button>
+          <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
+            <input id="searchCal" class="form-input" placeholder="Cari Aktiviti..." style="flex:1;">
+            <button class="btn btn-outline" onclick="toggleFilterPanel('calFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan</button>
+            <button class="btn btn-primary" onclick="renderCalendarTable()">Cari</button>
+          </div>
+          <div id="calFilters" class="filter-panel">
+            <div class="filter-grid">
+              <div><label class="filter-label">Bulan</label><select class="form-select" id="fCalBulan"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Tarikh</label><input type="date" class="form-input" id="fCalTarikh"></div>
+              <div><label class="filter-label">Tindakan</label><select class="form-select" id="fCalTindakan"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Kategori</label><select class="form-select" id="fCalKategori"><option value="">Semua</option></select></div>
             </div>
-
-            <div id="calFilters" class="filter-panel">
-               <div class="filter-grid">
-                  <div><label class="filter-label">Bulan</label><select class="form-select" id="fCalBulan"><option value="">Semua</option></select></div>
-                  <div><label class="filter-label">Tarikh/Tempoh</label><input class="form-input" id="fCalTarikh"></div>
-                   <div><label class="filter-label">Tindakan</label><select class="form-select" id="fCalTindakan"><option value="">Semua</option></select></div>
-                   <div><label class="filter-label">Kategori</label><select class="form-select" id="fCalKategori"><option value="">Semua</option></select></div>
-               </div>
-               <div style="text-align:right">
-                  <button class="btn btn-outline" onclick="resetCalFilters()">Reset</button>
-                  <button class="btn btn-primary" onclick="renderCalendarTable()">Terapkan</button>
-               </div>
-            </div>
-
+            <div style="text-align:right"><button class="btn btn-outline" onclick="resetCalFilters()">Reset</button> <button class="btn btn-primary" onclick="renderCalendarTable()">Terapkan</button></div>
+          </div>
           <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                   <th>BULAN</th>
-                   <th>TARIKH / TEMPOH</th>
-                   <th>AKTIVITI</th>
-                   <th>TINDAKAN</th>
-                   <th>KATEGORI</th>
-                </tr>
-              </thead>
-              <tbody id="calBody"></tbody>
-            </table>
+            <table><thead><tr><th>BULAN</th><th>TARIKH / TEMPOH</th><th>AKTIVITI</th><th>TINDAKAN</th><th>KATEGORI</th></tr></thead><tbody id="calBody"></tbody></table>
           </div>
         </div>
       </div>
@@ -458,7 +412,6 @@
         </div>
         <div class="dashboard-grid" id="parentsGrid"></div>
       </div>
-
     </div>
   </main>
 </div>
@@ -542,7 +495,7 @@
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [] };
   let DATA_ATT_CLEAN = [];
-  let USER_ROLE = 'public'; // public, family, admin
+  let USER_ROLE = 'public';
 
   // GLOBAL FUNCTIONS
   window.init = function() {
@@ -570,14 +523,11 @@
     const gear = document.getElementById('btnSettings');
     const loginScreen = document.getElementById('login-screen');
     const appContainer = document.getElementById('appContainer');
-    const loginStatus = document.getElementById('loginStatus');
 
     if (user) {
-      // Determine Role
       if (ADMIN_EMAILS.includes(user.email)) USER_ROLE = 'admin';
       else USER_ROLE = 'family';
 
-      // UI Updates
       btn.textContent = "Log Keluar";
       btn.style.background = "#B42318";
       info.style.display = "block";
@@ -585,30 +535,26 @@
       
       if(USER_ROLE === 'admin') gear.style.display = 'grid';
       
-      // Close Login Screen
       loginScreen.style.opacity = '0';
       setTimeout(() => {
          loginScreen.style.display = 'none';
          appContainer.style.display = 'flex';
-         init(); // Start App
+         init();
       }, 500);
 
     } else {
-      // Default to Public View
       USER_ROLE = 'public';
       btn.textContent = "Log Masuk";
       btn.style.background = "var(--primary)";
       info.style.display = "none";
       gear.style.display = "none";
       
-      // Auto-enter Public Mode
       loginScreen.style.display = 'none'; 
       appContainer.style.display = 'flex';
       init();
     }
 
     renderSidebar(); 
-    // If user was on restricted page, go home
     const activePage = document.querySelector('.page-section[style*="block"]');
     if (activePage && activePage.id !== 'page-home') {
        const menu = CONFIG.menus.find(m => 'page-'+m.id === activePage.id);
@@ -630,7 +576,6 @@
     
     CONFIG.menus.forEach(m => {
       if(m.hidden) return;
-      // Role Check
       if (m.role === 'admin' && USER_ROLE !== 'admin') return;
       if (m.role === 'family' && USER_ROLE === 'public') return;
 
@@ -705,9 +650,9 @@
     processAttendance();
     renderAnn();
     initPajsk();
-    initCalendar(); // New
     renderParents();
-    renderCalendarTable(); // New
+    initCalendar();
+    renderCalendarTable();
   }
 
   /* ================= ATTENDANCE ================= */
@@ -724,7 +669,6 @@
     }).filter(r => r.isoDate && !isNaN(r.rawDate));
     DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
 
-    // Global Stats
     const todayStr = new Date().toISOString().split('T')[0];
     const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
     const present = todayRecs.filter(r => r.status === 'HADIR').length;
@@ -844,10 +788,17 @@
     renderPajskTable();
   }
 
-  /* ================= TAKWIM (NEW LOGIC) ================= */
+  /* ================= TAKWIM ================= */
   window.initCalendar = function() {
+     const monthOrder = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
+     
      const pop = (id, key) => {
-        const vals = [...new Set(DATA.cal.map(r => getVal(r, key)))].filter(Boolean).sort();
+        let vals = [...new Set(DATA.cal.map(r => getVal(r, key)))].filter(Boolean);
+        if(key === 'BULAN 2') {
+           vals.sort((a, b) => monthOrder.indexOf(a.toUpperCase()) - monthOrder.indexOf(b.toUpperCase()));
+        } else {
+           vals.sort();
+        }
         document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${v}</option>`).join('');
      };
      pop('fCalBulan', 'BULAN 2');
@@ -860,17 +811,23 @@
       
       const q = document.getElementById('searchCal').value.toLowerCase();
       const fBulan = document.getElementById('fCalBulan').value;
-      const fTarikh = document.getElementById('fCalTarikh').value.toLowerCase();
+      const fTarikhRaw = document.getElementById('fCalTarikh').value;
       const fKat = document.getElementById('fCalKategori').value;
       const fTin = document.getElementById('fCalTindakan').value;
 
+      let fTarikh = "";
+      if(fTarikhRaw) {
+          const p = fTarikhRaw.split('-');
+          fTarikh = `${p[2]}/${p[1]}/${p[0]}`; 
+      }
+
       const filtered = DATA.cal.filter(r => {
          const act = (getVal(r, 'AKTIVITI')||"").toLowerCase();
-         const date = (getVal(r, 'TARIKH')||getVal(r,'TEMPOH')||"").toLowerCase();
+         const dateCol = (getVal(r, 'TARIKH')||getVal(r,'TEMPOH')||"");
 
          return (!q || act.includes(q)) &&
                 (!fBulan || getVal(r, 'BULAN 2') === fBulan) &&
-                (!fTarikh || date.includes(fTarikh)) &&
+                (!fTarikh || dateCol.includes(fTarikh)) &&
                 (!fKat || getVal(r, 'KATEGORI') === fKat) &&
                 (!fTin || getVal(r, 'TINDAKAN') === fTin);
       });
