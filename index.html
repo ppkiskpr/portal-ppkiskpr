@@ -165,7 +165,10 @@
 
     <div class="content-area">
       <div id="page-home" class="page-section">
-        <div class="page-banner"><div class="banner-text"><h2>Dashboard</h2><p>Selamat Datang ke Portal Rasmi PPKI</p></div></div>
+        <div class="page-banner">
+          <div class="banner-text"><h2>Dashboard</h2><p>Selamat Datang ke Portal Rasmi PPKI</p></div>
+          <div class="banner-actions"><button class="btn-action" onclick="forceReload('all')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload Semua</button></div>
+        </div>
         <div class="dashboard-grid">
           <div class="card stat-card clickable" onclick="navTo('attendance')"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card clickable" onclick="navTo('attendance')"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
@@ -189,6 +192,7 @@
       <div id="page-emailcheck" class="page-section" style="display:none;">
         <div class="page-banner">
             <div class="banner-text"><h2>Semakan ID Delima</h2><p>Semak Emel & Kata Laluan Murid</p></div>
+            <div class="banner-actions"><button class="btn-action" onclick="forceReload('db')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
         </div>
         <div class="card" style="max-width:600px; margin:0 auto;">
             <div style="text-align:center; margin-bottom:20px;">
@@ -201,31 +205,16 @@
             </div>
             
             <div id="idResultContainer" class="id-result-box">
-                <div class="id-result-item">
-                    <span class="id-label">NAMA MURID</span>
-                    <span class="id-value" id="resNama">-</span>
-                </div>
-                <div class="id-result-item">
-                    <span class="id-label">EMEL DELIMA</span>
-                    <div class="id-value-group">
-                        <span class="id-value" id="resEmail" style="color:var(--primary);">-</span>
-                        <button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
-                    </div>
-                </div>
-                <div class="id-result-item">
-                    <span class="id-label">KATA LALUAN</span>
-                    <div class="id-value-group">
-                         <span class="id-value" id="resPass" style="color:var(--accent);">-</span>
-                         <button class="copy-btn" onclick="copyText('resPass')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
-                    </div>
-                </div>
+                <div class="id-result-item"><span class="id-label">NAMA MURID</span><span class="id-value" id="resNama">-</span></div>
+                <div class="id-result-item"><span class="id-label">EMEL DELIMA</span><div class="id-value-group"><span class="id-value" id="resEmail" style="color:var(--primary);">-</span><button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
+                <div class="id-result-item"><span class="id-label">KATA LALUAN</span><div class="id-value-group"><span class="id-value" id="resPass" style="color:var(--accent);">-</span><button class="copy-btn" onclick="copyText('resPass')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
             </div>
             <p id="idError" style="text-align:center; color:#B42318; font-size:13px; display:none; margin-top:10px;"></p>
         </div>
       </div>
 
       <div id="page-attendance" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div><div class="banner-actions"><button class="btn-action" onclick="loadAllData()"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
+        <div class="page-banner"><div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('att')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
         <div class="dashboard-grid">
           <div class="card"><div class="stat-label">Hadir (Tapis)</div><div class="stat-val" id="attStatHadir">-</div></div>
           <div class="card"><div class="stat-label">Tidak Hadir (Tapis)</div><div class="stat-val" id="attStatTidak">-</div></div>
@@ -255,7 +244,7 @@
       </div>
 
       <div id="page-pajsk" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div><div class="banner-actions"><button class="btn-action" onclick="loadAllData()"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
+        <div class="page-banner"><div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('pajsk')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input class="form-input" id="searchPajsk" placeholder="Cari Nama / Acara..." style="flex:1;">
@@ -279,12 +268,12 @@
       </div>
 
       <div id="page-announcements" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div><div class="banner-actions"><button class="btn-action" onclick="loadAllData()"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
+        <div class="page-banner"><div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('ann')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
         <div class="dashboard-grid" id="annGrid" style="grid-template-columns: 1fr 1fr;"></div>
       </div>
 
       <div id="page-calendar" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Takwim</h2><p>Jadual Aktiviti</p></div></div>
+        <div class="page-banner"><div class="banner-text"><h2>Takwim</h2><p>Jadual Aktiviti</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('cal')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input id="searchCal" class="form-input" placeholder="Cari Aktiviti..." style="flex:1;">
@@ -305,7 +294,7 @@
       </div>
 
       <div id="page-parents" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Info Ibu Bapa</h2><p>Pautan & Dokumen</p></div></div>
+        <div class="page-banner"><div class="banner-text"><h2>Info Ibu Bapa</h2><p>Pautan & Dokumen</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('par')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
         <div class="dashboard-grid" id="parentsGrid"></div>
       </div>
     </div>
@@ -447,13 +436,12 @@
   async function fetchCSV(url) {
     if(!url) return [];
     try {
-      // ANTI-CACHE: Tambah timestamp
-      const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now());
+      // ANTI-CACHE AGGRESSIVE
+      const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now() + Math.random());
       const text = await res.text();
       return parseCSV(text);
     } catch(e) { 
         console.error("Gagal muat data:", e); 
-        // Jangan buang data lama jika fetch gagal, cuma alert
         return null; 
     }
   }
@@ -484,10 +472,8 @@
     return dStr;
   }
 
-  // UPDATED LOADALLDATA WITH SPINNER
   async function loadAllData() {
     document.getElementById('loading-overlay').style.display = 'grid';
-    
     const results = await Promise.all([
       fetchCSV(CONFIG.urls.attendance),
       fetchCSV(CONFIG.urls.pajsk),
@@ -496,8 +482,6 @@
       fetchCSV(CONFIG.urls.parents),
       fetchCSV(CONFIG.urls.database)
     ]);
-    
-    // Simpan hanya jika data berjaya diambil (tidak null)
     if(results[0]) DATA.att = results[0];
     if(results[1]) DATA.pajsk = results[1];
     if(results[2]) DATA.ann = results[2];
@@ -511,7 +495,31 @@
     renderParents();
     initCalendar();
     renderCalendarTable();
+    document.getElementById('loading-overlay').style.display = 'none';
+  }
+
+  // FORCE RELOAD SPECIFIC
+  window.forceReload = async function(type) {
+    document.getElementById('loading-overlay').style.display = 'grid';
+    let url = '';
+    if(type === 'all') { await loadAllData(); return; }
     
+    if(type === 'att') url = CONFIG.urls.attendance;
+    else if(type === 'pajsk') url = CONFIG.urls.pajsk;
+    else if(type === 'ann') url = CONFIG.urls.announcements;
+    else if(type === 'cal') url = CONFIG.urls.calendar;
+    else if(type === 'par') url = CONFIG.urls.parents;
+    else if(type === 'db') url = CONFIG.urls.database;
+
+    const data = await fetchCSV(url);
+    if(data) {
+        if(type === 'att') { DATA.att = data; processAttendance(); }
+        else if(type === 'pajsk') { DATA.pajsk = data; initPajsk(); }
+        else if(type === 'ann') { DATA.ann = data; renderAnn(); }
+        else if(type === 'cal') { DATA.cal = data; initCalendar(); renderCalendarTable(); }
+        else if(type === 'par') { DATA.par = data; renderParents(); }
+        else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); }
+    }
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
@@ -520,11 +528,7 @@
       const ic = document.getElementById('inputIC').value.trim();
       const resBox = document.getElementById('idResultContainer');
       const errBox = document.getElementById('idError');
-      
-      if(!DATA.db || DATA.db.length === 0) {
-          alert('Data belum sedia. Sila tunggu sebentar.');
-          return;
-      }
+      if(!DATA.db || DATA.db.length === 0) { alert('Data belum sedia. Sila tekan Reload.'); return; }
 
       const student = DATA.db.find(r => {
           const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO');
@@ -547,9 +551,7 @@
   window.copyText = function(id) {
     const text = document.getElementById(id).innerText;
     if(text === '-') return;
-    navigator.clipboard.writeText(text).then(() => {
-        alert("Disalin: " + text);
-    });
+    navigator.clipboard.writeText(text).then(() => { alert("Disalin: " + text); });
   }
 
   /* ================= ATTENDANCE ================= */
@@ -565,7 +567,7 @@
       };
     }).filter(r => r.isoDate && !isNaN(r.rawDate));
     
-    // Sort Descending (Newest First)
+    // Sort Descending (Terkini di Atas)
     DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
     
     const todayStr = new Date().toISOString().split('T')[0];
@@ -841,9 +843,6 @@
   window.checkPin = function() { if(document.getElementById('pinInput').value === CONFIG.pin) { document.getElementById('pinStep').style.display = 'none'; document.getElementById('settingStep').style.display = 'block'; populateSettings(); } else alert('Salah PIN'); }
   function populateSettings() { document.getElementById('setName').value = CONFIG.schoolName; document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `<div class="menu-toggle-item"><span>${m.label} (${m.role})</span><input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}"></div>`).join(''); }
   window.saveSettings = function() { CONFIG.schoolName = document.getElementById('setName').value; CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked); localStorage.setItem('portalConfig', JSON.stringify(CONFIG)); location.reload(); }
-  window.loadAttendance = function(m){ loadAllData(); }
-  window.loadPajsk = function(m){ loadAllData(); }
-  window.loadAnnouncements = function(m){ loadAllData(); }
   window.toggleTheme = function() { const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-mode', n); localStorage.setItem('theme', n); renderTrend(); }
   function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
   function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
