@@ -443,13 +443,32 @@
     });
   }
 
+  // === KEMASKINI: LOGIK SECURITY DITAMBAH DI SINI ===
   window.navTo = function(id) {
+    const menu = CONFIG.menus.find(m => m.id === id);
+
+    // Sekatan Keselamatan (Security Check)
+    if (menu) {
+      if (menu.role === 'admin' && USER_ROLE !== 'admin') {
+        alert("Maaf, akses terhad kepada Admin sahaja.");
+        return; // Halang navigasi
+      }
+      if (menu.role === 'family' && USER_ROLE === 'public') {
+        alert("Sila log masuk untuk akses halaman ini.");
+        return; // Halang navigasi
+      }
+    }
+
+    // Jika lulus, teruskan navigasi
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     const el = document.getElementById(`nav-${id}`);
     if(el) el.classList.add('active');
+    
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
     document.getElementById(`page-${id}`).style.display='block';
+    
     if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
+    document.querySelector('.content-area').scrollTop = 0;
   }
 
   window.toggleFilterPanel = function(id) { document.getElementById(id).classList.toggle('open'); }
@@ -664,10 +683,10 @@
   window.initCalendar = function() {
      const monthOrder = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
      const pop = (id, key) => {
-        let vals = [...new Set(DATA.cal.map(r => getVal(r, key)))].filter(Boolean);
-        if(key === 'BULAN 2') vals.sort((a, b) => monthOrder.indexOf(a.toUpperCase()) - monthOrder.indexOf(b.toUpperCase()));
-        else vals.sort();
-        document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${v}</option>`).join('');
+       let vals = [...new Set(DATA.cal.map(r => getVal(r, key)))].filter(Boolean);
+       if(key === 'BULAN 2') vals.sort((a, b) => monthOrder.indexOf(a.toUpperCase()) - monthOrder.indexOf(b.toUpperCase()));
+       else vals.sort();
+       document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${v}</option>`).join('');
      };
      pop('fCalBulan', 'BULAN 2');
      pop('fCalKategori', 'KATEGORI');
