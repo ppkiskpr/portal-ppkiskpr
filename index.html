@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Portal Rasmi PPKI SK Paya Resak</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
+    /* ... (Style V25.1 kekal) ... */
     /* === CSS LOGIN SCREEN === */
     #login-screen { position: fixed; inset: 0; z-index: 9999; background: #F2F4F7; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
     .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
@@ -151,7 +151,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 25.1</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 26.0</div>
     </div>
   </aside>
 
@@ -778,18 +778,26 @@
 
   /* ================= DASHBOARD & OTHERS ================= */
   function renderAnn() {
-    const today = new Date().toISOString().split('T')[0];
+    // UPDATED: Logic Date (Ignoring Time)
+    const today = new Date();
+    today.setHours(0,0,0,0); // Reset jam jadi 00:00
+
     const list = DATA.ann.filter(a => {
-      const start = parseDateStr(getVal(a, 'MULA'));
-      const end = parseDateStr(getVal(a, 'TAMAT'));
+      const startStr = parseDateStr(getVal(a, 'MULA'));
+      const endStr = parseDateStr(getVal(a, 'TAMAT'));
       const title = getVal(a, 'TAJUK');
+
       if(!title) return false;
-      if(start && today < start) return false;
-      if(end && today > end) return false;
-      return true;
+      
+      const start = new Date(startStr); start.setHours(0,0,0,0);
+      const end = new Date(endStr); end.setHours(23,59,59,999); // Akhir hari
+
+      // Logic: Hari ini mesti >= Start DAN <= End
+      return today >= start && today <= end;
     });
+
     document.getElementById('dAnn').innerText = list.length;
-    document.getElementById('annGrid').innerHTML = list.map(a => `<div class="card clickable" onclick="openInfoModal('${escapeHtml(getVal(a,'TAJUK'))}', '${escapeHtml(getVal(a,'KANDUNGAN'))}')"><div style="display:flex; justify-content:space-between; margin-bottom:10px"><span class="badge b-blue">INFO</span><span style="font-size:11px; color:var(--text-muted)">${getVal(a,'TARIKH')}</span></div><h4 style="margin:0 0 10px;">${getVal(a,'TAJUK')}</h4><p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${getVal(a,'KANDUNGAN')}</p></div>`).join('');
+    document.getElementById('annGrid').innerHTML = list.map(a => `<div class="card clickable" onclick="openInfoModal('${escapeHtml(getVal(a,'TAJUK'))}', '${escapeHtml(getVal(a,'KANDUNGAN'))}')"><div style="display:flex; justify-content:space-between; margin-bottom:10px"><span class="badge b-blue">INFO</span><span style="font-size:11px; color:var(--text-muted)">${getVal(a,'TARIKH MULA')}</span></div><h4 style="margin:0 0 10px;">${getVal(a,'TAJUK')}</h4><p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${getVal(a,'KANDUNGAN')}</p></div>`).join('');
   }
 
   function renderParents() {
@@ -844,9 +852,6 @@
   window.checkPin = function() { if(document.getElementById('pinInput').value === CONFIG.pin) { document.getElementById('pinStep').style.display = 'none'; document.getElementById('settingStep').style.display = 'block'; populateSettings(); } else alert('Salah PIN'); }
   function populateSettings() { document.getElementById('setName').value = CONFIG.schoolName; document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `<div class="menu-toggle-item"><span>${m.label} (${m.role})</span><input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}"></div>`).join(''); }
   window.saveSettings = function() { CONFIG.schoolName = document.getElementById('setName').value; CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked); localStorage.setItem('portalConfig', JSON.stringify(CONFIG)); location.reload(); }
-  window.loadAttendance = function(m){ loadAllData(); }
-  window.loadPajsk = function(m){ loadAllData(); }
-  window.loadAnnouncements = function(m){ loadAllData(); }
   window.toggleTheme = function() { const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-mode', n); localStorage.setItem('theme', n); renderTrend(); }
   function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
   function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
