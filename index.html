@@ -172,11 +172,32 @@
     .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
     .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
 
+    /* ===== CSS LOGIN SCREEN ===== */
+    #login-screen {
+        position: fixed; inset: 0; z-index: 9999;
+        background: #F2F4F7;
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        transition: opacity 0.5s ease;
+    }
+    .login-box {
+        background: white; padding: 40px; border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;
+        max-width: 400px; width: 90%;
+    }
+    .login-btn-google {
+        background: #4285F4; color: white; border: none;
+        padding: 12px 24px; border-radius: 8px; font-size: 16px;
+        cursor: pointer; font-family: 'Poppins', sans-serif;
+        display: flex; align-items: center; gap: 10px; margin: 20px auto 0;
+    }
+    .login-btn-google:hover { background: #3367d6; }
+
     /* ===== PRINT STYLES ===== */
     @media print {
       @page { size: A4; margin: 1cm; }
       body { background: white; color: black; font-family: serif; }
-      .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, .search-bar-container { display: none !important; }
+      .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, .search-bar-container, #login-screen { display: none !important; }
       .app-container, .main-content, .content-area { height: auto; width: 100%; margin: 0; padding: 0; overflow: visible; display: block; }
       .card { border: none; box-shadow: none; padding: 0; margin: 0; background: transparent; }
       .table-wrap { overflow: visible; border: none; }
@@ -200,9 +221,24 @@
 </head>
 <body>
 
+<div id="login-screen">
+    <div class="login-box">
+        <div style="width:60px; height:60px; background:var(--primary); border-radius:12px; margin:0 auto 20px; display:grid; place-items:center;">
+             <span class="material-icons-round" style="color:white; font-size:32px;">school</span>
+        </div>
+        <h2 style="margin:0 0 10px; color:var(--text-main);">Selamat Datang</h2>
+        <p style="color:var(--text-muted); font-size:14px; margin:0 0 20px;">Portal Rasmi PPKI SK Paya Resak</p>
+        
+        <button id="btnLoginGoogle" class="login-btn-google">
+            <span class="material-icons-round">login</span> Masuk dengan Google
+        </button>
+        <p id="loginStatus" style="font-size:12px; margin-top:20px; color:var(--text-muted);"></p>
+    </div>
+</div>
+
 <div class="backdrop" onclick="toggleSidebar()"></div>
 
-<div class="app-container">
+<div class="app-container" id="appContainer" style="display:none;">
   
   <aside class="sidebar" id="sidebar">
     <div class="brand">
@@ -256,22 +292,22 @@
         </div>
 
         <div class="dashboard-grid">
-          <div class="card stat-card">
+          <div class="card stat-card clickable" onclick="navTo('attendance')">
             <div class="stat-label">Kehadiran Hari Ini</div>
             <div class="stat-val" id="dToday">-</div>
             <div class="stat-sub red" id="dAbsent">- Tidak Hadir</div>
           </div>
-          <div class="card stat-card">
+          <div class="card stat-card clickable" onclick="navTo('attendance')">
             <div class="stat-label">Minggu Ini</div>
             <div class="stat-val" id="dWeek">-</div>
             <div class="stat-sub">Rekod Kehadiran</div>
           </div>
-          <div class="card stat-card">
+          <div class="card stat-card clickable" onclick="navTo('attendance')">
             <div class="stat-label">Bulan Ini</div>
             <div class="stat-val" id="dPct">-</div>
             <div class="stat-sub">Peratus Kehadiran</div>
           </div>
-          <div class="card stat-card">
+          <div class="card stat-card clickable" onclick="navTo('announcements')">
             <div class="stat-label">Pengumuman</div>
             <div class="stat-val" id="dAnn">-</div>
             <div class="stat-sub">Aktif</div>
@@ -378,7 +414,41 @@
           <div class="banner-text"><h2>Takwim</h2><p>Jadual Aktiviti</p></div>
         </div>
         <div class="card">
-          <div class="table-wrap"><table><thead id="calHead"></thead><tbody id="calBody"></tbody></table></div>
+           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
+               <input id="searchCal" class="form-input" placeholder="Cari Aktiviti..." style="flex:1;">
+               <button class="btn btn-outline" onclick="toggleFilterPanel('calFilters')">
+                  <span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan
+               </button>
+               <button class="btn btn-primary" onclick="renderCalendarTable()">Cari</button>
+            </div>
+
+            <div id="calFilters" class="filter-panel">
+               <div class="filter-grid">
+                  <div><label class="filter-label">Bulan</label><select class="form-select" id="fCalBulan"><option value="">Semua</option></select></div>
+                  <div><label class="filter-label">Tarikh/Tempoh</label><input class="form-input" id="fCalTarikh"></div>
+                   <div><label class="filter-label">Tindakan</label><select class="form-select" id="fCalTindakan"><option value="">Semua</option></select></div>
+                   <div><label class="filter-label">Kategori</label><select class="form-select" id="fCalKategori"><option value="">Semua</option></select></div>
+               </div>
+               <div style="text-align:right">
+                  <button class="btn btn-outline" onclick="resetCalFilters()">Reset</button>
+                  <button class="btn btn-primary" onclick="renderCalendarTable()">Terapkan</button>
+               </div>
+            </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                   <th>BULAN</th>
+                   <th>TARIKH / TEMPOH</th>
+                   <th>AKTIVITI</th>
+                   <th>TINDAKAN</th>
+                   <th>KATEGORI</th>
+                </tr>
+              </thead>
+              <tbody id="calBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -453,7 +523,7 @@
     schoolName: "SK Paya Resak",
     pin: "5235", 
     urls: {
-      attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWi_5VfDz43sMFydp926q062CCPLyRnNUZyAGtlSk_9xv3gI0Xo0I7VMGSlj-llcpYCFHggVP289Ja/pub?gid=944218320&single=true&output=csv",
+      attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKhex5gcCHKoiLqRZpgVRMRfrGGvPtbgc3jo_Q-3FPL5OpcoWvyAnec0dTgykrpkYuS34iNJnEAkDU/pub?gid=880667725&single=true&output=csv",
       pajsk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGcqw1v5SRbEL_2LMhX9I_X8uIo5CTQRzOpY5nTlbSc8_6Q4cx56LWtTI3-I5D9pJYeS20nEgADikT/pub?gid=0&single=true&output=csv",
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
@@ -498,6 +568,9 @@
     const btn = document.getElementById('authBtn');
     const info = document.getElementById('userInfo');
     const gear = document.getElementById('btnSettings');
+    const loginScreen = document.getElementById('login-screen');
+    const appContainer = document.getElementById('appContainer');
+    const loginStatus = document.getElementById('loginStatus');
 
     if (user) {
       // Determine Role
@@ -512,20 +585,35 @@
       
       if(USER_ROLE === 'admin') gear.style.display = 'grid';
       
+      // Close Login Screen
+      loginScreen.style.opacity = '0';
+      setTimeout(() => {
+         loginScreen.style.display = 'none';
+         appContainer.style.display = 'flex';
+         init(); // Start App
+      }, 500);
+
     } else {
+      // Default to Public View
       USER_ROLE = 'public';
       btn.textContent = "Log Masuk";
       btn.style.background = "var(--primary)";
       info.style.display = "none";
       gear.style.display = "none";
+      
+      // Auto-enter Public Mode
+      loginScreen.style.display = 'none'; 
+      appContainer.style.display = 'flex';
+      init();
     }
 
-    renderSidebar(); // Refresh menu based on role
-    // Redirect if on forbidden page
+    renderSidebar(); 
+    // If user was on restricted page, go home
     const activePage = document.querySelector('.page-section[style*="block"]');
     if (activePage && activePage.id !== 'page-home') {
-       // Simple check: if not public and user is public -> home
-       if(USER_ROLE === 'public') window.navTo('home');
+       const menu = CONFIG.menus.find(m => 'page-'+m.id === activePage.id);
+       if (menu && (menu.role === 'admin' && USER_ROLE !== 'admin')) window.navTo('home');
+       if (menu && (menu.role === 'family' && USER_ROLE === 'public')) window.navTo('home');
     }
   });
 
@@ -617,8 +705,9 @@
     processAttendance();
     renderAnn();
     initPajsk();
+    initCalendar(); // New
     renderParents();
-    renderCalendar();
+    renderCalendarTable(); // New
   }
 
   /* ================= ATTENDANCE ================= */
@@ -755,7 +844,56 @@
     renderPajskTable();
   }
 
-  /* ================= OTHERS ================= */
+  /* ================= TAKWIM (NEW LOGIC) ================= */
+  window.initCalendar = function() {
+     const pop = (id, key) => {
+        const vals = [...new Set(DATA.cal.map(r => getVal(r, key)))].filter(Boolean).sort();
+        document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${v}</option>`).join('');
+     };
+     pop('fCalBulan', 'BULAN 2');
+     pop('fCalKategori', 'KATEGORI');
+     pop('fCalTindakan', 'TINDAKAN');
+  }
+
+  window.renderCalendarTable = function() {
+      if(!DATA.cal.length) { document.getElementById('calBody').innerHTML='<tr><td colspan="5">Tiada Data.</td></tr>'; return; }
+      
+      const q = document.getElementById('searchCal').value.toLowerCase();
+      const fBulan = document.getElementById('fCalBulan').value;
+      const fTarikh = document.getElementById('fCalTarikh').value.toLowerCase();
+      const fKat = document.getElementById('fCalKategori').value;
+      const fTin = document.getElementById('fCalTindakan').value;
+
+      const filtered = DATA.cal.filter(r => {
+         const act = (getVal(r, 'AKTIVITI')||"").toLowerCase();
+         const date = (getVal(r, 'TARIKH')||getVal(r,'TEMPOH')||"").toLowerCase();
+
+         return (!q || act.includes(q)) &&
+                (!fBulan || getVal(r, 'BULAN 2') === fBulan) &&
+                (!fTarikh || date.includes(fTarikh)) &&
+                (!fKat || getVal(r, 'KATEGORI') === fKat) &&
+                (!fTin || getVal(r, 'TINDAKAN') === fTin);
+      });
+
+      document.getElementById('calBody').innerHTML = filtered.map(r => `
+         <tr>
+            <td>${getVal(r, 'BULAN 2')}</td>
+            <td>${getVal(r, 'TARIKH') || getVal(r, 'TEMPOH')}</td>
+            <td><strong>${getVal(r, 'AKTIVITI')}</strong></td>
+            <td>${getVal(r, 'TINDAKAN')}</td>
+            <td><span class="badge b-blue">${getVal(r, 'KATEGORI')}</span></td>
+         </tr>
+      `).join('');
+  }
+
+  window.resetCalFilters = function() {
+     document.getElementById('searchCal').value = '';
+     document.getElementById('fCalTarikh').value = '';
+     document.querySelectorAll('#calFilters select').forEach(s => s.value='');
+     renderCalendarTable();
+  }
+
+  /* ================= ANNOUNCEMENT & DASHBOARD ================= */
   function renderAnn() {
     const today = new Date().toISOString().split('T')[0];
     const list = DATA.ann.filter(a => {
@@ -778,6 +916,7 @@
       </div>`).join('');
   }
 
+  /* ================= PARENTS & OTHERS ================= */
   function renderParents() {
     document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => {
       const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
@@ -787,13 +926,6 @@
         ${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}
       </div>`;
     }).join('');
-  }
-
-  function renderCalendar() {
-    if(!DATA.cal.length) return;
-    const k=Object.keys(DATA.cal[0]);
-    document.getElementById('calHead').innerHTML=`<tr>${k.map(x=>`<th>${x}</th>`).join('')}</tr>`;
-    document.getElementById('calBody').innerHTML=DATA.cal.map(r=>`<tr>${k.map(x=>`<td>${r[x]}</td>`).join('')}</tr>`).join('');
   }
 
   window.renderTrend = function() {
