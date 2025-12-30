@@ -16,7 +16,7 @@
     .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
     .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 10px; margin: 20px auto 0; }
     .login-btn-google:hover { background: #3367d6; }
-    
+
     /* LOADING SPINNER */
     #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(2px); }
     .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -31,8 +31,20 @@
 
     /* SIDEBAR */
     .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 12px; transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow-x: hidden; }
-    @media (min-width: 769px) { .sidebar { width: var(--sidebar-w-full); } body.desktop-mini .sidebar { width: var(--sidebar-w-mini); } body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; } body.desktop-mini .brand { justify-content: center; padding-left: 0; } body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; } body.desktop-mini .nav-icon { margin-right: 0; } }
-    @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); } body.mobile-active .sidebar { left: 0; } .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); } body.mobile-active .backdrop { display: block; } }
+    @media (min-width: 769px) {
+      .sidebar { width: var(--sidebar-w-full); }
+      body.desktop-mini .sidebar { width: var(--sidebar-w-mini); }
+      body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; }
+      body.desktop-mini .brand { justify-content: center; padding-left: 0; }
+      body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; }
+      body.desktop-mini .nav-icon { margin-right: 0; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); }
+      body.mobile-active .sidebar { left: 0; }
+      .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); }
+      body.mobile-active .backdrop { display: block; }
+    }
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-height: 45px; overflow: hidden; white-space: nowrap; }
     .brand-logo { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
     .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
@@ -63,7 +75,7 @@
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
-    .banner-actions { display: flex; gap: 10px; } 
+    .banner-actions { display: flex; gap: 10px; }
     .btn-action { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
     .btn-action:hover { background: rgba(255,255,255,0.3); }
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
@@ -124,15 +136,15 @@
 <body>
 
 <div id="login-screen">
-    <div class="login-box">
-        <div style="width:60px; height:60px; background:var(--primary); border-radius:12px; margin:0 auto 20px; display:grid; place-items:center;">
-             <span class="material-icons-round" style="color:white; font-size:32px;">school</span>
-        </div>
-        <h2 style="margin:0 0 10px; color:var(--text-main);">Selamat Datang</h2>
-        <p style="color:var(--text-muted); font-size:14px; margin:0 0 20px;">Portal Rasmi PPKI SK Paya Resak</p>
-        <button id="btnLoginGoogle" class="login-btn-google"><span class="material-icons-round">login</span> Masuk dengan Google</button>
-        <p id="loginStatus" style="font-size:12px; margin-top:20px; color:var(--text-muted);"></p>
+  <div class="login-box">
+    <div style="width:60px; height:60px; background:var(--primary); border-radius:12px; margin:0 auto 20px; display:grid; place-items:center;">
+      <span class="material-icons-round" style="color:white; font-size:32px;">school</span>
     </div>
+    <h2 style="margin:0 0 10px; color:var(--text-main);">Selamat Datang</h2>
+    <p style="color:var(--text-muted); font-size:14px; margin:0 0 20px;">Portal Rasmi PPKI SK Paya Resak</p>
+    <button id="btnLoginGoogle" class="login-btn-google"><span class="material-icons-round">login</span> Masuk dengan Google</button>
+    <p id="loginStatus" style="font-size:12px; margin-top:20px; color:var(--text-muted);"></p>
+  </div>
 </div>
 
 <div id="loading-overlay"><div class="spinner"></div></div>
@@ -168,14 +180,18 @@
       <div id="page-home" class="page-section">
         <div class="page-banner">
           <div class="banner-text"><h2>Dashboard</h2><p>Selamat Datang ke Portal Rasmi PPKI</p></div>
-          <div class="banner-actions"><button class="btn-action" onclick="forceReload('all')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload Semua</button></div>
+          <div class="banner-actions">
+            <button class="btn-action" onclick="forceReload('all')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload Semua</button>
+          </div>
         </div>
+
         <div class="dashboard-grid">
           <div class="card stat-card clickable" onclick="navTo('attendance')"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card clickable" onclick="navTo('attendance')"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
           <div class="card stat-card clickable" onclick="navTo('attendance')"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
           <div class="card stat-card clickable" onclick="navTo('announcements')"><div class="stat-label">Pengumuman</div><div class="stat-val" id="dAnn">-</div><div class="stat-sub">Aktif</div></div>
         </div>
+
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:20px;">
             <h3 style="margin:0; font-size:16px;">📈 Trend Harian</h3>
@@ -192,42 +208,66 @@
 
       <div id="page-emailcheck" class="page-section" style="display:none;">
         <div class="page-banner">
-            <div class="banner-text"><h2>Semakan ID Delima</h2><p>Semak Emel & Kata Laluan Murid</p></div>
-            <div class="banner-actions"><button class="btn-action" onclick="forceReload('db')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+          <div class="banner-text"><h2>Semakan ID Delima</h2><p>Semak Emel & Kata Laluan Murid</p></div>
+          <div class="banner-actions">
+            <button class="btn-action" onclick="forceReload('db')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+          </div>
         </div>
+
         <div class="card" style="max-width:600px; margin:0 auto;">
-            <div style="text-align:center; margin-bottom:20px;">
-                <span class="material-icons-round" style="font-size:48px; color:var(--primary);">fingerprint</span>
-                <p style="color:var(--text-muted); font-size:13px; margin-top:5px;">Sila masukkan No. Kad Pengenalan murid untuk semakan.</p>
+          <div style="text-align:center; margin-bottom:20px;">
+            <span class="material-icons-round" style="font-size:48px; color:var(--primary);">fingerprint</span>
+            <p style="color:var(--text-muted); font-size:13px; margin-top:5px;">Sila masukkan No. Kad Pengenalan murid untuk semakan.</p>
+          </div>
+          <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input id="inputIC" class="form-input" placeholder="Contoh: 123456789012" style="flex:1; text-align:center; letter-spacing:1px;">
+            <button class="btn btn-primary" onclick="checkEmail()">Semak</button>
+          </div>
+
+          <div id="idResultContainer" class="id-result-box">
+            <div class="id-result-item"><span class="id-label">NAMA MURID</span><span class="id-value" id="resNama">-</span></div>
+            <div class="id-result-item">
+              <span class="id-label">EMEL DELIMA</span>
+              <div class="id-value-group">
+                <span class="id-value" id="resEmail" style="color:var(--primary);">-</span>
+                <button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
+              </div>
             </div>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <input id="inputIC" class="form-input" placeholder="Contoh: 123456789012" style="flex:1; text-align:center; letter-spacing:1px;">
-                <button class="btn btn-primary" onclick="checkEmail()">Semak</button>
+            <div class="id-result-item">
+              <span class="id-label">KATA LALUAN</span>
+              <div class="id-value-group">
+                <span class="id-value" id="resPass" style="color:var(--accent);">-</span>
+                <button class="copy-btn" onclick="copyText('resPass')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
+              </div>
             </div>
-            
-            <div id="idResultContainer" class="id-result-box">
-                <div class="id-result-item"><span class="id-label">NAMA MURID</span><span class="id-value" id="resNama">-</span></div>
-                <div class="id-result-item"><span class="id-label">EMEL DELIMA</span><div class="id-value-group"><span class="id-value" id="resEmail" style="color:var(--primary);">-</span><button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
-                <div class="id-result-item"><span class="id-label">KATA LALUAN</span><div class="id-value-group"><span class="id-value" id="resPass" style="color:var(--accent);">-</span><button class="copy-btn" onclick="copyText('resPass')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
-            </div>
-            <p id="idError" style="text-align:center; color:#B42318; font-size:13px; display:none; margin-top:10px;"></p>
+          </div>
+          <p id="idError" style="text-align:center; color:#B42318; font-size:13px; display:none; margin-top:10px;"></p>
         </div>
       </div>
 
       <div id="page-attendance" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('att')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
+        <div class="page-banner">
+          <div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div>
+          <div class="banner-actions">
+            <button class="btn-action" onclick="forceReload('att')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+            <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+          </div>
+        </div>
+
         <div class="dashboard-grid">
           <div class="card"><div class="stat-label">Hadir (Tapis)</div><div class="stat-val" id="attStatHadir">-</div></div>
           <div class="card"><div class="stat-label">Tidak Hadir (Tapis)</div><div class="stat-val" id="attStatTidak">-</div></div>
           <div class="card"><div class="stat-label">Peratus (Tapis)</div><div class="stat-val" id="attStatPct">-</div></div>
           <div class="card"><div class="stat-label">Jumlah Rekod</div><div class="stat-val" id="attStatTotal">-</div></div>
         </div>
+
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input class="form-input" id="searchAtt" placeholder="Cari Nama Murid..." style="flex:1;">
             <button class="btn btn-outline" onclick="toggleFilterPanel('attFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan</button>
             <button class="btn btn-primary" onclick="applyFilterAtt()">Cari</button>
           </div>
+
           <div id="attFilters" class="filter-panel">
             <div class="filter-grid">
               <div><label class="filter-label">Tarikh Mula</label><input type="date" class="form-input" id="filterDateStart"></div>
@@ -238,20 +278,34 @@
             </div>
             <div style="text-align:right"><button class="btn btn-outline" onclick="resetFilterAtt()">Reset</button> <button class="btn btn-primary" onclick="applyFilterAtt()">Terapkan</button></div>
           </div>
+
           <div class="print-header"><h2>LAPORAN KEHADIRAN MURID PPKI</h2><p>SK PAYA RESAK</p></div>
-          <div class="table-wrap"><table><thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Status</th></tr></thead><tbody id="attBody"></tbody></table></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Status</th></tr></thead>
+              <tbody id="attBody"></tbody>
+            </table>
+          </div>
           <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="attCount"></div>
         </div>
       </div>
 
       <div id="page-pajsk" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('pajsk')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
+        <div class="page-banner">
+          <div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div>
+          <div class="banner-actions">
+            <button class="btn-action" onclick="forceReload('pajsk')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+            <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+          </div>
+        </div>
+
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input class="form-input" id="searchPajsk" placeholder="Cari Nama / Acara..." style="flex:1;">
             <button class="btn btn-outline" onclick="toggleFilterPanel('pajskFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan</button>
             <button class="btn btn-primary" onclick="renderPajskTable()">Cari</button>
           </div>
+
           <div id="pajskFilters" class="filter-panel">
             <div class="filter-grid">
               <div><label class="filter-label">Tahun</label><select class="form-select" id="fPajskTahun"><option value="">Semua</option></select></div>
@@ -263,8 +317,14 @@
             </div>
             <div style="text-align:right"><button class="btn btn-outline" onclick="resetPajskFilters()">Reset</button> <button class="btn btn-primary" onclick="renderPajskTable()">Terapkan</button></div>
           </div>
+
           <div class="print-header"><h2>LAPORAN PAJSK PPKI</h2><p>SK PAYA RESAK</p></div>
-          <div class="table-wrap"><table><thead><tr><th>Tahun</th><th>Tarikh</th><th>Unit</th><th>Kelas</th><th>Nama Murid</th><th>Acara</th><th>Penglibatan</th><th>Pencapaian</th></tr></thead><tbody id="pajskBody"></tbody></table></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tahun</th><th>Tarikh</th><th>Unit</th><th>Kelas</th><th>Nama Murid</th><th>Acara</th><th>Penglibatan</th><th>Pencapaian</th></tr></thead>
+              <tbody id="pajskBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -275,7 +335,7 @@
         <div class="dashboard-grid">
           <div class="card clickable" onclick="window.open('https://www.canva.com/design/DAGj-NSCaiM/dFdneny6BMl3IR4EOgn7aw/view?utm_content=DAGj-NSCaiM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha053443e84', '_blank')">
             <div style="display:flex; justify-content:center; align-items:center; height:100px; background:var(--primary-light); border-radius:12px; margin-bottom:15px;">
-               <span class="material-icons-round" style="font-size:48px; color:var(--primary);">inventory_2</span>
+              <span class="material-icons-round" style="font-size:48px; color:var(--primary);">inventory_2</span>
             </div>
             <h4 style="text-align:center; margin:0;">OPR 2025</h4>
             <p style="text-align:center; color:var(--text-muted); font-size:12px;">Klik untuk lihat</p>
@@ -283,7 +343,7 @@
 
           <div class="card clickable" onclick="window.open('https://www.canva.com/design/DAG7lN9ebrs/Y2M_3qNm6U0Q7ge1EEpsZA/view?utm_content=DAG7lN9ebrs&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h13988d7b9d', '_blank')">
             <div style="display:flex; justify-content:center; align-items:center; height:100px; background:var(--bg-element); border-radius:12px; margin-bottom:15px;">
-               <span class="material-icons-round" style="font-size:48px; color:var(--text-muted);">folder_open</span>
+              <span class="material-icons-round" style="font-size:48px; color:var(--text-muted);">folder_open</span>
             </div>
             <h4 style="text-align:center; margin:0;">OPR 2026</h4>
             <p style="text-align:center; color:var(--text-muted); font-size:12px;">Klik untuk lihat</p>
@@ -292,12 +352,18 @@
       </div>
 
       <div id="page-announcements" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('ann')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
+        <div class="page-banner">
+          <div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div>
+          <div class="banner-actions"><button class="btn-action" onclick="forceReload('ann')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+        </div>
         <div class="dashboard-grid" id="annGrid" style="grid-template-columns: 1fr 1fr;"></div>
       </div>
 
       <div id="page-calendar" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Takwim</h2><p>Jadual Aktiviti</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('cal')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
+        <div class="page-banner">
+          <div class="banner-text"><h2>Takwim</h2><p>Jadual Aktiviti</p></div>
+          <div class="banner-actions"><button class="btn-action" onclick="forceReload('cal')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+        </div>
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input id="searchCal" class="form-input" placeholder="Cari Aktiviti..." style="flex:1;">
@@ -318,15 +384,46 @@
       </div>
 
       <div id="page-parents" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Info Ibu Bapa</h2><p>Pautan & Dokumen</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('par')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
+        <div class="page-banner">
+          <div class="banner-text"><h2>Info Ibu Bapa</h2><p>Pautan & Dokumen</p></div>
+          <div class="banner-actions"><button class="btn-action" onclick="forceReload('par')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+        </div>
         <div class="dashboard-grid" id="parentsGrid"></div>
       </div>
+
     </div>
   </main>
 </div>
 
-<div class="modal-overlay" id="infoModal"><div class="modal-content"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;"><h3 style="margin:0" id="infoTitle">Tajuk</h3><button class="icon-btn" onclick="document.getElementById('infoModal').classList.remove('active')"><span class="material-icons-round">close</span></button></div><div id="infoBody" style="line-height:1.6; font-size:14px; color:var(--text-main);"></div></div></div>
-<div class="modal-overlay" id="settingsModal"><div class="modal-content"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 style="margin:0">Tetapan Portal</h3><button class="icon-btn" onclick="closeSettings()"><span class="material-icons-round">close</span></button></div><div id="pinStep"><input type="password" id="pinInput" class="form-input" placeholder="PIN Keselamatan" style="width:100%; text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:15px;"><button class="btn btn-primary" onclick="checkPin()" style="width:100%">Sahkan</button></div><div id="settingStep" style="display:none;"><label style="font-weight:600; font-size:12px; display:block; margin-top:10px;">Nama Sekolah</label><input id="setName" class="form-input" style="width:100%"><div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); font-weight:700; font-size:13px;">Paparan Menu</div><div id="menuManagerList"></div><button class="btn btn-primary" onclick="saveSettings()" style="width:100%; margin-top:20px;">Simpan Perubahan</button></div></div></div>
+<div class="modal-overlay" id="infoModal">
+  <div class="modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h3 style="margin:0" id="infoTitle">Tajuk</h3>
+      <button class="icon-btn" onclick="document.getElementById('infoModal').classList.remove('active')"><span class="material-icons-round">close</span></button>
+    </div>
+    <div id="infoBody" style="line-height:1.6; font-size:14px; color:var(--text-main);"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3 style="margin:0">Tetapan Portal</h3>
+      <button class="icon-btn" onclick="closeSettings()"><span class="material-icons-round">close</span></button>
+    </div>
+    <div id="pinStep">
+      <input type="password" id="pinInput" class="form-input" placeholder="PIN Keselamatan" style="width:100%; text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:15px;">
+      <button class="btn btn-primary" onclick="checkPin()" style="width:100%">Sahkan</button>
+    </div>
+    <div id="settingStep" style="display:none;">
+      <label style="font-weight:600; font-size:12px; display:block; margin-top:10px;">Nama Sekolah</label>
+      <input id="setName" class="form-input" style="width:100%">
+      <div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); font-weight:700; font-size:13px;">Paparan Menu</div>
+      <div id="menuManagerList"></div>
+      <button class="btn btn-primary" onclick="saveSettings()" style="width:100%; margin-top:20px;">Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -348,7 +445,7 @@
 
   const DEFAULTS = {
     schoolName: "SK Paya Resak",
-    pin: "5235", 
+    pin: "5235",
     urls: {
       attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWi_5VfDz43sMFydp926q062CCPLyRnNUZyAGtlSk_9xv3gI0Xo0I7VMGSlj-llcpYCFHggVP289Ja/pub?gid=944218320&single=true&output=csv",
       pajsk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQoRKdkGyefQ6iSz1HVsXTEenUDbSKjC_XXlq8qQLFYg6IjnSkaixKsg0ajT88VvfnnjkGaDNtxvvD7/pub?gid=816416312&single=true&output=csv",
@@ -374,11 +471,34 @@
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
 
+  // === FIX: elak init double-run ===
+  let __APP_STARTED__ = false;
+
+  function showLoading(on){
+    const el = document.getElementById('loading-overlay');
+    if(!el) return;
+    el.style.display = on ? 'grid' : 'none';
+  }
+
+  function safeRun(fn, name){
+    try { return fn(); }
+    catch(e){
+      console.error(`[SAFE] ${name} crashed:`, e);
+      return null;
+    }
+  }
+
+  // === FIX: init hanya sekali ===
   window.init = function() {
+    if(__APP_STARTED__) return;
+    __APP_STARTED__ = true;
+
     applyTheme();
     setupTrendSelectors();
-    loadAllData();
     document.querySelector('.brand-text h1').textContent = CONFIG.schoolName;
+
+    // load data (fail-safe)
+    loadAllData();
   }
 
   window.handleAuth = function() {
@@ -388,6 +508,15 @@
       signInWithPopup(auth, provider).catch(e => alert(e.message));
     }
   }
+
+  // === FIX: butang login screen memang trigger sign in ===
+  document.getElementById('btnLoginGoogle')?.addEventListener('click', () => {
+    document.getElementById('loginStatus').innerText = "Sedang log masuk...";
+    signInWithPopup(auth, provider).catch(e => {
+      document.getElementById('loginStatus').innerText = "Gagal: " + (e?.message || e);
+      alert(e.message || e);
+    });
+  });
 
   onAuthStateChanged(auth, (user) => {
     const btn = document.getElementById('authBtn');
@@ -399,29 +528,41 @@
     if (user) {
       if (ADMIN_EMAILS.includes(user.email)) USER_ROLE = 'admin';
       else USER_ROLE = 'family';
+
       btn.textContent = "Log Keluar";
       btn.style.background = "#B42318";
       info.style.display = "block";
-      info.innerHTML = `<div>${user.displayName}</div><div style="color:var(--primary); font-size:10px">${USER_ROLE.toUpperCase()}</div>`;
-      if(USER_ROLE === 'admin') gear.style.display = 'grid';
+      info.innerHTML = `<div>${user.displayName || user.email}</div><div style="color:var(--primary); font-size:10px">${USER_ROLE.toUpperCase()}</div>`;
+      gear.style.display = (USER_ROLE === 'admin') ? 'grid' : 'none';
+
       loginScreen.style.opacity = '0';
-      setTimeout(() => { loginScreen.style.display = 'none'; appContainer.style.display = 'flex'; init(); }, 500);
+      setTimeout(() => {
+        loginScreen.style.display = 'none';
+        appContainer.style.display = 'flex';
+        init();
+      }, 300);
+
     } else {
       USER_ROLE = 'public';
       btn.textContent = "Log Masuk";
       btn.style.background = "var(--primary)";
       info.style.display = "none";
       gear.style.display = "none";
-      loginScreen.style.display = 'none'; 
+
+      // untuk public: terus masuk app (tanpa login)
+      loginScreen.style.display = 'none';
       appContainer.style.display = 'flex';
       init();
     }
-    renderSidebar(); 
+
+    renderSidebar();
+
+    // safety: kalau page tak patut akses, balikan home
     const activePage = document.querySelector('.page-section[style*="block"]');
     if (activePage && activePage.id !== 'page-home') {
-       const menu = CONFIG.menus.find(m => 'page-'+m.id === activePage.id);
-       if (menu && (menu.role === 'admin' && USER_ROLE !== 'admin')) window.navTo('home');
-       if (menu && (menu.role === 'family' && USER_ROLE === 'public')) window.navTo('home');
+      const menu = CONFIG.menus.find(m => 'page-'+m.id === activePage.id);
+      if (menu && (menu.role === 'admin' && USER_ROLE !== 'admin')) window.navTo('home');
+      if (menu && (menu.role === 'family' && USER_ROLE === 'public')) window.navTo('home');
     }
   });
 
@@ -438,6 +579,7 @@
       if(m.hidden) return;
       if (m.role === 'admin' && USER_ROLE !== 'admin') return;
       if (m.role === 'family' && USER_ROLE === 'public') return;
+
       const a = document.createElement('a');
       a.className = `nav-item ${m.id==='home'?'active':''}`;
       a.id = `nav-${m.id}`;
@@ -451,184 +593,189 @@
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     const el = document.getElementById(`nav-${id}`);
     if(el) el.classList.add('active');
+
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
-    document.getElementById(`page-${id}`).style.display='block';
+    const page = document.getElementById(`page-${id}`);
+    if(page) page.style.display='block';
+
     if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
   }
 
-  window.toggleFilterPanel = function(id) { document.getElementById(id).classList.toggle('open'); }
+  window.toggleFilterPanel = function(id) {
+    document.getElementById(id)?.classList.toggle('open');
+  }
 
+  // === FIX: fetch CSV ada TIMEOUT supaya tak hang ===
   async function fetchCSV(url) {
     if(!url) return [];
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
     try {
-      // ANTI-CACHE AGGRESSIVE
-      const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now() + Math.random());
+      const cacheBuster = (url.includes('?') ? '&' : '?') + 't=' + Date.now() + Math.random();
+      const res = await fetch(url + cacheBuster, { signal: controller.signal });
       const text = await res.text();
       return parseCSV(text);
-    } catch(e) { 
-        console.error("Gagal muat data:", e); 
-        return null; 
+    } catch(e) {
+      console.error("Gagal muat data:", url, e);
+      return null;
+    } finally {
+      clearTimeout(timeout);
     }
   }
 
-function parseCSV(text) {
-  if (!text) return [];
-  // normalize line endings
-  text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  function parseCSV(text) {
+    if (!text) return [];
+    text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
-  const rows = [];
-  let row = [];
-  let cur = "";
-  let inQuotes = false;
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
 
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    const next = text[i + 1];
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const next = text[i + 1];
 
-    if (ch === '"') {
-      // escaped quote ""
-      if (inQuotes && next === '"') {
-        cur += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
+      if (ch === '"') {
+        if (inQuotes && next === '"') { cur += '"'; i++; }
+        else { inQuotes = !inQuotes; }
+        continue;
       }
-      continue;
+
+      if (ch === "," && !inQuotes) { row.push(cur); cur = ""; continue; }
+
+      if (ch === "\n" && !inQuotes) {
+        row.push(cur); rows.push(row);
+        row = []; cur = "";
+        continue;
+      }
+
+      cur += ch;
     }
 
-    if (ch === "," && !inQuotes) {
-      row.push(cur);
-      cur = "";
-      continue;
-    }
+    row.push(cur);
+    rows.push(row);
 
-    if (ch === "\n" && !inQuotes) {
-      row.push(cur);
-      rows.push(row);
-      row = [];
-      cur = "";
-      continue;
-    }
+    while (rows.length && rows[rows.length - 1].every(c => (c || "").trim() === "")) rows.pop();
+    if (!rows.length) return [];
 
-    cur += ch;
-  }
+    const headers = rows[0].map(h => (h || "").trim().toUpperCase());
+    const dataRows = rows.slice(1).filter(r => r.some(c => (c || "").trim() !== ""));
 
-  // last cell
-  row.push(cur);
-  rows.push(row);
-
-  // buang row kosong hujung
-  while (rows.length && rows[rows.length - 1].every(c => (c || "").trim() === "")) {
-    rows.pop();
-  }
-
-  if (!rows.length) return [];
-
-  const headers = rows[0].map(h => (h || "").trim().toUpperCase());
-  const dataRows = rows.slice(1).filter(r => r.some(c => (c || "").trim() !== ""));
-
-  return dataRows.map(r => {
-    const obj = {};
-    headers.forEach((h, idx) => {
-      obj[h] = (r[idx] ?? "").trim();
+    return dataRows.map(r => {
+      const obj = {};
+      headers.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
+      return obj;
     });
-    return obj;
-  });
-}
-
+  }
 
   function getVal(row, keyPart) {
+    if(!row) return "";
     const key = Object.keys(row).find(k => k.includes(keyPart.toUpperCase()));
     return key ? row[key] : "";
   }
 
   function parseDateStr(dStr) {
     if(!dStr) return null;
-    dStr = dStr.trim().replace(/^"|"$/g, ''); // Buang quote kalau ada
+    dStr = String(dStr).trim().replace(/^"|"$/g, '');
     if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
       const p = dStr.split('/');
-      return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`; 
+      return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
     }
     return dStr;
   }
 
+  // === FIX: overlay pasti tutup walau apa jadi ===
   async function loadAllData() {
-    document.getElementById('loading-overlay').style.display = 'grid';
-    const results = await Promise.all([
-      fetchCSV(CONFIG.urls.attendance),
-      fetchCSV(CONFIG.urls.pajsk),
-      fetchCSV(CONFIG.urls.announcements),
-      fetchCSV(CONFIG.urls.calendar),
-      fetchCSV(CONFIG.urls.parents),
-      fetchCSV(CONFIG.urls.database)
-    ]);
-    if(results[0]) DATA.att = results[0];
-    if(results[1]) DATA.pajsk = results[1];
-    if(results[2]) DATA.ann = results[2];
-    if(results[3]) DATA.cal = results[3];
-    if(results[4]) DATA.par = results[4];
-    if(results[5]) DATA.db = results[5];
+    showLoading(true);
+    try {
+      const results = await Promise.all([
+        fetchCSV(CONFIG.urls.attendance),
+        fetchCSV(CONFIG.urls.pajsk),
+        fetchCSV(CONFIG.urls.announcements),
+        fetchCSV(CONFIG.urls.calendar),
+        fetchCSV(CONFIG.urls.parents),
+        fetchCSV(CONFIG.urls.database)
+      ]);
 
-    processAttendance();
-    renderAnn();
-    initPajsk();
-    renderParents();
-    initCalendar();
-    renderCalendarTable();
-    document.getElementById('loading-overlay').style.display = 'none';
+      if(results[0]) DATA.att = results[0];
+      if(results[1]) DATA.pajsk = results[1];
+      if(results[2]) DATA.ann = results[2];
+      if(results[3]) DATA.cal = results[3];
+      if(results[4]) DATA.par = results[4];
+      if(results[5]) DATA.db = results[5];
+
+      safeRun(() => processAttendance(), 'processAttendance');
+      safeRun(() => renderAnn(), 'renderAnn');
+      safeRun(() => initPajsk(), 'initPajsk');
+      safeRun(() => renderParents(), 'renderParents');
+      safeRun(() => initCalendar(), 'initCalendar');
+      safeRun(() => renderCalendarTable(), 'renderCalendarTable');
+
+    } catch(e) {
+      console.error("loadAllData ERROR:", e);
+      alert("Ada masalah masa load data. Sila cuba Reload. (Rujuk Console untuk detail)");
+    } finally {
+      showLoading(false);
+    }
   }
 
-  // FORCE RELOAD SPECIFIC
   window.forceReload = async function(type) {
-    document.getElementById('loading-overlay').style.display = 'grid';
-    let url = '';
-    if(type === 'all') { await loadAllData(); return; }
-    
-    if(type === 'att') url = CONFIG.urls.attendance;
-    else if(type === 'pajsk') url = CONFIG.urls.pajsk;
-    else if(type === 'ann') url = CONFIG.urls.announcements;
-    else if(type === 'cal') url = CONFIG.urls.calendar;
-    else if(type === 'par') url = CONFIG.urls.parents;
-    else if(type === 'db') url = CONFIG.urls.database;
+    showLoading(true);
+    try {
+      if(type === 'all') { await loadAllData(); return; }
 
-    const data = await fetchCSV(url);
-    if(data) {
-        if(type === 'att') { DATA.att = data; processAttendance(); }
-        else if(type === 'pajsk') { DATA.pajsk = data; initPajsk(); }
-        else if(type === 'ann') { DATA.ann = data; renderAnn(); }
-        else if(type === 'cal') { DATA.cal = data; initCalendar(); renderCalendarTable(); }
-        else if(type === 'par') { DATA.par = data; renderParents(); }
+      let url = '';
+      if(type === 'att') url = CONFIG.urls.attendance;
+      else if(type === 'pajsk') url = CONFIG.urls.pajsk;
+      else if(type === 'ann') url = CONFIG.urls.announcements;
+      else if(type === 'cal') url = CONFIG.urls.calendar;
+      else if(type === 'par') url = CONFIG.urls.parents;
+      else if(type === 'db') url = CONFIG.urls.database;
+
+      const data = await fetchCSV(url);
+      if(data) {
+        if(type === 'att') { DATA.att = data; safeRun(() => processAttendance(), 'processAttendance'); }
+        else if(type === 'pajsk') { DATA.pajsk = data; safeRun(() => initPajsk(), 'initPajsk'); }
+        else if(type === 'ann') { DATA.ann = data; safeRun(() => renderAnn(), 'renderAnn'); }
+        else if(type === 'cal') { DATA.cal = data; safeRun(() => initCalendar(), 'initCalendar'); safeRun(() => renderCalendarTable(), 'renderCalendarTable'); }
+        else if(type === 'par') { DATA.par = data; safeRun(() => renderParents(), 'renderParents'); }
         else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); }
+      } else {
+        alert("Gagal muat data. Sila cuba lagi.");
+      }
+    } finally {
+      showLoading(false);
     }
-    document.getElementById('loading-overlay').style.display = 'none';
   }
 
   /* ================= EMAIL CHECK LOGIC WITH COPY ================= */
   window.checkEmail = function() {
-      const ic = document.getElementById('inputIC').value.trim();
-      const resBox = document.getElementById('idResultContainer');
-      const errBox = document.getElementById('idError');
-      if(!DATA.db || DATA.db.length === 0) { alert('Data belum sedia. Sila tekan Reload.'); return; }
+    const ic = document.getElementById('inputIC').value.trim();
+    const resBox = document.getElementById('idResultContainer');
+    const errBox = document.getElementById('idError');
 
-      const student = DATA.db.find(r => {
-          const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO');
-          return kp && kp.replace(/[^0-9]/g, '') === ic.replace(/[^0-9]/g, '');
-      });
+    if(!DATA.db || DATA.db.length === 0) { alert('Data belum sedia. Sila tekan Reload.'); return; }
+    if(!ic) { alert("Sila isi No KP."); return; }
 
-      if(student) {
-          document.getElementById('resNama').innerText = getVal(student, 'NAMA');
-          
-          // UBAH LOGIK CARIAN DI SINI (CARI 'MULA' / 'TAMAT')
-          document.getElementById('resEmail').innerText = getVal(student, 'DELIMA') || getVal(student, 'EMEL') || '-';
-          document.getElementById('resPass').innerText = getVal(student, 'LALUAN') || getVal(student, 'PASS') || getVal(student, 'KATA') || '-';
-          
-          resBox.style.display = 'block';
-          errBox.style.display = 'none';
-      } else {
-          resBox.style.display = 'none';
-          errBox.innerText = "Rekod tidak dijumpai. Sila semak nombor kad pengenalan.";
-          errBox.style.display = 'block';
-      }
+    const student = DATA.db.find(r => {
+      const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO');
+      return kp && kp.replace(/[^0-9]/g, '') === ic.replace(/[^0-9]/g, '');
+    });
+
+    if(student) {
+      document.getElementById('resNama').innerText = getVal(student, 'NAMA') || '-';
+      document.getElementById('resEmail').innerText = getVal(student, 'DELIMA') || getVal(student, 'EMEL') || '-';
+      document.getElementById('resPass').innerText = getVal(student, 'LALUAN') || getVal(student, 'PASS') || getVal(student, 'KATA') || '-';
+
+      resBox.style.display = 'block';
+      errBox.style.display = 'none';
+    } else {
+      resBox.style.display = 'none';
+      errBox.innerText = "Rekod tidak dijumpai. Sila semak nombor kad pengenalan.";
+      errBox.style.display = 'block';
+    }
   }
 
   window.copyText = function(id) {
@@ -639,25 +786,37 @@ function parseCSV(text) {
 
   /* ================= ATTENDANCE ================= */
   function processAttendance() {
-    if(!DATA.att.length) return;
+    if(!DATA.att || !DATA.att.length) {
+      document.getElementById('attBody').innerHTML = `<tr><td colspan="5">Tiada Data.</td></tr>`;
+      return;
+    }
+
     DATA_ATT_CLEAN = DATA.att.map(r => {
       const dStr = getVal(r, 'TARIKH');
       const isoDate = parseDateStr(dStr);
       return {
-        date: dStr, isoDate: isoDate, rawDate: new Date(isoDate),
-        name: getVal(r, 'NAMA'), kelas: getVal(r, 'KELAS'),
-        gender: getVal(r, 'JANTINA') || '-', status: getVal(r, 'STATUS').toUpperCase()
+        date: dStr,
+        isoDate: isoDate,
+        rawDate: new Date(isoDate),
+        name: getVal(r, 'NAMA'),
+        kelas: getVal(r, 'KELAS'),
+        gender: getVal(r, 'JANTINA') || '-',
+        status: (getVal(r, 'STATUS') || '').toUpperCase()
       };
     }).filter(r => r.isoDate && !isNaN(r.rawDate));
+
     DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
+
     const todayStr = new Date().toISOString().split('T')[0];
     const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
     const present = todayRecs.filter(r => r.status === 'HADIR').length;
     const absent = todayRecs.filter(r => r.status.includes('TIDAK')).length;
+
     document.getElementById('dToday').innerText = present;
     document.getElementById('dAbsent').innerText = `${absent} Tidak Hadir`;
     document.getElementById('dWeek').innerText = DATA_ATT_CLEAN.length;
-    document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(todayRecs.length||1))*100) + "%" : "0%";
+    document.getElementById('dPct').innerText = todayRecs.length ? Math.round((present/todayRecs.length)*100) + "%" : "0%";
+
     populateAttSelectors();
     renderAttTable(DATA_ATT_CLEAN);
     updateAttStats(DATA_ATT_CLEAN);
@@ -666,7 +825,16 @@ function parseCSV(text) {
 
   function renderAttTable(data) {
     const tb = document.getElementById('attBody');
-    tb.innerHTML = data.slice(0,100).map(r => `<tr><td>${r.date}</td><td><strong>${r.name}</strong></td><td>${r.kelas}</td><td>${r.gender}</td><td><span class="badge ${r.status==='HADIR'?'b-green':'b-red'}">${r.status}</span></td></tr>`).join('');
+    const slice = data.slice(0,100);
+    tb.innerHTML = slice.map(r => `
+      <tr>
+        <td>${escapeHtml(r.date)}</td>
+        <td><strong>${escapeHtml(r.name)}</strong></td>
+        <td>${escapeHtml(r.kelas)}</td>
+        <td>${escapeHtml(r.gender)}</td>
+        <td><span class="badge ${r.status==='HADIR'?'b-green':'b-red'}">${escapeHtml(r.status || '-')}</span></td>
+      </tr>
+    `).join('');
     document.getElementById('attCount').innerText = `Papar: ${Math.min(data.length,100)} / ${data.length} rekod.`;
   }
 
@@ -687,13 +855,18 @@ function parseCSV(text) {
     const g = document.getElementById('filterGenderAtt').value;
     const start = document.getElementById('filterDateStart').value;
     const end = document.getElementById('filterDateEnd').value;
+
     const filtered = DATA_ATT_CLEAN.filter(r => {
       let dOk = true;
       if(start && end) dOk = r.isoDate >= start && r.isoDate <= end;
-      return dOk && (!q || r.name.toLowerCase().includes(q)) &&
-             (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) &&
-             (!s || (s==='HADIR'?r.status==='HADIR':r.status.includes('TIDAK')));
+
+      return dOk &&
+        (!q || (r.name||'').toLowerCase().includes(q)) &&
+        (!c || r.kelas === c) &&
+        (!g || (r.gender||'').toUpperCase() === g) &&
+        (!s || (s==='HADIR' ? r.status==='HADIR' : r.status.includes('TIDAK')));
     });
+
     renderAttTable(filtered);
     updateAttStats(filtered);
   }
@@ -710,40 +883,48 @@ function parseCSV(text) {
   }
 
   function populateAttSelectors() {
-    const classes = [...new Set(DATA_ATT_CLEAN.map(r => r.kelas))].sort();
-    const opts = '<option value="">Semua Kelas</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
+    const classes = [...new Set(DATA_ATT_CLEAN.map(r => r.kelas).filter(Boolean))].sort();
+    const opts = '<option value="">Semua Kelas</option>' + classes.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
     document.getElementById('filterClassAtt').innerHTML = opts;
     document.getElementById('trendClass').innerHTML = opts;
   }
 
-  /* ================= PAJSK (UPDATED WITH YEAR) ================= */
+  /* ================= PAJSK ================= */
   function initPajsk() {
-    const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
-    DATA.pajsk = cleanPajsk;
+    if(!DATA.pajsk) DATA.pajsk = [];
+    DATA.pajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
+
     const pop = (id, key) => {
-      const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
-      document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
+      const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)).filter(Boolean))].sort();
+      document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${escapeHtml(v)}</option>`).join('');
     };
-    // Auto detect Year from TAHUN column, fallback to extracting from date
+
     let years = [...new Set(DATA.pajsk.map(r => {
-        let y = getVal(r, 'TAHUN');
-        if(!y) {
-            let d = parseDateStr(getVal(r, 'TARIKH'));
-            if(d) y = d.split('-')[0];
-        }
-        return y;
+      let y = getVal(r, 'TAHUN');
+      if(!y) {
+        const d = parseDateStr(getVal(r, 'TARIKH'));
+        if(d) y = d.split('-')[0];
+      }
+      return y;
     }))].filter(Boolean).sort();
-    document.getElementById('fPajskTahun').innerHTML = '<option value="">Semua</option>' + years.map(y=>`<option>${y}</option>`).join('');
+
+    document.getElementById('fPajskTahun').innerHTML = '<option value="">Semua</option>' + years.map(y=>`<option>${escapeHtml(y)}</option>`).join('');
 
     pop('fPajskUnit', 'UNIT');
     pop('fPajskKelas', 'KELAS');
     pop('fPajskLibat', 'PENGLIBATAN');
     pop('fPajskCapai', 'PENCAPAIAN');
+
     renderPajskTable();
   }
 
   window.renderPajskTable = function() {
-    if(!DATA.pajsk.length) { document.getElementById('pajskBody').innerHTML='<tr><td colspan="7">Tiada Data.</td></tr>'; return; }
+    const body = document.getElementById('pajskBody');
+    if(!DATA.pajsk || !DATA.pajsk.length) {
+      body.innerHTML = `<tr><td colspan="8">Tiada Data.</td></tr>`;
+      return;
+    }
+
     const q = document.getElementById('searchPajsk').value.toLowerCase();
     const fTahun = document.getElementById('fPajskTahun').value;
     const fDate = document.getElementById('fPajskDate').value;
@@ -756,32 +937,38 @@ function parseCSV(text) {
       const name = (getVal(r, 'NAMA')||"").toLowerCase();
       const acara = (getVal(r, 'ACARA')||"").toLowerCase();
       const searchMatch = !q || name.includes(q) || acara.includes(q);
+
       const iso = parseDateStr(getVal(r, 'TARIKH'));
-      
       let year = getVal(r, 'TAHUN');
       if(!year && iso) year = iso.split('-')[0];
 
-      return searchMatch && 
-             (!fTahun || year == fTahun) &&
-             (!fDate || iso === fDate) && 
-             (!fUnit || getVal(r,'UNIT') === fUnit) &&
-             (!fKelas || getVal(r,'KELAS') === fKelas) && 
-             (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
-             (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
+      return searchMatch &&
+        (!fTahun || year == fTahun) &&
+        (!fDate || iso === fDate) &&
+        (!fUnit || getVal(r,'UNIT') === fUnit) &&
+        (!fKelas || getVal(r,'KELAS') === fKelas) &&
+        (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
+        (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
     });
 
-    document.getElementById('pajskBody').innerHTML = filtered.map(r => {
-        let displayYear = getVal(r, 'TAHUN');
-        if(!displayYear) {
-             let d = parseDateStr(getVal(r,'TARIKH'));
-             if(d) displayYear = d.split('-')[0];
-        }
-        return `<tr>
-        <td>${displayYear}</td>
-        <td>${getVal(r,'TARIKH')}</td><td>${getVal(r,'UNIT')}</td><td>${getVal(r,'KELAS')}</td>
-        <td><strong>${getVal(r,'NAMA')}</strong></td><td>${getVal(r,'ACARA')}</td>
-        <td>${getVal(r,'PENGLIBATAN')}</td><td><span class="badge b-green">${getVal(r,'PENCAPAIAN')}</span></td>
-      </tr>`;
+    body.innerHTML = filtered.map(r => {
+      let displayYear = getVal(r, 'TAHUN');
+      if(!displayYear) {
+        const d = parseDateStr(getVal(r,'TARIKH'));
+        if(d) displayYear = d.split('-')[0];
+      }
+      return `
+        <tr>
+          <td>${escapeHtml(displayYear || '-')}</td>
+          <td>${escapeHtml(getVal(r,'TARIKH'))}</td>
+          <td>${escapeHtml(getVal(r,'UNIT'))}</td>
+          <td>${escapeHtml(getVal(r,'KELAS'))}</td>
+          <td><strong>${escapeHtml(getVal(r,'NAMA'))}</strong></td>
+          <td>${escapeHtml(getVal(r,'ACARA'))}</td>
+          <td>${escapeHtml(getVal(r,'PENGLIBATAN'))}</td>
+          <td><span class="badge b-green">${escapeHtml(getVal(r,'PENCAPAIAN'))}</span></td>
+        </tr>
+      `;
     }).join('');
   }
 
@@ -795,273 +982,305 @@ function parseCSV(text) {
 
   /* ================= TAKWIM ================= */
   window.initCalendar = function() {
-     const monthOrder = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
-     const pop = (id, key) => {
-        let vals = [...new Set(DATA.cal.map(r => getVal(r, key)))].filter(Boolean);
-        if(key === 'BULAN 2') vals.sort((a, b) => monthOrder.indexOf(a.toUpperCase()) - monthOrder.indexOf(b.toUpperCase()));
-        else vals.sort();
-        document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${v}</option>`).join('');
-     };
-     pop('fCalBulan', 'BULAN 2');
-     pop('fCalKategori', 'KATEGORI');
-     pop('fCalTindakan', 'TINDAKAN');
+    const monthOrder = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
+    const pop = (id, key) => {
+      let vals = [...new Set((DATA.cal||[]).map(r => getVal(r, key)).filter(Boolean))];
+      if(key === 'BULAN 2') vals.sort((a, b) => monthOrder.indexOf(a.toUpperCase()) - monthOrder.indexOf(b.toUpperCase()));
+      else vals.sort();
+      document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${escapeHtml(v)}</option>`).join('');
+    };
+    pop('fCalBulan', 'BULAN 2');
+    pop('fCalKategori', 'KATEGORI');
+    pop('fCalTindakan', 'TINDAKAN');
   }
 
   window.renderCalendarTable = function() {
-      if(!DATA.cal.length) { document.getElementById('calBody').innerHTML='<tr><td colspan="5">Tiada Data.</td></tr>'; return; }
-      const q = document.getElementById('searchCal').value.toLowerCase();
-      const fBulan = document.getElementById('fCalBulan').value;
-      const fTarikhRaw = document.getElementById('fCalTarikh').value;
-      const fKat = document.getElementById('fCalKategori').value;
-      const fTin = document.getElementById('fCalTindakan').value;
-      let fTarikh = "";
-      if(fTarikhRaw) { const p = fTarikhRaw.split('-'); fTarikh = `${p[2]}/${p[1]}/${p[0]}`; }
+    const body = document.getElementById('calBody');
+    if(!DATA.cal || !DATA.cal.length) {
+      body.innerHTML = `<tr><td colspan="5">Tiada Data.</td></tr>`;
+      return;
+    }
 
-      const filtered = DATA.cal.filter(r => {
-         const act = (getVal(r, 'AKTIVITI')||"").toLowerCase();
-         const dateCol = (getVal(r, 'TARIKH')||getVal(r,'TEMPOH')||"");
-         return (!q || act.includes(q)) && (!fBulan || getVal(r, 'BULAN 2') === fBulan) &&
-                (!fTarikh || dateCol.includes(fTarikh)) && (!fKat || getVal(r, 'KATEGORI') === fKat) &&
-                (!fTin || getVal(r, 'TINDAKAN') === fTin);
-      });
-      document.getElementById('calBody').innerHTML = filtered.map(r => `<tr><td>${getVal(r, 'BULAN 2')}</td><td>${getVal(r, 'TARIKH') || getVal(r, 'TEMPOH')}</td><td><strong>${getVal(r, 'AKTIVITI')}</strong></td><td>${getVal(r, 'TINDAKAN')}</td><td><span class="badge b-blue">${getVal(r, 'KATEGORI')}</span></td></tr>`).join('');
+    const q = document.getElementById('searchCal').value.toLowerCase();
+    const fBulan = document.getElementById('fCalBulan').value;
+    const fTarikhRaw = document.getElementById('fCalTarikh').value;
+    const fKat = document.getElementById('fCalKategori').value;
+    const fTin = document.getElementById('fCalTindakan').value;
+
+    let fTarikh = "";
+    if(fTarikhRaw) { const p = fTarikhRaw.split('-'); fTarikh = `${p[2]}/${p[1]}/${p[0]}`; }
+
+    const filtered = DATA.cal.filter(r => {
+      const act = (getVal(r, 'AKTIVITI')||"").toLowerCase();
+      const dateCol = (getVal(r, 'TARIKH')||getVal(r,'TEMPOH')||"");
+      return (!q || act.includes(q)) &&
+        (!fBulan || getVal(r, 'BULAN 2') === fBulan) &&
+        (!fTarikh || dateCol.includes(fTarikh)) &&
+        (!fKat || getVal(r, 'KATEGORI') === fKat) &&
+        (!fTin || getVal(r, 'TINDAKAN') === fTin);
+    });
+
+    body.innerHTML = filtered.map(r => `
+      <tr>
+        <td>${escapeHtml(getVal(r, 'BULAN 2'))}</td>
+        <td>${escapeHtml(getVal(r, 'TARIKH') || getVal(r, 'TEMPOH'))}</td>
+        <td><strong>${escapeHtml(getVal(r, 'AKTIVITI'))}</strong></td>
+        <td>${escapeHtml(getVal(r, 'TINDAKAN'))}</td>
+        <td><span class="badge b-blue">${escapeHtml(getVal(r, 'KATEGORI'))}</span></td>
+      </tr>
+    `).join('');
   }
 
   window.resetCalFilters = function() {
-     document.getElementById('searchCal').value = '';
-     document.getElementById('fCalTarikh').value = '';
-     document.querySelectorAll('#calFilters select').forEach(s => s.value='');
-     renderCalendarTable();
+    document.getElementById('searchCal').value = '';
+    document.getElementById('fCalTarikh').value = '';
+    document.querySelectorAll('#calFilters select').forEach(s => s.value='');
+    renderCalendarTable();
   }
 
-  /* ================= DASHBOARD & OTHERS ================= */
-  // REVISED RENDER ANN FUNCTION
-// ✅ BAHAJUAN: RENDER PENGUMUMAN (AUTO MULA/TAMAT, FAIL-SAFE)
-// ✅ RENDER PENGUMUMAN – POP OUT + PAUTAN DALAM MODAL
-function renderAnn() {
-  const today = new Date();
-  today.setHours(0,0,0,0);
+  /* ================= DASHBOARD & PENGUMUMAN ================= */
+  function renderAnn() {
+    const today = new Date();
+    today.setHours(0,0,0,0);
 
-  const getStart = (a) =>
-    parseDateStr(
-      getVal(a,'TARIKH MULA') ||
-      getVal(a,'MULA')
-    );
+    const getStart = (a) => parseDateStr(getVal(a,'TARIKH MULA') || getVal(a,'MULA'));
+    const getEnd   = (a) => parseDateStr(getVal(a,'TARIKH TAMAT') || getVal(a,'TAMAT'));
 
-  const getEnd = (a) =>
-    parseDateStr(
-      getVal(a,'TARIKH TAMAT') ||
-      getVal(a,'TAMAT')
-    );
+    const list = (DATA.ann || []).filter(a => {
+      const tajuk = (getVal(a,'TAJUK') || '').trim();
+      if(!tajuk) return false;
 
-  const list = (DATA.ann || []).filter(a => {
-    const tajuk = (getVal(a,'TAJUK') || '').trim();
-    if(!tajuk) return false;
+      const s = getStart(a);
+      const e = getEnd(a);
 
-    const s = getStart(a);
-    const e = getEnd(a);
+      if(!s && !e) return true;
 
-    // fail-safe
-    if(!s && !e) return true;
+      if(s && !e){
+        const sd = new Date(s); sd.setHours(0,0,0,0);
+        return !isNaN(sd) && today >= sd;
+      }
 
-    if(s && !e){
+      if(!s && e){
+        const ed = new Date(e); ed.setHours(23,59,59,999);
+        return !isNaN(ed) && today <= ed;
+      }
+
       const sd = new Date(s); sd.setHours(0,0,0,0);
-      return !isNaN(sd) && today >= sd;
-    }
-
-    if(!s && e){
       const ed = new Date(e); ed.setHours(23,59,59,999);
-      return !isNaN(ed) && today <= ed;
-    }
+      if(isNaN(sd)||isNaN(ed)) return true;
 
-    const sd = new Date(s); sd.setHours(0,0,0,0);
-    const ed = new Date(e); ed.setHours(23,59,59,999);
-    if(isNaN(sd)||isNaN(ed)) return true;
+      return today >= sd && today <= ed;
+    });
 
-    return today >= sd && today <= ed;
-  });
+    document.getElementById('dAnn').innerText = list.length;
 
-  document.getElementById('dAnn').innerText = list.length;
+    document.getElementById('annGrid').innerHTML = list.map(a => {
+      const tajuk = getVal(a,'TAJUK') || '';
+      const isi = getVal(a,'ISI KANDUNGAN') || getVal(a,'KANDUNGAN') || '';
+      const url = getVal(a,'URL') || '';
+      const mula = getVal(a,'TARIKH MULA') || getVal(a,'MULA') || '';
 
-  document.getElementById('annGrid').innerHTML = list.map(a => {
-    const tajuk = getVal(a,'TAJUK') || '';
-    const isi = getVal(a,'ISI KANDUNGAN') || getVal(a,'KANDUNGAN') || '';
-    const url = getVal(a,'URL') || '';
-    const mula = getVal(a,'TARIKH MULA') || getVal(a,'MULA') || '';
-
-    return `
-      <div class="card clickable"
-        onclick="openAnnModal(
-          ${JSON.stringify(tajuk)},
-          ${JSON.stringify(isi)},
-          ${JSON.stringify(url)}
-        )">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-          <span class="badge b-blue">INFO</span>
-          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(mula)}</span>
+      return `
+        <div class="card clickable"
+          onclick="openAnnModal(
+            ${JSON.stringify(tajuk)},
+            ${JSON.stringify(isi)},
+            ${JSON.stringify(url)}
+          )">
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+            <span class="badge b-blue">INFO</span>
+            <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(mula)}</span>
+          </div>
+          <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
+          <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">
+            ${escapeHtml(isi)}
+          </p>
         </div>
-        <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
-        <p style="font-size:13px; color:var(--text-muted);
-                  display:-webkit-box; -webkit-line-clamp:3;
-                  -webkit-box-orient:vertical; overflow:hidden;">
-          ${escapeHtml(isi)}
-        </p>
+      `;
+    }).join('');
+  }
+
+  window.openAnnModal = function(tajuk, isi, url) {
+    document.getElementById('infoTitle').innerText = tajuk;
+
+    let html = `
+      <div style="white-space:pre-line; line-height:1.6; margin-bottom:16px;">
+        ${escapeHtml(isi)}
       </div>
     `;
-  }).join('');
-}
 
+    if (url) {
+      const safeUrl = String(url).replace(/'/g,"\\'");
+      html += `
+        <div class="card clickable"
+          onclick="window.open('${safeUrl}', '_blank')"
+          style="border:1px dashed var(--border-color); padding:14px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-icons-round" style="color:var(--accent)">link</span>
+            <div>
+              <div style="font-weight:600; font-size:13px;">Buka Pautan Berkaitan</div>
+              <div style="font-size:11px; color:var(--text-muted); word-break:break-all;">${escapeHtml(url)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById('infoBody').innerHTML = html;
+    document.getElementById('infoModal').classList.add('active');
+  }
+
+  /* ================= TREND (SVG) ================= */
   window.renderTrend = function() {
     if(!DATA_ATT_CLEAN.length) return;
+
     const mode = document.getElementById('trendType').value;
     const mo = parseInt(document.getElementById('trendMonth').value);
     const yr = parseInt(document.getElementById('trendYear').value);
     const cl = document.getElementById('trendClass').value;
-    const filtered = DATA_ATT_CLEAN.filter(r => r.rawDate.getMonth()===mo && r.rawDate.getFullYear()===yr && (!cl || r.kelas===cl));
+
+    const filtered = DATA_ATT_CLEAN.filter(r =>
+      r.rawDate.getMonth()===mo &&
+      r.rawDate.getFullYear()===yr &&
+      (!cl || r.kelas===cl)
+    );
+
     const daysInMonth = new Date(yr, mo+1, 0).getDate();
-    let points = []; let maxVal = 0;
+    let points = [];
+    let maxVal = 0;
+
     for(let d=1; d<=daysInMonth; d++) {
       const dayRecs = filtered.filter(r => r.rawDate.getDate()===d);
       let val = 0;
+
       if(mode==='hadir') val = dayRecs.filter(r=>r.status==='HADIR').length;
       else if(mode==='tidak') val = dayRecs.filter(r=>r.status.includes('TIDAK')).length;
-      else { if(dayRecs.length) val = (dayRecs.filter(r=>r.status==='HADIR').length / dayRecs.length) * 100; }
+      else {
+        if(dayRecs.length) val = (dayRecs.filter(r=>r.status==='HADIR').length / dayRecs.length) * 100;
+      }
+
       if(val > maxVal) maxVal = val;
       points.push({x:d, y:val});
     }
+
     if(mode==='pct') maxVal = 100;
     if(maxVal===0) maxVal = 10;
+
     const W=900, H=280, Pad=30;
     const innerW = W - Pad*2;
     const innerH = H - Pad*2;
+
     const path = points.map((p,i) => {
-      const px = Pad + (i * (innerW / (daysInMonth-1)));
+      const px = Pad + (i * (innerW / (daysInMonth-1 || 1)));
       const py = (H - Pad) - (p.y / maxVal) * innerH;
       return `${px},${py}`;
     }).join(' ');
-    document.getElementById('chartContainer').innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="background:var(--bg-card); border-radius:12px;"><polyline points="${path}" fill="none" stroke="var(--primary)" stroke-width="3" /><text x="${Pad}" y="20" fill="var(--text-muted)" font-size="12">Max: ${Math.round(maxVal)}</text></svg>`;
+
+    document.getElementById('chartContainer').innerHTML = `
+      <svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="background:var(--bg-card); border-radius:12px;">
+        <polyline points="${path}" fill="none" stroke="var(--primary)" stroke-width="3" />
+        <text x="${Pad}" y="20" fill="var(--text-muted)" font-size="12">Max: ${Math.round(maxVal)}</text>
+      </svg>
+    `;
   }
 
   function setupTrendSelectors() {
     const m = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"];
     document.getElementById('trendMonth').innerHTML = m.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
     document.getElementById('trendMonth').value = new Date().getMonth();
+
     const y = new Date().getFullYear();
     document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
   }
 
-window.openInfoModal = function(title, body) {
-  document.getElementById('infoTitle').innerText = title;
-  document.getElementById('infoBody').innerText = body;
-  document.getElementById('infoModal').classList.add('active');
-}
-
-/* ===========================
-   MODAL KHAS PENGUMUMAN
-   (POP-OUT + KAD PAUTAN)
-   =========================== */
-window.openAnnModal = function(tajuk, isi, url) {
-  document.getElementById('infoTitle').innerText = tajuk;
-
-  let html = `
-    <div style="white-space:pre-line; line-height:1.6; margin-bottom:16px;">
-      ${escapeHtml(isi)}
-    </div>
-  `;
-
-  if (url) {
-    html += `
-      <div class="card clickable"
-           onclick="window.open('${url.replace(/'/g,"\\'")}', '_blank')"
-           style="border:1px dashed var(--border-color); padding:14px;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="material-icons-round" style="color:var(--accent)">link</span>
-          <div>
-            <div style="font-weight:600; font-size:13px;">
-              Buka Pautan Berkaitan
-            </div>
-            <div style="font-size:11px; color:var(--text-muted); word-break:break-all;">
-              ${escapeHtml(url)}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+  /* ================= SETTINGS ================= */
+  window.openSettings = function() {
+    document.getElementById('settingsModal').classList.add('active');
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinStep').style.display = 'block';
+    document.getElementById('settingStep').style.display = 'none';
   }
 
-  document.getElementById('infoBody').innerHTML = html;
-  document.getElementById('infoModal').classList.add('active');
-}
+  window.closeSettings = function() {
+    document.getElementById('settingsModal').classList.remove('active');
+  }
 
-window.openSettings = function() {
-  document.getElementById('settingsModal').classList.add('active');
-  document.getElementById('pinInput').value = '';
-  document.getElementById('pinStep').style.display = 'block';
-  document.getElementById('settingStep').style.display = 'none';
-}
+  window.checkPin = function() {
+    if(document.getElementById('pinInput').value === CONFIG.pin) {
+      document.getElementById('pinStep').style.display = 'none';
+      document.getElementById('settingStep').style.display = 'block';
+      populateSettings();
+    } else alert('Salah PIN');
+  }
 
-window.closeSettings = function() {
-  document.getElementById('settingsModal').classList.remove('active');
-}
+  function populateSettings() {
+    document.getElementById('setName').value = CONFIG.schoolName;
+    document.getElementById('menuManagerList').innerHTML =
+      CONFIG.menus.map((m,i) =>
+        `<div class="menu-toggle-item">
+          <span>${escapeHtml(m.label)} (${escapeHtml(m.role)})</span>
+          <input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}">
+        </div>`
+      ).join('');
+  }
 
-window.checkPin = function() {
-  if(document.getElementById('pinInput').value === CONFIG.pin) {
-    document.getElementById('pinStep').style.display = 'none';
-    document.getElementById('settingStep').style.display = 'block';
-    populateSettings();
-  } else alert('Salah PIN');
-}
+  window.saveSettings = function() {
+    CONFIG.schoolName = document.getElementById('setName').value;
+    CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked);
+    localStorage.setItem('portalConfig', JSON.stringify(CONFIG));
+    location.reload();
+  }
 
-function populateSettings() {
-  document.getElementById('setName').value = CONFIG.schoolName;
-  document.getElementById('menuManagerList').innerHTML =
-    CONFIG.menus.map((m,i) =>
-      `<div class="menu-toggle-item">
-        <span>${m.label} (${m.role})</span>
-        <input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}">
-      </div>`
-    ).join('');
-}
+  window.toggleTheme = function() {
+    const n = document.documentElement.getAttribute('data-mode')==='dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-mode', n);
+    localStorage.setItem('theme', n);
+    renderTrend();
+  }
 
-window.saveSettings = function() {
-  CONFIG.schoolName = document.getElementById('setName').value;
-  CONFIG.menus.forEach((m,i) =>
-    m.hidden = !document.getElementById(`menu_${i}`).checked
-  );
-  localStorage.setItem('portalConfig', JSON.stringify(CONFIG));
-  location.reload();
-}
+  function applyTheme() {
+    document.documentElement.setAttribute('data-mode', localStorage.getItem('theme') || 'light');
+  }
 
-window.loadAttendance = function(m){ loadAllData(); }
-window.loadPajsk = function(m){ loadAllData(); }
-window.loadAnnouncements = function(m){ loadAllData(); }
+  function escapeHtml(s){
+    return (s||'')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
 
-window.toggleTheme = function() {
-  const n = document.documentElement.getAttribute('data-mode')==='dark'
-    ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-mode', n);
-  localStorage.setItem('theme', n);
-  renderTrend();
-}
+  // === STUB supaya tak crash kalau bahagian ibu bapa belum siap ===
+  function renderParents(){
+    const grid = document.getElementById('parentsGrid');
+    if(!grid) return;
+    if(!DATA.par || !DATA.par.length){
+      grid.innerHTML = `<div class="card"><div style="color:var(--text-muted)">Tiada data Ibu Bapa.</div></div>`;
+      return;
+    }
+    // Basic card: ambil apa yang ada (tajuk + url jika wujud)
+    grid.innerHTML = DATA.par.slice(0, 12).map(r => {
+      const title = getVal(r, 'TAJUK') || getVal(r,'NAMA') || getVal(r,'TITLE') || 'Pautan';
+      const url = getVal(r,'URL') || getVal(r,'PAUTAN') || '';
+      const note = getVal(r,'CATATAN') || getVal(r,'NOTA') || '';
+      const clickable = url ? `onclick="window.open('${String(url).replace(/'/g,"\\'")}', '_blank')"` : '';
+      return `
+        <div class="card clickable" ${clickable}>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div>
+              <div style="font-weight:700;">${escapeHtml(title)}</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">${escapeHtml(note)}</div>
+              ${url ? `<div style="font-size:11px; color:var(--text-muted); margin-top:8px; word-break:break-all;">${escapeHtml(url)}</div>` : ''}
+            </div>
+            <span class="material-icons-round" style="color:var(--accent)">open_in_new</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 
-function applyTheme() {
-  document.documentElement.setAttribute(
-    'data-mode',
-    localStorage.getItem('theme') || 'light'
-  );
-}
-
-function escapeHtml(s){
-  return (s||'')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#039;');
-}
-
-  
-  init();
+  // IMPORTANT: JANGAN panggil init() kat bawah (ini punca double init + loading sangkut)
 </script>
 </body>
 </html>
