@@ -450,55 +450,71 @@
   /* =======================
      ✅ PARSE CSV (QUOTE-SAFE)
      ======================= */
-  function parseCSV(text) {
-    if (!text) return [];
+function parseCSV(text) {
+  if (!text) return [];
+  // normalize line endings
+  text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
-    const rows = [];
-    let row = [];
-    let cur = "";
-    let inQuotes = false;
+  const rows = [];
+  let row = [];
+  let cur = "";
+  let inQuotes = false;
 
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-      const next = text[i + 1];
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
 
-      if (ch === '"') {
-        if (inQuotes && next === '"') { // escaped quote
-          cur += '"';
-          i++;
-        } else {
-          inQuotes = !inQuotes;
-        }
-      } else if (ch === "," && !inQuotes) {
-        row.push(cur);
-        cur = "";
-      } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
-        if (ch === "\r" && next === "\n") i++; // CRLF
-        row.push(cur);
-        rows.push(row);
-        row = [];
-        cur = "";
+    if (ch === '"') {
+      // escaped quote ""
+      if (inQuotes && next === '"') {
+        cur += '"';
+        i++;
       } else {
-        cur += ch;
+        inQuotes = !inQuotes;
       }
+      continue;
     }
 
-    row.push(cur);
-    rows.push(row);
+    if (ch === "," && !inQuotes) {
+      row.push(cur);
+      cur = "";
+      continue;
+    }
 
-    const cleaned = rows.filter(r => r.some(c => (c || "").trim() !== ""));
-    if (!cleaned.length) return [];
+    if (ch === "\n" && !inQuotes) {
+      row.push(cur);
+      rows.push(row);
+      row = [];
+      cur = "";
+      continue;
+    }
 
-    const headers = cleaned[0].map(h => (h || "").trim().toUpperCase());
-
-    return cleaned.slice(1)
-      .map(r => {
-        const obj = {};
-        headers.forEach((h, idx) => obj[h] = (r[idx] || "").trim());
-        return obj;
-      })
-      .filter(obj => Object.values(obj).some(v => (v || "").trim() !== ""));
+    cur += ch;
   }
+
+  // last cell
+  row.push(cur);
+  rows.push(row);
+
+  // buang row kosong hujung
+  while (rows.length && rows[rows.length - 1].every(c => (c || "").trim() === "")) {
+    rows.pop();
+  }
+
+  if (!rows.length) return [];
+
+  const headers = rows[0].map(h => (h || "").trim().toUpperCase());
+  const dataRows = rows.slice(1).filter(r => r.some(c => (c || "").trim() !== ""));
+
+  return dataRows.map(r => {
+    const obj = {};
+    headers.forEach((h, idx) => {
+      obj[h] = (r[idx] ?? "").trim();
+    });
+    return obj;
+  });
+}
+
 
   function getVal(row, keyPart) {
     const key = Object.keys(row).find(k => k.includes(keyPart.toUpperCase()));
