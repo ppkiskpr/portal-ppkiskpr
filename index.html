@@ -188,7 +188,7 @@
         <div class="dashboard-grid">
           <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card att-card"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
-          <div class="card stat-card att-card"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
+          <div class="card stat-card att-card"><div class="stat-label">Hari Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
           <div class="card stat-card clickable" onclick="navTo('announcements')"><div class="stat-label">Pengumuman</div><div class="stat-val" id="dAnn">-</div><div class="stat-sub">Aktif</div></div>
         </div>
         <div class="card">
@@ -894,53 +894,58 @@ function parseCSV(text) {
   }
 
   function renderAnn() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const list = (DATA.ann || []).filter(a => {
-    const tajuk = getVal(a, 'TAJUK');
-    if (!tajuk) return false;
-    const startStr = parseDateStr(getVal(a, 'TARIKH MULA'));
-    const endStr   = parseDateStr(getVal(a, 'TARIKH TAMAT'));
-    if (!startStr || !endStr) return false;
-    const start = new Date(startStr); start.setHours(0, 0, 0, 0);
-    const end   = new Date(endStr);   end.setHours(23, 59, 59, 999);
-    return today >= start && today <= end;
-  });
-  document.getElementById('dAnn').innerText = list.length;
-  const grid = document.getElementById('annGrid');
-  const emptyMsg = document.getElementById('annEmpty');
-  if(list.length === 0) {
-      grid.style.display = 'none';
-      emptyMsg.style.display = 'block';
-  } else {
-      grid.style.display = 'grid';
-      emptyMsg.style.display = 'none';
-      grid.innerHTML = list.map(a => {
-        const tajuk = getVal(a, 'TAJUK') || '';
-        const isi = getVal(a, 'ISI KANDUNGAN') || '';
-        const tindakan = (getVal(a, 'TINDAKAN') || '').toUpperCase();
-        const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
-        const url = getVal(a, 'URL') || '';
-        const badgeClass =
-          (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
-          (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' : 'b-blue';
-        
-        // MODIFIED: Always open modal, pass URL along
-        const onClick = `openInfoModal(${JSON.stringify(tajuk)}, ${JSON.stringify(isi)}, ${JSON.stringify(url)})`;
-        
-        return `
-          <div class="card clickable" onclick="${onClick}">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-              <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
-              <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const list = (DATA.ann || []).filter(a => {
+      const tajuk = getVal(a, 'TAJUK');
+      if (!tajuk) return false;
+      const startStr = parseDateStr(getVal(a, 'TARIKH MULA'));
+      const endStr   = parseDateStr(getVal(a, 'TARIKH TAMAT'));
+      if (!startStr || !endStr) return false;
+      const start = new Date(startStr); start.setHours(0, 0, 0, 0);
+      const end   = new Date(endStr);   end.setHours(23, 59, 59, 999);
+      return today >= start && today <= end;
+    });
+    
+    document.getElementById('dAnn').innerText = list.length;
+    const grid = document.getElementById('annGrid');
+    const emptyMsg = document.getElementById('annEmpty');
+    
+    if(list.length === 0) {
+        grid.style.display = 'none';
+        emptyMsg.style.display = 'block';
+    } else {
+        grid.style.display = 'grid';
+        emptyMsg.style.display = 'none';
+        grid.innerHTML = list.map(a => {
+          const tajuk = getVal(a, 'TAJUK') || '';
+          const isi = getVal(a, 'ISI KANDUNGAN') || '';
+          const tindakan = (getVal(a, 'TINDAKAN') || '').toUpperCase();
+          const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
+          const url = getVal(a, 'URL') || '';
+          
+          const badgeClass =
+            (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
+            (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' : 'b-blue';
+          
+          return `
+            <div class="card clickable" 
+                 data-title="${escapeHtml(tajuk)}" 
+                 data-body="${escapeHtml(isi)}" 
+                 data-url="${escapeHtml(url)}"
+                 onclick="openInfoModal(this.getAttribute('data-title'), this.getAttribute('data-body'), this.getAttribute('data-url'))">
+                 
+              <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+                <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
+                <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
+              </div>
+              <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
+              <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin:0;">${escapeHtml(isi)}</p>
+              ${(tindakan || url) ? `<div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">${escapeHtml(tindakan || (url ? 'LIHAT MAKLUMAT' : ''))} ${url ? '&nearr;' : ''}</div>` : ''}
             </div>
-            <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
-            <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin:0;">${escapeHtml(isi)}</p>
-            ${(tindakan || url) ? `<div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">${escapeHtml(tindakan || (url ? 'LIHAT MAKLUMAT' : ''))} ${url ? '&nearr;' : ''}</div>` : ''}
-          </div>
-        `;
-      }).join('');
-    }
+          `;
+        }).join('');
+      }
   }
 
   function renderParents() {
@@ -989,15 +994,14 @@ function parseCSV(text) {
     document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
   }
 
-  // MODIFIED: Accepts optional URL
   window.openInfoModal = function(title, body, url) { 
-      document.getElementById('infoTitle').innerText = title; 
-      document.getElementById('infoBody').innerText = body; 
+      document.getElementById('infoTitle').innerText = title || ''; 
+      document.getElementById('infoBody').innerText = body || ''; 
       
       const linkDiv = document.getElementById('infoLinkContainer');
       const linkBtn = document.getElementById('infoLinkBtn');
       
-      if(url) {
+      if(url && url !== 'undefined' && url.trim() !== '') {
           linkDiv.style.display = 'block';
           linkBtn.onclick = function() { window.open(url, '_blank'); };
       } else {
