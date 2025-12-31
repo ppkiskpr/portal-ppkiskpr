@@ -4,7 +4,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-
+  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Portal Rasmi PPKI SK Paya Resak</title>
@@ -14,7 +14,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.5) === */
+    /* === CSS UTAMA (V27.4) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -36,19 +36,19 @@
     .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 12px; transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow-x: hidden; }
     @media (min-width: 769px) { .sidebar { width: var(--sidebar-w-full); } body.desktop-mini .sidebar { width: var(--sidebar-w-mini); } body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; } body.desktop-mini .brand { justify-content: center; padding-left: 0; } body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; } body.desktop-mini .nav-icon { margin-right: 0; } }
     @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); } body.mobile-active .sidebar { left: 0; } .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); } body.mobile-active .backdrop { display: block; } }
-
+    
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-height: 45px; overflow: hidden; white-space: nowrap; }
     .brand-logo { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
     .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
     .brand-text h1 { margin: 0; font-size: 15px; font-weight: 700; }
     .brand-text p { margin: 0; font-size: 11px; color: var(--text-muted); }
-
+    
     .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; overflow-x: hidden; }
     .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; cursor: pointer; color: var(--text-muted); text-decoration: none; transition: all 0.2s; white-space: nowrap; }
     .nav-item:hover { background: var(--bg-element); color: var(--text-main); }
     .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
     .nav-icon { font-size: 22px; display: flex; align-items: center; justify-content: center; }
-
+    
     .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; padding-top: 20px; line-height: 1.4; border-top: 1px solid var(--border-color); }
 
     /* MAIN CONTENT */
@@ -65,10 +65,10 @@
     .stat-val { font-size: 28px; font-weight: 700; margin: 5px 0; color: var(--text-main); }
     .stat-sub { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
     .stat-sub.red { color: #D92D20; font-weight: 600; }
-
+    
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
-
+    
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
     .banner-actions { display: flex; gap: 10px; }
@@ -80,7 +80,7 @@
     .btn { padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-
+    
     .filter-panel { display: none; padding: 20px; background: var(--bg-element); border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color); }
     .filter-panel.open { display: block; }
     .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
@@ -90,7 +90,7 @@
     table { width: 100%; border-collapse: collapse; min-width: 800px; font-size: 13px; }
     th { text-align: left; padding: 14px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
     td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
-
+    
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
@@ -102,10 +102,6 @@
     .modal-content { width: 90%; max-width: 500px; background: var(--bg-card); border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
     .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
     .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
-
-    /* LINK CARD DALAM MODAL (V27.5) */
-    .link-card-small { margin-top:20px; padding:15px; background:var(--bg-element); border:1px solid var(--border-color); border-radius:12px; display:flex; align-items:center; justify-content:space-between; text-decoration:none; color:var(--text-main); transition:0.2s; cursor:pointer; }
-    .link-card-small:hover { background:var(--primary-light); border-color:var(--primary); }
 
     /* SEMAKAN ID BOX (WITH COPY) */
     .id-result-box { display:none; background: var(--bg-element); padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid var(--border-color); }
@@ -167,9 +163,9 @@
     <div class="sidebar-footer">
       <div id="userInfo" style="margin-bottom:10px; font-weight:600; font-size:12px; display:none;"></div>
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
-      <div>© 2025 NK Dev.</div>
+      <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.5</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.4</div>
     </div>
   </aside>
 
@@ -191,7 +187,7 @@
         <div class="dashboard-grid">
           <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card att-card"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
-          <div class="card stat-card att-card"><div class="stat-label">Hari Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
+          <div class="card stat-card att-card"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
           <div class="card stat-card clickable" onclick="navTo('announcements')"><div class="stat-label">Pengumuman</div><div class="stat-val" id="dAnn">-</div><div class="stat-sub">Aktif</div></div>
         </div>
         <div class="card">
@@ -315,7 +311,7 @@
           <div class="table-wrap"><table><thead><tr><th>BULAN</th><th>TARIKH / TEMPOH</th><th>AKTIVITI</th><th>TINDAKAN</th><th>KATEGORI</th></tr></thead><tbody id="calBody"></tbody></table></div>
         </div>
       </div>
-
+      
       <div id="page-opr" class="page-section" style="display:none;">
           <div class="page-banner">
             <div class="banner-text"><h2>One Page Report (OPR)</h2><p>Laporan & Dokumentasi Tahunan</p></div>
@@ -363,7 +359,7 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-
+  
   // === OPR DATA (Edit Link Di Sini) ===
   const OPR_DATA = [
       { title: "OPR 2025", url: "#", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2025" },
@@ -394,15 +390,16 @@
   };
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
-
-  // === AUTO-FIX & HARD RESET (V27.5) ===
-  const CURRENT_VERSION = '27.5'; 
+  
+  // === AUTO-FIX & HARD RESET (V27.4) ===
+  const CURRENT_VERSION = '27.4'; // Increment this to force reset on client devices
   const savedVer = localStorage.getItem('portalVersion');
-
+  
   if(savedVer !== CURRENT_VERSION) {
       console.log("New version detected. Clearing cache...");
-      localStorage.clear(); 
+      localStorage.clear(); // Nuke all old data
       localStorage.setItem('portalVersion', CURRENT_VERSION);
+      // Reload page to apply clean slate
       location.reload(); 
   }
   // ===============================================
@@ -410,7 +407,6 @@
   let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [] };
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
-  let CURRENT_ANNOUNCEMENTS = []; // Simpan data pengumuman utk modal
 
   window.init = function() {
     applyTheme();
@@ -457,7 +453,8 @@
       appContainer.style.display = 'flex';
       init();
     }
-
+    
+    // === UPDATE DASHBOARD CARDS INTERACTIVITY BASED ON ROLE ===
     document.querySelectorAll('.att-card').forEach(el => {
         if(USER_ROLE === 'admin') {
             el.classList.add('clickable');
@@ -467,6 +464,7 @@
             el.onclick = null;
         }
     });
+    // ========================================================
 
     renderSidebar();
     const activePage = document.querySelector('.page-section[style*="block"]');
@@ -599,6 +597,7 @@ function parseCSV(text) {
     if(results[4]) DATA.par = results[4];
     if(results[5]) DATA.db = results[5];
 
+    // === Update Footer Timestamp ===
     const now = new Date();
     document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
 
@@ -632,6 +631,7 @@ function parseCSV(text) {
         else if(type === 'par') { DATA.par = data; renderParents(); }
         else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); }
         
+        // Update timestamp on manual reload too
         const now = new Date();
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
     }
@@ -650,98 +650,6 @@ function parseCSV(text) {
             <p style="color:var(--text-muted); font-size:12px; margin:0;">${item.desc}</p>
         </div>
     `).join('');
-  }
-
-  /* ================= ANNOUNCEMENT LOGIC (V27.5) ================= */
-  function renderAnn() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const list = (DATA.ann || []).filter(a => {
-        const tajuk = getVal(a, 'TAJUK');
-        if (!tajuk) return false;
-        const startStr = parseDateStr(getVal(a, 'TARIKH MULA'));
-        const endStr   = parseDateStr(getVal(a, 'TARIKH TAMAT'));
-        if (!startStr || !endStr) return false;
-        const start = new Date(startStr); start.setHours(0, 0, 0, 0);
-        const end   = new Date(endStr);   end.setHours(23, 59, 59, 999);
-        return today >= start && today <= end;
-    });
-
-    // SIMPAN DATA UTK MODAL
-    CURRENT_ANNOUNCEMENTS = list; 
-
-    document.getElementById('dAnn').innerText = list.length;
-    const grid = document.getElementById('annGrid');
-    const emptyMsg = document.getElementById('annEmpty');
-
-    if(list.length === 0) {
-        grid.style.display = 'none';
-        emptyMsg.style.display = 'block';
-    } else {
-        grid.style.display = 'grid';
-        emptyMsg.style.display = 'none';
-        grid.innerHTML = list.map((a, index) => {
-            const tajuk = getVal(a, 'TAJUK') || '';
-            const isi = getVal(a, 'ISI KANDUNGAN') || '';
-            const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
-            const badgeClass =
-            (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
-            (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' : 'b-blue';
-            
-            // SEMUA KLIK BUKA MODAL, PASS INDEX
-            const onClick = `openAnnModal(${index})`;
-
-            return `
-            <div class="card clickable" onclick="${onClick}">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-                <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
-                <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
-                </div>
-                <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
-                <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin:0;">${escapeHtml(isi)}</p>
-                <div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">BACA LANJUT &nearr;</div>
-            </div>
-            `;
-        }).join('');
-    }
-  }
-
-  // FUNGSI BUKA MODAL PENGUMUMAN (DENGAN LINK CARD)
-  window.openAnnModal = function(index) {
-        const data = CURRENT_ANNOUNCEMENTS[index];
-        if(!data) return;
-
-        const title = getVal(data, 'TAJUK');
-        const content = getVal(data, 'ISI KANDUNGAN');
-        const url = getVal(data, 'URL');
-        const label = (getVal(data, 'KEUTAMAAN') || 'INFO').toUpperCase();
-        const date = getVal(data, 'TARIKH MULA');
-
-        document.getElementById('infoTitle').innerText = title;
-        
-        let html = `
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                <span class="badge b-gray">${escapeHtml(label)}</span>
-                <span style="font-size:12px; color:var(--text-muted);">${escapeHtml(date)}</span>
-            </div>
-            <div style="line-height:1.6; font-size:14px; color:var(--text-main); white-space:pre-wrap;">${escapeHtml(content)}</div>
-        `;
-
-        // JIKA ADA URL, TAMBAH KAD KECIL
-        if(url && url.length > 5) {
-            html += `
-                <a href="${url}" target="_blank" class="link-card-small">
-                    <div>
-                        <div style="font-weight:600; font-size:13px; color:var(--primary);">Buka Pautan</div>
-                        <div style="font-size:11px; color:var(--text-muted);">Klik di sini untuk info lanjut</div>
-                    </div>
-                    <span class="material-icons-round" style="color:var(--primary);">open_in_new</span>
-                </a>
-            `;
-        }
-
-        document.getElementById('infoBody').innerHTML = html;
-        document.getElementById('infoModal').classList.add('active');
   }
 
   window.checkEmail = function() {
@@ -970,6 +878,53 @@ function parseCSV(text) {
      renderCalendarTable();
   }
 
+  function renderAnn() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const list = (DATA.ann || []).filter(a => {
+    const tajuk = getVal(a, 'TAJUK');
+    if (!tajuk) return false;
+    const startStr = parseDateStr(getVal(a, 'TARIKH MULA'));
+    const endStr   = parseDateStr(getVal(a, 'TARIKH TAMAT'));
+    if (!startStr || !endStr) return false;
+    const start = new Date(startStr); start.setHours(0, 0, 0, 0);
+    const end   = new Date(endStr);   end.setHours(23, 59, 59, 999);
+    return today >= start && today <= end;
+  });
+  document.getElementById('dAnn').innerText = list.length;
+  const grid = document.getElementById('annGrid');
+  const emptyMsg = document.getElementById('annEmpty');
+  if(list.length === 0) {
+      grid.style.display = 'none';
+      emptyMsg.style.display = 'block';
+  } else {
+      grid.style.display = 'grid';
+      emptyMsg.style.display = 'none';
+      grid.innerHTML = list.map(a => {
+        const tajuk = getVal(a, 'TAJUK') || '';
+        const isi = getVal(a, 'ISI KANDUNGAN') || '';
+        const tindakan = (getVal(a, 'TINDAKAN') || '').toUpperCase();
+        const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
+        const url = getVal(a, 'URL') || '';
+        const badgeClass =
+          (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
+          (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' : 'b-blue';
+        const onClick = url ? `window.open('${String(url).replace(/'/g, "\\'")}', '_blank')` : `openInfoModal(${JSON.stringify(tajuk)}, ${JSON.stringify(isi)})`;
+        return `
+          <div class="card clickable" onclick="${onClick}">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+              <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
+              <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
+            </div>
+            <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
+            <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin:0;">${escapeHtml(isi)}</p>
+            ${(tindakan || url) ? `<div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">${escapeHtml(tindakan || (url ? 'BUKA PAUTAN' : ''))} ${url ? '&nearr;' : ''}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
   function renderParents() {
     document.getElementById('parentsGrid').innerHTML = (DATA.par || []).map(p => {
       const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
@@ -1030,3 +985,4 @@ function parseCSV(text) {
 </script>
 </body>
 </html>
+
