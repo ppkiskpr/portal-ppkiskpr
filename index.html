@@ -10,8 +10,14 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* ... (Style V25.1 kekal) ... */
-    /* === CSS LOGIN SCREEN === */
+    /* === CSS UTAMA (V27.1) === */
+    :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
+    html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
+    * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; font-family: var(--font-main); background: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; }
+    .app-container { display: flex; height: 100%; width: 100%; }
+
+    /* LOGIN SCREEN */
     #login-screen { position: fixed; inset: 0; z-index: 9999; background: #F2F4F7; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
     .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
     .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 10px; margin: 20px auto 0; }
@@ -22,30 +28,26 @@
     .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* === CSS UTAMA === */
-    :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
-    html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
-    * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; font-family: var(--font-main); background: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; }
-    .app-container { display: flex; height: 100%; width: 100%; }
-
     /* SIDEBAR */
     .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 12px; transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow-x: hidden; }
     @media (min-width: 769px) { .sidebar { width: var(--sidebar-w-full); } body.desktop-mini .sidebar { width: var(--sidebar-w-mini); } body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; } body.desktop-mini .brand { justify-content: center; padding-left: 0; } body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; } body.desktop-mini .nav-icon { margin-right: 0; } }
     @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); } body.mobile-active .sidebar { left: 0; } .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); } body.mobile-active .backdrop { display: block; } }
+    
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-height: 45px; overflow: hidden; white-space: nowrap; }
     .brand-logo { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
     .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
     .brand-text h1 { margin: 0; font-size: 15px; font-weight: 700; }
     .brand-text p { margin: 0; font-size: 11px; color: var(--text-muted); }
+    
     .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; overflow-x: hidden; }
     .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; cursor: pointer; color: var(--text-muted); text-decoration: none; transition: all 0.2s; white-space: nowrap; }
     .nav-item:hover { background: var(--bg-element); color: var(--text-main); }
     .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
     .nav-icon { font-size: 22px; display: flex; align-items: center; justify-content: center; }
+    
     .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; padding-top: 20px; line-height: 1.4; border-top: 1px solid var(--border-color); }
 
-    /* MAIN */
+    /* MAIN CONTENT */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
     .top-bar { height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--bg-body); flex-shrink: 0; }
     .icon-btn { width: 40px; height: 40px; border-radius: 8px; border: none; background: transparent; color: var(--text-main); display: grid; place-items: center; cursor: pointer; font-size: 24px; }
@@ -59,30 +61,38 @@
     .stat-val { font-size: 28px; font-weight: 700; margin: 5px 0; color: var(--text-main); }
     .stat-sub { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
     .stat-sub.red { color: #D92D20; font-weight: 600; }
+    
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
+    
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
     .banner-actions { display: flex; gap: 10px; }
     .btn-action { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
     .btn-action:hover { background: rgba(255,255,255,0.3); }
+
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; }
     .btn { padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+    
     .filter-panel { display: none; padding: 20px; background: var(--bg-element); border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color); }
     .filter-panel.open { display: block; }
     .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
     .filter-label { font-size: 12px; font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-muted); }
+
     .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
     table { width: 100%; border-collapse: collapse; min-width: 800px; font-size: 13px; }
     th { text-align: left; padding: 14px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
     td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
+    
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
     .b-blue { background: #EFF8FF; color: #175CD3; }
+    .b-gray { background: #F2F4F7; color: #344054; }
+
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: none; place-items: center; backdrop-filter: blur(2px); }
     .modal-overlay.active { display: grid; }
     .modal-content { width: 90%; max-width: 500px; background: var(--bg-card); border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
@@ -149,9 +159,9 @@
     <div class="sidebar-footer">
       <div id="userInfo" style="margin-bottom:10px; font-weight:600; font-size:12px; display:none;"></div>
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
-      <div>© 2025 NK.</div>
+      <div>© 2025 NK Dev.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 26.0</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.1</div>
     </div>
   </aside>
 
@@ -271,6 +281,7 @@
       <div id="page-announcements" class="page-section" style="display:none;">
         <div class="page-banner"><div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('ann')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
         <div class="dashboard-grid" id="annGrid" style="grid-template-columns: 1fr 1fr;"></div>
+        <div id="annEmpty" style="display:none; text-align:center; padding:40px; color:var(--text-muted);"><span class="material-icons-round" style="font-size:48px; opacity:0.5;">campaign</span><p>Tiada pengumuman aktif buat masa ini.</p></div>
       </div>
 
       <div id="page-calendar" class="page-section" style="display:none;">
@@ -292,6 +303,13 @@
           </div>
           <div class="table-wrap"><table><thead><tr><th>BULAN</th><th>TARIKH / TEMPOH</th><th>AKTIVITI</th><th>TINDAKAN</th><th>KATEGORI</th></tr></thead><tbody id="calBody"></tbody></table></div>
         </div>
+      </div>
+      
+      <div id="page-opr" class="page-section" style="display:none;">
+          <div class="page-banner">
+            <div class="banner-text"><h2>One Page Report (OPR)</h2><p>Laporan & Dokumentasi Tahunan</p></div>
+          </div>
+          <div class="dashboard-grid" id="oprGrid"></div>
       </div>
 
       <div id="page-parents" class="page-section" style="display:none;">
@@ -322,6 +340,12 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
+  
+  // === OPR DATA (Edit Link Di Sini) ===
+  const OPR_DATA = [
+      { title: "OPR 2025", url: "#", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2025" },
+      { title: "OPR 2026", url: "#", icon: "folder_open", desc: "Perancangan Tahun 2026" }
+  ];
 
   const DEFAULTS = {
     schoolName: "SK Paya Resak",
@@ -338,6 +362,7 @@
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
       {id:'pajsk', label:'PAJSK', icon:'emoji_events', hidden:false, role:'admin'},
+      {id:'opr', label:'OPR', icon:'description', hidden:false, role:'public'}, // MENU BARU
       {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'public'},
       {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'},
       {id:'calendar', label:'Takwim', icon:'calendar_month', hidden:false, role:'public'},
@@ -346,6 +371,17 @@
   };
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
+  
+  // === AUTO-FIX: Ensure new menu (OPR) exists even if user has old config ===
+  const defaultIds = DEFAULTS.menus.map(m=>m.id);
+  const currentIds = CONFIG.menus.map(m=>m.id);
+  defaultIds.forEach(id => {
+      if(!currentIds.includes(id)) {
+          CONFIG.menus.splice(DEFAULTS.menus.findIndex(m=>m.id===id), 0, DEFAULTS.menus.find(m=>m.id===id));
+      }
+  });
+  // =========================================================================
+
   let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [] };
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
@@ -354,12 +390,15 @@
     applyTheme();
     setupTrendSelectors();
     loadAllData();
+    renderOPR(); // Render OPR Cards
     document.querySelector('.brand-text h1').textContent = CONFIG.schoolName;
   }
 
   window.handleAuth = function() {
     if (auth.currentUser) {
-      signOut(auth).then(() => { alert("Berjaya Log Keluar"); location.reload(); });
+      if(confirm("Adakah anda pasti untuk log keluar?")) {
+          signOut(auth).then(() => { location.reload(); });
+      }
     } else {
       signInWithPopup(auth, provider).catch(e => alert(e.message));
     }
@@ -437,84 +476,54 @@
   async function fetchCSV(url) {
     if(!url) return [];
     try {
-      // ANTI-CACHE AGGRESSIVE
-      const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now() + Math.random());
-      const text = await res.text();
+      const fetchWithRetry = async (retries = 2) => {
+         try {
+            const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now() + Math.random());
+            if(!res.ok) throw new Error("Status " + res.status);
+            return await res.text();
+         } catch(err) {
+            if(retries > 0) return await fetchWithRetry(retries - 1);
+            throw err;
+         }
+      };
+      const text = await fetchWithRetry();
       return parseCSV(text);
     } catch(e) {
-        console.error("Gagal muat data:", e);
+        console.error("Gagal muat data:", url, e);
         return null;
     }
   }
 
-  /* =======================
-     ✅ PARSE CSV (QUOTE-SAFE)
-     ======================= */
 function parseCSV(text) {
   if (!text) return [];
-  // normalize line endings
   text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-
   const rows = [];
   let row = [];
   let cur = "";
   let inQuotes = false;
-
   for (let i = 0; i < text.length; i++) {
     const ch = text[i];
     const next = text[i + 1];
-
     if (ch === '"') {
-      // escaped quote ""
-      if (inQuotes && next === '"') {
-        cur += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
+      if (inQuotes && next === '"') { cur += '"'; i++; }
+      else { inQuotes = !inQuotes; }
       continue;
     }
-
-    if (ch === "," && !inQuotes) {
-      row.push(cur);
-      cur = "";
-      continue;
-    }
-
-    if (ch === "\n" && !inQuotes) {
-      row.push(cur);
-      rows.push(row);
-      row = [];
-      cur = "";
-      continue;
-    }
-
+    if (ch === "," && !inQuotes) { row.push(cur); cur = ""; continue; }
+    if (ch === "\n" && !inQuotes) { row.push(cur); rows.push(row); row = []; cur = ""; continue; }
     cur += ch;
   }
-
-  // last cell
   row.push(cur);
   rows.push(row);
-
-  // buang row kosong hujung
-  while (rows.length && rows[rows.length - 1].every(c => (c || "").trim() === "")) {
-    rows.pop();
-  }
-
+  while (rows.length && rows[rows.length - 1].every(c => (c || "").trim() === "")) { rows.pop(); }
   if (!rows.length) return [];
-
   const headers = rows[0].map(h => (h || "").trim().toUpperCase());
-  const dataRows = rows.slice(1).filter(r => r.some(c => (c || "").trim() !== ""));
-
-  return dataRows.map(r => {
+  return rows.slice(1).map(r => {
     const obj = {};
-    headers.forEach((h, idx) => {
-      obj[h] = (r[idx] ?? "").trim();
-    });
+    headers.forEach((h, idx) => { obj[h] = (r[idx] ?? "").trim(); });
     return obj;
   });
 }
-
 
   function getVal(row, keyPart) {
     const key = Object.keys(row).find(k => k.includes(keyPart.toUpperCase()));
@@ -527,6 +536,11 @@ function parseCSV(text) {
     if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
       const p = dStr.split('/');
       return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+    }
+    if(dStr.match(/^\d{4}-\d{1,2}-\d{1,2}/)) { return dStr.split('T')[0]; }
+    if(dStr.includes('/')) {
+        const p = dStr.split('/');
+        if(p[2].length === 4) return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
     }
     return dStr;
   }
@@ -557,7 +571,6 @@ function parseCSV(text) {
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
-  // FORCE RELOAD SPECIFIC
   window.forceReload = async function(type) {
     document.getElementById('loading-overlay').style.display = 'grid';
     let url = '';
@@ -582,18 +595,29 @@ function parseCSV(text) {
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
-  /* ================= EMAIL CHECK LOGIC WITH COPY ================= */
+  /* ================= OPR RENDERER ================= */
+  function renderOPR() {
+    const grid = document.getElementById('oprGrid');
+    grid.innerHTML = OPR_DATA.map(item => `
+        <div class="card clickable" onclick="window.open('${item.url}', '_blank')" style="text-align:center; padding:30px;">
+            <div style="width:60px; height:60px; background:var(--primary-light); border-radius:50%; margin:0 auto 15px; display:grid; place-items:center; color:var(--primary);">
+                <span class="material-icons-round" style="font-size:30px;">${item.icon}</span>
+            </div>
+            <h3 style="margin:0 0 5px;">${item.title}</h3>
+            <p style="color:var(--text-muted); font-size:12px; margin:0;">${item.desc}</p>
+        </div>
+    `).join('');
+  }
+
   window.checkEmail = function() {
       const ic = document.getElementById('inputIC').value.trim();
       const resBox = document.getElementById('idResultContainer');
       const errBox = document.getElementById('idError');
       if(!DATA.db || DATA.db.length === 0) { alert('Data belum sedia. Sila tekan Reload.'); return; }
-
       const student = DATA.db.find(r => {
           const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO');
           return kp && kp.replace(/[^0-9]/g, '') === ic.replace(/[^0-9]/g, '');
       });
-
       if(student) {
           document.getElementById('resNama').innerText = getVal(student, 'NAMA');
           document.getElementById('resEmail').innerText = getVal(student, 'DELIMA') || getVal(student, 'EMEL') || '-';
@@ -613,7 +637,6 @@ function parseCSV(text) {
     navigator.clipboard.writeText(text).then(() => { alert("Disalin: " + text); });
   }
 
-  /* ================= ATTENDANCE ================= */
   function processAttendance() {
     if(!DATA.att.length) return;
     DATA_ATT_CLEAN = DATA.att.map(r => {
@@ -625,10 +648,7 @@ function parseCSV(text) {
         gender: getVal(r, 'JANTINA') || '-', status: (getVal(r, 'STATUS')||"").toUpperCase()
       };
     }).filter(r => r.isoDate && !isNaN(r.rawDate));
-
-    // Sort Descending (Terkini di Atas)
     DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
-
     const todayStr = new Date().toISOString().split('T')[0];
     const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
     const present = todayRecs.filter(r => r.status === 'HADIR').length;
@@ -695,23 +715,19 @@ function parseCSV(text) {
     document.getElementById('trendClass').innerHTML = opts;
   }
 
-  /* ================= PAJSK (UPDATED WITH YEAR & AUTO SELECT) ================= */
   function initPajsk() {
     const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
-    // Sort Descending by Date
     cleanPajsk.sort((a,b) => {
         const dA = parseDateStr(getVal(a,'TARIKH'));
         const dB = parseDateStr(getVal(b,'TARIKH'));
+        if(!dA || !dB) return 0;
         return new Date(dB) - new Date(dA);
     });
     DATA.pajsk = cleanPajsk;
-
     const pop = (id, key) => {
       const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
       document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
     };
-
-    // Auto detect Year & Set Default to Current Year
     let years = [...new Set(DATA.pajsk.map(r => {
         let y = getVal(r, 'TAHUN');
         if(!y) {
@@ -720,15 +736,9 @@ function parseCSV(text) {
         }
         return y;
     }))].filter(Boolean).sort().reverse();
-
     document.getElementById('fPajskTahun').innerHTML = '<option value="">Semua</option>' + years.map(y=>`<option>${y}</option>`).join('');
-
-    // Set default year
     const currentYear = new Date().getFullYear().toString();
-    if(years.includes(currentYear)) {
-        document.getElementById('fPajskTahun').value = currentYear;
-    }
-
+    if(years.includes(currentYear)) { document.getElementById('fPajskTahun').value = currentYear; }
     pop('fPajskUnit', 'UNIT');
     pop('fPajskKelas', 'KELAS');
     pop('fPajskLibat', 'PENGLIBATAN');
@@ -737,7 +747,7 @@ function parseCSV(text) {
   }
 
   window.renderPajskTable = function() {
-    if(!DATA.pajsk.length) { document.getElementById('pajskBody').innerHTML='<tr><td colspan="7">Tiada Data.</td></tr>'; return; }
+    if(!DATA.pajsk.length) { document.getElementById('pajskBody').innerHTML='<tr><td colspan="8">Tiada Data.</td></tr>'; return; }
     const q = document.getElementById('searchPajsk').value.toLowerCase();
     const fTahun = document.getElementById('fPajskTahun').value;
     const fDate = document.getElementById('fPajskDate').value;
@@ -745,16 +755,13 @@ function parseCSV(text) {
     const fKelas = document.getElementById('fPajskKelas').value;
     const fLibat = document.getElementById('fPajskLibat').value;
     const fCapai = document.getElementById('fPajskCapai').value;
-
     const filtered = DATA.pajsk.filter(r => {
       const name = (getVal(r, 'NAMA')||"").toLowerCase();
       const acara = (getVal(r, 'ACARA')||"").toLowerCase();
       const searchMatch = !q || name.includes(q) || acara.includes(q);
       const iso = parseDateStr(getVal(r, 'TARIKH'));
-
       let year = getVal(r, 'TAHUN');
       if(!year && iso) year = iso.split('-')[0];
-
       return searchMatch &&
              (!fTahun || year == fTahun) &&
              (!fDate || iso === fDate) &&
@@ -763,7 +770,6 @@ function parseCSV(text) {
              (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
              (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
     });
-
     document.getElementById('pajskBody').innerHTML = filtered.map(r => {
         let displayYear = getVal(r, 'TAHUN');
         if(!displayYear) {
@@ -784,22 +790,19 @@ function parseCSV(text) {
     document.getElementById('fPajskTahun').value = '';
     document.getElementById('fPajskDate').value = '';
     document.querySelectorAll('#pajskFilters select').forEach(s => s.value='');
-
     const currentYear = new Date().getFullYear().toString();
     const options = Array.from(document.getElementById('fPajskTahun').options).map(o => o.value);
     if(options.includes(currentYear)) document.getElementById('fPajskTahun').value = currentYear;
-
     renderPajskTable();
   }
 
-  /* ================= TAKWIM ================= */
   window.initCalendar = function() {
      const monthOrder = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
      const pop = (id, key) => {
-        let vals = [...new Set(DATA.cal.map(r => getVal(r, key)))].filter(Boolean);
-        if(key === 'BULAN 2') vals.sort((a, b) => monthOrder.indexOf(a.toUpperCase()) - monthOrder.indexOf(b.toUpperCase()));
-        else vals.sort();
-        document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${v}</option>`).join('');
+       let vals = [...new Set(DATA.cal.map(r => getVal(r, key)))].filter(Boolean);
+       if(key === 'BULAN 2') vals.sort((a, b) => monthOrder.indexOf(a.toUpperCase()) - monthOrder.indexOf(b.toUpperCase()));
+       else vals.sort();
+       document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${v}</option>`).join('');
      };
      pop('fCalBulan', 'BULAN 2');
      pop('fCalKategori', 'KATEGORI');
@@ -815,7 +818,6 @@ function parseCSV(text) {
       const fTin = document.getElementById('fCalTindakan').value;
       let fTarikh = "";
       if(fTarikhRaw) { const p = fTarikhRaw.split('-'); fTarikh = `${p[2]}/${p[1]}/${p[0]}`; }
-
       const filtered = DATA.cal.filter(r => {
          const act = (getVal(r, 'AKTIVITI')||"").toLowerCase();
          const dateCol = (getVal(r, 'TARIKH')||getVal(r,'TEMPOH')||"");
@@ -833,69 +835,52 @@ function parseCSV(text) {
      renderCalendarTable();
   }
 
-  /* ================= DASHBOARD & OTHERS ================= */
   function renderAnn() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
   const list = (DATA.ann || []).filter(a => {
     const tajuk = getVal(a, 'TAJUK');
     if (!tajuk) return false;
-
     const startStr = parseDateStr(getVal(a, 'TARIKH MULA'));
     const endStr   = parseDateStr(getVal(a, 'TARIKH TAMAT'));
     if (!startStr || !endStr) return false;
-
     const start = new Date(startStr); start.setHours(0, 0, 0, 0);
     const end   = new Date(endStr);   end.setHours(23, 59, 59, 999);
-
     return today >= start && today <= end;
   });
-
   document.getElementById('dAnn').innerText = list.length;
-
   const grid = document.getElementById('annGrid');
-  grid.innerHTML = list.map(a => {
-    const tajuk = getVal(a, 'TAJUK') || '';
-    const isi = getVal(a, 'ISI KANDUNGAN') || '';
-    const tindakan = (getVal(a, 'TINDAKAN') || '').toUpperCase();
-    const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
-    const url = getVal(a, 'URL') || '';
-
-    const badgeClass =
-      (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
-      (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' :
-      'b-blue';
-
-    // Klik kad: kalau ada URL -> buka URL, kalau tiada -> buka modal
-    const onClick = url
-      ? `window.open('${String(url).replace(/'/g, "\\'")}', '_blank')`
-      : `openInfoModal(${JSON.stringify(tajuk)}, ${JSON.stringify(isi)})`;
-
-    return `
-      <div class="card clickable" onclick="${onClick}">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-          <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
-          <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
-        </div>
-
-        <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
-
-        <p style="font-size:13px; color:var(--text-muted);
-                  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
-                  overflow:hidden; margin:0;">
-          ${escapeHtml(isi)}
-        </p>
-
-        ${(tindakan || url) ? `
-          <div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">
-            ${escapeHtml(tindakan || (url ? 'BUKA PAUTAN' : ''))} ${url ? '&nearr;' : ''}
+  const emptyMsg = document.getElementById('annEmpty');
+  if(list.length === 0) {
+      grid.style.display = 'none';
+      emptyMsg.style.display = 'block';
+  } else {
+      grid.style.display = 'grid';
+      emptyMsg.style.display = 'none';
+      grid.innerHTML = list.map(a => {
+        const tajuk = getVal(a, 'TAJUK') || '';
+        const isi = getVal(a, 'ISI KANDUNGAN') || '';
+        const tindakan = (getVal(a, 'TINDAKAN') || '').toUpperCase();
+        const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
+        const url = getVal(a, 'URL') || '';
+        const badgeClass =
+          (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
+          (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' : 'b-blue';
+        const onClick = url ? `window.open('${String(url).replace(/'/g, "\\'")}', '_blank')` : `openInfoModal(${JSON.stringify(tajuk)}, ${JSON.stringify(isi)})`;
+        return `
+          <div class="card clickable" onclick="${onClick}">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+              <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
+              <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
+            </div>
+            <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
+            <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin:0;">${escapeHtml(isi)}</p>
+            ${(tindakan || url) ? `<div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">${escapeHtml(tindakan || (url ? 'BUKA PAUTAN' : ''))} ${url ? '&nearr;' : ''}</div>` : ''}
           </div>
-        ` : ''}
-      </div>
-    `;
-  }).join('');
-}
+        `;
+      }).join('');
+    }
+  }
 
   function renderParents() {
     document.getElementById('parentsGrid').innerHTML = (DATA.par || []).map(p => {
@@ -957,4 +942,3 @@ function parseCSV(text) {
 </script>
 </body>
 </html>
-
