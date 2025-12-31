@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="ms" class="h-full">
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Portal Rasmi PPKI SK Paya Resak</title>
@@ -10,7 +14,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.3) === */
+    /* === CSS UTAMA (V27.4) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -161,7 +165,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.3</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.4</div>
     </div>
   </aside>
 
@@ -183,7 +187,7 @@
         <div class="dashboard-grid">
           <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card att-card"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
-          <div class="card stat-card att-card"><div class="stat-label">Hari Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
+          <div class="card stat-card att-card"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
           <div class="card stat-card clickable" onclick="navTo('announcements')"><div class="stat-label">Pengumuman</div><div class="stat-val" id="dAnn">-</div><div class="stat-sub">Aktif</div></div>
         </div>
         <div class="card">
@@ -197,6 +201,9 @@
             </div>
           </div>
           <div id="chartContainer" style="height:280px; width:100%;"></div>
+          <div style="text-align:center; margin-top:15px; font-size:10px; color:var(--text-muted);">
+              Data dikemaskini pada: <span id="updateTime">-</span>
+          </div>
         </div>
       </div>
 
@@ -372,21 +379,17 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & ROLE ENFORCER (FORCE UPDATE) ===
-  const defaultIds = DEFAULTS.menus.map(m=>m.id);
-  const currentIds = CONFIG.menus.map(m=>m.id);
-  // 1. Add missing menus
-  defaultIds.forEach(id => {
-      if(!currentIds.includes(id)) {
-          CONFIG.menus.splice(DEFAULTS.menus.findIndex(m=>m.id===id), 0, DEFAULTS.menus.find(m=>m.id===id));
-      }
-  });
-  // 2. Force Update Roles (To ensure "family" changes are applied)
-  DEFAULTS.menus.forEach(dm => {
-      const cm = CONFIG.menus.find(m => m.id === dm.id);
-      if(cm && cm.role !== dm.role) { cm.role = dm.role; }
-  });
-  localStorage.setItem('portalConfig', JSON.stringify(CONFIG));
+  // === AUTO-FIX & HARD RESET (V27.4) ===
+  const CURRENT_VERSION = '27.4'; // Increment this to force reset on client devices
+  const savedVer = localStorage.getItem('portalVersion');
+  
+  if(savedVer !== CURRENT_VERSION) {
+      console.log("New version detected. Clearing cache...");
+      localStorage.clear(); // Nuke all old data
+      localStorage.setItem('portalVersion', CURRENT_VERSION);
+      // Reload page to apply clean slate
+      location.reload(); 
+  }
   // ===============================================
 
   let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [] };
@@ -398,7 +401,7 @@
     setupTrendSelectors();
     loadAllData();
     renderOPR();
-    document.querySelector('.brand-text h1').textContent = CONFIG.schoolName;
+    document.querySelector('.brand-text h1').textContent = CONFIG.schoolName ? CONFIG.schoolName : DEFAULTS.schoolName;
   }
 
   window.handleAuth = function() {
@@ -582,6 +585,10 @@ function parseCSV(text) {
     if(results[4]) DATA.par = results[4];
     if(results[5]) DATA.db = results[5];
 
+    // === Update Footer Timestamp ===
+    const now = new Date();
+    document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
+
     processAttendance();
     renderAnn();
     initPajsk();
@@ -611,6 +618,10 @@ function parseCSV(text) {
         else if(type === 'cal') { DATA.cal = data; initCalendar(); renderCalendarTable(); }
         else if(type === 'par') { DATA.par = data; renderParents(); }
         else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); }
+        
+        // Update timestamp on manual reload too
+        const now = new Date();
+        document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
     }
     document.getElementById('loading-overlay').style.display = 'none';
   }
