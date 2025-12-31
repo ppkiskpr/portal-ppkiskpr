@@ -328,7 +328,21 @@
   </main>
 </div>
 
-<div class="modal-overlay" id="infoModal"><div class="modal-content"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;"><h3 style="margin:0" id="infoTitle">Tajuk</h3><button class="icon-btn" onclick="document.getElementById('infoModal').classList.remove('active')"><span class="material-icons-round">close</span></button></div><div id="infoBody" style="line-height:1.6; font-size:14px; color:var(--text-main);"></div></div></div>
+<div class="modal-overlay" id="infoModal">
+  <div class="modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 style="margin:0" id="infoTitle">Tajuk</h3>
+        <button class="icon-btn" onclick="document.getElementById('infoModal').classList.remove('active')"><span class="material-icons-round">close</span></button>
+    </div>
+    <div id="infoBody" style="line-height:1.6; font-size:14px; color:var(--text-main);"></div>
+    <div id="infoLinkContainer" style="margin-top:20px; display:none; text-align:right;">
+        <button id="infoLinkBtn" class="btn btn-primary">
+            Buka Pautan <span class="material-icons-round" style="font-size:14px; margin-left:5px; vertical-align:middle;">open_in_new</span>
+        </button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="settingsModal"><div class="modal-content"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 style="margin:0">Tetapan Portal</h3><button class="icon-btn" onclick="closeSettings()"><span class="material-icons-round">close</span></button></div><div id="pinStep"><input type="password" id="pinInput" class="form-input" placeholder="PIN Keselamatan" style="width:100%; text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:15px;"><button class="btn btn-primary" onclick="checkPin()" style="width:100%">Sahkan</button></div><div id="settingStep" style="display:none;"><label style="font-weight:600; font-size:12px; display:block; margin-top:10px;">Nama Sekolah</label><input id="setName" class="form-input" style="width:100%"><div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); font-weight:700; font-size:13px;">Paparan Menu</div><div id="menuManagerList"></div><button class="btn btn-primary" onclick="saveSettings()" style="width:100%; margin-top:20px;">Simpan Perubahan</button></div></div></div>
 
 <script type="module">
@@ -514,12 +528,12 @@
     try {
       const fetchWithRetry = async (retries = 2) => {
          try {
-            const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now() + Math.random());
-            if(!res.ok) throw new Error("Status " + res.status);
-            return await res.text();
+           const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now() + Math.random());
+           if(!res.ok) throw new Error("Status " + res.status);
+           return await res.text();
          } catch(err) {
-            if(retries > 0) return await fetchWithRetry(retries - 1);
-            throw err;
+           if(retries > 0) return await fetchWithRetry(retries - 1);
+           throw err;
          }
       };
       const text = await fetchWithRetry();
@@ -910,7 +924,10 @@ function parseCSV(text) {
         const badgeClass =
           (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
           (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' : 'b-blue';
-        const onClick = url ? `window.open('${String(url).replace(/'/g, "\\'")}', '_blank')` : `openInfoModal(${JSON.stringify(tajuk)}, ${JSON.stringify(isi)})`;
+        
+        // MODIFIED: Always open modal, pass URL along
+        const onClick = `openInfoModal(${JSON.stringify(tajuk)}, ${JSON.stringify(isi)}, ${JSON.stringify(url)})`;
+        
         return `
           <div class="card clickable" onclick="${onClick}">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px">
@@ -919,7 +936,7 @@ function parseCSV(text) {
             </div>
             <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
             <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin:0;">${escapeHtml(isi)}</p>
-            ${(tindakan || url) ? `<div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">${escapeHtml(tindakan || (url ? 'BUKA PAUTAN' : ''))} ${url ? '&nearr;' : ''}</div>` : ''}
+            ${(tindakan || url) ? `<div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">${escapeHtml(tindakan || (url ? 'LIHAT MAKLUMAT' : ''))} ${url ? '&nearr;' : ''}</div>` : ''}
           </div>
         `;
       }).join('');
@@ -972,7 +989,24 @@ function parseCSV(text) {
     document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
   }
 
-  window.openInfoModal = function(title, body) { document.getElementById('infoTitle').innerText = title; document.getElementById('infoBody').innerText = body; document.getElementById('infoModal').classList.add('active'); }
+  // MODIFIED: Accepts optional URL
+  window.openInfoModal = function(title, body, url) { 
+      document.getElementById('infoTitle').innerText = title; 
+      document.getElementById('infoBody').innerText = body; 
+      
+      const linkDiv = document.getElementById('infoLinkContainer');
+      const linkBtn = document.getElementById('infoLinkBtn');
+      
+      if(url) {
+          linkDiv.style.display = 'block';
+          linkBtn.onclick = function() { window.open(url, '_blank'); };
+      } else {
+          linkDiv.style.display = 'none';
+      }
+      
+      document.getElementById('infoModal').classList.add('active'); 
+  }
+
   window.openSettings = function() { document.getElementById('settingsModal').classList.add('active'); document.getElementById('pinInput').value = ''; document.getElementById('pinStep').style.display = 'block'; document.getElementById('settingStep').style.display = 'none'; }
   window.closeSettings = function() { document.getElementById('settingsModal').classList.remove('active'); }
   window.checkPin = function() { if(document.getElementById('pinInput').value === CONFIG.pin) { document.getElementById('pinStep').style.display = 'none'; document.getElementById('settingStep').style.display = 'block'; populateSettings(); } else alert('Salah PIN'); }
@@ -986,4 +1020,3 @@ function parseCSV(text) {
 </script>
 </body>
 </html>
-
