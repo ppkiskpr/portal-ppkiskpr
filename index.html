@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.8 - Enrolmen Fix) === */
+    /* === CSS UTAMA (V27.9 - Smart Stats Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -180,7 +180,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.8</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.9</div>
     </div>
   </aside>
 
@@ -459,7 +459,7 @@
       {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'}, // UMUM
       {id:'opr', label:'Laporan OPR', icon:'description', hidden:false, role:'public'}, // UMUM
       {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'}, // UMUM
-      {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM (UPDATED)
+      {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM
       
       // SENSITIF (Wajib Login)
       {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'family'}, 
@@ -468,8 +468,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V27.8) ===
-  const CURRENT_VERSION = '27.8'; // Increment this to force reset on client devices
+  // === AUTO-FIX & HARD RESET (V27.9) ===
+  const CURRENT_VERSION = '27.9'; // Increment this to force reset on client devices
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -799,28 +799,70 @@ function parseCSV(text) {
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
-  // === NEW: STUDENT STATS LOGIC ===
+  // === SMART STATS LOGIC (SUM MODE) ===
   function renderStudentStats() {
       if(!DATA.db || !DATA.db.length) return;
       
-      const total = DATA.db.length;
-      document.getElementById('totalStudentsBadge').innerText = total + " Murid";
-
-      let male = 0, female = 0;
+      let total = 0, male = 0, female = 0;
       const classCounts = {};
+      
+      // Keywords untuk diabaikan (baris rumusan)
+      const ignore = ['JUMLAH', 'TOTAL', 'PERATUS', 'PERCENT', 'KESELURUHAN', 'ORANG'];
+
+      const sample = DATA.db[0];
+      const keys = Object.keys(sample);
+      
+      // Cari kolom L/P (Smart Detection)
+      const colL = keys.find(k => k === 'L' || k === 'LEL' || k.includes('LELAKI') || k.includes('MALE'));
+      const colP = keys.find(k => k === 'P' || k === 'PER' || k.includes('PEREMPUAN') || k.includes('FEMALE'));
+      const colClass = keys.find(k => k.includes('KELAS') || k.includes('TINGKATAN') || k.includes('TAHUN') || k.includes('DARJAH'));
+
+      // Check Mode: Adakah fail ini jadual rumusan?
+      let isSummaryMode = false;
+      if (colL && colP) {
+          const valL = parseFloat(sample[colL]);
+          if (!isNaN(valL) && valL < 1000) isSummaryMode = true; 
+      }
 
       DATA.db.forEach(r => {
-          // Gender Count (Robust matching)
-          const g = (getVal(r, 'JANTINA') || getVal(r, 'GENDER') || '').toUpperCase();
-          if(g.startsWith('L') || g.includes('LELAKI') || g.includes('MALE')) male++;
-          else if(g.startsWith('P') || g.includes('PEREMPUAN') || g.includes('FEMALE')) female++;
+          let cName = "";
+          if (colClass) cName = r[colClass];
+          else cName = getVal(r, 'KELAS') || getVal(r, 'CLASS');
+          
+          cName = (cName || '').toUpperCase().trim();
+          
+          // Tapis baris yang bukan kelas (baris Total/Peratus)
+          if (!cName || ignore.some(x => cName.includes(x))) return;
+          if (cName.length > 30) return; // Buang ayat panjang yang bukan nama kelas
 
-          // Class Count
-          let c = (getVal(r, 'KELAS') || getVal(r, 'CLASS') || 'Tiada Kelas').toUpperCase();
-          c = c.replace('KELAS', '').trim(); // Clean up "KELAS 1 AMANAH" -> "1 AMANAH"
-          if(c) classCounts[c] = (classCounts[c] || 0) + 1;
+          let mCount = 0, fCount = 0;
+
+          if (isSummaryMode) {
+              // Jika Summary Mode: AMBIL NILAI (SUM)
+              mCount = parseInt(r[colL]) || 0;
+              fCount = parseInt(r[colP]) || 0;
+          } else {
+              // Jika Raw Mode: KIRA BARIS (COUNT)
+              mCount = 0; fCount = 0;
+              const g = (getVal(r, 'JANTINA') || getVal(r, 'GENDER') || '').toUpperCase();
+              if (g.startsWith('L') || g.includes('LELAKI')) mCount = 1;
+              else if (g.startsWith('P') || g.includes('PEREMPUAN')) fCount = 1;
+          }
+
+          const rowTotal = isSummaryMode ? (mCount + fCount) : 1;
+          
+          if(rowTotal > 0) {
+              male += mCount;
+              female += fCount;
+              total += rowTotal;
+              
+              const cleanC = cName.replace('KELAS', '').replace('TINGKATAN', '').trim();
+              classCounts[cleanC] = (classCounts[cleanC] || 0) + rowTotal;
+          }
       });
 
+      // UPDATE UI
+      document.getElementById('totalStudentsBadge').innerText = total + " Murid";
       document.getElementById('countMale').innerText = male;
       document.getElementById('countFemale').innerText = female;
 
