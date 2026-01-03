@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.9 - Smart Stats Fix) === */
+    /* === CSS UTAMA (V27.10 - Interactive Stats) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -108,7 +108,12 @@
     .enrolmen-summary { display:flex; gap:10px; flex-direction:column; justify-content:center; }
     .enrolmen-item { display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--bg-element); border-radius:8px; border:1px solid var(--border-color); }
     .class-list-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:10px; }
-    .class-badge { background:var(--bg-element); border:1px solid var(--border-color); padding:8px; border-radius:8px; text-align:center; }
+    
+    .class-badge { background:var(--bg-element); border:1px solid var(--border-color); padding:8px; border-radius:8px; text-align:center; cursor:pointer; transition:all 0.2s; }
+    .class-badge:hover { transform:translateY(-2px); border-color:var(--primary); }
+    .class-badge.active { background:var(--primary); color:white; border-color:var(--primary); }
+    .class-badge.active div { color:white !important; }
+
     @media (max-width: 768px) { .enrolmen-grid { grid-template-columns: 1fr; } }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: none; place-items: center; backdrop-filter: blur(2px); }
@@ -180,7 +185,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.9</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.10</div>
     </div>
   </aside>
 
@@ -209,7 +214,10 @@
 
         <div class="card" style="margin-bottom:24px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="margin:0; font-size:16px;">👥 Analisis Enrolmen Murid</h3>
+                <div>
+                    <h3 style="margin:0; font-size:16px;">👥 Analisis Enrolmen Murid</h3>
+                    <p style="margin:2px 0 0; font-size:11px; color:var(--text-muted);" id="enrolSubTitle">KESELURUHAN SEKOLAH</p>
+                </div>
                 <span class="badge b-gray" id="totalStudentsBadge">0 Murid</span>
             </div>
             <div class="enrolmen-grid">
@@ -224,7 +232,7 @@
                     </div>
                 </div>
                 <div>
-                    <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px;">PECAHAN MENGIKUT KELAS</div>
+                    <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px;">PECAHAN MENGIKUT KELAS (KLIK UNTUK TAPIS)</div>
                     <div class="class-list-grid" id="classListStats">
                         <div style="color:var(--text-muted); font-size:12px;">Tiada data...</div>
                     </div>
@@ -459,7 +467,7 @@
       {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'}, // UMUM
       {id:'opr', label:'Laporan OPR', icon:'description', hidden:false, role:'public'}, // UMUM
       {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'}, // UMUM
-      {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM
+      {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM (UPDATED)
       
       // SENSITIF (Wajib Login)
       {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'family'}, 
@@ -467,9 +475,11 @@
   };
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
+  let STATS_CACHE = { overall: {m:0, f:0, t:0}, classes: {} };
+  let ACTIVE_CLASS = null;
   
-  // === AUTO-FIX & HARD RESET (V27.9) ===
-  const CURRENT_VERSION = '27.9'; // Increment this to force reset on client devices
+  // === AUTO-FIX & HARD RESET (V27.10) ===
+  const CURRENT_VERSION = '27.10'; // Increment this to force reset on client devices
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -857,24 +867,57 @@ function parseCSV(text) {
               total += rowTotal;
               
               const cleanC = cName.replace('KELAS', '').replace('TINGKATAN', '').trim();
-              classCounts[cleanC] = (classCounts[cleanC] || 0) + rowTotal;
+              classCounts[cleanC] = {
+                  m: (classCounts[cleanC]?.m || 0) + mCount,
+                  f: (classCounts[cleanC]?.f || 0) + fCount,
+                  t: (classCounts[cleanC]?.t || 0) + rowTotal
+              };
           }
       });
 
-      // UPDATE UI
-      document.getElementById('totalStudentsBadge').innerText = total + " Murid";
-      document.getElementById('countMale').innerText = male;
-      document.getElementById('countFemale').innerText = female;
+      // SAVE TO CACHE FOR INTERACTION
+      STATS_CACHE.classes = classCounts;
+      STATS_CACHE.overall = { m: male, f: female, t: total };
+      
+      // Initial Render (Overall)
+      updateStatsDisplay(null);
+  }
 
-      // Render Class List
-      const sortedClasses = Object.keys(classCounts).sort();
+  // === NEW: INTERACTIVE FILTER ===
+  window.filterStats = function(className) {
+      if (ACTIVE_CLASS === className) {
+          ACTIVE_CLASS = null; // Toggle Off (Reset)
+      } else {
+          ACTIVE_CLASS = className;
+      }
+      updateStatsDisplay(ACTIVE_CLASS);
+  }
+
+  function updateStatsDisplay(filterClass) {
+      let data = STATS_CACHE.overall;
+      let label = "KESELURUHAN SEKOLAH";
+
+      if(filterClass && STATS_CACHE.classes[filterClass]) {
+          data = STATS_CACHE.classes[filterClass];
+          label = "KELAS: " + filterClass;
+      }
+
+      document.getElementById('totalStudentsBadge').innerText = data.t + " Murid";
+      document.getElementById('countMale').innerText = data.m;
+      document.getElementById('countFemale').innerText = data.f;
+      document.getElementById('enrolSubTitle').innerText = label;
+
+      // Render Class List Buttons
+      const sortedClasses = Object.keys(STATS_CACHE.classes).sort();
       if(sortedClasses.length > 0) {
-          document.getElementById('classListStats').innerHTML = sortedClasses.map(c => `
-              <div class="class-badge">
+          document.getElementById('classListStats').innerHTML = sortedClasses.map(c => {
+              const activeClass = (c === filterClass) ? 'active' : '';
+              return `
+              <div class="class-badge ${activeClass}" onclick="filterStats('${c}')">
                   <div style="font-size:10px; font-weight:700; color:var(--text-muted); margin-bottom:2px;">${c}</div>
-                  <div style="font-size:16px; font-weight:700; color:var(--primary);">${classCounts[c]}</div>
-              </div>
-          `).join('');
+                  <div style="font-size:16px; font-weight:700; color:var(--primary);">${STATS_CACHE.classes[c].t}</div>
+              </div>`;
+          }).join('');
       } else {
            document.getElementById('classListStats').innerHTML = '<div style="color:var(--text-muted); font-size:12px;">Tiada data kelas.</div>';
       }
