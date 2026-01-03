@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.10 - Interactive Stats) === */
+    /* === CSS UTAMA (V27.11 - Sidebar Text Wrap Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -55,7 +55,27 @@
     .nav-group-header.collapsed .toggle-icon { transform: rotate(-90deg); }
     .nav-child-container { overflow: hidden; transition: max-height 0.3s ease; }
     .nav-child-container.collapsed { max-height: 0; }
-    .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; padding-top: 20px; line-height: 1.4; border-top: 1px solid var(--border-color); }
+    
+    /* UPDATED SIDEBAR FOOTER FOR LONG NAMES */
+    .sidebar-footer { 
+        margin-top: auto; 
+        font-size: 11px; 
+        text-align: center; 
+        color: var(--text-muted); 
+        padding: 20px 10px; /* Added side padding */
+        line-height: 1.4; 
+        border-top: 1px solid var(--border-color);
+        /* white-space: nowrap; REMOVED TO ALLOW WRAPPING */
+    }
+    #userInfo {
+        margin-bottom: 15px; 
+        font-weight: 600; 
+        font-size: 12px; 
+        /* Ensure wrapping happens */
+        white-space: normal; 
+        word-wrap: break-word;
+        line-height: 1.4;
+    }
 
     /* MAIN CONTENT */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -181,11 +201,11 @@
     <div class="nav-menu" id="sidebarMenu">
       </div>
     <div class="sidebar-footer">
-      <div id="userInfo" style="margin-bottom:10px; font-weight:600; font-size:12px; display:none;"></div>
+      <div id="userInfo" style="display:none;"></div>
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.10</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.11</div>
     </div>
   </aside>
 
@@ -478,8 +498,8 @@
   let STATS_CACHE = { overall: {m:0, f:0, t:0}, classes: {} };
   let ACTIVE_CLASS = null;
   
-  // === AUTO-FIX & HARD RESET (V27.10) ===
-  const CURRENT_VERSION = '27.10'; // Increment this to force reset on client devices
+  // === AUTO-FIX & HARD RESET (V27.11) ===
+  const CURRENT_VERSION = '27.11'; // Increment this to force reset on client devices
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -526,7 +546,8 @@
       btn.textContent = "Log Keluar";
       btn.style.background = "#B42318";
       info.style.display = "block";
-      info.innerHTML = `<div>${user.displayName}</div><div style="color:var(--primary); font-size:10px">${USER_ROLE.toUpperCase()}</div>`;
+      // UPDATED USER DISPLAY TO HANDLE LONG NAMES
+      info.innerHTML = `<div>${user.displayName.toUpperCase()}</div><div style="color:var(--primary); font-size:10px">${USER_ROLE.toUpperCase()}</div>`;
       if(USER_ROLE === 'admin') gear.style.display = 'grid';
       loginScreen.style.opacity = '0';
       setTimeout(() => { loginScreen.style.display = 'none'; appContainer.style.display = 'flex'; init(); }, 500);
