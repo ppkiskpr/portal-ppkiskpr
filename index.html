@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.11 - Sidebar Text Wrap Fix) === */
+    /* === CSS UTAMA (V27.12 - Asnaf Filter Added) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -56,22 +56,20 @@
     .nav-child-container { overflow: hidden; transition: max-height 0.3s ease; }
     .nav-child-container.collapsed { max-height: 0; }
     
-    /* UPDATED SIDEBAR FOOTER FOR LONG NAMES */
+    /* SIDEBAR FOOTER FIX */
     .sidebar-footer { 
         margin-top: auto; 
         font-size: 11px; 
         text-align: center; 
         color: var(--text-muted); 
-        padding: 20px 10px; /* Added side padding */
+        padding: 20px 10px;
         line-height: 1.4; 
         border-top: 1px solid var(--border-color);
-        /* white-space: nowrap; REMOVED TO ALLOW WRAPPING */
     }
     #userInfo {
         margin-bottom: 15px; 
         font-weight: 600; 
         font-size: 12px; 
-        /* Ensure wrapping happens */
         white-space: normal; 
         word-wrap: break-word;
         line-height: 1.4;
@@ -205,7 +203,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.11</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.12</div>
     </div>
   </aside>
 
@@ -334,10 +332,29 @@
       <div id="page-asnaf" class="page-section" style="display:none;">
           <div class="page-banner">
               <div class="banner-text"><h2>Rekod Asnaf & Yatim</h2><p>Pengurusan Bantuan Murid</p></div>
+              <div class="banner-actions"><button class="btn-action" onclick="forceReload('asnaf')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div>
           </div>
-          <div class="card" style="text-align:center; padding:50px;">
-              <span class="material-icons-round" style="font-size:48px; color:var(--text-muted);">engineering</span>
-              <p>Laman ini sedang dikemaskini oleh Admin.</p>
+          <div class="card">
+              <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
+                  <input class="form-input" id="searchAsnaf" placeholder="Cari Nama / No KP..." style="flex:1;">
+                  <button class="btn btn-outline" onclick="toggleFilterPanel('asnafFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan</button>
+                  <button class="btn btn-primary" onclick="renderAsnafTable()">Cari</button>
+              </div>
+              <div id="asnafFilters" class="filter-panel">
+                  <div class="filter-grid">
+                      <div><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafKelas"><option value="">Semua</option></select></div>
+                      <div><label class="filter-label">Jantina</label><select class="form-select" id="fAsnafJantina"><option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option></select></div>
+                  </div>
+                  <div style="text-align:right"><button class="btn btn-outline" onclick="resetFilterAsnaf()">Reset</button> <button class="btn btn-primary" onclick="renderAsnafTable()">Terapkan</button></div>
+              </div>
+              <div class="print-header"><h2>LAPORAN ASNAF & YATIM PPKI</h2><p>SK PAYA RESAK</p></div>
+              <div class="table-wrap">
+                  <table id="asnafTable">
+                      <thead><tr><th>Bil</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Info Tambahan</th></tr></thead>
+                      <tbody id="asnafBody"></tbody>
+                  </table>
+              </div>
+              <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="asnafCount"></div>
           </div>
       </div>
 
@@ -471,7 +488,8 @@
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
       // UPDATED DATABASE URL
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
-      asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?output=csv" // Placeholder untuk Asnaf
+      // ASNAF URL (Sama dengan Database untuk data ringkas, atau link lain jika ada)
+      asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?output=csv" 
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
@@ -498,8 +516,8 @@
   let STATS_CACHE = { overall: {m:0, f:0, t:0}, classes: {} };
   let ACTIVE_CLASS = null;
   
-  // === AUTO-FIX & HARD RESET (V27.11) ===
-  const CURRENT_VERSION = '27.11'; // Increment this to force reset on client devices
+  // === AUTO-FIX & HARD RESET (V27.12) ===
+  const CURRENT_VERSION = '27.12'; // Increment this to force reset on client devices
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -511,7 +529,7 @@
   }
   // ===============================================
 
-  let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [] };
+  let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [], asnaf: [] };
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
 
@@ -778,7 +796,8 @@ function parseCSV(text) {
       fetchCSV(CONFIG.urls.announcements),
       fetchCSV(CONFIG.urls.calendar),
       fetchCSV(CONFIG.urls.parents),
-      fetchCSV(CONFIG.urls.database)
+      fetchCSV(CONFIG.urls.database),
+      fetchCSV(CONFIG.urls.asnaf) // ADDED FETCH FOR ASNAF
     ]);
     if(results[0]) DATA.att = results[0];
     if(results[1]) DATA.pajsk = results[1];
@@ -786,6 +805,7 @@ function parseCSV(text) {
     if(results[3]) DATA.cal = results[3];
     if(results[4]) DATA.par = results[4];
     if(results[5]) DATA.db = results[5];
+    if(results[6]) DATA.asnaf = results[6];
 
     // === Update Footer Timestamp ===
     const now = new Date();
@@ -797,7 +817,8 @@ function parseCSV(text) {
     renderParents();
     initCalendar();
     renderCalendarTable();
-    renderStudentStats(); // NEW FUNCTION CALL
+    renderStudentStats(); 
+    initAsnaf(); // INIT ASNAF
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
@@ -812,7 +833,7 @@ function parseCSV(text) {
     else if(type === 'cal') url = CONFIG.urls.calendar;
     else if(type === 'par') url = CONFIG.urls.parents;
     else if(type === 'db') url = CONFIG.urls.database;
-    else if(type === 'asnaf') { alert("Data Asnaf belum dihubungkan."); document.getElementById('loading-overlay').style.display = 'none'; return; }
+    else if(type === 'asnaf') url = CONFIG.urls.asnaf;
 
     const data = await fetchCSV(url);
     if(data) {
@@ -821,13 +842,70 @@ function parseCSV(text) {
         else if(type === 'ann') { DATA.ann = data; renderAnn(); }
         else if(type === 'cal') { DATA.cal = data; initCalendar(); renderCalendarTable(); }
         else if(type === 'par') { DATA.par = data; renderParents(); }
-        else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); renderStudentStats(); } // Update Stats on reload
+        else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); renderStudentStats(); } 
+        else if(type === 'asnaf') { DATA.asnaf = data; initAsnaf(); alert('Data Asnaf Dikemaskini'); }
         
         // Update timestamp on manual reload too
         const now = new Date();
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
     }
     document.getElementById('loading-overlay').style.display = 'none';
+  }
+
+  // === ASNAF LOGIC ===
+  function initAsnaf() {
+      if(!DATA.asnaf || DATA.asnaf.length === 0) return;
+      
+      // Populate filters
+      const classes = [...new Set(DATA.asnaf.map(r => getVal(r, 'KELAS') || getVal(r, 'CLASS')))].filter(Boolean).sort();
+      document.getElementById('fAsnafKelas').innerHTML = '<option value="">Semua</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+      
+      renderAsnafTable();
+  }
+
+  window.renderAsnafTable = function() {
+      if(!DATA.asnaf || DATA.asnaf.length === 0) { 
+          document.getElementById('asnafBody').innerHTML = '<tr><td colspan="5">Tiada data dijumpai.</td></tr>'; 
+          return; 
+      }
+
+      const q = document.getElementById('searchAsnaf').value.toLowerCase();
+      const fKelas = document.getElementById('fAsnafKelas').value;
+      const fJantina = document.getElementById('fAsnafJantina').value;
+
+      const filtered = DATA.asnaf.filter(r => {
+          const nama = (getVal(r, 'NAMA') || '').toLowerCase();
+          const kp = (getVal(r, 'KP') || getVal(r, 'NO') || '').toLowerCase();
+          const kelas = getVal(r, 'KELAS') || getVal(r, 'CLASS');
+          const jantina = (getVal(r, 'JANTINA') || getVal(r, 'GENDER') || '').toUpperCase();
+
+          const matchSearch = !q || nama.includes(q) || kp.includes(q);
+          const matchKelas = !fKelas || kelas === fKelas;
+          const matchJantina = !fJantina || jantina.includes(fJantina) || (fJantina === 'LELAKI' && jantina.startsWith('L')) || (fJantina === 'PEREMPUAN' && jantina.startsWith('P'));
+
+          return matchSearch && matchKelas && matchJantina;
+      });
+
+      document.getElementById('asnafBody').innerHTML = filtered.map((r, i) => {
+          // Try to find extra info like "Bantuan", "Pendapatan", or "Status"
+          let info = getVal(r, 'BANTUAN') || getVal(r, 'PENDAPATAN') || getVal(r, 'STATUS') || '-';
+          return `<tr>
+              <td>${i + 1}</td>
+              <td><strong>${getVal(r, 'NAMA')}</strong><br><span style="font-size:10px; color:var(--text-muted)">${getVal(r, 'KP')}</span></td>
+              <td>${getVal(r, 'KELAS')}</td>
+              <td>${getVal(r, 'JANTINA')}</td>
+              <td>${info}</td>
+          </tr>`;
+      }).join('');
+      
+      document.getElementById('asnafCount').innerText = `Jumlah: ${filtered.length} rekod.`;
+  }
+
+  window.resetFilterAsnaf = function() {
+      document.getElementById('searchAsnaf').value = '';
+      document.getElementById('fAsnafKelas').value = '';
+      document.getElementById('fAsnafJantina').value = '';
+      renderAsnafTable();
   }
 
   // === SMART STATS LOGIC (SUM MODE) ===
