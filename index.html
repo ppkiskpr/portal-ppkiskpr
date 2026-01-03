@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.5 - Sidebar Groups) === */
+    /* === CSS UTAMA (V27.6 - Final Sidebar Groups) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -179,7 +179,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.5</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.6</div>
     </div>
   </aside>
 
@@ -419,26 +419,28 @@
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
       
-      // HEM
+      // GROUP HEM (Hanya Admin)
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
-      {id:'asnaf', label:'Rekod Asnaf', icon:'engineering', hidden:false, role:'admin'}, // ITEM BARU
-      {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'family'}, 
-      {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'family'},
+      {id:'asnaf', label:'Rekod Asnaf', icon:'engineering', hidden:false, role:'admin'},
       
-      // KOKO
+      // GROUP KOKO (Hanya Admin)
       {id:'pajsk', label:'Rekod PAJSK', icon:'emoji_events', hidden:false, role:'admin'},
       
-      // PENTADBIRAN
-      {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'},
-      {id:'opr', label:'Laporan OPR', icon:'description', hidden:false, role:'public'},
-      {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'} // Changed to Public
+      // GROUP PENTADBIRAN (Campur Public & Family)
+      {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'}, // UMUM
+      {id:'opr', label:'Laporan OPR', icon:'description', hidden:false, role:'public'}, // UMUM
+      {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'}, // UMUM
+      {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM (UPDATED)
+      
+      // SENSITIF (Wajib Login)
+      {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'family'}, 
     ]
   };
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V27.5) ===
-  const CURRENT_VERSION = '27.5'; // Increment this to force reset on client devices
+  // === AUTO-FIX & HARD RESET (V27.6) ===
+  const CURRENT_VERSION = '27.6'; // Increment this to force reset on client devices
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
