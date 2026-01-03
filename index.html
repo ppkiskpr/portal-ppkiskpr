@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.12 - Asnaf Filter Added) === */
+    /* === CSS UTAMA (V27.13 - Auto-Merge Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -56,7 +56,6 @@
     .nav-child-container { overflow: hidden; transition: max-height 0.3s ease; }
     .nav-child-container.collapsed { max-height: 0; }
     
-    /* SIDEBAR FOOTER FIX */
     .sidebar-footer { 
         margin-top: auto; 
         font-size: 11px; 
@@ -203,7 +202,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.12</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.13</div>
     </div>
   </aside>
 
@@ -516,8 +515,8 @@
   let STATS_CACHE = { overall: {m:0, f:0, t:0}, classes: {} };
   let ACTIVE_CLASS = null;
   
-  // === AUTO-FIX & HARD RESET (V27.12) ===
-  const CURRENT_VERSION = '27.12'; // Increment this to force reset on client devices
+  // === AUTO-FIX & HARD RESET (V27.13) ===
+  const CURRENT_VERSION = '27.13'; // Increment this to force reset on client devices
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -811,6 +810,7 @@ function parseCSV(text) {
     const now = new Date();
     document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
 
+    mergeAsnafData(); // NEW: MERGE DB CLASS INTO ASNAF
     processAttendance();
     renderAnn();
     initPajsk();
@@ -842,8 +842,8 @@ function parseCSV(text) {
         else if(type === 'ann') { DATA.ann = data; renderAnn(); }
         else if(type === 'cal') { DATA.cal = data; initCalendar(); renderCalendarTable(); }
         else if(type === 'par') { DATA.par = data; renderParents(); }
-        else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); renderStudentStats(); } 
-        else if(type === 'asnaf') { DATA.asnaf = data; initAsnaf(); alert('Data Asnaf Dikemaskini'); }
+        else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); renderStudentStats(); mergeAsnafData(); } 
+        else if(type === 'asnaf') { DATA.asnaf = data; mergeAsnafData(); initAsnaf(); alert('Data Asnaf Dikemaskini'); }
         
         // Update timestamp on manual reload too
         const now = new Date();
@@ -852,11 +852,35 @@ function parseCSV(text) {
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
+  // === NEW: MERGE FUNCTION (DB -> ASNAF) ===
+  function mergeAsnafData() {
+      if (!DATA.asnaf.length || !DATA.db.length) return;
+      
+      DATA.asnaf.forEach(asnafRow => {
+        // Normalize Asnaf Name
+        const asnafName = (getVal(asnafRow, 'NAMA') || '').toUpperCase().trim();
+        
+        // Find in DB
+        const dbRow = DATA.db.find(db => (getVal(db, 'NAMA') || '').toUpperCase().trim() === asnafName);
+        
+        if (dbRow) {
+          // Inject Class if missing in Asnaf
+          if (!getVal(asnafRow, 'KELAS')) {
+             asnafRow['KELAS'] = getVal(dbRow, 'KELAS');
+          }
+          // Inject Gender if missing in Asnaf
+          if (!getVal(asnafRow, 'JANTINA')) {
+             asnafRow['JANTINA'] = getVal(dbRow, 'JANTINA');
+          }
+        }
+      });
+  }
+
   // === ASNAF LOGIC ===
   function initAsnaf() {
       if(!DATA.asnaf || DATA.asnaf.length === 0) return;
       
-      // Populate filters
+      // Populate filters (after merge)
       const classes = [...new Set(DATA.asnaf.map(r => getVal(r, 'KELAS') || getVal(r, 'CLASS')))].filter(Boolean).sort();
       document.getElementById('fAsnafKelas').innerHTML = '<option value="">Semua</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
       
@@ -876,8 +900,8 @@ function parseCSV(text) {
       const filtered = DATA.asnaf.filter(r => {
           const nama = (getVal(r, 'NAMA') || '').toLowerCase();
           const kp = (getVal(r, 'KP') || getVal(r, 'NO') || '').toLowerCase();
-          const kelas = getVal(r, 'KELAS') || getVal(r, 'CLASS');
-          const jantina = (getVal(r, 'JANTINA') || getVal(r, 'GENDER') || '').toUpperCase();
+          const kelas = getVal(r, 'KELAS') || getVal(r, 'CLASS'); // Now pulled from DB if merged
+          const jantina = (getVal(r, 'JANTINA') || getVal(r, 'GENDER') || '').toUpperCase(); // Now pulled from DB if merged
 
           const matchSearch = !q || nama.includes(q) || kp.includes(q);
           const matchKelas = !fKelas || kelas === fKelas;
@@ -892,8 +916,8 @@ function parseCSV(text) {
           return `<tr>
               <td>${i + 1}</td>
               <td><strong>${getVal(r, 'NAMA')}</strong><br><span style="font-size:10px; color:var(--text-muted)">${getVal(r, 'KP')}</span></td>
-              <td>${getVal(r, 'KELAS')}</td>
-              <td>${getVal(r, 'JANTINA')}</td>
+              <td>${getVal(r, 'KELAS') || '-'}</td>
+              <td>${getVal(r, 'JANTINA') || '-'}</td>
               <td>${info}</td>
           </tr>`;
       }).join('');
