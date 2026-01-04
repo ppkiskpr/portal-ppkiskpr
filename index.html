@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.16 - ID Delima Dedicated CSV) === */
+    /* === CSS UTAMA (V28.17 - Enrolment UI & Trend Logic Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -90,12 +90,12 @@
     .chart-box { flex: 0 0 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
     
     /* Center text for Doughnut */
-    .chart-center-text { position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+    .chart-center-text { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
     .chart-number { font-size: 28px; font-weight: 800; line-height: 1; color: var(--text-main); }
     .chart-sub { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
 
-    /* Navigation Card Button */
-    .nav-card-btn { margin-top: 15px; background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    /* Navigation Card Button (Adjusted Spacing) */
+    .nav-card-btn { margin-top: 25px; background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
     .nav-card-btn:hover { transform: translateY(-2px); background: #145a3b; }
 
     .class-list-box { flex: 1; min-width: 250px; }
@@ -112,6 +112,8 @@
     .btn-action:hover { background: rgba(255,255,255,0.3); }
 
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    
+    /* FIX: Button Height & Alignment */
     .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; height: 42px; box-sizing: border-box; }
     .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 42px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary { background: var(--primary); color: white; }
@@ -203,7 +205,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.16</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.17</div>
     </div>
   </aside>
 
@@ -226,7 +228,7 @@
         <div class="dashboard-grid">
           <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card att-card"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
-          <div class="card stat-card att-card"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
+          <div class="card stat-card att-card"><div class="stat-label">Hari Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
           <div class="card stat-card clickable" onclick="navTo('announcements')"><div class="stat-label">Pengumuman</div><div class="stat-val" id="dAnn">-</div><div class="stat-sub">Aktif</div></div>
         </div>
 
@@ -520,7 +522,7 @@
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
-      // === DATABASE BARU (V28.15 - Fix for ID Delima & Enrolment) ===
+      // === DATABASE BARU (V28.17) ===
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
       // === NEW STUDENT LIST ===
       student_list: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=1759925919&single=true&output=csv",
@@ -556,8 +558,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.16) ===
-  const CURRENT_VERSION = '28.16'; 
+  // === AUTO-FIX & HARD RESET (V28.17) ===
+  const CURRENT_VERSION = '28.17'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -731,7 +733,7 @@
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
     document.getElementById(`page-${id}`).style.display='block';
     
-    // === V28.14 FIX: TRIGGER RESET ON NAVIGATION ===
+    // === V28.17 FIX: TRIGGER RESET ON NAVIGATION ===
     if(id === 'asnaf') resetAsnafFilters();
     if(id === 'yatim') resetYatimFilters();
     if(id === 'student_list') resetStudentList();
@@ -848,7 +850,7 @@ function parseCSV(text) {
           fetchCSV(CONFIG.urls.asnaf), 
           fetchCSV(CONFIG.urls.yatim),
           fetchCSV(CONFIG.urls.student_list),
-          fetchCSV(CONFIG.urls.delima) // Data Delima (V28.16)
+          fetchCSV(CONFIG.urls.delima) 
         ]);
         if(results[0]) DATA.att = results[0];
         if(results[1]) DATA.pajsk = results[1];
@@ -885,6 +887,7 @@ function parseCSV(text) {
   function processEnrolment() {
     let rawData = DATA.db || [];
     
+    // Fallback if DB empty
     if(rawData.length === 0 && DATA.att && DATA.att.length > 0) {
          const unique = new Map();
          DATA.att.forEach(r => {
@@ -945,7 +948,16 @@ function parseCSV(text) {
         const btn = document.createElement('div');
         btn.className = 'class-card-mini';
         btn.innerHTML = `<div class="cc-name">${cls}</div><div class="cc-count">${classMap[cls].total} Murid</div>`;
-        btn.onclick = () => { updateChart(cls, classMap[cls].L, classMap[cls].P); setActiveCard(btn); };
+        btn.onclick = () => { 
+            // If already active, toggle OFF to show ALL
+            if(btn.classList.contains('active')) {
+                updateChart('SEMUA', totalL, totalP);
+                document.querySelectorAll('.class-card-mini').forEach(c => c.classList.remove('active'));
+            } else {
+                updateChart(cls, classMap[cls].L, classMap[cls].P);
+                setActiveCard(btn);
+            }
+        };
         grid.appendChild(btn);
     });
   }
@@ -981,7 +993,14 @@ function parseCSV(text) {
               responsive: true,
               maintainAspectRatio: false,
               plugins: {
-                  legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Poppins' } } },
+                  legend: { 
+                      position: 'bottom', 
+                      labels: { 
+                          usePointStyle: true, 
+                          font: { family: 'Poppins' },
+                          padding: 20 // V28.17: Increased padding to push labels down
+                      } 
+                  },
                   datalabels: {
                       color: '#fff',
                       font: { weight: 'bold', size: 14 },
