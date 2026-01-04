@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V28.5 - Yatim Module Integrated) === */
+    /* === CSS UTAMA (V28.6 - Auto Current Year Filter) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -180,7 +180,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.5</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.6</div>
     </div>
   </aside>
 
@@ -336,37 +336,22 @@
              <div class="card"><div class="stat-label">Jumlah Murid Yatim</div><div class="stat-val" id="statYatim">-</div></div>
           </div>
           <div class="card">
-              <div style="margin-bottom:15px;">
-                  <label class="filter-label" style="margin-bottom:8px;">Pencarian (Nama / MyKid / Penjaga / No. Tel)</label>
-                  <div style="display:flex; gap:10px;">
-                    <input class="form-input" id="searchYatim" placeholder="Cari Nama Murid..." style="flex:1;">
-                    <button class="btn btn-primary" onclick="renderYatimTable()">Cari</button>
-                  </div>
+              <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
+                <input class="form-input" id="searchYatim" placeholder="Cari Nama Murid..." style="flex:1;">
+                <button class="btn btn-outline" onclick="toggleFilterPanel('yatimFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis</button>
+                <button class="btn btn-primary" onclick="renderYatimTable()">Cari</button>
               </div>
-              
-              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px; border:1px solid var(--border-color);">
-                   <div style="flex:1"><label class="filter-label">Tahun</label><select class="form-select" id="fYatimYear"><option value="">Semua</option></select></div>
-                   <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fYatimClass"><option value="">Semua</option></select></div>
-                   <div style="display:flex; align-items:flex-end;"><button class="btn btn-outline" onclick="resetYatimFilters()">Reset</button></div>
+              <div id="yatimFilters" class="filter-panel">
+                <div class="filter-grid">
+                   <div><label class="filter-label">Tahun</label><select class="form-select" id="fYatimYear"><option value="">Semua</option></select></div>
+                   <div><label class="filter-label">Kelas</label><select class="form-select" id="fYatimClass"><option value="">Semua</option></select></div>
+                   <div><label class="filter-label">Jantina</label><select class="form-select" id="fYatimGender"><option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option></select></div>
+                </div>
+                <div style="text-align:right"><button class="btn btn-outline" onclick="resetYatimFilters()">Reset</button> <button class="btn btn-primary" onclick="renderYatimTable()">Terapkan</button></div>
               </div>
-
               <div class="print-header"><h2>SENARAI MURID YATIM</h2><p>SK PAYA RESAK</p></div>
               <div class="table-wrap">
-                  <table>
-                      <thead>
-                          <tr>
-                              <th>NAMA MURID</th>
-                              <th>NO. MYKID</th>
-                              <th>KELAS</th>
-                              <th>NAMA PENJAGA</th>
-                              <th>NO. TEL</th>
-                              <th>PENDAPATAN</th>
-                              <th>ADIK BERADIK</th>
-                              <th>PERKAPITA</th>
-                          </tr>
-                      </thead>
-                      <tbody id="yatimBody"></tbody>
-                  </table>
+                  <table><thead><tr><th>Tahun</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Catatan</th></tr></thead><tbody id="yatimBody"></tbody></table>
               </div>
               <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="yatimCount"></div>
           </div>
@@ -530,8 +515,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.5) ===
-  const CURRENT_VERSION = '28.5'; 
+  // === AUTO-FIX & HARD RESET (V28.6) ===
+  const CURRENT_VERSION = '28.6'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -863,7 +848,7 @@ function parseCSV(text) {
     }
   }
 
-  /* ================= ASNAF RENDERER (V28.3 Smart) ================= */
+  /* ================= ASNAF RENDERER (V28.6 Auto-Filter) ================= */
   function initAsnaf() {
       if(!DATA.asnaf || !DATA.asnaf.length) {
           document.getElementById('statAsnaf').innerText = "0";
@@ -878,9 +863,12 @@ function parseCSV(text) {
       pop('fAsnafClass', 'KELAS');
       pop('fAsnafGender', 'JANTINA'); 
       
+      // === AUTO-SET CURRENT YEAR ===
       const currYear = new Date().getFullYear().toString();
       const yearOpts = Array.from(document.getElementById('fAsnafYear').options).map(o => o.value);
-      if(yearOpts.includes(currYear)) document.getElementById('fAsnafYear').value = currYear;
+      if(yearOpts.includes(currYear)) {
+          document.getElementById('fAsnafYear').value = currYear;
+      }
 
       renderAsnafTable();
   }
@@ -934,14 +922,17 @@ function parseCSV(text) {
   window.resetAsnafFilters = function() {
       document.getElementById('searchAsnaf').value = '';
       document.getElementById('fAsnafClass').value = '';
+      
+      // Reset to Current Year if exists, else empty
       const currYear = new Date().getFullYear().toString();
       const yearOpts = Array.from(document.getElementById('fAsnafYear').options).map(o => o.value);
       if(yearOpts.includes(currYear)) document.getElementById('fAsnafYear').value = currYear;
       else document.getElementById('fAsnafYear').value = '';
+      
       renderAsnafTable();
   }
 
-  /* ================= YATIM RENDERER ================= */
+  /* ================= YATIM RENDERER (V28.6 Auto-Filter) ================= */
   function initYatim() {
       if(!DATA.yatim || !DATA.yatim.length) {
           document.getElementById('statYatim').innerText = "0";
@@ -956,9 +947,12 @@ function parseCSV(text) {
       pop('fYatimClass', 'KELAS');
       pop('fYatimGender', 'JANTINA');
 
+      // === AUTO-SET CURRENT YEAR ===
       const currYear = new Date().getFullYear().toString();
       const yearOpts = Array.from(document.getElementById('fYatimYear').options).map(o => o.value);
-      if(yearOpts.includes(currYear)) document.getElementById('fYatimYear').value = currYear;
+      if(yearOpts.includes(currYear)) {
+          document.getElementById('fYatimYear').value = currYear;
+      }
 
       renderYatimTable();
   }
@@ -1011,10 +1005,13 @@ function parseCSV(text) {
   window.resetYatimFilters = function() {
       document.getElementById('searchYatim').value = '';
       document.getElementById('fYatimClass').value = '';
+      
+      // Reset to Current Year
       const currYear = new Date().getFullYear().toString();
       const yearOpts = Array.from(document.getElementById('fYatimYear').options).map(o => o.value);
       if(yearOpts.includes(currYear)) document.getElementById('fYatimYear').value = currYear;
       else document.getElementById('fYatimYear').value = '';
+      
       renderYatimTable();
   }
 
