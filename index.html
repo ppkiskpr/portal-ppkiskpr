@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.13 - Fixed Button Alignment & Enrolment Data) === */
+    /* === CSS UTAMA (V28.14 - Final Dashboard & New Submenu) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -87,14 +87,23 @@
     
     /* ENROLMEN CARD CSS */
     .enrol-grid { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
-    .chart-box { flex: 0 0 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .chart-box { flex: 0 0 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    
+    /* Center text for Doughnut */
+    .chart-center-text { position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+    .chart-number { font-size: 28px; font-weight: 800; line-height: 1; color: var(--text-main); }
+    .chart-sub { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+    /* Navigation Card Button */
+    .nav-card-btn { margin-top: 15px; background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    .nav-card-btn:hover { transform: translateY(-2px); background: #145a3b; }
+
     .class-list-box { flex: 1; min-width: 250px; }
     .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; max-height: 250px; overflow-y: auto; }
     .class-card-mini { background: var(--bg-element); padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; text-align: center; }
-    .class-card-mini:hover, .class-card-mini.active { background: var(--primary); color: white; border-color: var(--primary); }
-    .class-card-mini.active .cc-count { color: rgba(255,255,255,0.8); }
-    .cc-name { font-weight: 700; font-size: 12px; margin-bottom: 2px; }
-    .cc-count { font-size: 11px; color: var(--text-muted); }
+    .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); font-weight: 600; }
+    .cc-name { font-size: 11px; margin-bottom: 2px; text-transform: uppercase; }
+    .cc-count { font-size: 13px; font-weight: 700; }
 
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
@@ -103,8 +112,6 @@
     .btn-action:hover { background: rgba(255,255,255,0.3); }
 
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    
-    /* FIX: Button Height & Alignment */
     .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; height: 42px; box-sizing: border-box; }
     .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 42px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary { background: var(--primary); color: white; }
@@ -196,7 +203,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.13</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.14</div>
     </div>
   </aside>
 
@@ -226,14 +233,18 @@
         <div class="card" style="margin-bottom: 24px; padding: 24px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="margin:0; font-size:16px;">🎓 Enrolmen Murid</h3>
-                <span class="badge b-gray" id="totalEnrol">- Murid</span>
             </div>
             <div class="enrol-grid">
                 <div class="chart-box">
                     <div style="height: 220px; width: 220px; position:relative;">
                         <canvas id="genderChart"></canvas>
+                        <div class="chart-center-text">
+                            <div class="chart-number" id="centerCount">-</div>
+                        </div>
                     </div>
-                    <div id="chartLabel" style="margin-top: 15px; font-weight: 700; font-size: 14px; color: var(--text-main);">SEMUA KELAS</div>
+                    <button id="navCardBtn" class="nav-card-btn" onclick="navTo('student_list')">
+                        SEMUA MURID
+                    </button>
                 </div>
                 <div class="class-list-box">
                     <div class="class-grid" id="classGrid">
@@ -259,6 +270,30 @@
               Data dikemaskini pada: <span id="updateTime">-</span>
           </div>
         </div>
+      </div>
+
+      <div id="page-student_list" class="page-section" style="display:none;">
+          <div class="page-banner">
+              <div class="banner-text"><h2>Senarai Nama Murid</h2><p>Rekod Penuh Enrolmen</p></div>
+              <div class="banner-actions"><button class="btn-action" onclick="forceReload('stulist')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+          </div>
+          <div class="card">
+              <div style="margin-bottom:15px; display:flex; gap:10px;">
+                  <input class="form-input" id="searchStuList" placeholder="Cari Nama Murid..." style="flex:1;">
+                  <button class="btn btn-primary" onclick="renderStudentList()">Cari</button>
+              </div>
+              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px;">
+                  <div style="flex:1"><label class="filter-label">Filter Pintar</label><select class="form-select" id="fStuSmart"><option value="">Semua Data</option></select></div>
+                  <div style="display:flex; align-items:flex-end;"><button class="btn btn-outline" onclick="resetStudentList()">Reset</button></div>
+              </div>
+              <div class="table-wrap">
+                  <table id="stuTable">
+                      <thead><tr><th>NAMA MURID</th><th>NO. KP</th><th>KELAS</th><th>JANTINA</th></tr></thead>
+                      <tbody id="stuBody"></tbody>
+                  </table>
+              </div>
+              <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="stuCount"></div>
+          </div>
       </div>
 
       <div id="page-emailcheck" class="page-section" style="display:none;">
@@ -318,47 +353,20 @@
       <div id="page-asnaf" class="page-section" style="display:none;">
           <div class="page-banner">
               <div class="banner-text"><h2>Rekod Murid Asnaf</h2><p>Bantuan & Kebajikan</p></div>
-              <div class="banner-actions">
-                  <button class="btn-action" onclick="forceReload('asnaf')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
-                  <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
-              </div>
+              <div class="banner-actions"><button class="btn-action" onclick="forceReload('asnaf')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
           </div>
-          <div class="dashboard-grid" style="grid-template-columns: 1fr;">
-             <div class="card"><div class="stat-label">Jumlah Murid Asnaf</div><div class="stat-val" id="statAsnaf">-</div></div>
-          </div>
+          <div class="dashboard-grid" style="grid-template-columns: 1fr;"><div class="card"><div class="stat-label">Jumlah Murid Asnaf</div><div class="stat-val" id="statAsnaf">-</div></div></div>
           <div class="card">
-              <div style="margin-bottom:15px;">
-                  <label class="filter-label" style="margin-bottom:8px;">Pencarian (Nama / MyKid / Penjaga / No. Tel)</label>
-                  <div style="display:flex; gap:10px;">
-                    <input class="form-input" id="searchAsnaf" placeholder="Cari di sini..." style="flex:1;">
-                    <button class="btn btn-primary" onclick="renderAsnafTable()">Cari</button>
-                  </div>
+              <div style="margin-bottom:15px; display:flex; gap:10px;">
+                  <input class="form-input" id="searchAsnaf" placeholder="Cari Nama..." style="flex:1;">
+                  <button class="btn btn-primary" onclick="renderAsnafTable()">Cari</button>
               </div>
-              
-              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px; border:1px solid var(--border-color);">
+              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px;">
                    <div style="flex:1"><label class="filter-label">Tahun</label><select class="form-select" id="fAsnafYear"><option value="">Semua</option></select></div>
                    <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafClass"><option value="">Semua</option></select></div>
-                   <div style="display:flex; align-items:flex-end;"><button class="btn btn-outline" onclick="resetAsnafFilters()">Reset</button></div>
+                   <div><button class="btn btn-outline" onclick="resetAsnafFilters()">Reset</button></div>
               </div>
-
-              <div class="print-header"><h2>SENARAI MURID ASNAF</h2><p>SK PAYA RESAK</p></div>
-              <div class="table-wrap">
-                  <table>
-                      <thead>
-                          <tr>
-                              <th>NAMA MURID</th>
-                              <th>NO. MYKID</th>
-                              <th>KELAS</th>
-                              <th>NAMA PENJAGA</th>
-                              <th>NO. TEL</th>
-                              <th>PENDAPATAN</th>
-                              <th>ADIK BERADIK</th>
-                              <th>PERKAPITA</th>
-                          </tr>
-                      </thead>
-                      <tbody id="asnafBody"></tbody>
-                  </table>
-              </div>
+              <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>NO. MYKID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="asnafBody"></tbody></table></div>
               <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="asnafCount"></div>
           </div>
       </div>
@@ -366,32 +374,20 @@
       <div id="page-yatim" class="page-section" style="display:none;">
           <div class="page-banner">
               <div class="banner-text"><h2>Rekod Murid Yatim</h2><p>Bantuan & Kebajikan</p></div>
-              <div class="banner-actions">
-                  <button class="btn-action" onclick="forceReload('yatim')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
-                  <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
-              </div>
+              <div class="banner-actions"><button class="btn-action" onclick="forceReload('yatim')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
           </div>
-          <div class="dashboard-grid" style="grid-template-columns: 1fr;">
-             <div class="card"><div class="stat-label">Jumlah Murid Yatim</div><div class="stat-val" id="statYatim">-</div></div>
-          </div>
+          <div class="dashboard-grid" style="grid-template-columns: 1fr;"><div class="card"><div class="stat-label">Jumlah Murid Yatim</div><div class="stat-val" id="statYatim">-</div></div></div>
           <div class="card">
-              <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
-                <input class="form-input" id="searchYatim" placeholder="Cari Nama Murid..." style="flex:1;">
-                <button class="btn btn-outline" onclick="toggleFilterPanel('yatimFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis</button>
-                <button class="btn btn-primary" onclick="renderYatimTable()">Cari</button>
+              <div style="margin-bottom:15px; display:flex; gap:10px;">
+                  <input class="form-input" id="searchYatim" placeholder="Cari Nama..." style="flex:1;">
+                  <button class="btn btn-primary" onclick="renderYatimTable()">Cari</button>
               </div>
-              <div id="yatimFilters" class="filter-panel">
-                <div class="filter-grid">
-                   <div><label class="filter-label">Tahun</label><select class="form-select" id="fYatimYear"><option value="">Semua</option></select></div>
-                   <div><label class="filter-label">Kelas</label><select class="form-select" id="fYatimClass"><option value="">Semua</option></select></div>
-                   <div><label class="filter-label">Jantina</label><select class="form-select" id="fYatimGender"><option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option></select></div>
-                </div>
-                <div style="text-align:right"><button class="btn btn-outline" onclick="resetYatimFilters()">Reset</button> <button class="btn btn-primary" onclick="renderYatimTable()">Terapkan</button></div>
+              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px;">
+                   <div style="flex:1"><label class="filter-label">Tahun</label><select class="form-select" id="fYatimYear"><option value="">Semua</option></select></div>
+                   <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fYatimClass"><option value="">Semua</option></select></div>
+                   <div><button class="btn btn-outline" onclick="resetYatimFilters()">Reset</button></div>
               </div>
-              <div class="print-header"><h2>SENARAI MURID YATIM</h2><p>SK PAYA RESAK</p></div>
-              <div class="table-wrap">
-                  <table><thead><tr><th>Tahun</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Catatan</th></tr></thead><tbody id="yatimBody"></tbody></table>
-              </div>
+              <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>NO. MYKID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="yatimBody"></tbody></table></div>
               <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="yatimCount"></div>
           </div>
       </div>
@@ -526,6 +522,8 @@
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
       // === DATABASE BARU (V28.13) ===
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
+      // === NEW STUDENT LIST ===
+      student_list: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=1759925919&single=true&output=csv",
       
       asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=877457981&single=true&output=csv", 
       yatim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=1167967580&single=true&output=csv"
@@ -535,6 +533,7 @@
       
       // GROUP HEM (Hanya Admin)
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
+      {id:'student_list', label:'Senarai Nama Murid', icon:'groups', hidden:false, role:'admin'}, // NEW MENU
       {id:'asnaf', label:'Rekod Asnaf', icon:'volunteer_activism', hidden:false, role:'admin'},
       {id:'yatim', label:'Rekod Yatim', icon:'child_care', hidden:false, role:'admin'},
       
@@ -554,8 +553,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.13) ===
-  const CURRENT_VERSION = '28.13'; 
+  // === AUTO-FIX & HARD RESET (V28.14) ===
+  const CURRENT_VERSION = '28.14'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -566,7 +565,7 @@
   }
   // ===============================================
 
-  let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [], asnaf: [], yatim: [] };
+  let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [], asnaf: [], yatim: [], stu: [] };
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
   let chartInstance = null; // Global Chart Instance
@@ -654,7 +653,7 @@
     
     const NAV_GROUPS = [
         { type: 'single', id: 'home' }, 
-        { type: 'group', label: 'PENGURUSAN HEM', id: 'grp_hem', items: ['attendance', 'asnaf', 'yatim', 'emailcheck', 'parents'] },
+        { type: 'group', label: 'PENGURUSAN HEM', id: 'grp_hem', items: ['attendance', 'student_list', 'asnaf', 'yatim', 'emailcheck', 'parents'] },
         { type: 'group', label: 'PENGURUSAN KOKURIKULUM', id: 'grp_koko', items: ['pajsk'] },
         { type: 'group', label: 'PENTADBIRAN & HEBAHAN', id: 'grp_admin', items: ['announcements', 'opr', 'calendar'] }
     ];
@@ -729,9 +728,10 @@
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
     document.getElementById(`page-${id}`).style.display='block';
     
-    // === V28.12 FIX: TRIGGER RESET ON NAVIGATION ===
+    // === V28.14 FIX: TRIGGER RESET ON NAVIGATION ===
     if(id === 'asnaf') resetAsnafFilters();
     if(id === 'yatim') resetYatimFilters();
+    if(id === 'student_list') resetStudentList();
     
     if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
   }
@@ -787,8 +787,8 @@ function parseCSV(text) {
   let headerIdx = -1;
   for(let i=0; i<Math.min(rows.length, 10); i++) {
      const rowStr = rows[i].join(' ').toUpperCase();
-     // Cari keyword 'BIL' atau 'NAMA MURID' atau 'KELAS'
-     if(rowStr.includes('NAMA MURID') || rowStr.includes('KELAS')) {
+     // Cari keyword 'BIL' atau 'NAMA MURID'
+     if(rowStr.includes('NAMA MURID') || (rowStr.includes('BIL') && rowStr.includes('NAMA'))) {
          headerIdx = i;
          break;
      }
@@ -843,7 +843,8 @@ function parseCSV(text) {
           fetchCSV(CONFIG.urls.parents),
           fetchCSV(CONFIG.urls.database),
           fetchCSV(CONFIG.urls.asnaf), 
-          fetchCSV(CONFIG.urls.yatim) 
+          fetchCSV(CONFIG.urls.yatim),
+          fetchCSV(CONFIG.urls.student_list) // New Data
         ]);
         if(results[0]) DATA.att = results[0];
         if(results[1]) DATA.pajsk = results[1];
@@ -853,6 +854,7 @@ function parseCSV(text) {
         if(results[5]) DATA.db = results[5];
         if(results[6]) DATA.asnaf = results[6];
         if(results[7]) DATA.yatim = results[7];
+        if(results[8]) DATA.stu = results[8];
 
         const now = new Date();
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
@@ -866,6 +868,7 @@ function parseCSV(text) {
         renderCalendarTable();
         initAsnaf(); 
         initYatim();
+        renderStudentList();
     } catch(err) {
         console.error("Critical Load Error", err);
     } finally {
@@ -877,9 +880,7 @@ function parseCSV(text) {
   function processEnrolment() {
     let rawData = DATA.db || [];
     
-    // Fallback if DB empty
     if(rawData.length === 0 && DATA.att && DATA.att.length > 0) {
-         // Try to build from attendance unique names
          const unique = new Map();
          DATA.att.forEach(r => {
              const n = getVal(r, 'NAMA');
@@ -888,7 +889,6 @@ function parseCSV(text) {
          rawData = Array.from(unique.values());
     }
 
-    // Default Structure (Ensure all classes appear)
     const classMap = {
         "1 AL-FARABI": { L: 0, P: 0, total: 0 },
         "2 AL-FARABI": { L: 0, P: 0, total: 0 },
@@ -902,21 +902,17 @@ function parseCSV(text) {
     let totalStudents = 0;
 
     rawData.forEach(r => {
-        // Direct mapping from CSV
         let clsName = (getVal(r, 'KELAS') || '').toUpperCase().trim();
         
-        // Normalize class names (e.g. "2 AF" -> "2 AL-FARABI")
         if(clsName.includes('1')) clsName = '1 AL-FARABI';
         else if(clsName.includes('2')) clsName = '2 AL-FARABI';
         else if(clsName.includes('3')) clsName = '3 AL-FARABI';
         else if(clsName.includes('4')) clsName = '4 AL-FARABI';
         else if(clsName.includes('5')) clsName = '5 AL-FARABI';
 
-        // Check columns LELAKI / PEREMPUAN directly first (from new CSV format)
         let l = parseInt(getVal(r, 'LELAKI')) || 0;
         let p = parseInt(getVal(r, 'PEREMPUAN')) || 0;
         
-        // If not summary format, assume row is 1 student
         if(l === 0 && p === 0) {
             const gender = (getVal(r, 'JANTINA') || '').toUpperCase().trim();
             if(gender.startsWith('L')) l = 1;
@@ -933,17 +929,13 @@ function parseCSV(text) {
         }
     });
 
-    document.getElementById('totalEnrol').innerText = `${totalStudents} Murid`;
-
     const grid = document.getElementById('classGrid');
     grid.innerHTML = '';
     
-    const btnAll = document.createElement('div');
-    btnAll.className = 'class-card-mini active';
-    btnAll.innerHTML = `<div class="cc-name">SEMUA</div><div class="cc-count">${totalStudents} Murid</div>`;
-    btnAll.onclick = () => { updateChart('SEMUA', totalL, totalP); setActiveCard(btnAll); };
-    grid.appendChild(btnAll);
-
+    // DEFAULT STATE: ALL
+    updateChart('SEMUA', totalL, totalP);
+    
+    // Render Class Buttons
     Object.keys(classMap).sort().forEach(cls => {
         const btn = document.createElement('div');
         btn.className = 'class-card-mini';
@@ -951,8 +943,6 @@ function parseCSV(text) {
         btn.onclick = () => { updateChart(cls, classMap[cls].L, classMap[cls].P); setActiveCard(btn); };
         grid.appendChild(btn);
     });
-
-    updateChart('SEMUA', totalL, totalP);
   }
 
   function setActiveCard(el) {
@@ -961,9 +951,15 @@ function parseCSV(text) {
   }
 
   function updateChart(label, lCount, pCount) {
-      const ctx = document.getElementById('genderChart').getContext('2d');
-      document.getElementById('chartLabel').innerText = `${label}: ${lCount + pCount} Murid`;
+      // 1. Update Center Number
+      document.getElementById('centerCount').innerText = lCount + pCount;
+      
+      // 2. Update Nav Button Text
+      const navBtn = document.getElementById('navCardBtn');
+      navBtn.innerText = label === 'SEMUA' ? 'SEMUA MURID' : label;
 
+      // 3. Update Chart
+      const ctx = document.getElementById('genderChart').getContext('2d');
       if(chartInstance) chartInstance.destroy();
 
       chartInstance = new Chart(ctx, {
@@ -1007,6 +1003,7 @@ function parseCSV(text) {
         else if(type === 'db') { DATA.db = await fetchCSV(CONFIG.urls.database); processEnrolment(); alert('Pangkalan Data Dikemaskini'); }
         else if(type === 'asnaf') { DATA.asnaf = await fetchCSV(CONFIG.urls.asnaf); initAsnaf(); }
         else if(type === 'yatim') { DATA.yatim = await fetchCSV(CONFIG.urls.yatim); initYatim(); }
+        else if(type === 'stulist') { DATA.stu = await fetchCSV(CONFIG.urls.student_list); renderStudentList(); }
         
         const now = new Date();
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
@@ -1017,7 +1014,52 @@ function parseCSV(text) {
     }
   }
 
-  /* ================= ASNAF RENDERER (V28.12) ================= */
+  // === NEW: STUDENT LIST RENDERER ===
+  window.renderStudentList = function() {
+      if(!DATA.stu || !DATA.stu.length) {
+          document.getElementById('stuBody').innerHTML = '<tr><td colspan="4" style="text-align:center">Tiada Data.</td></tr>';
+          return;
+      }
+      
+      // Populate Filter
+      const fSmart = document.getElementById('fStuSmart');
+      if(fSmart.options.length === 1) {
+          const classes = [...new Set(DATA.stu.map(r => getVal(r,'KELAS')))].filter(Boolean).sort();
+          classes.forEach(c => {
+              const opt = document.createElement('option');
+              opt.value = c;
+              opt.innerText = c;
+              fSmart.appendChild(opt);
+          });
+      }
+
+      const q = document.getElementById('searchStuList').value.toLowerCase();
+      const fVal = fSmart.value;
+
+      const filtered = DATA.stu.filter(r => {
+          const name = (getVal(r, 'NAMA')||"").toLowerCase();
+          const cls = getVal(r, 'KELAS') || "";
+          return (!q || name.includes(q)) && (!fVal || cls === fVal);
+      });
+      
+      document.getElementById('stuCount').innerText = `Jumlah: ${filtered.length} Murid`;
+      document.getElementById('stuBody').innerHTML = filtered.map(r => `
+          <tr>
+              <td><strong>${getVal(r, 'NAMA')}</strong></td>
+              <td>${getVal(r, 'NO. KP') || getVal(r, 'KP')}</td>
+              <td>${getVal(r, 'KELAS')}</td>
+              <td>${getVal(r, 'JANTINA')}</td>
+          </tr>
+      `).join('');
+  }
+  
+  window.resetStudentList = function() {
+      document.getElementById('searchStuList').value = '';
+      document.getElementById('fStuSmart').value = '';
+      renderStudentList();
+  }
+
+  /* ================= ASNAF RENDERER (V28.13) ================= */
   function initAsnaf() {
       if(!DATA.asnaf || !DATA.asnaf.length) {
           document.getElementById('statAsnaf').innerText = "0";
@@ -1030,81 +1072,48 @@ function parseCSV(text) {
       };
       pop('fAsnafYear', 'TAHUN');
       pop('fAsnafClass', 'KELAS');
-      pop('fAsnafGender', 'JANTINA'); 
       
+      // Auto-set current year
       const currYear = new Date().getFullYear().toString();
       const yearSelect = document.getElementById('fAsnafYear');
       const yearOpts = Array.from(yearSelect.options).map(o => o.value);
-      
-      if(yearOpts.includes(currYear)) {
-          yearSelect.value = currYear;
-      } else if (yearOpts.length > 1) {
-          yearSelect.value = yearOpts[1]; 
-      }
+      if(yearOpts.includes(currYear)) yearSelect.value = currYear;
+      else if(yearOpts.length > 1) yearSelect.value = yearOpts[1];
 
       renderAsnafTable(); 
   }
 
   window.renderAsnafTable = function() {
       if(!DATA.asnaf || !DATA.asnaf.length) return;
-      
       const q = document.getElementById('searchAsnaf').value.toLowerCase();
       const fYear = document.getElementById('fAsnafYear').value;
       const fClass = document.getElementById('fAsnafClass').value;
       
       const filtered = DATA.asnaf.filter(r => {
           const name = (getVal(r, 'NAMA')||"").toLowerCase();
-          const mykid = (getVal(r, 'MYKID')||getVal(r, 'KP')||"").toLowerCase();
-          const guardian = (getVal(r, 'PENJAGA')||getVal(r, 'BAPA')||"").toLowerCase();
-          const phone = (getVal(r, 'TEL')||getVal(r, 'HP')||"").toLowerCase();
           const yr = getVal(r, 'TAHUN') || ""; 
-
-          const matchSearch = !q || name.includes(q) || mykid.includes(q) || guardian.includes(q) || phone.includes(q);
-          
-          return matchSearch &&
-                 (!fYear || yr == fYear) && 
-                 (!fClass || getVal(r, 'KELAS') === fClass);
+          return (!q || name.includes(q)) && (!fYear || yr == fYear) && (!fClass || getVal(r, 'KELAS') === fClass);
       });
 
       document.getElementById('statAsnaf').innerText = filtered.length;
       document.getElementById('asnafCount').innerText = `Papar: ${filtered.length} rekod.`;
       
-      document.getElementById('asnafBody').innerHTML = filtered.map(r => {
-          const mykid = getVal(r, 'MYKID') || '-';
-          const guardian = getVal(r, 'PENJAGA') || '-';
-          const income = getVal(r, 'PENDAPATAN') || '-';
-          const siblings = getVal(r, 'ADIK') || '-';
-          const perkapita = getVal(r, 'PERKAPITA') || '-';
-          const phone = getVal(r, 'TEL') || '-';
-
-          return `
+      document.getElementById('asnafBody').innerHTML = filtered.map(r => `
             <tr>
                 <td><strong>${getVal(r, 'NAMA')}</strong></td>
-                <td>${mykid}</td>
+                <td>${getVal(r, 'MYKID')||'-'}</td>
                 <td>${getVal(r, 'KELAS')}</td>
-                <td>${guardian}</td>
-                <td>${phone}</td>
-                <td>${income}</td>
-                <td style="text-align:center">${siblings}</td>
-                <td>${perkapita}</td>
-            </tr>`;
-      }).join('');
+                <td>${getVal(r, 'PENDAPATAN')||'-'}</td>
+            </tr>`).join('');
   }
 
   window.resetAsnafFilters = function() {
       document.getElementById('searchAsnaf').value = '';
       document.getElementById('fAsnafClass').value = '';
-      
-      const currYear = new Date().getFullYear().toString();
-      const yearOpts = Array.from(document.getElementById('fAsnafYear').options).map(o => o.value);
-      if(yearOpts.includes(currYear)) document.getElementById('fAsnafYear').value = currYear;
-      else if(yearOpts.length > 1) document.getElementById('fAsnafYear').value = yearOpts[1];
-      else document.getElementById('fAsnafYear').value = '';
-      
       renderAsnafTable();
   }
 
-  /* ================= YATIM RENDERER (V28.12) ================= */
+  /* ================= YATIM RENDERER ================= */
   function initYatim() {
       if(!DATA.yatim || !DATA.yatim.length) {
           document.getElementById('statYatim').innerText = "0";
@@ -1117,17 +1126,12 @@ function parseCSV(text) {
       };
       pop('fYatimYear', 'TAHUN');
       pop('fYatimClass', 'KELAS');
-      pop('fYatimGender', 'JANTINA');
-
+      
       const currYear = new Date().getFullYear().toString();
       const yearSelect = document.getElementById('fYatimYear');
       const yearOpts = Array.from(yearSelect.options).map(o => o.value);
-
-      if(yearOpts.includes(currYear)) {
-          yearSelect.value = currYear;
-      } else if(yearOpts.length > 1) {
-          yearSelect.value = yearOpts[1];
-      }
+      if(yearOpts.includes(currYear)) yearSelect.value = currYear;
+      else if(yearOpts.length > 1) yearSelect.value = yearOpts[1];
 
       renderYatimTable(); 
   }
@@ -1140,53 +1144,25 @@ function parseCSV(text) {
       
       const filtered = DATA.yatim.filter(r => {
           const name = (getVal(r, 'NAMA')||"").toLowerCase();
-          const mykid = (getVal(r, 'MYKID')||getVal(r, 'KP')||"").toLowerCase();
-          const guardian = (getVal(r, 'PENJAGA')||getVal(r, 'BAPA')||"").toLowerCase();
-          const phone = (getVal(r, 'TEL')||getVal(r, 'HP')||"").toLowerCase();
           const yr = getVal(r, 'TAHUN') || "";
-
-          const matchSearch = !q || name.includes(q) || mykid.includes(q) || guardian.includes(q) || phone.includes(q);
-          
-          return matchSearch &&
-                 (!fYear || yr == fYear) && 
-                 (!fClass || getVal(r, 'KELAS') === fClass);
+          return (!q || name.includes(q)) && (!fYear || yr == fYear) && (!fClass || getVal(r, 'KELAS') === fClass);
       });
 
       document.getElementById('statYatim').innerText = filtered.length;
       document.getElementById('yatimCount').innerText = `Papar: ${filtered.length} rekod.`;
       
-      document.getElementById('yatimBody').innerHTML = filtered.map(r => {
-          const mykid = getVal(r, 'MYKID') || '-';
-          const guardian = getVal(r, 'PENJAGA') || '-';
-          const income = getVal(r, 'PENDAPATAN') || '-';
-          const siblings = getVal(r, 'ADIK') || '-';
-          const perkapita = getVal(r, 'PERKAPITA') || '-';
-          const phone = getVal(r, 'TEL') || '-';
-
-          return `
+      document.getElementById('yatimBody').innerHTML = filtered.map(r => `
             <tr>
                 <td><strong>${getVal(r, 'NAMA')}</strong></td>
-                <td>${mykid}</td>
+                <td>${getVal(r, 'MYKID')||'-'}</td>
                 <td>${getVal(r, 'KELAS')}</td>
-                <td>${guardian}</td>
-                <td>${phone}</td>
-                <td>${income}</td>
-                <td style="text-align:center">${siblings}</td>
-                <td>${perkapita}</td>
-            </tr>`;
-      }).join('');
+                <td>${getVal(r, 'PENDAPATAN')||'-'}</td>
+            </tr>`).join('');
   }
 
   window.resetYatimFilters = function() {
       document.getElementById('searchYatim').value = '';
       document.getElementById('fYatimClass').value = '';
-      
-      const currYear = new Date().getFullYear().toString();
-      const yearOpts = Array.from(document.getElementById('fYatimYear').options).map(o => o.value);
-      if(yearOpts.includes(currYear)) document.getElementById('fYatimYear').value = currYear;
-      else if(yearOpts.length > 1) document.getElementById('fYatimYear').value = yearOpts[1];
-      else document.getElementById('fYatimYear').value = '';
-      
       renderYatimTable();
   }
 
