@@ -13,9 +13,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* === CSS UTAMA (V28.8 - Auto-Trigger on Menu Click) === */
+    /* === CSS UTAMA (V28.10 - Dashboard Redesign with Chart.js) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -82,6 +83,16 @@
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
     
+    /* ENROLMEN CARD STYLES */
+    .enrol-grid { display: flex; flex-wrap: wrap; gap: 24px; }
+    .chart-box { flex: 1; min-width: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    .class-list-box { flex: 2; min-width: 300px; }
+    .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .class-card-mini { background: var(--bg-element); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; text-align: center; }
+    .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+    .cc-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+    .cc-count { font-size: 11px; color: var(--text-muted); }
+
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
     .banner-actions { display: flex; gap: 10px; }
@@ -180,7 +191,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.8</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.10</div>
     </div>
   </aside>
 
@@ -199,12 +210,33 @@
           <div class="banner-text"><h2>Dashboard</h2><p>Selamat Datang ke Portal Rasmi PPKI</p></div>
           <div class="banner-actions"><button class="btn-action" onclick="forceReload('all')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload Semua</button></div>
         </div>
+        
         <div class="dashboard-grid">
           <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card att-card"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
           <div class="card stat-card att-card"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
           <div class="card stat-card clickable" onclick="navTo('announcements')"><div class="stat-label">Pengumuman</div><div class="stat-val" id="dAnn">-</div><div class="stat-sub">Aktif</div></div>
         </div>
+
+        <div class="card" style="margin-bottom: 24px; padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin:0; font-size:16px;">🎓 Enrolmen Murid</h3>
+                <span class="badge b-gray" id="totalEnrol">- Murid</span>
+            </div>
+            <div class="enrol-grid">
+                <div class="chart-box">
+                    <div style="height: 220px; width: 220px; position:relative;">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                    <div id="chartLabel" style="margin-top: 15px; font-weight: 700; font-size: 14px; color: var(--text-main);">SEMUA KELAS</div>
+                </div>
+                <div class="class-list-box">
+                    <div class="class-grid" id="classGrid">
+                        </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:20px;">
             <h3 style="margin:0; font-size:16px;">📈 Trend Harian</h3>
@@ -515,8 +547,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.8 - Auto-Trigger Fix) ===
-  const CURRENT_VERSION = '28.8'; 
+  // === AUTO-FIX & HARD RESET (V28.10 - Dashboard Enrolment with Chart.js) ===
+  const CURRENT_VERSION = '28.10'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -530,6 +562,7 @@
   let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [], asnaf: [], yatim: [] };
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
+  let chartInstance = null; // Global Chart Instance
 
   window.init = function() {
     applyTheme();
@@ -815,6 +848,7 @@ function parseCSV(text) {
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
 
         processAttendance();
+        processEnrolment(); 
         renderAnn();
         initPajsk();
         renderParents();
@@ -829,6 +863,87 @@ function parseCSV(text) {
     }
   }
 
+  // === PROCESS ENROLMENT & CHART ===
+  function processEnrolment() {
+    if(!DATA.db || DATA.db.length === 0) return;
+    
+    // 1. Get Valid Students
+    const students = DATA.db.filter(r => getVal(r, 'NAMA') && getVal(r, 'NAMA').trim() !== '');
+    document.getElementById('totalEnrol').innerText = `${students.length} Murid`;
+    
+    // 2. Aggregate Data by Class & Gender
+    const classMap = {};
+    let totalL = 0;
+    let totalP = 0;
+
+    students.forEach(s => {
+        const cls = getVal(s, 'KELAS') || 'LAIN-LAIN';
+        const gender = (getVal(s, 'JANTINA') || '').toUpperCase().trim();
+        
+        if(!classMap[cls]) classMap[cls] = { L: 0, P: 0, total: 0 };
+        
+        if(gender.startsWith('L')) { classMap[cls].L++; totalL++; }
+        else if(gender.startsWith('P')) { classMap[cls].P++; totalP++; }
+        
+        classMap[cls].total++;
+    });
+
+    // 3. Render Class Buttons
+    const grid = document.getElementById('classGrid');
+    grid.innerHTML = '';
+    
+    // Button for ALL
+    const btnAll = document.createElement('div');
+    btnAll.className = 'class-card-mini active';
+    btnAll.innerHTML = `<div class="cc-name">SEMUA</div><div class="cc-count">${students.length} Murid</div>`;
+    btnAll.onclick = () => { updateChart('SEMUA', totalL, totalP); setActiveCard(btnAll); };
+    grid.appendChild(btnAll);
+
+    Object.keys(classMap).sort().forEach(cls => {
+        const btn = document.createElement('div');
+        btn.className = 'class-card-mini';
+        btn.innerHTML = `<div class="cc-name">${cls}</div><div class="cc-count">${classMap[cls].total} Murid</div>`;
+        btn.onclick = () => { updateChart(cls, classMap[cls].L, classMap[cls].P); setActiveCard(btn); };
+        grid.appendChild(btn);
+    });
+
+    // 4. Init Chart
+    updateChart('SEMUA', totalL, totalP);
+  }
+
+  function setActiveCard(el) {
+      document.querySelectorAll('.class-card-mini').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+  }
+
+  function updateChart(label, lCount, pCount) {
+      const ctx = document.getElementById('genderChart').getContext('2d');
+      document.getElementById('chartLabel').innerText = `${label}: ${lCount + pCount} Murid`;
+
+      if(chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+              labels: ['Lelaki', 'Perempuan'],
+              datasets: [{
+                  data: [lCount, pCount],
+                  backgroundColor: ['#2E90FA', '#F63D68'],
+                  borderWidth: 0
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Poppins' } } }
+              },
+              cutout: '65%'
+          }
+      });
+  }
+
+
   window.forceReload = async function(type) {
     document.getElementById('loading-overlay').style.display = 'grid';
     let url = '';
@@ -840,7 +955,7 @@ function parseCSV(text) {
         else if(type === 'ann') { DATA.ann = await fetchCSV(CONFIG.urls.announcements); renderAnn(); }
         else if(type === 'cal') { DATA.cal = await fetchCSV(CONFIG.urls.calendar); initCalendar(); renderCalendarTable(); }
         else if(type === 'par') { DATA.par = await fetchCSV(CONFIG.urls.parents); renderParents(); }
-        else if(type === 'db') { DATA.db = await fetchCSV(CONFIG.urls.database); alert('Pangkalan Data Dikemaskini'); }
+        else if(type === 'db') { DATA.db = await fetchCSV(CONFIG.urls.database); processEnrolment(); alert('Pangkalan Data Dikemaskini'); }
         else if(type === 'asnaf') { DATA.asnaf = await fetchCSV(CONFIG.urls.asnaf); initAsnaf(); }
         else if(type === 'yatim') { DATA.yatim = await fetchCSV(CONFIG.urls.yatim); initYatim(); }
         
