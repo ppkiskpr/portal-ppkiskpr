@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.14 - Final Dashboard & New Submenu) === */
+    /* === CSS UTAMA (V28.16 - ID Delima Dedicated CSV) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -203,7 +203,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.14</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.16</div>
     </div>
   </aside>
 
@@ -262,7 +262,7 @@
               <select class="form-select" style="width:auto" id="trendMonth"></select>
               <select class="form-select" style="width:auto" id="trendYear"></select>
               <select class="form-select" style="width:auto" id="trendClass"><option value="">Semua Kelas</option></select>
-              <button class="btn btn-primary" onclick="renderTrend()" style="padding: 0 16px;" title="Tapis"><span class="material-icons-round">search</span></button>
+              <button class="btn btn-primary btn-search" onclick="renderTrend()" title="Tapis"><span class="material-icons-round">search</span></button>
             </div>
           </div>
           <div id="chartContainer" style="height:280px; width:100%;"></div>
@@ -520,20 +520,23 @@
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
-      // === DATABASE BARU (V28.13) ===
+      // === DATABASE BARU (V28.15 - Fix for ID Delima & Enrolment) ===
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
       // === NEW STUDENT LIST ===
       student_list: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=1759925919&single=true&output=csv",
       
       asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=877457981&single=true&output=csv", 
-      yatim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=1167967580&single=true&output=csv"
+      yatim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=1167967580&single=true&output=csv",
+
+      // === LINK ID DELIMA (EDIT SINI) ===
+      delima: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1752164570&single=true&output=csv"
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
       
       // GROUP HEM (Hanya Admin)
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
-      {id:'student_list', label:'Senarai Nama Murid', icon:'groups', hidden:false, role:'admin'}, // NEW MENU
+      {id:'student_list', label:'Senarai Nama Murid', icon:'groups', hidden:false, role:'admin'}, 
       {id:'asnaf', label:'Rekod Asnaf', icon:'volunteer_activism', hidden:false, role:'admin'},
       {id:'yatim', label:'Rekod Yatim', icon:'child_care', hidden:false, role:'admin'},
       
@@ -553,8 +556,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.14) ===
-  const CURRENT_VERSION = '28.14'; 
+  // === AUTO-FIX & HARD RESET (V28.16) ===
+  const CURRENT_VERSION = '28.16'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -565,7 +568,7 @@
   }
   // ===============================================
 
-  let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [], asnaf: [], yatim: [], stu: [] };
+  let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [], asnaf: [], yatim: [], stu: [], delima: [] };
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
   let chartInstance = null; // Global Chart Instance
@@ -844,7 +847,8 @@ function parseCSV(text) {
           fetchCSV(CONFIG.urls.database),
           fetchCSV(CONFIG.urls.asnaf), 
           fetchCSV(CONFIG.urls.yatim),
-          fetchCSV(CONFIG.urls.student_list) // New Data
+          fetchCSV(CONFIG.urls.student_list),
+          fetchCSV(CONFIG.urls.delima) // Data Delima (V28.16)
         ]);
         if(results[0]) DATA.att = results[0];
         if(results[1]) DATA.pajsk = results[1];
@@ -855,6 +859,7 @@ function parseCSV(text) {
         if(results[6]) DATA.asnaf = results[6];
         if(results[7]) DATA.yatim = results[7];
         if(results[8]) DATA.stu = results[8];
+        if(results[9]) DATA.delima = results[9];
 
         const now = new Date();
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
@@ -1004,6 +1009,7 @@ function parseCSV(text) {
         else if(type === 'asnaf') { DATA.asnaf = await fetchCSV(CONFIG.urls.asnaf); initAsnaf(); }
         else if(type === 'yatim') { DATA.yatim = await fetchCSV(CONFIG.urls.yatim); initYatim(); }
         else if(type === 'stulist') { DATA.stu = await fetchCSV(CONFIG.urls.student_list); renderStudentList(); }
+        else if(type === 'db') { DATA.delima = await fetchCSV(CONFIG.urls.delima); alert('Data ID Delima Dikemaskini'); }
         
         const now = new Date();
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
@@ -1180,19 +1186,31 @@ function parseCSV(text) {
     `).join('');
   }
 
+  // === NEW CHECK EMAIL (V28.16 - Dedicated Source Search) ===
   window.checkEmail = function() {
       const ic = document.getElementById('inputIC').value.trim();
       const resBox = document.getElementById('idResultContainer');
       const errBox = document.getElementById('idError');
-      if(!DATA.db || DATA.db.length === 0) { alert('Data belum sedia. Sila tekan Reload.'); return; }
-      const student = DATA.db.find(r => {
-          const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO');
+      
+      // ONLY SEARCH IN DATA.delima
+      const dataSource = DATA.delima || [];
+      
+      if(dataSource.length === 0) { alert('Data ID Delima belum sedia. Sila tekan Reload.'); return; }
+      
+      const student = dataSource.find(r => {
+          const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO') || getVal(r, 'MYKID');
           return kp && kp.replace(/[^0-9]/g, '') === ic.replace(/[^0-9]/g, '');
       });
+      
       if(student) {
           document.getElementById('resNama').innerText = getVal(student, 'NAMA');
-          document.getElementById('resEmail').innerText = getVal(student, 'DELIMA') || getVal(student, 'EMEL') || '-';
-          document.getElementById('resPass').innerText = getVal(student, 'LALUAN') || getVal(student, 'PASS') || getVal(student, 'KATA') || '-';
+          // Enhanced Column Finding
+          const delima = getVal(student, 'DELIMA') || getVal(student, 'ID DELIMA') || getVal(student, 'EMEL') || getVal(student, 'EMAIL') || '-';
+          const pass = getVal(student, 'LALUAN') || getVal(student, 'KATA LALUAN') || getVal(student, 'PASSWORD') || getVal(student, 'PASS') || '-';
+          
+          document.getElementById('resEmail').innerText = delima;
+          document.getElementById('resPass').innerText = pass;
+          
           resBox.style.display = 'block';
           errBox.style.display = 'none';
       } else {
