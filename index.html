@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.15 - Split Menu Asnaf & Yatim) === */
+    /* === CSS UTAMA (V27.16 - Table Fix & Dropdown Filters) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -26,7 +26,6 @@
     #login-screen { position: fixed; inset: 0; z-index: 9999; background: #F2F4F7; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
     .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
     .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 10px; margin: 20px auto 0; }
-    .login-btn-google:hover { background: #3367d6; }
 
     /* LOADING SPINNER */
     #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(2px); }
@@ -56,23 +55,8 @@
     .nav-child-container { overflow: hidden; transition: max-height 0.3s ease; }
     .nav-child-container.collapsed { max-height: 0; }
     
-    .sidebar-footer { 
-        margin-top: auto; 
-        font-size: 11px; 
-        text-align: center; 
-        color: var(--text-muted); 
-        padding: 20px 10px;
-        line-height: 1.4; 
-        border-top: 1px solid var(--border-color);
-    }
-    #userInfo {
-        margin-bottom: 15px; 
-        font-weight: 600; 
-        font-size: 12px; 
-        white-space: normal; 
-        word-wrap: break-word;
-        line-height: 1.4;
-    }
+    .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); padding: 20px 10px; line-height: 1.4; border-top: 1px solid var(--border-color); }
+    #userInfo { margin-bottom: 15px; font-weight: 600; font-size: 12px; white-space: normal; word-wrap: break-word; line-height: 1.4; }
 
     /* MAIN CONTENT */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -88,7 +72,6 @@
     .stat-val { font-size: 28px; font-weight: 700; margin: 5px 0; color: var(--text-main); }
     .stat-sub { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
     .stat-sub.red { color: #D92D20; font-weight: 600; }
-    
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
     
@@ -106,7 +89,7 @@
     
     .filter-panel { display: none; padding: 20px; background: var(--bg-element); border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color); }
     .filter-panel.open { display: block; }
-    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
     .filter-label { font-size: 12px; font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-muted); }
 
     .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
@@ -126,12 +109,10 @@
     .enrolmen-summary { display:flex; gap:10px; flex-direction:column; justify-content:center; }
     .enrolmen-item { display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--bg-element); border-radius:8px; border:1px solid var(--border-color); }
     .class-list-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:10px; }
-    
     .class-badge { background:var(--bg-element); border:1px solid var(--border-color); padding:8px; border-radius:8px; text-align:center; cursor:pointer; transition:all 0.2s; }
     .class-badge:hover { transform:translateY(-2px); border-color:var(--primary); }
     .class-badge.active { background:var(--primary); color:white; border-color:var(--primary); }
     .class-badge.active div { color:white !important; }
-
     @media (max-width: 768px) { .enrolmen-grid { grid-template-columns: 1fr; } }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: none; place-items: center; backdrop-filter: blur(2px); }
@@ -140,7 +121,6 @@
     .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
     .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
 
-    /* SEMAKAN ID BOX (WITH COPY) */
     .id-result-box { display:none; background: var(--bg-element); padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid var(--border-color); }
     .id-result-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
     .id-result-item:last-child { border-bottom: none; }
@@ -150,7 +130,6 @@
     .copy-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 4px; transition: 0.2s; display: flex; }
     .copy-btn:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
 
-    /* PRINT */
     @media print {
       @page { size: A4; margin: 1cm; }
       body { background: white; color: black; font-family: serif; }
@@ -203,7 +182,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.15</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.16</div>
     </div>
   </aside>
 
@@ -338,16 +317,18 @@
               <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
                   <button class="btn btn-outline" onclick="toggleFilterPanel('asnafFilters')" style="width:100%"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Buka Tapisan Lanjutan</button>
               </div>
-              <div id="asnafFilters" class="filter-panel open">
+              <div id="asnafFilters" class="filter-panel">
                   <div class="filter-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-                      <div><label class="filter-label">Nama Murid</label><input class="form-input" id="fAsnafNama"></div>
-                      <div><label class="filter-label">No. MyKid</label><input class="form-input" id="fAsnafMykid"></div>
+                      <div><label class="filter-label">Nama Murid</label><input class="form-input" id="fAsnafNama" placeholder="Cari Nama..."></div>
+                      
+                      <div><label class="filter-label">No. MyKid</label><input class="form-input" id="fAsnafMykid" placeholder="Cari MyKid..."></div>
+                      <div><label class="filter-label">Nama Penjaga</label><input class="form-input" id="fAsnafPenjaga" placeholder="Cari Penjaga..."></div>
+                      <div><label class="filter-label">No Tel</label><input class="form-input" id="fAsnafTel" placeholder="Cari No Tel..."></div>
+                      
                       <div><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafKelas"><option value="">Semua</option></select></div>
-                      <div><label class="filter-label">Nama Penjaga</label><input class="form-input" id="fAsnafPenjaga"></div>
-                      <div><label class="filter-label">Pendapatan</label><input class="form-input" id="fAsnafGaji"></div>
-                      <div><label class="filter-label">Bil Adik Beradik</label><input class="form-input" id="fAsnafAdik"></div>
-                      <div><label class="filter-label">Perkapita</label><input class="form-input" id="fAsnafPerkapita"></div>
-                      <div><label class="filter-label">No Tel</label><input class="form-input" id="fAsnafTel"></div>
+                      <div><label class="filter-label">Pendapatan</label><select class="form-select" id="fAsnafGaji"><option value="">Semua</option></select></div>
+                      <div><label class="filter-label">Bil Adik Beradik</label><select class="form-select" id="fAsnafAdik"><option value="">Semua</option></select></div>
+                      <div><label class="filter-label">Perkapita</label><select class="form-select" id="fAsnafPerkapita"><option value="">Semua</option></select></div>
                   </div>
                   <div style="text-align:right; margin-top:10px;">
                       <button class="btn btn-outline" onclick="resetFilterAsnaf()">Reset</button> 
@@ -384,17 +365,19 @@
               <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
                   <button class="btn btn-outline" onclick="toggleFilterPanel('yatimFilters')" style="width:100%"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Buka Tapisan Lanjutan</button>
               </div>
-              <div id="yatimFilters" class="filter-panel open">
+              <div id="yatimFilters" class="filter-panel">
                   <div class="filter-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-                      <div><label class="filter-label">Nama Murid</label><input class="form-input" id="fYatimNama"></div>
-                      <div><label class="filter-label">No. MyKid</label><input class="form-input" id="fYatimMykid"></div>
-                      <div><label class="filter-label">Status Yatim</label><select class="form-select" id="fYatimStatus"><option value="">Semua</option><option value="BAPA">Bapa</option><option value="IBU">Ibu</option><option value="PIATU">Yatim Piatu</option></select></div>
+                      <div><label class="filter-label">Nama Murid</label><input class="form-input" id="fYatimNama" placeholder="Cari Nama..."></div>
+                      
+                      <div><label class="filter-label">No. MyKid</label><input class="form-input" id="fYatimMykid" placeholder="Cari MyKid..."></div>
+                      <div><label class="filter-label">Nama Penjaga</label><input class="form-input" id="fYatimPenjaga" placeholder="Cari Penjaga..."></div>
+                      <div><label class="filter-label">No Tel</label><input class="form-input" id="fYatimTel" placeholder="Cari No Tel..."></div>
+                      
+                      <div><label class="filter-label">Status Yatim</label><select class="form-select" id="fYatimStatus"><option value="">Semua</option></select></div>
                       <div><label class="filter-label">Kelas</label><select class="form-select" id="fYatimKelas"><option value="">Semua</option></select></div>
-                      <div><label class="filter-label">Nama Penjaga</label><input class="form-input" id="fYatimPenjaga"></div>
-                      <div><label class="filter-label">Pendapatan</label><input class="form-input" id="fYatimGaji"></div>
-                      <div><label class="filter-label">Bil Adik Beradik</label><input class="form-input" id="fYatimAdik"></div>
-                      <div><label class="filter-label">Perkapita</label><input class="form-input" id="fYatimPerkapita"></div>
-                      <div><label class="filter-label">No Tel</label><input class="form-input" id="fYatimTel"></div>
+                      <div><label class="filter-label">Pendapatan</label><select class="form-select" id="fYatimGaji"><option value="">Semua</option></select></div>
+                      <div><label class="filter-label">Bil Adik Beradik</label><select class="form-select" id="fYatimAdik"><option value="">Semua</option></select></div>
+                      <div><label class="filter-label">Perkapita</label><select class="form-select" id="fYatimPerkapita"><option value="">Semua</option></select></div>
                   </div>
                   <div style="text-align:right; margin-top:10px;">
                       <button class="btn btn-outline" onclick="resetFilterYatim()">Reset</button> 
@@ -580,8 +563,8 @@
   let STATS_CACHE = { overall: {m:0, f:0, t:0}, classes: {} };
   let ACTIVE_CLASS = null;
   
-  // === AUTO-FIX & HARD RESET (V27.15) ===
-  const CURRENT_VERSION = '27.15';
+  // === AUTO-FIX & HARD RESET (V27.16) ===
+  const CURRENT_VERSION = '27.16';
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -872,8 +855,8 @@ function parseCSV(text) {
     renderStudentStats(); 
     
     // Init Filters
-    populateClassFilter('asnaf', DATA.asnaf, 'fAsnafKelas');
-    populateClassFilter('yatim', DATA.yatim, 'fYatimKelas');
+    initFilters();
+
     renderAsnafTable();
     renderYatimTable();
 
@@ -902,8 +885,8 @@ function parseCSV(text) {
         else if(type === 'cal') { DATA.cal = data; initCalendar(); renderCalendarTable(); }
         else if(type === 'par') { DATA.par = data; renderParents(); }
         else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); renderStudentStats(); enrichBantuanData(); renderAsnafTable(); renderYatimTable(); } 
-        else if(type === 'asnaf') { DATA.asnaf = data; enrichBantuanData(); populateClassFilter('asnaf', DATA.asnaf, 'fAsnafKelas'); renderAsnafTable(); alert('Asnaf Dikemaskini'); }
-        else if(type === 'yatim') { DATA.yatim = data; enrichBantuanData(); populateClassFilter('yatim', DATA.yatim, 'fYatimKelas'); renderYatimTable(); alert('Yatim Dikemaskini'); }
+        else if(type === 'asnaf') { DATA.asnaf = data; enrichBantuanData(); initFilters(); renderAsnafTable(); alert('Asnaf Dikemaskini'); }
+        else if(type === 'yatim') { DATA.yatim = data; enrichBantuanData(); initFilters(); renderYatimTable(); alert('Yatim Dikemaskini'); }
         
         const now = new Date();
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
@@ -928,10 +911,34 @@ function parseCSV(text) {
       if(DATA.yatim) DATA.yatim.forEach(r => injectInfo(r));
   }
 
-  function populateClassFilter(type, dataSet, elemId) {
+  function populateColumnFilter(dataSet, keyList, elemId) {
       if(!dataSet) return;
-      const classes = [...new Set(dataSet.map(r => getVal(r, 'KELAS') || getVal(r, 'CLASS')))].filter(Boolean).sort();
-      document.getElementById(elemId).innerHTML = '<option value="">Semua</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+      // Get Values based on array of potential keys
+      const vals = [...new Set(dataSet.map(r => {
+          for(let k of keyList) {
+             const v = getVal(r, k);
+             if(v) return v.toUpperCase().trim();
+          }
+          return null;
+      }))].filter(Boolean).sort();
+      
+      const sel = document.getElementById(elemId);
+      if(sel) sel.innerHTML = '<option value="">Semua</option>' + vals.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+
+  function initFilters() {
+      // Asnaf Filters
+      populateColumnFilter(DATA.asnaf, ['KELAS', 'CLASS'], 'fAsnafKelas');
+      populateColumnFilter(DATA.asnaf, ['PENDAPATAN', 'GAJI'], 'fAsnafGaji');
+      populateColumnFilter(DATA.asnaf, ['BIL', 'ADIK'], 'fAsnafAdik');
+      populateColumnFilter(DATA.asnaf, ['PERKAPITA'], 'fAsnafPerkapita');
+
+      // Yatim Filters
+      populateColumnFilter(DATA.yatim, ['KELAS', 'CLASS'], 'fYatimKelas');
+      populateColumnFilter(DATA.yatim, ['YATIM', 'STATUS', 'JENIS'], 'fYatimStatus');
+      populateColumnFilter(DATA.yatim, ['PENDAPATAN', 'GAJI'], 'fYatimGaji');
+      populateColumnFilter(DATA.yatim, ['BIL', 'ADIK'], 'fYatimAdik');
+      populateColumnFilter(DATA.yatim, ['PERKAPITA'], 'fYatimPerkapita');
   }
 
   // === RENDER ASNAF ===
@@ -945,28 +952,32 @@ function parseCSV(text) {
       const fMykid = document.getElementById('fAsnafMykid').value.toLowerCase();
       const fKelas = document.getElementById('fAsnafKelas').value;
       const fPenjaga = document.getElementById('fAsnafPenjaga').value.toLowerCase();
-      const fGaji = document.getElementById('fAsnafGaji').value.toLowerCase();
-      const fAdik = document.getElementById('fAsnafAdik').value.toLowerCase();
-      const fPerkapita = document.getElementById('fAsnafPerkapita').value.toLowerCase();
+      const fGaji = document.getElementById('fAsnafGaji').value;
+      const fAdik = document.getElementById('fAsnafAdik').value;
+      const fPerkapita = document.getElementById('fAsnafPerkapita').value;
       const fTel = document.getElementById('fAsnafTel').value.toLowerCase();
 
       const filtered = DATA.asnaf.filter(r => {
-          const nama = (getVal(r, 'NAMA') || '').toLowerCase();
+          const nama = (getVal(r, 'NAMA') || '').toUpperCase();
+          
+          // FIX: Filter out bad rows
+          if (nama === 'BIL' || nama === 'NAMA MURID' || nama.length < 3) return false;
+
           const kp = (getVal(r, 'KP') || getVal(r, 'NO') || getVal(r, 'MYKID') || '').toLowerCase();
-          const kelas = getVal(r, 'KELAS') || getVal(r, 'CLASS'); 
+          const kelas = (getVal(r, 'KELAS') || getVal(r, 'CLASS') || '').toUpperCase(); 
           const penjaga = (getVal(r, 'PENJAGA') || getVal(r, 'BAPA') || '').toLowerCase();
-          const gaji = (getVal(r, 'PENDAPATAN') || getVal(r, 'GAJI') || '').toLowerCase();
-          const adik = (getVal(r, 'BIL') || getVal(r, 'ADIK') || '').toLowerCase();
-          const perkapita = (getVal(r, 'PERKAPITA') || '').toLowerCase();
+          const gaji = (getVal(r, 'PENDAPATAN') || getVal(r, 'GAJI') || '').toUpperCase();
+          const adik = (getVal(r, 'BIL') || getVal(r, 'ADIK') || '').toUpperCase();
+          const perkapita = (getVal(r, 'PERKAPITA') || '').toUpperCase();
           const tel = (getVal(r, 'TEL') || getVal(r, 'HP') || '').toLowerCase();
 
-          return (!fNama || nama.includes(fNama)) &&
+          return (!fNama || nama.toLowerCase().includes(fNama)) &&
                  (!fMykid || kp.includes(fMykid)) &&
                  (!fKelas || kelas === fKelas) &&
                  (!fPenjaga || penjaga.includes(fPenjaga)) &&
-                 (!fGaji || gaji.includes(fGaji)) &&
-                 (!fAdik || adik.includes(fAdik)) &&
-                 (!fPerkapita || perkapita.includes(fPerkapita)) &&
+                 (!fGaji || gaji === fGaji) &&
+                 (!fAdik || adik === fAdik) &&
+                 (!fPerkapita || perkapita === fPerkapita) &&
                  (!fTel || tel.includes(fTel));
       });
 
@@ -1002,30 +1013,34 @@ function parseCSV(text) {
       const fStatus = document.getElementById('fYatimStatus').value;
       const fKelas = document.getElementById('fYatimKelas').value;
       const fPenjaga = document.getElementById('fYatimPenjaga').value.toLowerCase();
-      const fGaji = document.getElementById('fYatimGaji').value.toLowerCase();
-      const fAdik = document.getElementById('fYatimAdik').value.toLowerCase();
-      const fPerkapita = document.getElementById('fYatimPerkapita').value.toLowerCase();
+      const fGaji = document.getElementById('fYatimGaji').value;
+      const fAdik = document.getElementById('fYatimAdik').value;
+      const fPerkapita = document.getElementById('fYatimPerkapita').value;
       const fTel = document.getElementById('fYatimTel').value.toLowerCase();
 
       const filtered = DATA.yatim.filter(r => {
-          const nama = (getVal(r, 'NAMA') || '').toLowerCase();
+          const nama = (getVal(r, 'NAMA') || '').toUpperCase();
+          
+          // FIX: Filter out bad rows
+          if (nama === 'BIL' || nama === 'NAMA MURID' || nama.length < 3) return false;
+
           const kp = (getVal(r, 'KP') || getVal(r, 'NO') || getVal(r, 'MYKID') || '').toLowerCase();
           const status = (getVal(r, 'YATIM') || getVal(r, 'STATUS') || getVal(r, 'JENIS') || '').toUpperCase();
-          const kelas = getVal(r, 'KELAS') || getVal(r, 'CLASS'); 
+          const kelas = (getVal(r, 'KELAS') || getVal(r, 'CLASS') || '').toUpperCase(); 
           const penjaga = (getVal(r, 'PENJAGA') || getVal(r, 'BAPA') || '').toLowerCase();
-          const gaji = (getVal(r, 'PENDAPATAN') || getVal(r, 'GAJI') || '').toLowerCase();
-          const adik = (getVal(r, 'BIL') || getVal(r, 'ADIK') || '').toLowerCase();
-          const perkapita = (getVal(r, 'PERKAPITA') || '').toLowerCase();
+          const gaji = (getVal(r, 'PENDAPATAN') || getVal(r, 'GAJI') || '').toUpperCase();
+          const adik = (getVal(r, 'BIL') || getVal(r, 'ADIK') || '').toUpperCase();
+          const perkapita = (getVal(r, 'PERKAPITA') || '').toUpperCase();
           const tel = (getVal(r, 'TEL') || getVal(r, 'HP') || '').toLowerCase();
 
-          return (!fNama || nama.includes(fNama)) &&
+          return (!fNama || nama.toLowerCase().includes(fNama)) &&
                  (!fMykid || kp.includes(fMykid)) &&
-                 (!fStatus || status.includes(fStatus)) &&
+                 (!fStatus || status === fStatus) &&
                  (!fKelas || kelas === fKelas) &&
                  (!fPenjaga || penjaga.includes(fPenjaga)) &&
-                 (!fGaji || gaji.includes(fGaji)) &&
-                 (!fAdik || adik.includes(fAdik)) &&
-                 (!fPerkapita || perkapita.includes(fPerkapita)) &&
+                 (!fGaji || gaji === fGaji) &&
+                 (!fAdik || adik === fAdik) &&
+                 (!fPerkapita || perkapita === fPerkapita) &&
                  (!fTel || tel.includes(fTel));
       });
 
