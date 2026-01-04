@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.12 - Chart Labels & Filter Button) === */
+    /* === CSS UTAMA (V28.13 - Search Button Alignment Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -103,8 +103,10 @@
     .btn-action:hover { background: rgba(255,255,255,0.3); }
 
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; }
-    .btn { padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; }
+    /* FIXED HEIGHT FOR SEARCH BUTTON & SELECT */
+    .form-select, .form-input, .btn-search { height: 40px; box-sizing: border-box; } 
+    .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; display: flex; align-items: center; }
+    .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 40px; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
     
@@ -249,7 +251,7 @@
               <select class="form-select" style="width:auto" id="trendMonth"></select>
               <select class="form-select" style="width:auto" id="trendYear"></select>
               <select class="form-select" style="width:auto" id="trendClass"><option value="">Semua Kelas</option></select>
-              <button class="btn btn-primary" onclick="renderTrend()" style="padding: 0 12px;" title="Tapis"><span class="material-icons-round">search</span></button>
+              <button class="btn btn-primary btn-search" onclick="renderTrend()" title="Tapis"><span class="material-icons-round">search</span></button>
             </div>
           </div>
           <div id="chartContainer" style="height:280px; width:100%;"></div>
@@ -522,9 +524,9 @@
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
-      database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRD7_23mP7_2c-74a9p0o_599h69e88j40h07p96-29177a499119h9e6924b179k3976e1088/pub?gid=0&single=true&output=csv",
+      // === DATABASE BARU (V28.12) ===
+      database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
       
-      // === URL DATA TERPISAH ===
       asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=877457981&single=true&output=csv", 
       yatim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=1167967580&single=true&output=csv"
     },
