@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V27.13 - Auto-Merge Fix) === */
+    /* === CSS UTAMA (V27.14 - Updated Asnaf/Yatim) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -119,6 +119,7 @@
     .b-red { background: #FEF3F2; color: #B42318; }
     .b-blue { background: #EFF8FF; color: #175CD3; }
     .b-gray { background: #F2F4F7; color: #344054; }
+    .b-purple { background: #F4F3FF; color: #5925DC; } /* New Badge for Yatim */
 
     /* STATS ENROLMEN BOX */
     .enrolmen-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 10px; }
@@ -202,7 +203,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.13</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 27.14</div>
     </div>
   </aside>
 
@@ -341,6 +342,7 @@
               </div>
               <div id="asnafFilters" class="filter-panel">
                   <div class="filter-grid">
+                      <div><label class="filter-label">Kategori</label><select class="form-select" id="fAsnafKategori"><option value="">Semua</option><option value="ASNAF">Asnaf & Miskin</option><option value="YATIM">Anak Yatim</option></select></div>
                       <div><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafKelas"><option value="">Semua</option></select></div>
                       <div><label class="filter-label">Jantina</label><select class="form-select" id="fAsnafJantina"><option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option></select></div>
                   </div>
@@ -349,7 +351,7 @@
               <div class="print-header"><h2>LAPORAN ASNAF & YATIM PPKI</h2><p>SK PAYA RESAK</p></div>
               <div class="table-wrap">
                   <table id="asnafTable">
-                      <thead><tr><th>Bil</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Info Tambahan</th></tr></thead>
+                      <thead><tr><th>Bil</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Kategori</th><th>Info Tambahan</th></tr></thead>
                       <tbody id="asnafBody"></tbody>
                   </table>
               </div>
@@ -487,15 +489,16 @@
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
       // UPDATED DATABASE URL
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
-      // ASNAF URL (Sama dengan Database untuk data ringkas, atau link lain jika ada)
-      asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?output=csv" 
+      // === UPDATED ASNAF & YATIM URLS ===
+      asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=877457981&single=true&output=csv",
+      yatim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=1167967580&single=true&output=csv"
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
       
       // GROUP HEM (Hanya Admin)
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
-      {id:'asnaf', label:'Rekod Asnaf', icon:'engineering', hidden:false, role:'admin'},
+      {id:'asnaf', label:'Rekod Asnaf', icon:'engineering', hidden:false, role:'admin'}, // Menu Label stays similar but content updated
       
       // GROUP KOKO (Hanya Admin)
       {id:'pajsk', label:'Rekod PAJSK', icon:'emoji_events', hidden:false, role:'admin'},
@@ -515,8 +518,8 @@
   let STATS_CACHE = { overall: {m:0, f:0, t:0}, classes: {} };
   let ACTIVE_CLASS = null;
   
-  // === AUTO-FIX & HARD RESET (V27.13) ===
-  const CURRENT_VERSION = '27.13'; // Increment this to force reset on client devices
+  // === AUTO-FIX & HARD RESET (V27.14) ===
+  const CURRENT_VERSION = '27.14'; // Force Reset for new URLs
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -528,7 +531,7 @@
   }
   // ===============================================
 
-  let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [], asnaf: [] };
+  let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [], asnaf: [], yatim: [], bantuan_display: [] };
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
 
@@ -796,7 +799,8 @@ function parseCSV(text) {
       fetchCSV(CONFIG.urls.calendar),
       fetchCSV(CONFIG.urls.parents),
       fetchCSV(CONFIG.urls.database),
-      fetchCSV(CONFIG.urls.asnaf) // ADDED FETCH FOR ASNAF
+      fetchCSV(CONFIG.urls.asnaf), // Result 6
+      fetchCSV(CONFIG.urls.yatim)  // Result 7 (NEW)
     ]);
     if(results[0]) DATA.att = results[0];
     if(results[1]) DATA.pajsk = results[1];
@@ -805,12 +809,13 @@ function parseCSV(text) {
     if(results[4]) DATA.par = results[4];
     if(results[5]) DATA.db = results[5];
     if(results[6]) DATA.asnaf = results[6];
+    if(results[7]) DATA.yatim = results[7];
 
     // === Update Footer Timestamp ===
     const now = new Date();
     document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
 
-    mergeAsnafData(); // NEW: MERGE DB CLASS INTO ASNAF
+    mergeAsnafData(); // NEW: MERGE DB INTO ASNAF & YATIM & COMBINE
     processAttendance();
     renderAnn();
     initPajsk();
@@ -818,7 +823,7 @@ function parseCSV(text) {
     initCalendar();
     renderCalendarTable();
     renderStudentStats(); 
-    initAsnaf(); // INIT ASNAF
+    initAsnaf(); // INIT ASNAF UI
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
@@ -833,7 +838,19 @@ function parseCSV(text) {
     else if(type === 'cal') url = CONFIG.urls.calendar;
     else if(type === 'par') url = CONFIG.urls.parents;
     else if(type === 'db') url = CONFIG.urls.database;
-    else if(type === 'asnaf') url = CONFIG.urls.asnaf;
+    else if(type === 'asnaf') {
+        // Special Case: Reload both Asnaf & Yatim
+        const p1 = fetchCSV(CONFIG.urls.asnaf);
+        const p2 = fetchCSV(CONFIG.urls.yatim);
+        const res = await Promise.all([p1, p2]);
+        if(res[0]) DATA.asnaf = res[0];
+        if(res[1]) DATA.yatim = res[1];
+        mergeAsnafData();
+        initAsnaf();
+        alert('Data Asnaf & Yatim Dikemaskini');
+        document.getElementById('loading-overlay').style.display = 'none';
+        return;
+    }
 
     const data = await fetchCSV(url);
     if(data) {
@@ -842,8 +859,7 @@ function parseCSV(text) {
         else if(type === 'ann') { DATA.ann = data; renderAnn(); }
         else if(type === 'cal') { DATA.cal = data; initCalendar(); renderCalendarTable(); }
         else if(type === 'par') { DATA.par = data; renderParents(); }
-        else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); renderStudentStats(); mergeAsnafData(); } 
-        else if(type === 'asnaf') { DATA.asnaf = data; mergeAsnafData(); initAsnaf(); alert('Data Asnaf Dikemaskini'); }
+        else if(type === 'db') { DATA.db = data; alert('Pangkalan Data Dikemaskini'); renderStudentStats(); mergeAsnafData(); initAsnaf(); } 
         
         // Update timestamp on manual reload too
         const now = new Date();
@@ -852,72 +868,96 @@ function parseCSV(text) {
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
-  // === NEW: MERGE FUNCTION (DB -> ASNAF) ===
+  // === NEW: MERGE FUNCTION (DB -> ASNAF & YATIM) ===
   function mergeAsnafData() {
-      if (!DATA.asnaf.length || !DATA.db.length) return;
-      
-      DATA.asnaf.forEach(asnafRow => {
-        // Normalize Asnaf Name
-        const asnafName = (getVal(asnafRow, 'NAMA') || '').toUpperCase().trim();
-        
-        // Find in DB
-        const dbRow = DATA.db.find(db => (getVal(db, 'NAMA') || '').toUpperCase().trim() === asnafName);
-        
-        if (dbRow) {
-          // Inject Class if missing in Asnaf
-          if (!getVal(asnafRow, 'KELAS')) {
-             asnafRow['KELAS'] = getVal(dbRow, 'KELAS');
+      // Clear display array
+      DATA.bantuan_display = [];
+
+      // 1. Helper function to find student info in DB
+      const injectInfo = (row, type) => {
+          row._type = type; // Tag type (ASNAF / YATIM)
+          
+          const name = (getVal(row, 'NAMA') || '').toUpperCase().trim();
+          // Find in DB
+          if(DATA.db && DATA.db.length) {
+              const dbRow = DATA.db.find(db => (getVal(db, 'NAMA') || '').toUpperCase().trim() === name);
+              if (dbRow) {
+                if (!getVal(row, 'KELAS')) row['KELAS'] = getVal(dbRow, 'KELAS');
+                if (!getVal(row, 'JANTINA')) row['JANTINA'] = getVal(dbRow, 'JANTINA');
+              }
           }
-          // Inject Gender if missing in Asnaf
-          if (!getVal(asnafRow, 'JANTINA')) {
-             asnafRow['JANTINA'] = getVal(dbRow, 'JANTINA');
-          }
-        }
-      });
+          return row;
+      };
+
+      // 2. Process ASNAF
+      if(DATA.asnaf && DATA.asnaf.length) {
+          const processedAsnaf = DATA.asnaf.map(r => injectInfo({...r}, 'ASNAF'));
+          DATA.bantuan_display.push(...processedAsnaf);
+      }
+
+      // 3. Process YATIM
+      if(DATA.yatim && DATA.yatim.length) {
+          const processedYatim = DATA.yatim.map(r => injectInfo({...r}, 'YATIM'));
+          DATA.bantuan_display.push(...processedYatim);
+      }
   }
 
   // === ASNAF LOGIC ===
   function initAsnaf() {
-      if(!DATA.asnaf || DATA.asnaf.length === 0) return;
-      
       // Populate filters (after merge)
-      const classes = [...new Set(DATA.asnaf.map(r => getVal(r, 'KELAS') || getVal(r, 'CLASS')))].filter(Boolean).sort();
+      // Use bantuan_display which contains merged data
+      if(!DATA.bantuan_display.length) return;
+
+      const classes = [...new Set(DATA.bantuan_display.map(r => getVal(r, 'KELAS') || getVal(r, 'CLASS')))].filter(Boolean).sort();
       document.getElementById('fAsnafKelas').innerHTML = '<option value="">Semua</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
       
       renderAsnafTable();
   }
 
   window.renderAsnafTable = function() {
-      if(!DATA.asnaf || DATA.asnaf.length === 0) { 
-          document.getElementById('asnafBody').innerHTML = '<tr><td colspan="5">Tiada data dijumpai.</td></tr>'; 
+      if(!DATA.bantuan_display || DATA.bantuan_display.length === 0) { 
+          document.getElementById('asnafBody').innerHTML = '<tr><td colspan="6">Tiada data dijumpai.</td></tr>'; 
           return; 
       }
 
       const q = document.getElementById('searchAsnaf').value.toLowerCase();
       const fKelas = document.getElementById('fAsnafKelas').value;
       const fJantina = document.getElementById('fAsnafJantina').value;
+      const fKat = document.getElementById('fAsnafKategori').value; // New Filter
 
-      const filtered = DATA.asnaf.filter(r => {
+      const filtered = DATA.bantuan_display.filter(r => {
           const nama = (getVal(r, 'NAMA') || '').toLowerCase();
           const kp = (getVal(r, 'KP') || getVal(r, 'NO') || '').toLowerCase();
-          const kelas = getVal(r, 'KELAS') || getVal(r, 'CLASS'); // Now pulled from DB if merged
-          const jantina = (getVal(r, 'JANTINA') || getVal(r, 'GENDER') || '').toUpperCase(); // Now pulled from DB if merged
+          const kelas = getVal(r, 'KELAS') || getVal(r, 'CLASS'); 
+          const jantina = (getVal(r, 'JANTINA') || getVal(r, 'GENDER') || '').toUpperCase(); 
+          const type = r._type;
 
           const matchSearch = !q || nama.includes(q) || kp.includes(q);
           const matchKelas = !fKelas || kelas === fKelas;
           const matchJantina = !fJantina || jantina.includes(fJantina) || (fJantina === 'LELAKI' && jantina.startsWith('L')) || (fJantina === 'PEREMPUAN' && jantina.startsWith('P'));
+          const matchKat = !fKat || type === fKat;
 
-          return matchSearch && matchKelas && matchJantina;
+          return matchSearch && matchKelas && matchJantina && matchKat;
       });
 
       document.getElementById('asnafBody').innerHTML = filtered.map((r, i) => {
           // Try to find extra info like "Bantuan", "Pendapatan", or "Status"
           let info = getVal(r, 'BANTUAN') || getVal(r, 'PENDAPATAN') || getVal(r, 'STATUS') || '-';
+          
+          let badgeClass = 'b-green';
+          let badgeText = 'ASNAF & MISKIN';
+          
+          if(r._type === 'YATIM') {
+              badgeClass = 'b-purple';
+              badgeText = 'ANAK YATIM';
+          }
+
           return `<tr>
               <td>${i + 1}</td>
               <td><strong>${getVal(r, 'NAMA')}</strong><br><span style="font-size:10px; color:var(--text-muted)">${getVal(r, 'KP')}</span></td>
               <td>${getVal(r, 'KELAS') || '-'}</td>
               <td>${getVal(r, 'JANTINA') || '-'}</td>
+              <td><span class="badge ${badgeClass}">${badgeText}</span></td>
               <td>${info}</td>
           </tr>`;
       }).join('');
@@ -929,6 +969,7 @@ function parseCSV(text) {
       document.getElementById('searchAsnaf').value = '';
       document.getElementById('fAsnafKelas').value = '';
       document.getElementById('fAsnafJantina').value = '';
+      document.getElementById('fAsnafKategori').value = '';
       renderAsnafTable();
   }
 
@@ -1141,7 +1182,7 @@ function parseCSV(text) {
       let dOk = true;
       if(start && end) dOk = r.isoDate >= start && r.isoDate <= end;
       return dOk && (!q || r.name.toLowerCase().includes(q)) &&
-             (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) &&
+             (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) && 
              (!s || (s==='HADIR'?r.status==='HADIR':r.status.includes('TIDAK')));
     });
     renderAttTable(filtered);
@@ -1213,12 +1254,12 @@ function parseCSV(text) {
       const iso = parseDateStr(getVal(r, 'TARIKH'));
       let year = getVal(r, 'TAHUN');
       if(!year && iso) year = iso.split('-')[0];
-      return searchMatch &&
-             (!fTahun || year == fTahun) &&
-             (!fDate || iso === fDate) &&
-             (!fUnit || getVal(r,'UNIT') === fUnit) &&
-             (!fKelas || getVal(r,'KELAS') === fKelas) &&
-             (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
+      return searchMatch && 
+             (!fTahun || year == fTahun) && 
+             (!fDate || iso === fDate) && 
+             (!fUnit || getVal(r,'UNIT') === fUnit) && 
+             (!fKelas || getVal(r,'KELAS') === fKelas) && 
+             (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) && 
              (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
     });
     document.getElementById('pajskBody').innerHTML = filtered.map(r => {
@@ -1317,8 +1358,8 @@ function parseCSV(text) {
           const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
           const url = getVal(a, 'URL') || '';
           
-          const badgeClass =
-            (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
+          const badgeClass = 
+            (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' : 
             (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' : 'b-blue';
           
           return `
