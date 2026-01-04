@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V28.6 - Auto Current Year Filter) === */
+    /* === CSS UTAMA (V28.7 - Auto Render Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -180,7 +180,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.6</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.7</div>
     </div>
   </aside>
 
@@ -515,8 +515,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.6) ===
-  const CURRENT_VERSION = '28.6'; 
+  // === AUTO-FIX & HARD RESET (V28.7) ===
+  const CURRENT_VERSION = '28.7'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -848,7 +848,7 @@ function parseCSV(text) {
     }
   }
 
-  /* ================= ASNAF RENDERER (V28.6 Auto-Filter) ================= */
+  /* ================= ASNAF RENDERER (V28.7 Auto-Render Fix) ================= */
   function initAsnaf() {
       if(!DATA.asnaf || !DATA.asnaf.length) {
           document.getElementById('statAsnaf').innerText = "0";
@@ -863,14 +863,19 @@ function parseCSV(text) {
       pop('fAsnafClass', 'KELAS');
       pop('fAsnafGender', 'JANTINA'); 
       
-      // === AUTO-SET CURRENT YEAR ===
+      // === AUTO-SET CURRENT YEAR & FORCE RENDER ===
       const currYear = new Date().getFullYear().toString();
-      const yearOpts = Array.from(document.getElementById('fAsnafYear').options).map(o => o.value);
+      const yearSelect = document.getElementById('fAsnafYear');
+      const yearOpts = Array.from(yearSelect.options).map(o => o.value);
+      
       if(yearOpts.includes(currYear)) {
-          document.getElementById('fAsnafYear').value = currYear;
+          yearSelect.value = currYear;
+      } else if (yearOpts.length > 1) {
+          // Fallback to latest year if current year not found
+          yearSelect.value = yearOpts[1]; 
       }
 
-      renderAsnafTable();
+      renderAsnafTable(); // Call render explicitly
   }
 
   window.renderAsnafTable = function() {
@@ -932,7 +937,7 @@ function parseCSV(text) {
       renderAsnafTable();
   }
 
-  /* ================= YATIM RENDERER (V28.6 Auto-Filter) ================= */
+  /* ================= YATIM RENDERER (V28.7 Auto-Render Fix) ================= */
   function initYatim() {
       if(!DATA.yatim || !DATA.yatim.length) {
           document.getElementById('statYatim').innerText = "0";
@@ -947,14 +952,18 @@ function parseCSV(text) {
       pop('fYatimClass', 'KELAS');
       pop('fYatimGender', 'JANTINA');
 
-      // === AUTO-SET CURRENT YEAR ===
+      // === AUTO-SET CURRENT YEAR & FORCE RENDER ===
       const currYear = new Date().getFullYear().toString();
-      const yearOpts = Array.from(document.getElementById('fYatimYear').options).map(o => o.value);
+      const yearSelect = document.getElementById('fYatimYear');
+      const yearOpts = Array.from(yearSelect.options).map(o => o.value);
+
       if(yearOpts.includes(currYear)) {
-          document.getElementById('fYatimYear').value = currYear;
+          yearSelect.value = currYear;
+      } else if(yearOpts.length > 1) {
+          yearSelect.value = yearOpts[1];
       }
 
-      renderYatimTable();
+      renderYatimTable(); // Call render explicitly
   }
 
   window.renderYatimTable = function() {
