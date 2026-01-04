@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V28.2 - Smart Parser Fix) === */
+    /* === CSS UTAMA (V28.3 - Robust Parser) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -180,7 +180,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.2</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.3</div>
     </div>
   </aside>
 
@@ -515,8 +515,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.2) ===
-  const CURRENT_VERSION = '28.2'; 
+  // === AUTO-FIX & HARD RESET (V28.3) ===
+  const CURRENT_VERSION = '28.3'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -707,7 +707,7 @@
       return parseCSV(text);
     } catch(e) {
         console.error("Gagal muat data:", url, e);
-        return null;
+        return []; // Return empty array on fail
     }
   }
 
@@ -739,7 +739,8 @@ function parseCSV(text) {
   let headerIdx = -1;
   for(let i=0; i<Math.min(rows.length, 10); i++) {
      const rowStr = rows[i].join(' ').toUpperCase();
-     if(rowStr.includes('NAMA MURID') || rowStr.includes('NO.MYKID')) {
+     // Cari keyword 'BIL' atau 'NAMA MURID'
+     if(rowStr.includes('NAMA MURID') || (rowStr.includes('BIL') && rowStr.includes('NAMA'))) {
          headerIdx = i;
          break;
      }
@@ -752,6 +753,13 @@ function parseCSV(text) {
   return dataRows.map(r => {
     const obj = {};
     headers.forEach((h, idx) => { obj[h] = (r[idx] ?? "").trim(); });
+    // FALLBACK: If "TAHUN" header is missing, try to grab last column if it looks like a year
+    if(!obj['TAHUN'] && r.length > 0) {
+        const lastVal = r[r.length-1];
+        if(lastVal && (lastVal.includes('2025') || lastVal.includes('2026'))) {
+            obj['TAHUN'] = lastVal;
+        }
+    }
     return obj;
   });
 }
@@ -778,38 +786,42 @@ function parseCSV(text) {
 
   async function loadAllData() {
     document.getElementById('loading-overlay').style.display = 'grid';
-    const results = await Promise.all([
-      fetchCSV(CONFIG.urls.attendance),
-      fetchCSV(CONFIG.urls.pajsk),
-      fetchCSV(CONFIG.urls.announcements),
-      fetchCSV(CONFIG.urls.calendar),
-      fetchCSV(CONFIG.urls.parents),
-      fetchCSV(CONFIG.urls.database),
-      fetchCSV(CONFIG.urls.asnaf), 
-      fetchCSV(CONFIG.urls.yatim) 
-    ]);
-    if(results[0]) DATA.att = results[0];
-    if(results[1]) DATA.pajsk = results[1];
-    if(results[2]) DATA.ann = results[2];
-    if(results[3]) DATA.cal = results[3];
-    if(results[4]) DATA.par = results[4];
-    if(results[5]) DATA.db = results[5];
-    if(results[6]) DATA.asnaf = results[6];
-    if(results[7]) DATA.yatim = results[7];
+    try {
+        const results = await Promise.all([
+          fetchCSV(CONFIG.urls.attendance),
+          fetchCSV(CONFIG.urls.pajsk),
+          fetchCSV(CONFIG.urls.announcements),
+          fetchCSV(CONFIG.urls.calendar),
+          fetchCSV(CONFIG.urls.parents),
+          fetchCSV(CONFIG.urls.database),
+          fetchCSV(CONFIG.urls.asnaf), 
+          fetchCSV(CONFIG.urls.yatim) 
+        ]);
+        if(results[0]) DATA.att = results[0];
+        if(results[1]) DATA.pajsk = results[1];
+        if(results[2]) DATA.ann = results[2];
+        if(results[3]) DATA.cal = results[3];
+        if(results[4]) DATA.par = results[4];
+        if(results[5]) DATA.db = results[5];
+        if(results[6]) DATA.asnaf = results[6];
+        if(results[7]) DATA.yatim = results[7];
 
-    // === Update Footer Timestamp ===
-    const now = new Date();
-    document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
+        const now = new Date();
+        document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
 
-    processAttendance();
-    renderAnn();
-    initPajsk();
-    renderParents();
-    initCalendar();
-    renderCalendarTable();
-    initAsnaf(); 
-    initYatim();
-    document.getElementById('loading-overlay').style.display = 'none';
+        processAttendance();
+        renderAnn();
+        initPajsk();
+        renderParents();
+        initCalendar();
+        renderCalendarTable();
+        initAsnaf(); 
+        initYatim();
+    } catch(err) {
+        console.error("Critical Load Error", err);
+    } finally {
+        document.getElementById('loading-overlay').style.display = 'none';
+    }
   }
 
   window.forceReload = async function(type) {
@@ -817,21 +829,26 @@ function parseCSV(text) {
     let url = '';
     if(type === 'all') { await loadAllData(); return; }
 
-    if(type === 'att') { DATA.att = await fetchCSV(CONFIG.urls.attendance); processAttendance(); }
-    else if(type === 'pajsk') { DATA.pajsk = await fetchCSV(CONFIG.urls.pajsk); initPajsk(); }
-    else if(type === 'ann') { DATA.ann = await fetchCSV(CONFIG.urls.announcements); renderAnn(); }
-    else if(type === 'cal') { DATA.cal = await fetchCSV(CONFIG.urls.calendar); initCalendar(); renderCalendarTable(); }
-    else if(type === 'par') { DATA.par = await fetchCSV(CONFIG.urls.parents); renderParents(); }
-    else if(type === 'db') { DATA.db = await fetchCSV(CONFIG.urls.database); alert('Pangkalan Data Dikemaskini'); }
-    else if(type === 'asnaf') { DATA.asnaf = await fetchCSV(CONFIG.urls.asnaf); initAsnaf(); }
-    else if(type === 'yatim') { DATA.yatim = await fetchCSV(CONFIG.urls.yatim); initYatim(); }
+    try {
+        if(type === 'att') { DATA.att = await fetchCSV(CONFIG.urls.attendance); processAttendance(); }
+        else if(type === 'pajsk') { DATA.pajsk = await fetchCSV(CONFIG.urls.pajsk); initPajsk(); }
+        else if(type === 'ann') { DATA.ann = await fetchCSV(CONFIG.urls.announcements); renderAnn(); }
+        else if(type === 'cal') { DATA.cal = await fetchCSV(CONFIG.urls.calendar); initCalendar(); renderCalendarTable(); }
+        else if(type === 'par') { DATA.par = await fetchCSV(CONFIG.urls.parents); renderParents(); }
+        else if(type === 'db') { DATA.db = await fetchCSV(CONFIG.urls.database); alert('Pangkalan Data Dikemaskini'); }
+        else if(type === 'asnaf') { DATA.asnaf = await fetchCSV(CONFIG.urls.asnaf); initAsnaf(); }
+        else if(type === 'yatim') { DATA.yatim = await fetchCSV(CONFIG.urls.yatim); initYatim(); }
         
-    const now = new Date();
-    document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
-    document.getElementById('loading-overlay').style.display = 'none';
+        const now = new Date();
+        document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
+    } catch(e) {
+        console.error(e);
+    } finally {
+        document.getElementById('loading-overlay').style.display = 'none';
+    }
   }
 
-  /* ================= ASNAF RENDERER (V28.2 Fixed) ================= */
+  /* ================= ASNAF RENDERER (V28.3 Smart) ================= */
   function initAsnaf() {
       if(!DATA.asnaf || !DATA.asnaf.length) {
           document.getElementById('statAsnaf').innerText = "0";
