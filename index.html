@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V28.0 - Asnaf & Yatim Split) === */
+    /* === CSS UTAMA (V28.1 - Asnaf Enhanced) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -180,7 +180,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.0</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.1</div>
     </div>
   </aside>
 
@@ -288,22 +288,37 @@
              <div class="card"><div class="stat-label">Jumlah Murid Asnaf</div><div class="stat-val" id="statAsnaf">-</div></div>
           </div>
           <div class="card">
-              <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
-                <input class="form-input" id="searchAsnaf" placeholder="Cari Nama Murid..." style="flex:1;">
-                <button class="btn btn-outline" onclick="toggleFilterPanel('asnafFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis</button>
-                <button class="btn btn-primary" onclick="renderAsnafTable()">Cari</button>
+              <div style="margin-bottom:15px;">
+                  <label class="filter-label" style="margin-bottom:8px;">Pencarian (Nama / MyKid / Penjaga / No. Tel)</label>
+                  <div style="display:flex; gap:10px;">
+                    <input class="form-input" id="searchAsnaf" placeholder="Cari di sini..." style="flex:1;">
+                    <button class="btn btn-primary" onclick="renderAsnafTable()">Cari</button>
+                  </div>
               </div>
-              <div id="asnafFilters" class="filter-panel">
-                <div class="filter-grid">
-                   <div><label class="filter-label">Tahun</label><select class="form-select" id="fAsnafYear"><option value="">Semua</option></select></div>
-                   <div><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafClass"><option value="">Semua</option></select></div>
-                   <div><label class="filter-label">Jantina</label><select class="form-select" id="fAsnafGender"><option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option></select></div>
-                </div>
-                <div style="text-align:right"><button class="btn btn-outline" onclick="resetAsnafFilters()">Reset</button> <button class="btn btn-primary" onclick="renderAsnafTable()">Terapkan</button></div>
+              
+              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px; border:1px solid var(--border-color);">
+                   <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafClass"><option value="">Semua</option></select></div>
+                   <div style="flex:1"><label class="filter-label">Jantina</label><select class="form-select" id="fAsnafGender"><option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option></select></div>
+                   <div style="display:flex; align-items:flex-end;"><button class="btn btn-outline" onclick="resetAsnafFilters()">Reset</button></div>
               </div>
+
               <div class="print-header"><h2>SENARAI MURID ASNAF</h2><p>SK PAYA RESAK</p></div>
               <div class="table-wrap">
-                  <table><thead><tr><th>Tahun</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Catatan</th></tr></thead><tbody id="asnafBody"></tbody></table>
+                  <table>
+                      <thead>
+                          <tr>
+                              <th>NAMA MURID</th>
+                              <th>NO. MYKID</th>
+                              <th>KELAS</th>
+                              <th>NAMA PENJAGA</th>
+                              <th>NO. TEL</th>
+                              <th>PENDAPATAN (RM)</th>
+                              <th>ADIK BERADIK</th>
+                              <th>PERKAPITA (RM)</th>
+                          </tr>
+                      </thead>
+                      <tbody id="asnafBody"></tbody>
+                  </table>
               </div>
               <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="asnafCount"></div>
           </div>
@@ -500,8 +515,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.0) ===
-  const CURRENT_VERSION = '28.0'; 
+  // === AUTO-FIX & HARD RESET (V28.1) ===
+  const CURRENT_VERSION = '28.1'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -802,67 +817,74 @@ function parseCSV(text) {
     document.getElementById('loading-overlay').style.display = 'none';
   }
 
-  /* ================= ASNAF RENDERER ================= */
+  /* ================= ASNAF RENDERER (V28.1 Updated) ================= */
   function initAsnaf() {
       if(!DATA.asnaf || !DATA.asnaf.length) {
           document.getElementById('statAsnaf').innerText = "0";
-          document.getElementById('asnafBody').innerHTML = '<tr><td colspan="5" style="text-align:center">Tiada Data.</td></tr>';
+          document.getElementById('asnafBody').innerHTML = '<tr><td colspan="8" style="text-align:center">Tiada Data.</td></tr>';
           return;
       }
-      // Populate Dropdowns
       const pop = (id, key) => {
           const vals = [...new Set(DATA.asnaf.map(r => getVal(r, key)))].filter(Boolean).sort();
           document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
       };
-      pop('fAsnafYear', 'TAHUN');
       pop('fAsnafClass', 'KELAS');
       pop('fAsnafGender', 'JANTINA');
       
-      // Auto-set current year if exists
-      const currYear = new Date().getFullYear().toString();
-      const yearOpts = Array.from(document.getElementById('fAsnafYear').options).map(o => o.value);
-      if(yearOpts.includes(currYear)) document.getElementById('fAsnafYear').value = currYear;
-
       renderAsnafTable();
   }
 
   window.renderAsnafTable = function() {
       if(!DATA.asnaf || !DATA.asnaf.length) return;
+      
+      // SEARCH LOGIC: Checks Name, MyKid, Guardian, Phone
       const q = document.getElementById('searchAsnaf').value.toLowerCase();
-      const fYear = document.getElementById('fAsnafYear').value;
       const fClass = document.getElementById('fAsnafClass').value;
       const fGender = document.getElementById('fAsnafGender').value;
 
       const filtered = DATA.asnaf.filter(r => {
           const name = (getVal(r, 'NAMA')||"").toLowerCase();
-          const yr = getVal(r, 'TAHUN') || "";
-          return (!q || name.includes(q)) &&
-                 (!fYear || yr === fYear) &&
+          const mykid = (getVal(r, 'MYKID')||getVal(r, 'KP')||"").toLowerCase();
+          const guardian = (getVal(r, 'PENJAGA')||getVal(r, 'BAPA')||"").toLowerCase();
+          const phone = (getVal(r, 'TEL')||getVal(r, 'HP')||"").toLowerCase();
+          
+          const matchSearch = !q || name.includes(q) || mykid.includes(q) || guardian.includes(q) || phone.includes(q);
+          
+          return matchSearch &&
                  (!fClass || getVal(r, 'KELAS') === fClass) &&
                  (!fGender || (getVal(r, 'JANTINA')||"").toUpperCase() === fGender);
       });
 
       document.getElementById('statAsnaf').innerText = filtered.length;
       document.getElementById('asnafCount').innerText = `Papar: ${filtered.length} rekod.`;
-      document.getElementById('asnafBody').innerHTML = filtered.map(r => `
+      
+      // RENDER 8 SPECIFIC COLUMNS
+      document.getElementById('asnafBody').innerHTML = filtered.map(r => {
+          const mykid = getVal(r, 'MYKID') || getVal(r, 'KP') || '-';
+          const guardian = getVal(r, 'PENJAGA') || getVal(r, 'BAPA') || '-';
+          const income = getVal(r, 'PENDAPATAN') || getVal(r, 'GAJI') || '-';
+          const siblings = getVal(r, 'ADIK') || getVal(r, 'TANGGUNGAN') || '-';
+          const perkapita = getVal(r, 'PERKAPITA') || '-';
+          const phone = getVal(r, 'TEL') || getVal(r, 'HP') || '-';
+
+          return `
             <tr>
-                <td>${getVal(r, 'TAHUN')}</td>
                 <td><strong>${getVal(r, 'NAMA')}</strong></td>
+                <td>${mykid}</td>
                 <td>${getVal(r, 'KELAS')}</td>
-                <td>${getVal(r, 'JANTINA')}</td>
-                <td>${getVal(r, 'CATATAN') || '-'}</td>
-            </tr>`).join('');
+                <td>${guardian}</td>
+                <td>${phone}</td>
+                <td>${income}</td>
+                <td style="text-align:center">${siblings}</td>
+                <td>${perkapita}</td>
+            </tr>`;
+      }).join('');
   }
 
   window.resetAsnafFilters = function() {
       document.getElementById('searchAsnaf').value = '';
       document.getElementById('fAsnafClass').value = '';
       document.getElementById('fAsnafGender').value = '';
-      // Reset year to current year if possible
-      const currYear = new Date().getFullYear().toString();
-      const yearOpts = Array.from(document.getElementById('fAsnafYear').options).map(o => o.value);
-      if(yearOpts.includes(currYear)) document.getElementById('fAsnafYear').value = currYear;
-      else document.getElementById('fAsnafYear').value = '';
       renderAsnafTable();
   }
 
