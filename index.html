@@ -13,10 +13,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.11 - Dashboard Data Fix) === */
+    /* === CSS UTAMA (V28.12 - Chart Labels & Filter Button) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -85,7 +87,7 @@
     
     /* ENROLMEN CARD CSS */
     .enrol-grid { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
-    .chart-box { flex: 0 0 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .chart-box { flex: 0 0 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .class-list-box { flex: 1; min-width: 250px; }
     .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; max-height: 250px; overflow-y: auto; }
     .class-card-mini { background: var(--bg-element); padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; text-align: center; }
@@ -192,7 +194,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.11</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.12</div>
     </div>
   </aside>
 
@@ -215,7 +217,7 @@
         <div class="dashboard-grid">
           <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card att-card"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
-          <div class="card stat-card att-card"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
+          <div class="card stat-card att-card"><div class="stat-label">Hari Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
           <div class="card stat-card clickable" onclick="navTo('announcements')"><div class="stat-label">Pengumuman</div><div class="stat-val" id="dAnn">-</div><div class="stat-sub">Aktif</div></div>
         </div>
 
@@ -243,10 +245,11 @@
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:20px;">
             <h3 style="margin:0; font-size:16px;">📈 Trend Harian</h3>
             <div class="filter-row">
-              <select class="form-select" style="width:auto" id="trendType" onchange="renderTrend()"><option value="hadir">Hadir</option><option value="tidak">Tidak Hadir</option><option value="pct">%</option></select>
-              <select class="form-select" style="width:auto" id="trendMonth" onchange="renderTrend()"></select>
-              <select class="form-select" style="width:auto" id="trendYear" onchange="renderTrend()"></select>
-              <select class="form-select" style="width:auto" id="trendClass" onchange="renderTrend()"><option value="">Semua Kelas</option></select>
+              <select class="form-select" style="width:auto" id="trendType"><option value="hadir">Hadir</option><option value="tidak">Tidak Hadir</option><option value="pct">%</option></select>
+              <select class="form-select" style="width:auto" id="trendMonth"></select>
+              <select class="form-select" style="width:auto" id="trendYear"></select>
+              <select class="form-select" style="width:auto" id="trendClass"><option value="">Semua Kelas</option></select>
+              <button class="btn btn-primary" onclick="renderTrend()" style="padding: 0 12px;" title="Tapis"><span class="material-icons-round">search</span></button>
             </div>
           </div>
           <div id="chartContainer" style="height:280px; width:100%;"></div>
@@ -549,8 +552,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.11) ===
-  const CURRENT_VERSION = '28.11'; 
+  // === AUTO-FIX & HARD RESET (V28.12) ===
+  const CURRENT_VERSION = '28.12'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -565,6 +568,9 @@
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
   let chartInstance = null; // Global Chart Instance
+  
+  // REGISTER CHART DATA LABELS
+  Chart.register(ChartDataLabels);
 
   window.init = function() {
     applyTheme();
@@ -721,7 +727,7 @@
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
     document.getElementById(`page-${id}`).style.display='block';
     
-    // === V28.8 FIX: TRIGGER RESET ON NAVIGATION ===
+    // === V28.12 FIX: TRIGGER RESET ON NAVIGATION ===
     if(id === 'asnaf') resetAsnafFilters();
     if(id === 'yatim') resetYatimFilters();
     
@@ -865,15 +871,17 @@ function parseCSV(text) {
     }
   }
 
-  // === PROCESS ENROLMENT & CHART (Backup if DATA.db empty) ===
+  // === PROCESS ENROLMENT & CHART (Aggressive Fallback) ===
   function processEnrolment() {
     let students = [];
     
-    // Prefer DATABASE, else fallback to ATTENDANCE list
+    // 1. Try DB
     if(DATA.db && DATA.db.length > 0) {
          students = DATA.db.filter(r => getVal(r, 'NAMA') && getVal(r, 'NAMA').trim() !== '');
-    } else if(DATA.att && DATA.att.length > 0) {
-         // Create unique list from attendance if database missing
+    } 
+    
+    // 2. Fallback to Attendance if DB empty
+    if(students.length === 0 && DATA.att && DATA.att.length > 0) {
          const unique = new Map();
          DATA.att.forEach(r => {
              const n = getVal(r, 'NAMA');
@@ -945,7 +953,12 @@ function parseCSV(text) {
               responsive: true,
               maintainAspectRatio: false,
               plugins: {
-                  legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Poppins' } } }
+                  legend: { position: 'bottom', labels: { usePointStyle: true, font: { family: 'Poppins' } } },
+                  datalabels: {
+                      color: '#fff',
+                      font: { weight: 'bold', size: 14 },
+                      formatter: (value) => value > 0 ? value : '' // Hide 0
+                  }
               },
               cutout: '65%'
           }
@@ -977,7 +990,7 @@ function parseCSV(text) {
     }
   }
 
-  /* ================= ASNAF RENDERER (V28.8 - Auto Trigger) ================= */
+  /* ================= ASNAF RENDERER (V28.12) ================= */
   function initAsnaf() {
       if(!DATA.asnaf || !DATA.asnaf.length) {
           document.getElementById('statAsnaf').innerText = "0";
@@ -992,7 +1005,6 @@ function parseCSV(text) {
       pop('fAsnafClass', 'KELAS');
       pop('fAsnafGender', 'JANTINA'); 
       
-      // === AUTO-SET CURRENT YEAR & FORCE RENDER ===
       const currYear = new Date().getFullYear().toString();
       const yearSelect = document.getElementById('fAsnafYear');
       const yearOpts = Array.from(yearSelect.options).map(o => o.value);
@@ -1018,12 +1030,12 @@ function parseCSV(text) {
           const mykid = (getVal(r, 'MYKID')||getVal(r, 'KP')||"").toLowerCase();
           const guardian = (getVal(r, 'PENJAGA')||getVal(r, 'BAPA')||"").toLowerCase();
           const phone = (getVal(r, 'TEL')||getVal(r, 'HP')||"").toLowerCase();
-          const yr = getVal(r, 'TAHUN') || ""; // Loose check (string/number)
+          const yr = getVal(r, 'TAHUN') || ""; 
 
           const matchSearch = !q || name.includes(q) || mykid.includes(q) || guardian.includes(q) || phone.includes(q);
           
           return matchSearch &&
-                 (!fYear || yr == fYear) && // Double equal for loose comparison
+                 (!fYear || yr == fYear) && 
                  (!fClass || getVal(r, 'KELAS') === fClass);
       });
 
@@ -1065,7 +1077,7 @@ function parseCSV(text) {
       renderAsnafTable();
   }
 
-  /* ================= YATIM RENDERER (V28.8 - Auto Trigger) ================= */
+  /* ================= YATIM RENDERER (V28.12) ================= */
   function initYatim() {
       if(!DATA.yatim || !DATA.yatim.length) {
           document.getElementById('statYatim').innerText = "0";
@@ -1080,7 +1092,6 @@ function parseCSV(text) {
       pop('fYatimClass', 'KELAS');
       pop('fYatimGender', 'JANTINA');
 
-      // === AUTO-SET CURRENT YEAR & FORCE RENDER ===
       const currYear = new Date().getFullYear().toString();
       const yearSelect = document.getElementById('fYatimYear');
       const yearOpts = Array.from(yearSelect.options).map(o => o.value);
@@ -1110,7 +1121,7 @@ function parseCSV(text) {
           const matchSearch = !q || name.includes(q) || mykid.includes(q) || guardian.includes(q) || phone.includes(q);
           
           return matchSearch &&
-                 (!fYear || yr == fYear) && // Double equal for loose comparison
+                 (!fYear || yr == fYear) && 
                  (!fClass || getVal(r, 'KELAS') === fClass);
       });
 
@@ -1464,12 +1475,11 @@ function parseCSV(text) {
     
     // === AUTO-SWITCH YEAR IF DATA EMPTY ===
     if(filtered.length === 0 && yr == new Date().getFullYear()) {
-         // Try previous year
          const prevYr = yr - 1;
          const hasDataPrev = DATA_ATT_CLEAN.some(r => r.rawDate.getFullYear()===prevYr);
          if(hasDataPrev) {
              document.getElementById('trendYear').value = prevYr;
-             renderTrend(); // Re-run with new year
+             renderTrend(); 
              return;
          }
     }
