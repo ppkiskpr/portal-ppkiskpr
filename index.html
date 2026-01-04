@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V28.8 - Auto-Trigger on Menu Click) === */
+    /* === CSS UTAMA (V28.9 - Dashboard Enrolment Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -180,7 +180,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.8</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.9</div>
     </div>
   </aside>
 
@@ -200,9 +200,10 @@
           <div class="banner-actions"><button class="btn-action" onclick="forceReload('all')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload Semua</button></div>
         </div>
         <div class="dashboard-grid">
-          <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
-          <div class="card stat-card att-card"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
-          <div class="card stat-card att-card"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Peratus Kehadiran</div></div>
+          <div class="card stat-card"><div class="stat-label">Enrolmen Murid</div><div class="stat-val" id="dEnrol">-</div><div class="stat-sub">Jumlah Keseluruhan</div></div>
+          
+          <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub">Rekod Harian</div></div>
+          <div class="card stat-card att-card"><div class="stat-label">Peratus Kehadiran</div><div class="stat-val" id="dPct">-</div><div class="stat-sub">Hari Ini</div></div>
           <div class="card stat-card clickable" onclick="navTo('announcements')"><div class="stat-label">Pengumuman</div><div class="stat-val" id="dAnn">-</div><div class="stat-sub">Aktif</div></div>
         </div>
         <div class="card">
@@ -515,8 +516,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.8 - Auto-Trigger Fix) ===
-  const CURRENT_VERSION = '28.8'; 
+  // === AUTO-FIX & HARD RESET (V28.9 - Dashboard & Enrolment Fix) ===
+  const CURRENT_VERSION = '28.9'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -815,6 +816,7 @@ function parseCSV(text) {
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
 
         processAttendance();
+        processEnrolment(); // Update Enrolment Card
         renderAnn();
         initPajsk();
         renderParents();
@@ -829,6 +831,14 @@ function parseCSV(text) {
     }
   }
 
+  // === NEW: Process Enrolment Logic ===
+  function processEnrolment() {
+    if(!DATA.db) return;
+    // Count non-empty rows in database by Name
+    const count = DATA.db.filter(r => getVal(r, 'NAMA') && getVal(r, 'NAMA').trim() !== '').length;
+    document.getElementById('dEnrol').innerText = count;
+  }
+
   window.forceReload = async function(type) {
     document.getElementById('loading-overlay').style.display = 'grid';
     let url = '';
@@ -840,7 +850,7 @@ function parseCSV(text) {
         else if(type === 'ann') { DATA.ann = await fetchCSV(CONFIG.urls.announcements); renderAnn(); }
         else if(type === 'cal') { DATA.cal = await fetchCSV(CONFIG.urls.calendar); initCalendar(); renderCalendarTable(); }
         else if(type === 'par') { DATA.par = await fetchCSV(CONFIG.urls.parents); renderParents(); }
-        else if(type === 'db') { DATA.db = await fetchCSV(CONFIG.urls.database); alert('Pangkalan Data Dikemaskini'); }
+        else if(type === 'db') { DATA.db = await fetchCSV(CONFIG.urls.database); processEnrolment(); alert('Pangkalan Data Dikemaskini'); }
         else if(type === 'asnaf') { DATA.asnaf = await fetchCSV(CONFIG.urls.asnaf); initAsnaf(); }
         else if(type === 'yatim') { DATA.yatim = await fetchCSV(CONFIG.urls.yatim); initYatim(); }
         
