@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
   <style>
-    /* === CSS UTAMA (V28.7 - Auto Render Fix) === */
+    /* === CSS UTAMA (V28.8 - Auto-Trigger on Menu Click) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -180,7 +180,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.7</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.8</div>
     </div>
   </aside>
 
@@ -515,8 +515,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.7) ===
-  const CURRENT_VERSION = '28.7'; 
+  // === AUTO-FIX & HARD RESET (V28.8 - Auto-Trigger Fix) ===
+  const CURRENT_VERSION = '28.8'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -685,6 +685,11 @@
     if(el) el.classList.add('active');
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
     document.getElementById(`page-${id}`).style.display='block';
+    
+    // === V28.8 FIX: TRIGGER RESET ON NAVIGATION ===
+    if(id === 'asnaf') resetAsnafFilters();
+    if(id === 'yatim') resetYatimFilters();
+    
     if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
   }
 
@@ -848,7 +853,7 @@ function parseCSV(text) {
     }
   }
 
-  /* ================= ASNAF RENDERER (V28.7 Auto-Render Fix) ================= */
+  /* ================= ASNAF RENDERER (V28.8 - Auto Trigger) ================= */
   function initAsnaf() {
       if(!DATA.asnaf || !DATA.asnaf.length) {
           document.getElementById('statAsnaf').innerText = "0";
@@ -871,11 +876,10 @@ function parseCSV(text) {
       if(yearOpts.includes(currYear)) {
           yearSelect.value = currYear;
       } else if (yearOpts.length > 1) {
-          // Fallback to latest year if current year not found
           yearSelect.value = yearOpts[1]; 
       }
 
-      renderAsnafTable(); // Call render explicitly
+      renderAsnafTable(); 
   }
 
   window.renderAsnafTable = function() {
@@ -890,12 +894,12 @@ function parseCSV(text) {
           const mykid = (getVal(r, 'MYKID')||getVal(r, 'KP')||"").toLowerCase();
           const guardian = (getVal(r, 'PENJAGA')||getVal(r, 'BAPA')||"").toLowerCase();
           const phone = (getVal(r, 'TEL')||getVal(r, 'HP')||"").toLowerCase();
-          const yr = getVal(r, 'TAHUN') || "";
+          const yr = getVal(r, 'TAHUN') || ""; // Loose check (string/number)
 
           const matchSearch = !q || name.includes(q) || mykid.includes(q) || guardian.includes(q) || phone.includes(q);
           
           return matchSearch &&
-                 (!fYear || yr === fYear) &&
+                 (!fYear || yr == fYear) && // Double equal for loose comparison
                  (!fClass || getVal(r, 'KELAS') === fClass);
       });
 
@@ -928,16 +932,16 @@ function parseCSV(text) {
       document.getElementById('searchAsnaf').value = '';
       document.getElementById('fAsnafClass').value = '';
       
-      // Reset to Current Year if exists, else empty
       const currYear = new Date().getFullYear().toString();
       const yearOpts = Array.from(document.getElementById('fAsnafYear').options).map(o => o.value);
       if(yearOpts.includes(currYear)) document.getElementById('fAsnafYear').value = currYear;
+      else if(yearOpts.length > 1) document.getElementById('fAsnafYear').value = yearOpts[1];
       else document.getElementById('fAsnafYear').value = '';
       
       renderAsnafTable();
   }
 
-  /* ================= YATIM RENDERER (V28.7 Auto-Render Fix) ================= */
+  /* ================= YATIM RENDERER (V28.8 - Auto Trigger) ================= */
   function initYatim() {
       if(!DATA.yatim || !DATA.yatim.length) {
           document.getElementById('statYatim').innerText = "0";
@@ -963,7 +967,7 @@ function parseCSV(text) {
           yearSelect.value = yearOpts[1];
       }
 
-      renderYatimTable(); // Call render explicitly
+      renderYatimTable(); 
   }
 
   window.renderYatimTable = function() {
@@ -982,7 +986,7 @@ function parseCSV(text) {
           const matchSearch = !q || name.includes(q) || mykid.includes(q) || guardian.includes(q) || phone.includes(q);
           
           return matchSearch &&
-                 (!fYear || yr === fYear) &&
+                 (!fYear || yr == fYear) && // Double equal for loose comparison
                  (!fClass || getVal(r, 'KELAS') === fClass);
       });
 
@@ -1015,10 +1019,10 @@ function parseCSV(text) {
       document.getElementById('searchYatim').value = '';
       document.getElementById('fYatimClass').value = '';
       
-      // Reset to Current Year
       const currYear = new Date().getFullYear().toString();
       const yearOpts = Array.from(document.getElementById('fYatimYear').options).map(o => o.value);
       if(yearOpts.includes(currYear)) document.getElementById('fYatimYear').value = currYear;
+      else if(yearOpts.length > 1) document.getElementById('fYatimYear').value = yearOpts[1];
       else document.getElementById('fYatimYear').value = '';
       
       renderYatimTable();
