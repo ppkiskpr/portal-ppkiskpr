@@ -16,7 +16,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* === CSS UTAMA (V28.10 - Dashboard Redesign with Chart.js) === */
+    /* === CSS UTAMA (V28.11 - Dashboard Data Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -83,14 +83,15 @@
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
     
-    /* ENROLMEN CARD STYLES */
-    .enrol-grid { display: flex; flex-wrap: wrap; gap: 24px; }
-    .chart-box { flex: 1; min-width: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-    .class-list-box { flex: 2; min-width: 300px; }
-    .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-    .class-card-mini { background: var(--bg-element); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; text-align: center; }
-    .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
-    .cc-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+    /* ENROLMEN CARD CSS */
+    .enrol-grid { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
+    .chart-box { flex: 0 0 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .class-list-box { flex: 1; min-width: 250px; }
+    .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; max-height: 250px; overflow-y: auto; }
+    .class-card-mini { background: var(--bg-element); padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; text-align: center; }
+    .class-card-mini:hover, .class-card-mini.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .class-card-mini.active .cc-count { color: rgba(255,255,255,0.8); }
+    .cc-name { font-weight: 700; font-size: 12px; margin-bottom: 2px; }
     .cc-count { font-size: 11px; color: var(--text-muted); }
 
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
@@ -157,7 +158,7 @@
     }
     .print-header { display: none; }
     @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .page-banner { flex-direction: column; align-items: flex-start; } }
+    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .page-banner { flex-direction: column; align-items: flex-start; } .enrol-grid { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -191,7 +192,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.10</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.11</div>
     </div>
   </aside>
 
@@ -232,7 +233,8 @@
                 </div>
                 <div class="class-list-box">
                     <div class="class-grid" id="classGrid">
-                        </div>
+                        <p style="text-align:center; color:var(--text-muted); font-size:12px; width:100%;">Memuatkan data...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -547,8 +549,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.10 - Dashboard Enrolment with Chart.js) ===
-  const CURRENT_VERSION = '28.10'; 
+  // === AUTO-FIX & HARD RESET (V28.11) ===
+  const CURRENT_VERSION = '28.11'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -848,7 +850,7 @@ function parseCSV(text) {
         document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
 
         processAttendance();
-        processEnrolment(); 
+        processEnrolment(); // Update Enrolment Card
         renderAnn();
         initPajsk();
         renderParents();
@@ -863,15 +865,25 @@ function parseCSV(text) {
     }
   }
 
-  // === PROCESS ENROLMENT & CHART ===
+  // === PROCESS ENROLMENT & CHART (Backup if DATA.db empty) ===
   function processEnrolment() {
-    if(!DATA.db || DATA.db.length === 0) return;
+    let students = [];
     
-    // 1. Get Valid Students
-    const students = DATA.db.filter(r => getVal(r, 'NAMA') && getVal(r, 'NAMA').trim() !== '');
+    // Prefer DATABASE, else fallback to ATTENDANCE list
+    if(DATA.db && DATA.db.length > 0) {
+         students = DATA.db.filter(r => getVal(r, 'NAMA') && getVal(r, 'NAMA').trim() !== '');
+    } else if(DATA.att && DATA.att.length > 0) {
+         // Create unique list from attendance if database missing
+         const unique = new Map();
+         DATA.att.forEach(r => {
+             const n = getVal(r, 'NAMA');
+             if(n && !unique.has(n)) unique.set(n, r);
+         });
+         students = Array.from(unique.values());
+    }
+
     document.getElementById('totalEnrol').innerText = `${students.length} Murid`;
     
-    // 2. Aggregate Data by Class & Gender
     const classMap = {};
     let totalL = 0;
     let totalP = 0;
@@ -888,11 +900,9 @@ function parseCSV(text) {
         classMap[cls].total++;
     });
 
-    // 3. Render Class Buttons
     const grid = document.getElementById('classGrid');
     grid.innerHTML = '';
     
-    // Button for ALL
     const btnAll = document.createElement('div');
     btnAll.className = 'class-card-mini active';
     btnAll.innerHTML = `<div class="cc-name">SEMUA</div><div class="cc-count">${students.length} Murid</div>`;
@@ -907,7 +917,6 @@ function parseCSV(text) {
         grid.appendChild(btn);
     });
 
-    // 4. Init Chart
     updateChart('SEMUA', totalL, totalP);
   }
 
@@ -1452,6 +1461,19 @@ function parseCSV(text) {
     const yr = parseInt(document.getElementById('trendYear').value);
     const cl = document.getElementById('trendClass').value;
     const filtered = DATA_ATT_CLEAN.filter(r => r.rawDate.getMonth()===mo && r.rawDate.getFullYear()===yr && (!cl || r.kelas===cl));
+    
+    // === AUTO-SWITCH YEAR IF DATA EMPTY ===
+    if(filtered.length === 0 && yr == new Date().getFullYear()) {
+         // Try previous year
+         const prevYr = yr - 1;
+         const hasDataPrev = DATA_ATT_CLEAN.some(r => r.rawDate.getFullYear()===prevYr);
+         if(hasDataPrev) {
+             document.getElementById('trendYear').value = prevYr;
+             renderTrend(); // Re-run with new year
+             return;
+         }
+    }
+    
     const daysInMonth = new Date(yr, mo+1, 0).getDate();
     let points = []; let maxVal = 0;
     for(let d=1; d<=daysInMonth; d++) {
