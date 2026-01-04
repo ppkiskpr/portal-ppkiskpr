@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.13 - Fixed Class List) === */
+    /* === CSS UTAMA (V28.13 - Fixed Button Alignment & Enrolment Data) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -105,8 +105,8 @@
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     
     /* FIX: Button Height & Alignment */
-    .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; height: 40px; box-sizing: border-box; }
-    .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 40px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; }
+    .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; height: 42px; box-sizing: border-box; }
+    .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 42px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
     
@@ -524,7 +524,7 @@
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
-      // === DATABASE BARU (V28.12) ===
+      // === DATABASE BARU (V28.13) ===
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
       
       asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=877457981&single=true&output=csv", 
@@ -554,8 +554,8 @@
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
-  // === AUTO-FIX & HARD RESET (V28.12) ===
-  const CURRENT_VERSION = '28.12'; 
+  // === AUTO-FIX & HARD RESET (V28.13) ===
+  const CURRENT_VERSION = '28.13'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -787,8 +787,8 @@ function parseCSV(text) {
   let headerIdx = -1;
   for(let i=0; i<Math.min(rows.length, 10); i++) {
      const rowStr = rows[i].join(' ').toUpperCase();
-     // Cari keyword 'BIL' atau 'NAMA MURID'
-     if(rowStr.includes('NAMA MURID') || (rowStr.includes('BIL') && rowStr.includes('NAMA'))) {
+     // Cari keyword 'BIL' atau 'NAMA MURID' atau 'KELAS'
+     if(rowStr.includes('NAMA MURID') || rowStr.includes('KELAS')) {
          headerIdx = i;
          break;
      }
@@ -873,28 +873,22 @@ function parseCSV(text) {
     }
   }
 
-  // === PROCESS ENROLMENT & CHART (Aggressive Fallback) ===
+  // === PROCESS ENROLMENT & CHART (Use Database URL CSV directly) ===
   function processEnrolment() {
-    let students = [];
+    let rawData = DATA.db || [];
     
-    // 1. Try DB
-    if(DATA.db && DATA.db.length > 0) {
-         students = DATA.db.filter(r => getVal(r, 'NAMA') && getVal(r, 'NAMA').trim() !== '');
-    } 
-    
-    // 2. Fallback to Attendance if DB empty
-    if(students.length === 0 && DATA.att && DATA.att.length > 0) {
+    // Fallback if DB empty
+    if(rawData.length === 0 && DATA.att && DATA.att.length > 0) {
+         // Try to build from attendance unique names
          const unique = new Map();
          DATA.att.forEach(r => {
              const n = getVal(r, 'NAMA');
              if(n && !unique.has(n)) unique.set(n, r);
          });
-         students = Array.from(unique.values());
+         rawData = Array.from(unique.values());
     }
 
-    document.getElementById('totalEnrol').innerText = `${students.length} Murid`;
-    
-    // 1. DEFINE DEFAULT CLASSES (Supaya sentiasa keluar walaupun tiada murid)
+    // Default Structure (Ensure all classes appear)
     const classMap = {
         "1 AL-FARABI": { L: 0, P: 0, total: 0 },
         "2 AL-FARABI": { L: 0, P: 0, total: 0 },
@@ -905,33 +899,48 @@ function parseCSV(text) {
     
     let totalL = 0;
     let totalP = 0;
+    let totalStudents = 0;
 
-    students.forEach(s => {
-        let cls = (getVal(s, 'KELAS') || 'LAIN-LAIN').toUpperCase().trim();
+    rawData.forEach(r => {
+        // Direct mapping from CSV
+        let clsName = (getVal(r, 'KELAS') || '').toUpperCase().trim();
         
-        // Normalize class names
-        if(cls.includes('1')) cls = '1 AL-FARABI';
-        else if(cls.includes('2')) cls = '2 AL-FARABI';
-        else if(cls.includes('3')) cls = '3 AL-FARABI';
-        else if(cls.includes('4')) cls = '4 AL-FARABI';
-        else if(cls.includes('5')) cls = '5 AL-FARABI';
+        // Normalize class names (e.g. "2 AF" -> "2 AL-FARABI")
+        if(clsName.includes('1')) clsName = '1 AL-FARABI';
+        else if(clsName.includes('2')) clsName = '2 AL-FARABI';
+        else if(clsName.includes('3')) clsName = '3 AL-FARABI';
+        else if(clsName.includes('4')) clsName = '4 AL-FARABI';
+        else if(clsName.includes('5')) clsName = '5 AL-FARABI';
+
+        // Check columns LELAKI / PEREMPUAN directly first (from new CSV format)
+        let l = parseInt(getVal(r, 'LELAKI')) || 0;
+        let p = parseInt(getVal(r, 'PEREMPUAN')) || 0;
         
-        const gender = (getVal(s, 'JANTINA') || '').toUpperCase().trim();
-        
-        if(!classMap[cls]) classMap[cls] = { L: 0, P: 0, total: 0 };
-        
-        if(gender.startsWith('L')) { classMap[cls].L++; totalL++; }
-        else if(gender.startsWith('P')) { classMap[cls].P++; totalP++; }
-        
-        classMap[cls].total++;
+        // If not summary format, assume row is 1 student
+        if(l === 0 && p === 0) {
+            const gender = (getVal(r, 'JANTINA') || '').toUpperCase().trim();
+            if(gender.startsWith('L')) l = 1;
+            else if(gender.startsWith('P')) p = 1;
+        }
+
+        if(classMap[clsName]) {
+            classMap[clsName].L += l;
+            classMap[clsName].P += p;
+            classMap[clsName].total += (l + p);
+            totalL += l;
+            totalP += p;
+            totalStudents += (l + p);
+        }
     });
+
+    document.getElementById('totalEnrol').innerText = `${totalStudents} Murid`;
 
     const grid = document.getElementById('classGrid');
     grid.innerHTML = '';
     
     const btnAll = document.createElement('div');
     btnAll.className = 'class-card-mini active';
-    btnAll.innerHTML = `<div class="cc-name">SEMUA</div><div class="cc-count">${students.length} Murid</div>`;
+    btnAll.innerHTML = `<div class="cc-name">SEMUA</div><div class="cc-count">${totalStudents} Murid</div>`;
     btnAll.onclick = () => { updateChart('SEMUA', totalL, totalP); setActiveCard(btnAll); };
     grid.appendChild(btnAll);
 
