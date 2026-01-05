@@ -47,7 +47,22 @@
     .brand-text h1 { margin: 0; font-size: 15px; font-weight: 700; }
     .brand-text p { margin: 0; font-size: 11px; color: var(--text-muted); }
     
-    .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; overflow-x: hidden; }
+    /* === UBAHSUAI: NAV MENU SCROLLBAR & SPACING === */
+    .nav-menu { 
+        flex: 1; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 4px; 
+        overflow-y: auto; 
+        overflow-x: hidden;
+        padding-bottom: 20px; /* Jarak bawah supaya scroll tak sangkut */
+    }
+
+    /* Style untuk Scrollbar Sidebar supaya nampak */
+    .nav-menu::-webkit-scrollbar { width: 5px; }
+    .nav-menu::-webkit-scrollbar-track { background: transparent; }
+    .nav-menu::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 10px; }
+    .nav-menu::-webkit-scrollbar-thumb:hover { background: #98a2b3; }
     
     /* NAV ITEMS & GROUPS */
     .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; cursor: pointer; color: var(--text-muted); text-decoration: none; transition: all 0.2s; white-space: nowrap; font-size: 13px; font-weight: 500; }
@@ -65,7 +80,30 @@
     .nav-child-container { overflow: hidden; transition: max-height 0.3s ease; }
     .nav-child-container.collapsed { max-height: 0; }
     
-    .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); white-space: nowrap; padding-top: 20px; line-height: 1.4; border-top: 1px solid var(--border-color); }
+    /* === UBAHSUAI: FOOTER & USER INFO WRAPPING === */
+    .sidebar-footer { 
+        margin-top: auto; 
+        font-size: 11px; 
+        text-align: center; 
+        color: var(--text-muted); 
+        white-space: normal; /* Ubah dari nowrap ke normal */
+        padding-top: 20px; 
+        line-height: 1.4; 
+        border-top: 1px solid var(--border-color); 
+    }
+
+    /* CSS Khas untuk Nama User */
+    #userInfo {
+        margin-bottom: 10px;
+        font-weight: 600;
+        font-size: 12px;
+        display: none;
+        white-space: normal; /* Benarkan wrap */
+        word-wrap: break-word; /* Pecahkan perkataan panjang */
+        line-height: 1.3; /* Jarak baris */
+        text-align: center;
+        padding: 0 5px;
+    }
 
     /* MAIN CONTENT */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -241,7 +279,7 @@
     <div class="nav-menu" id="sidebarMenu">
       </div>
     <div class="sidebar-footer">
-      <div id="userInfo" style="margin-bottom:10px; font-weight:600; font-size:12px; display:none;"></div>
+      <div id="userInfo"></div>
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
@@ -649,7 +687,7 @@
       btn.textContent = "Log Keluar";
       btn.style.background = "#B42318";
       info.style.display = "block";
-      info.innerHTML = `<div>${user.displayName}</div><div style="color:var(--primary); font-size:10px">${USER_ROLE.toUpperCase()}</div>`;
+      info.innerHTML = `<div>${user.displayName}</div><div style="color:var(--primary); font-size:10px; margin-top:2px;">${USER_ROLE.toUpperCase()}</div>`;
       if(USER_ROLE === 'admin') gear.style.display = 'grid';
       loginScreen.style.opacity = '0';
       setTimeout(() => { loginScreen.style.display = 'none'; appContainer.style.display = 'flex'; init(); }, 500);
@@ -831,12 +869,12 @@ function parseCSV(text) {
   // === SMART HEADER DETECTION (Ignore Title Rows) ===
   let headerIdx = -1;
   for(let i=0; i<Math.min(rows.length, 10); i++) {
-     const rowStr = rows[i].join(' ').toUpperCase();
-     // Cari keyword 'BIL' atau 'NAMA MURID'
-     if(rowStr.includes('NAMA MURID') || (rowStr.includes('BIL') && rowStr.includes('NAMA'))) {
-         headerIdx = i;
-         break;
-     }
+      const rowStr = rows[i].join(' ').toUpperCase();
+      // Cari keyword 'BIL' atau 'NAMA MURID'
+      if(rowStr.includes('NAMA MURID') || (rowStr.includes('BIL') && rowStr.includes('NAMA'))) {
+          headerIdx = i;
+          break;
+      }
   }
   if(headerIdx === -1) headerIdx = 0; // Fallback to first row if not found
 
