@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.26 - Secure Deep Linking) === */
+    /* === CSS UTAMA (V28.27 - Table Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -37,9 +37,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* SIDEBAR */
-    .sidebar { 
-        background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 12px; transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow: hidden; height: 100%; max-height: 100vh;
-    }
+    .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 12px; transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow: hidden; height: 100%; max-height: 100vh; }
     @media (min-width: 769px) { .sidebar { width: var(--sidebar-w-full); } body.desktop-mini .sidebar { width: var(--sidebar-w-mini); } body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; } body.desktop-mini .brand { justify-content: center; padding-left: 0; } body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; } body.desktop-mini .nav-icon { margin-right: 0; } }
     @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); } body.mobile-active .sidebar { left: 0; } .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); } body.mobile-active .backdrop { display: block; } }
     
@@ -53,7 +51,6 @@
     .nav-menu::-webkit-scrollbar { width: 5px; }
     .nav-menu::-webkit-scrollbar-track { background: transparent; }
     .nav-menu::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 10px; }
-    .nav-menu::-webkit-scrollbar-thumb:hover { background: #98a2b3; }
     
     .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; cursor: pointer; color: var(--text-muted); text-decoration: none; transition: all 0.2s; white-space: nowrap; font-size: 13px; font-weight: 500; flex-shrink: 0; }
     .nav-item:hover { background: var(--bg-element); color: var(--text-main); }
@@ -61,10 +58,8 @@
     .nav-icon { font-size: 20px; display: flex; align-items: center; justify-content: center; min-width: 24px; }
     
     .nav-group-header { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 15px 14px 5px 14px; margin-top: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; }
-    .nav-group-header:hover { color: var(--primary); }
     .nav-group-header .toggle-icon { font-size: 16px; transition: transform 0.3s; }
     .nav-group-header.collapsed .toggle-icon { transform: rotate(-90deg); }
-    
     .nav-child-container { overflow: hidden; transition: max-height 0.3s ease; flex-shrink: 0; }
     .nav-child-container.collapsed { max-height: 0; }
     
@@ -85,40 +80,30 @@
     .stat-val { font-size: 28px; font-weight: 700; margin: 5px 0; color: var(--text-main); }
     .stat-sub { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
     .stat-sub.red { color: #D92D20; font-weight: 600; }
-    
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
     
-    /* ENROLMEN CARD CSS */
+    /* ENROLMEN */
     .enrol-grid { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
     .chart-box { flex: 0 0 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
     .chart-center-text { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
     .chart-number { font-size: 28px; font-weight: 800; line-height: 1; color: var(--text-main); }
-    .chart-sub { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-    .nav-card-btn { margin-top: 25px; background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
-    .nav-card-btn:hover { transform: translateY(-2px); background: #145a3b; }
-
-    /* NEW CLASS CARD STYLES */
+    .nav-card-btn { margin-top: 25px; background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; border: none; transition: transform 0.2s; }
     .class-list-box { flex: 1; min-width: 250px; }
     .class-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-    .class-card-mini { background: var(--bg-element); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
-    .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .class-card-mini { background: var(--bg-element); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+    .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); border-color: var(--primary); transform: translateY(-2px); }
     .cc-icon-box { width: 36px; height: 36px; background: #D1FADF; border-radius: 8px; display: grid; place-items: center; color: var(--primary); }
-    .class-card-mini.active .cc-icon-box { background: var(--primary); color: white; }
-    .cc-info { flex: 1; }
     .cc-name { font-weight: 700; font-size: 12px; color: var(--text-main); margin-bottom: 2px; text-transform: uppercase; }
-    .cc-count { font-size: 11px; color: var(--text-muted); display: flex; gap: 8px; font-weight: 500; }
-    .cc-count span { display: inline-flex; align-items: center; gap: 3px; }
+    .cc-count { font-size: 11px; color: var(--text-muted); font-weight: 500; }
 
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
-    .banner-actions { display: flex; gap: 10px; }
     .btn-action { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
-    .btn-action:hover { background: rgba(255,255,255,0.3); }
 
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; height: 42px; box-sizing: border-box; }
-    .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 42px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; }
+    .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 42px; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
     
@@ -206,9 +191,9 @@
     <div class="sidebar-footer">
       <div id="userInfo"></div>
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
-      <div>© 2026 NK.</div>
+      <div>© 2025 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.26</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.27</div>
     </div>
   </aside>
 
@@ -293,7 +278,13 @@
               </div>
               <div class="table-wrap">
                   <table id="stuTable">
-                      <thead><tr><th>NAMA MURID</th><th>KELAS</th><th>JANTINA</th></tr></thead>
+                      <thead>
+                          <tr>
+                            <th>NAMA MURID</th>
+                            <th style="text-align:center; width:150px;">KELAS</th>
+                            <th style="text-align:center; width:120px;">JANTINA</th>
+                          </tr>
+                      </thead>
                       <tbody id="stuBody"></tbody>
                   </table>
               </div>
@@ -562,7 +553,7 @@
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
   
   // === AUTO-FIX & HARD RESET (V28.18) ===
-  const CURRENT_VERSION = '28.26'; 
+  const CURRENT_VERSION = '28.27'; 
   const savedVer = localStorage.getItem('portalVersion');
   
   if(savedVer !== CURRENT_VERSION) {
@@ -649,16 +640,40 @@
     renderSidebar();
 
     // === URL HASH CHECKER (DEEP LINKING LOGIC) ===
-    // This runs after auth state is confirmed
+    // 1. Check if there's a hash in the URL (e.g., #attendance)
     const initialHash = window.location.hash.substring(1);
     
-    if (initialHash) {
-        // Attempt navigation (navTo contains security check)
+    // 2. If hash exists and corresponds to a valid page, try to open it
+    if (initialHash && document.getElementById('page-' + initialHash)) {
         window.navTo(initialHash);
     } else {
-        // If no hash, go home
-        window.navTo('home');
+        // 3. If no hash, default to home (unless page already active via other logic)
+        const activePage = document.querySelector('.page-section[style*="block"]');
+        if(!activePage || activePage.id === 'page-home') window.navTo('home');
     }
+
+    // === SECURITY CHECK (KICK UNAUTHORIZED USERS) ===
+    // This runs after a slight delay to ensure user role is set
+    setTimeout(() => {
+        const currentActive = document.querySelector('.page-section[style*="block"]');
+        if (currentActive && currentActive.id !== 'page-home') {
+           const pageId = currentActive.id.replace('page-', '');
+           const menu = CONFIG.menus.find(m => m.id === pageId);
+           
+           if (menu) {
+               // Rule: If page is ADMIN only, but user is NOT admin -> Kick to Home
+               if (menu.role === 'admin' && USER_ROLE !== 'admin') {
+                   console.log("Access Denied: Admin Only");
+                   window.navTo('home');
+               }
+               // Rule: If page is FAMILY only, but user is PUBLIC -> Kick to Home
+               if (menu.role === 'family' && USER_ROLE === 'public') {
+                   console.log("Access Denied: Login Required");
+                   window.navTo('home');
+               }
+           }
+        }
+    }, 100);
   });
 
   window.toggleSidebar = function() {
@@ -1117,10 +1132,10 @@ function parseCSV(text) {
     }
   }
 
-  // === NEW: STUDENT LIST RENDERER ===
+  // === NEW: STUDENT LIST RENDERER (V28.27 - FIXED COLUMNS & ALIGNMENT) ===
   window.renderStudentList = function() {
       if(!DATA.stu || !DATA.stu.length) {
-          document.getElementById('stuBody').innerHTML = '<tr><td colspan="4" style="text-align:center">Tiada Data.</td></tr>';
+          document.getElementById('stuBody').innerHTML = '<tr><td colspan="3" style="text-align:center">Tiada Data.</td></tr>';
           return;
       }
       
@@ -1146,12 +1161,19 @@ function parseCSV(text) {
       });
       
       document.getElementById('stuCount').innerText = `Jumlah: ${filtered.length} Murid`;
+      
+      // MAPPING DATA KE TABLE (3 KOLUM SAHAJA, JANTINA BERWARNA, KELAS CENTER)
       document.getElementById('stuBody').innerHTML = filtered.map(r => `
           <tr>
-              <td><strong>${getVal(r, 'NAMA')}</strong></td>
-              <td>${getVal(r, 'NO. KP') || getVal(r, 'KP')}</td>
-              <td>${getVal(r, 'KELAS')}</td>
-              <td>${getVal(r, 'JANTINA')}</td>
+              <td style="vertical-align: middle;">
+                  <strong>${getVal(r, 'NAMA')}</strong>
+              </td>
+              <td style="text-align:center; vertical-align: middle;">${getVal(r, 'KELAS')}</td>
+              <td style="text-align:center; vertical-align: middle;">
+                  <span class="badge ${getVal(r, 'JANTINA').toUpperCase().startsWith('L') ? 'b-blue' : 'b-red'}">
+                      ${getVal(r, 'JANTINA')}
+                  </span>
+              </td>
           </tr>
       `).join('');
   }
