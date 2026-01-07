@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.22 - Full logic + Scroll + Deep Linking) === */
+    /* === CSS UTAMA (V28.23 - Deep Linking Update) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -36,10 +36,21 @@
     .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* SIDEBAR WITH SCROLL */
+    /* SIDEBAR */
     .sidebar { 
-        background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 12px; transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow: hidden; height: 100%; max-height: 100vh;
+        background: var(--bg-sidebar); 
+        border-right: 1px solid var(--border-color); 
+        display: flex; 
+        flex-direction: column; 
+        padding: 20px 12px; 
+        transition: width 0.3s ease; 
+        z-index: 50; 
+        flex-shrink: 0; 
+        overflow: hidden; 
+        height: 100%; 
+        max-height: 100vh;
     }
+    
     @media (min-width: 769px) { .sidebar { width: var(--sidebar-w-full); } body.desktop-mini .sidebar { width: var(--sidebar-w-mini); } body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; } body.desktop-mini .brand { justify-content: center; padding-left: 0; } body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; } body.desktop-mini .nav-icon { margin-right: 0; } }
     @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); } body.mobile-active .sidebar { left: 0; } .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); } body.mobile-active .backdrop { display: block; } }
     
@@ -49,10 +60,21 @@
     .brand-text h1 { margin: 0; font-size: 15px; font-weight: 700; }
     .brand-text p { margin: 0; font-size: 11px; color: var(--text-muted); }
     
-    .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; overflow-x: hidden; padding-bottom: 40px; min-height: 0; }
+    .nav-menu { 
+        flex: 1; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 4px; 
+        overflow-y: auto; 
+        overflow-x: hidden;
+        padding-bottom: 40px; 
+        min-height: 0; 
+    }
+
     .nav-menu::-webkit-scrollbar { width: 5px; }
     .nav-menu::-webkit-scrollbar-track { background: transparent; }
     .nav-menu::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 10px; }
+    .nav-menu::-webkit-scrollbar-thumb:hover { background: #98a2b3; }
     
     .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; cursor: pointer; color: var(--text-muted); text-decoration: none; transition: all 0.2s; white-space: nowrap; font-size: 13px; font-weight: 500; flex-shrink: 0; }
     .nav-item:hover { background: var(--bg-element); color: var(--text-main); }
@@ -60,18 +82,44 @@
     .nav-icon { font-size: 20px; display: flex; align-items: center; justify-content: center; min-width: 24px; }
     
     .nav-group-header { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 15px 14px 5px 14px; margin-top: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; }
+    .nav-group-header:hover { color: var(--primary); }
+    .nav-group-header .toggle-icon { font-size: 16px; transition: transform 0.3s; }
     .nav-group-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+    
     .nav-child-container { overflow: hidden; transition: max-height 0.3s ease; flex-shrink: 0; }
     .nav-child-container.collapsed { max-height: 0; }
     
-    /* FOOTER & USER INFO WRAPPING */
-    .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); padding-top: 20px; line-height: 1.4; border-top: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-sidebar); }
-    #userInfo { margin-bottom: 10px; font-weight: 600; font-size: 12px; display: none; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.3; text-align: center; padding: 0 5px; }
+    .sidebar-footer { 
+        margin-top: auto; 
+        font-size: 11px; 
+        text-align: center; 
+        color: var(--text-muted); 
+        padding-top: 20px; 
+        line-height: 1.4; 
+        border-top: 1px solid var(--border-color);
+        flex-shrink: 0; 
+        background: var(--bg-sidebar); 
+    }
+
+    #userInfo {
+        margin-bottom: 10px;
+        font-weight: 600;
+        font-size: 12px;
+        display: none;
+        white-space: normal; 
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        line-height: 1.3;
+        text-align: center;
+        padding: 0 5px;
+    }
 
     /* MAIN CONTENT */
     .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100%; }
     .top-bar { height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--bg-body); flex-shrink: 0; }
     .icon-btn { width: 40px; height: 40px; border-radius: 8px; border: none; background: transparent; color: var(--text-main); display: grid; place-items: center; cursor: pointer; font-size: 24px; }
+    .icon-btn:hover { background: var(--bg-element); }
     .content-area { flex: 1; overflow-y: auto; padding: 10px 24px 40px 24px; }
 
     /* COMPONENTS */
@@ -81,31 +129,46 @@
     .stat-val { font-size: 28px; font-weight: 700; margin: 5px 0; color: var(--text-main); }
     .stat-sub { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
     .stat-sub.red { color: #D92D20; font-weight: 600; }
+    
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
     
-    /* ENROLMEN */
+    /* ENROLMEN CARD CSS */
     .enrol-grid { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
     .chart-box { flex: 0 0 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    
     .chart-center-text { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
     .chart-number { font-size: 28px; font-weight: 800; line-height: 1; color: var(--text-main); }
-    .nav-card-btn { margin-top: 25px; background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; border: none; transition: transform 0.2s; }
+    .chart-sub { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+    /* Navigation Card Button */
+    .nav-card-btn { margin-top: 25px; background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    .nav-card-btn:hover { transform: translateY(-2px); background: #145a3b; }
+
+    /* NEW CLASS CARD STYLES */
     .class-list-box { flex: 1; min-width: 250px; }
     .class-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-    .class-card-mini { background: var(--bg-element); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
-    .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); border-color: var(--primary); transform: translateY(-2px); }
+    
+    .class-card-mini { background: var(--bg-element); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    
     .cc-icon-box { width: 36px; height: 36px; background: #D1FADF; border-radius: 8px; display: grid; place-items: center; color: var(--primary); }
+    .class-card-mini.active .cc-icon-box { background: var(--primary); color: white; }
+
     .cc-info { flex: 1; }
     .cc-name { font-weight: 700; font-size: 12px; color: var(--text-main); margin-bottom: 2px; text-transform: uppercase; }
     .cc-count { font-size: 11px; color: var(--text-muted); display: flex; gap: 8px; font-weight: 500; }
+    .cc-count span { display: inline-flex; align-items: center; gap: 3px; }
 
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
+    .banner-actions { display: flex; gap: 10px; }
     .btn-action { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+    .btn-action:hover { background: rgba(255,255,255,0.3); }
 
     .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .form-select, .form-input { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; width: 100%; height: 42px; box-sizing: border-box; }
-    .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 42px; display: inline-flex; align-items: center; justify-content: center; }
+    .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 42px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
     
@@ -123,18 +186,45 @@
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
     .b-blue { background: #EFF8FF; color: #175CD3; }
+    .b-gray { background: #F2F4F7; color: #344054; }
+    .b-yellow { background: #FFFAEB; color: #B54708; }
 
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: none; place-items: center; backdrop-filter: blur(2px); }
     .modal-overlay.active { display: grid; }
     .modal-content { width: 90%; max-width: 500px; background: var(--bg-card); border-radius: 16px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
+    .menu-toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
+    .menu-toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); }
 
+    /* SEMAKAN ID BOX (WITH COPY) */
     .id-result-box { display:none; background: var(--bg-element); padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid var(--border-color); }
     .id-result-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
-    .id-value { font-weight: 600; }
-    .copy-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; transition: 0.2s; }
+    .id-result-item:last-child { border-bottom: none; }
+    .id-label { color: var(--text-muted); font-size: 12px; }
+    .id-value-group { display: flex; align-items: center; gap: 8px; }
+    .id-value { font-weight: 600; font-size: 14px; text-align: right; user-select: text; }
+    .copy-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 4px; transition: 0.2s; display: flex; }
+    .copy-btn:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
 
+    /* PRINT */
+    @media print {
+      @page { size: A4; margin: 1cm; }
+      body { background: white; color: black; font-family: serif; }
+      .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, .search-bar-container, #login-screen, #loading-overlay { display: none !important; }
+      .app-container, .main-content, .content-area { height: auto; width: 100%; margin: 0; padding: 0; overflow: visible; display: block; }
+      .card { border: none; box-shadow: none; padding: 0; margin: 0; background: transparent; }
+      .table-wrap { overflow: visible; border: none; }
+      table { width: 100%; border: 1px solid black; font-size: 11pt; border-collapse: collapse; }
+      th, td { border: 1px solid black; padding: 8px; color: black; font-family: serif; }
+      th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; font-weight: bold; text-align: center; }
+      td { text-align: left; }
+      .badge { border: none; padding: 0; font-weight: normal; background: none !important; color: black !important; }
+      .print-header { display: block !important; text-align: center; margin-bottom: 20px; }
+      .print-header h2 { font-size: 16pt; margin: 0; font-weight: bold; text-transform: uppercase; }
+      .print-header p { font-size: 12pt; margin: 5px 0 0; }
+    }
+    .print-header { display: none; }
     @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .page-banner { flex-direction: column; align-items: flex-start; } }
+    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .page-banner { flex-direction: column; align-items: flex-start; } .enrol-grid { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -161,12 +251,14 @@
       <div class="brand-logo"><img src="https://i.ibb.co/Y7sp2wZg/SKPR-1.png" alt="Logo"></div>
       <div class="brand-text"><h1>SK Paya Resak</h1><p>Moving Forward</p></div>
     </div>
-    <div class="nav-menu" id="sidebarMenu"></div>
+    <div class="nav-menu" id="sidebarMenu">
+      </div>
     <div class="sidebar-footer">
       <div id="userInfo"></div>
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2025 NK.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.22</div>
+      <div>Hak Cipta Terpelihara.</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.23</div>
     </div>
   </aside>
 
@@ -194,16 +286,26 @@
         </div>
 
         <div class="card" style="margin-bottom: 24px; padding: 24px;">
-            <h3 style="margin:0 0 20px; font-size:16px;">🎓 Enrolmen Murid</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin:0; font-size:16px;">🎓 Enrolmen Murid</h3>
+            </div>
             <div class="enrol-grid">
                 <div class="chart-box">
                     <div style="height: 220px; width: 220px; position:relative;">
                         <canvas id="genderChart"></canvas>
-                        <div class="chart-center-text"><div class="chart-number" id="centerCount">-</div></div>
+                        <div class="chart-center-text">
+                            <div class="chart-number" id="centerCount">-</div>
+                        </div>
                     </div>
-                    <button id="navCardBtn" class="nav-card-btn" onclick="navTo('student_list')" style="display:none;">SEMUA MURID</button>
+                    <button id="navCardBtn" class="nav-card-btn" onclick="navTo('student_list')" style="display:none;">
+                        SEMUA MURID
+                    </button>
                 </div>
-                <div class="class-list-box"><div class="class-grid" id="classGrid"></div></div>
+                <div class="class-list-box">
+                    <div class="class-grid" id="classGrid">
+                        <p style="text-align:center; color:var(--text-muted); font-size:12px; width:100%;">Memuatkan data...</p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -215,39 +317,66 @@
               <select class="form-select" style="width:auto" id="trendMonth"></select>
               <select class="form-select" style="width:auto" id="trendYear"></select>
               <select class="form-select" style="width:auto" id="trendClass"><option value="">Semua Kelas</option></select>
-              <button class="btn btn-primary" onclick="renderTrend()"><span class="material-icons-round">search</span></button>
+              <button class="btn btn-primary btn-search" onclick="renderTrend()" title="Tapis"><span class="material-icons-round">search</span></button>
             </div>
           </div>
           <div id="chartContainer" style="height:280px; width:100%;"></div>
+          <div style="text-align:center; margin-top:15px; font-size:10px; color:var(--text-muted);">
+              Data dikemaskini pada: <span id="updateTime">-</span>
+          </div>
         </div>
       </div>
 
       <div id="page-student_list" class="page-section" style="display:none;">
-          <div class="page-banner"><div class="banner-text"><h2>Senarai Nama Murid</h2><p>Rekod Penuh Enrolmen</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('stulist')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
+          <div class="page-banner">
+              <div class="banner-text"><h2>Senarai Nama Murid</h2><p>Rekod Penuh Enrolmen</p></div>
+              <div class="banner-actions"><button class="btn-action" onclick="forceReload('stulist')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+          </div>
           <div class="card">
-              <div style="margin-bottom:15px; display:flex; gap:10px;"><input class="form-input" id="searchStuList" placeholder="Cari Nama Murid..." style="flex:1;"><button class="btn btn-primary" onclick="renderStudentList()">Cari</button></div>
-              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px;"><div style="flex:1"><label class="filter-label">Filter Pintar</label><select class="form-select" id="fStuSmart"><option value="">Semua Data</option></select></div><div><button class="btn btn-outline" onclick="resetStudentList()">Reset</button></div></div>
-              <div class="table-wrap"><table id="stuTable"><thead><tr><th>NAMA MURID</th><th>NO. KP</th><th>KELAS</th><th>JANTINA</th></tr></thead><tbody id="stuBody"></tbody></table></div>
+              <div style="margin-bottom:15px; display:flex; gap:10px;">
+                  <input class="form-input" id="searchStuList" placeholder="Cari Nama Murid..." style="flex:1;">
+                  <button class="btn btn-primary" onclick="renderStudentList()">Cari</button>
+              </div>
+              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px;">
+                  <div style="flex:1"><label class="filter-label">Filter Pintar</label><select class="form-select" id="fStuSmart"><option value="">Semua Data</option></select></div>
+                  <div style="display:flex; align-items:flex-end;"><button class="btn btn-outline" onclick="resetStudentList()">Reset</button></div>
+              </div>
+              <div class="table-wrap">
+                  <table id="stuTable">
+                      <thead><tr><th>NAMA MURID</th><th>KELAS</th><th>JANTINA</th></tr></thead>
+                      <tbody id="stuBody"></tbody>
+                  </table>
+              </div>
               <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="stuCount"></div>
           </div>
       </div>
 
       <div id="page-emailcheck" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Semakan ID Delima</h2><p>Semak Emel & Kata Laluan Murid</p></div></div>
+        <div class="page-banner">
+            <div class="banner-text"><h2>Semakan ID Delima</h2><p>Semak Emel & Kata Laluan Murid</p></div>
+            <div class="banner-actions"><button class="btn-action" onclick="forceReload('db')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+        </div>
         <div class="card" style="max-width:600px; margin:0 auto;">
-            <div style="text-align:center; margin-bottom:20px;"><span class="material-icons-round" style="font-size:48px; color:var(--primary);">fingerprint</span><p style="color:var(--text-muted); font-size:13px;">Masukkan No. Kad Pengenalan murid.</p></div>
-            <div style="display:flex; gap:10px; margin-bottom:10px;"><input id="inputIC" class="form-input" placeholder="Contoh: 123456789012" style="flex:1; text-align:center;"><button class="btn btn-primary" onclick="checkEmail()">Semak</button></div>
+            <div style="text-align:center; margin-bottom:20px;">
+                <span class="material-icons-round" style="font-size:48px; color:var(--primary);">fingerprint</span>
+                <p style="color:var(--text-muted); font-size:13px; margin-top:5px;">Sila masukkan No. Kad Pengenalan murid untuk semakan.</p>
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <input id="inputIC" class="form-input" placeholder="Contoh: 123456789012" style="flex:1; text-align:center; letter-spacing:1px;">
+                <button class="btn btn-primary" onclick="checkEmail()">Semak</button>
+            </div>
+
             <div id="idResultContainer" class="id-result-box">
                 <div class="id-result-item"><span class="id-label">NAMA MURID</span><span class="id-value" id="resNama">-</span></div>
-                <div class="id-result-item"><span class="id-label">EMEL DELIMA</span><div class="id-value-group"><span class="id-value" id="resEmail">-</span><button class="copy-btn" onclick="copyText('resEmail')"><span class="material-icons-round">content_copy</span></button></div></div>
-                <div class="id-result-item"><span class="id-label">KATA LALUAN</span><div class="id-value-group"><span class="id-value" id="resPass">-</span><button class="copy-btn" onclick="copyText('resPass')"><span class="material-icons-round">content_copy</span></button></div></div>
+                <div class="id-result-item"><span class="id-label">EMEL DELIMA</span><div class="id-value-group"><span class="id-value" id="resEmail" style="color:var(--primary);">-</span><button class="copy-btn" onclick="copyText('resEmail')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
+                <div class="id-result-item"><span class="id-label">KATA LALUAN</span><div class="id-value-group"><span class="id-value" id="resPass" style="color:var(--accent);">-</span><button class="copy-btn" onclick="copyText('resPass')" title="Salin"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button></div></div>
             </div>
-            <p id="idError" style="text-align:center; color:#B42318; font-size:13px; display:none;"></p>
+            <p id="idError" style="text-align:center; color:#B42318; font-size:13px; display:none; margin-top:10px;"></p>
         </div>
       </div>
 
       <div id="page-attendance" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('att')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
+        <div class="page-banner"><div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('att')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
         <div class="dashboard-grid">
           <div class="card"><div class="stat-label">Hadir (Tapis)</div><div class="stat-val" id="attStatHadir">-</div></div>
           <div class="card"><div class="stat-label">Tidak Hadir (Tapis)</div><div class="stat-val" id="attStatTidak">-</div></div>
@@ -255,109 +384,251 @@
           <div class="card"><div class="stat-label">Jumlah Rekod</div><div class="stat-val" id="attStatTotal">-</div></div>
         </div>
         <div class="card">
-            <div style="display:flex; gap:10px; margin-bottom:10px;"><input class="form-input" id="searchAtt" placeholder="Cari Nama Murid..." style="flex:1;"><button class="btn btn-primary" onclick="applyFilterAtt()">Cari</button></div>
-            <div class="table-wrap"><table><thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Status</th></tr></thead><tbody id="attBody"></tbody></table></div>
+          <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
+            <input class="form-input" id="searchAtt" placeholder="Cari Nama Murid..." style="flex:1;">
+            <button class="btn btn-outline" onclick="toggleFilterPanel('attFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan</button>
+            <button class="btn btn-primary" onclick="applyFilterAtt()">Cari</button>
+          </div>
+          <div id="attFilters" class="filter-panel">
+            <div class="filter-grid">
+              <div><label class="filter-label">Tarikh Mula</label><input type="date" class="form-input" id="filterDateStart"></div>
+              <div><label class="filter-label">Tarikh Akhir</label><input type="date" class="form-input" id="filterDateEnd"></div>
+              <div><label class="filter-label">Kelas</label><select class="form-select" id="filterClassAtt"><option value="">Semua Kelas</option></select></div>
+              <div><label class="filter-label">Jantina</label><select class="form-select" id="filterGenderAtt"><option value="">Semua</option><option value="LELAKI">Lelaki</option><option value="PEREMPUAN">Perempuan</option></select></div>
+              <div><label class="filter-label">Status</label><select class="form-select" id="filterStatusAtt"><option value="">Semua</option><option value="HADIR">Hadir</option><option value="TIDAK">Tidak Hadir</option></select></div>
+            </div>
+            <div style="text-align:right"><button class="btn btn-outline" onclick="resetFilterAtt()">Reset</button> <button class="btn btn-primary" onclick="applyFilterAtt()">Terapkan</button></div>
+          </div>
+          <div class="print-header"><h2>LAPORAN KEHADIRAN MURID PPKI</h2><p>SK PAYA RESAK</p></div>
+          <div class="table-wrap"><table><thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Status</th></tr></thead><tbody id="attBody"></tbody></table></div>
+          <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="attCount"></div>
         </div>
       </div>
 
       <div id="page-asnaf" class="page-section" style="display:none;">
-          <div class="page-banner"><div class="banner-text"><h2>Rekod Murid Asnaf</h2><p>Bantuan & Kebajikan</p></div></div>
+          <div class="page-banner">
+              <div class="banner-text"><h2>Rekod Murid Asnaf</h2><p>Bantuan & Kebajikan</p></div>
+              <div class="banner-actions"><button class="btn-action" onclick="forceReload('asnaf')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+          </div>
+          <div class="dashboard-grid" style="grid-template-columns: 1fr;"><div class="card"><div class="stat-label">Jumlah Murid Asnaf</div><div class="stat-val" id="statAsnaf">-</div></div></div>
           <div class="card">
-              <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="asnafBody"></tbody></table></div>
+              <div style="margin-bottom:15px; display:flex; gap:10px;">
+                  <input class="form-input" id="searchAsnaf" placeholder="Cari Nama..." style="flex:1;">
+                  <button class="btn btn-primary" onclick="renderAsnafTable()">Cari</button>
+              </div>
+              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px;">
+                   <div style="flex:1"><label class="filter-label">Tahun</label><select class="form-select" id="fAsnafYear"><option value="">Semua</option></select></div>
+                   <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafClass"><option value="">Semua</option></select></div>
+                   <div><button class="btn btn-outline" onclick="resetAsnafFilters()">Reset</button></div>
+              </div>
+              <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>NO. MYKID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="asnafBody"></tbody></table></div>
+              <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="asnafCount"></div>
           </div>
       </div>
 
       <div id="page-yatim" class="page-section" style="display:none;">
-          <div class="page-banner"><div class="banner-text"><h2>Rekod Murid Yatim</h2><p>Bantuan & Kebajikan</p></div></div>
+          <div class="page-banner">
+              <div class="banner-text"><h2>Rekod Murid Yatim</h2><p>Bantuan & Kebajikan</p></div>
+              <div class="banner-actions"><button class="btn-action" onclick="forceReload('yatim')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+          </div>
+          <div class="dashboard-grid" style="grid-template-columns: 1fr;"><div class="card"><div class="stat-label">Jumlah Murid Yatim</div><div class="stat-val" id="statYatim">-</div></div></div>
           <div class="card">
-              <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="yatimBody"></tbody></table></div>
+              <div style="margin-bottom:15px; display:flex; gap:10px;">
+                  <input class="form-input" id="searchYatim" placeholder="Cari Nama..." style="flex:1;">
+                  <button class="btn btn-primary" onclick="renderYatimTable()">Cari</button>
+              </div>
+              <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px;">
+                   <div style="flex:1"><label class="filter-label">Tahun</label><select class="form-select" id="fYatimYear"><option value="">Semua</option></select></div>
+                   <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fYatimClass"><option value="">Semua</option></select></div>
+                   <div><button class="btn btn-outline" onclick="resetYatimFilters()">Reset</button></div>
+              </div>
+              <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>NO. MYKID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="yatimBody"></tbody></table></div>
+              <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="yatimCount"></div>
           </div>
       </div>
 
       <div id="page-pajsk" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div></div>
+        <div class="page-banner"><div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('pajsk')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
         <div class="card">
-            <div class="table-wrap"><table><thead><tr><th>Tahun</th><th>Tarikh</th><th>Unit</th><th>Nama Murid</th><th>Acara</th><th>Pencapaian</th></tr></thead><tbody id="pajskBody"></tbody></table></div>
+          <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
+            <input class="form-input" id="searchPajsk" placeholder="Cari Nama / Acara..." style="flex:1;">
+            <button class="btn btn-outline" onclick="toggleFilterPanel('pajskFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan</button>
+            <button class="btn btn-primary" onclick="renderPajskTable()">Cari</button>
+          </div>
+          <div id="pajskFilters" class="filter-panel">
+            <div class="filter-grid">
+              <div><label class="filter-label">Tahun</label><select class="form-select" id="fPajskTahun"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Tarikh</label><input type="date" class="form-input" id="fPajskDate"></div>
+              <div><label class="filter-label">Unit</label><select class="form-select" id="fPajskUnit"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Kelas</label><select class="form-select" id="fPajskKelas"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Penglibatan</label><select class="form-select" id="fPajskLibat"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Pencapaian</label><select class="form-select" id="fPajskCapai"><option value="">Semua</option></select></div>
+            </div>
+            <div style="text-align:right"><button class="btn btn-outline" onclick="resetPajskFilters()">Reset</button> <button class="btn btn-primary" onclick="renderPajskTable()">Terapkan</button></div>
+          </div>
+          <div class="print-header"><h2>LAPORAN PAJSK PPKI</h2><p>SK PAYA RESAK</p></div>
+          <div class="table-wrap"><table><thead><tr><th>Tahun</th><th>Tarikh</th><th>Unit</th><th>Kelas</th><th>Nama Murid</th><th>Acara</th><th>Penglibatan</th><th>Pencapaian</th></tr></thead><tbody id="pajskBody"></tbody></table></div>
         </div>
       </div>
 
       <div id="page-announcements" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div></div>
-        <div class="dashboard-grid" id="annGrid"></div>
-        <div id="annEmpty" style="display:none; text-align:center; padding:40px; color:var(--text-muted);"><p>Tiada pengumuman aktif.</p></div>
+        <div class="page-banner"><div class="banner-text"><h2>Pengumuman</h2><p>Info Terkini</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('ann')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
+        <div class="dashboard-grid" id="annGrid" style="grid-template-columns: 1fr 1fr;"></div>
+        <div id="annEmpty" style="display:none; text-align:center; padding:40px; color:var(--text-muted);"><span class="material-icons-round" style="font-size:48px; opacity:0.5;">campaign</span><p>Tiada pengumuman aktif buat masa ini.</p></div>
       </div>
 
       <div id="page-calendar" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Takwim</h2><p>Jadual Aktiviti</p></div></div>
+        <div class="page-banner"><div class="banner-text"><h2>Takwim</h2><p>Jadual Aktiviti</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('cal')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
         <div class="card">
-            <div class="table-wrap"><table><thead><tr><th>BULAN</th><th>TARIKH</th><th>AKTIVITI</th><th>TINDAKAN</th></tr></thead><tbody id="calBody"></tbody></table></div>
+          <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
+            <input id="searchCal" class="form-input" placeholder="Cari Aktiviti..." style="flex:1;">
+            <button class="btn btn-outline" onclick="toggleFilterPanel('calFilters')"><span class="material-icons-round" style="font-size:16px; vertical-align:middle;">filter_list</span> Tapis Lanjutan</button>
+            <button class="btn btn-primary" onclick="renderCalendarTable()">Cari</button>
+          </div>
+          <div id="calFilters" class="filter-panel">
+            <div class="filter-grid">
+              <div><label class="filter-label">Bulan</label><select class="form-select" id="fCalBulan"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Tarikh</label><input type="date" class="form-input" id="fCalTarikh"></div>
+              <div><label class="filter-label">Tindakan</label><select class="form-select" id="fCalTindakan"><option value="">Semua</option></select></div>
+              <div><label class="filter-label">Kategori</label><select class="form-select" id="fCalKategori"><option value="">Semua</option></select></div>
+            </div>
+            <div style="text-align:right"><button class="btn btn-outline" onclick="resetCalFilters()">Reset</button> <button class="btn btn-primary" onclick="renderCalendarTable()">Terapkan</button></div>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>BULAN</th><th>TARIKH / TEMPOH</th><th>AKTIVITI</th><th>TINDAKAN</th><th>KATEGORI</th></tr></thead><tbody id="calBody"></tbody></table></div>
         </div>
       </div>
       
       <div id="page-opr" class="page-section" style="display:none;">
-          <div class="page-banner"><div class="banner-text"><h2>One Page Report (OPR)</h2><p>Laporan & Dokumentasi Tahunan</p></div></div>
+          <div class="page-banner">
+            <div class="banner-text"><h2>One Page Report (OPR)</h2><p>Laporan & Dokumentasi Tahunan</p></div>
+          </div>
           <div class="dashboard-grid" id="oprGrid"></div>
       </div>
 
       <div id="page-parents" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Info Ibu Bapa</h2><p>Pautan & Dokumen</p></div></div>
+        <div class="page-banner"><div class="banner-text"><h2>Info Ibu Bapa</h2><p>Pautan & Dokumen</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('par')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div></div>
         <div class="dashboard-grid" id="parentsGrid"></div>
       </div>
     </div>
   </main>
 </div>
 
-<div class="modal-overlay" id="infoModal"><div class="modal-content"><h3 id="infoTitle"></h3><div id="infoBody" style="margin:15px 0;"></div><div id="infoLinkContainer" style="display:none; text-align:right;"><button id="infoLinkBtn" class="btn btn-primary">Buka Pautan</button></div><button class="btn btn-outline" style="width:100%; margin-top:15px;" onclick="document.getElementById('infoModal').classList.remove('active')">Tutup</button></div></div>
-<div class="modal-overlay" id="settingsModal"><div class="modal-content"><h3>Tetapan Portal</h3><div id="pinStep"><input type="password" id="pinInput" class="form-input" placeholder="PIN"><button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="checkPin()">Sahkan</button></div><div id="settingStep" style="display:none;"><label>Nama Sekolah</label><input id="setName" class="form-input"><div id="menuManagerList"></div><button class="btn btn-primary" onclick="saveSettings()" style="width:100%; margin-top:20px;">Simpan</button></div></div></div>
+<div class="modal-overlay" id="infoModal">
+  <div class="modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 style="margin:0" id="infoTitle">Tajuk</h3>
+        <button class="icon-btn" onclick="document.getElementById('infoModal').classList.remove('active')"><span class="material-icons-round">close</span></button>
+    </div>
+    <div id="infoBody" style="line-height:1.6; font-size:14px; color:var(--text-main);"></div>
+    <div id="infoLinkContainer" style="margin-top:20px; display:none; text-align:right;">
+        <button id="infoLinkBtn" class="btn btn-primary">
+            Buka Pautan <span class="material-icons-round" style="font-size:14px; margin-left:5px; vertical-align:middle;">open_in_new</span>
+        </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal"><div class="modal-content"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h3 style="margin:0">Tetapan Portal</h3><button class="icon-btn" onclick="closeSettings()"><span class="material-icons-round">close</span></button></div><div id="pinStep"><input type="password" id="pinInput" class="form-input" placeholder="PIN Keselamatan" style="width:100%; text-align:center; font-size:18px; letter-spacing:4px; margin-bottom:15px;"><button class="btn btn-primary" onclick="checkPin()" style="width:100%">Sahkan</button></div><div id="settingStep" style="display:none;"><label style="font-weight:600; font-size:12px; display:block; margin-top:10px;">Nama Sekolah</label><input id="setName" class="form-input" style="width:100%"><div style="margin:20px 0 10px; border-bottom:1px solid var(--border-color); font-weight:700; font-size:13px;">Paparan Menu</div><div id="menuManagerList"></div><button class="btn btn-primary" onclick="saveSettings()" style="width:100%; margin-top:20px;">Simpan Perubahan</button></div></div></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  const ADMIN_EMAILS = ["naimullahkhalid@gmail.com", "g-84398229@moe-dl.edu.my", "g-48397926@moe-dl.edu.my", "g-82398222@moe-dl.edu.my", "g-04388130@moe-dl.edu.my", "g-32398244@moe-dl.edu.my", "g-23319047@moe-dl.edu.my", "g-42398215@moe-dl.edu.my", "g-30397592@moe-dl.edu.my", "g-58397586@moe-dl.edu.my", "g-35298209@moe-dl.edu.my"];
-  const firebaseConfig = { apiKey: "AIzaSyDdDlLNMjcOfi-6tfeaS_PcicQcnsqxaOk", authDomain: "portalppkiskpr-ecd1c.firebaseapp.com", projectId: "portalppkiskpr-ecd1c", storageBucket: "portalppkiskpr-ecd1c.firebasestorage.app", messagingSenderId: "643002702082", appId: "1:643002702082:web:7bac296fa189fa2f41ca1b" };
+  const ADMIN_EMAILS = [
+    "naimullahkhalid@gmail.com",
+    "g-84398229@moe-dl.edu.my",
+    "g-48397926@moe-dl.edu.my",
+    "g-82398222@moe-dl.edu.my",
+    "g-04388130@moe-dl.edu.my",
+    "g-32398244@moe-dl.edu.my",
+    "g-23319047@moe-dl.edu.my",
+    "g-42398215@moe-dl.edu.my",
+    "g-30397592@moe-dl.edu.my",
+    "g-58397586@moe-dl.edu.my",
+    "g-35298209@moe-dl.edu.my"
+  ];
+  const firebaseConfig = {
+    apiKey: "AIzaSyDdDlLNMjcOfi-6tfeaS_PcicQcnsqxaOk",
+    authDomain: "portalppkiskpr-ecd1c.firebaseapp.com",
+    projectId: "portalppkiskpr-ecd1c",
+    storageBucket: "portalppkiskpr-ecd1c.firebasestorage.app",
+    messagingSenderId: "643002702082",
+    appId: "1:643002702082:web:7bac296fa189fa2f41ca1b"
+  };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
   
-  const OPR_DATA = [{ title: "OPR 2025", url: "#", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2025" }, { title: "OPR 2026", url: "#", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2026" }];
+  // === OPR DATA ===
+  const OPR_DATA = [
+      { title: "OPR 2025", url: "#", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2025" },
+      { title: "OPR 2026", url: "#", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2026" }
+  ];
 
   const DEFAULTS = {
-    schoolName: "SK Paya Resak", pin: "5235",
+    schoolName: "SK Paya Resak",
+    pin: "5235",
     urls: {
       attendance: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWi_5VfDz43sMFydp926q062CCPLyRnNUZyAGtlSk_9xv3gI0Xo0I7VMGSlj-llcpYCFHggVP289Ja/pub?gid=944218320&single=true&output=csv",
       pajsk: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQoRKdkGyefQ6iSz1HVsXTEenUDbSKjC_XXlq8qQLFYg6IjnSkaixKsg0ajT88VvfnnjkGaDNtxvvD7/pub?gid=1208025171&single=true&output=csv",
       announcements: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=946270411&single=true&output=csv",
       parents: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_G1txQOE4Di1XsK6esbw8VgQtW2hcPsjzAmPH7V82JOeXegb7Kb_3Iz8CeHo-KvfvHe9x8BWtSfbB/pub?gid=1684744050&single=true&output=csv",
       calendar: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1430230642&single=true&output=csv",
+      // === DATABASE BARU (V28.18) ===
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
+      // === NEW STUDENT LIST ===
       student_list: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=1759925919&single=true&output=csv",
+      
       asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=877457981&single=true&output=csv", 
       yatim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=1167967580&single=true&output=csv",
+
+      // === LINK ID DELIMA ===
       delima: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQvKlO-LRGh8kj_-Be6NxZRR3Z38rjbC33jyvfhQvnR9L4LF7_dZRVXYGK3XO7bAoJwC9bJJmABjV6Z/pub?gid=1752164570&single=true&output=csv"
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
+      
+      // GROUP HEM (Hanya Admin)
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
       {id:'student_list', label:'Senarai Nama Murid', icon:'groups', hidden:false, role:'admin'}, 
       {id:'asnaf', label:'Rekod Asnaf', icon:'volunteer_activism', hidden:false, role:'admin'},
       {id:'yatim', label:'Rekod Yatim', icon:'child_care', hidden:false, role:'admin'},
+      
+      // GROUP KOKO (Hanya Admin)
       {id:'pajsk', label:'Rekod PAJSK', icon:'emoji_events', hidden:false, role:'admin'},
-      {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'},
-      {id:'opr', label:'Laporan OPR', icon:'description', hidden:false, role:'public'},
-      {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'},
-      {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'},
+      
+      // GROUP PENTADBIRAN (Campur Public & Family)
+      {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'}, // UMUM
+      {id:'opr', label:'Laporan OPR', icon:'description', hidden:false, role:'public'}, // UMUM
+      {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'}, // UMUM
+      {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM
+      
+      // SENSITIF (Wajib Login)
       {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'family'}, 
     ]
   };
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
+  
+  // === AUTO-FIX & HARD RESET (V28.18) ===
+  const CURRENT_VERSION = '28.23'; 
+  const savedVer = localStorage.getItem('portalVersion');
+  
+  if(savedVer !== CURRENT_VERSION) {
+      console.log("New version detected. Clearing cache...");
+      localStorage.clear(); // Nuke all old data
+      localStorage.setItem('portalVersion', CURRENT_VERSION);
+      location.reload(); 
+  }
+  // ===============================================
+
   let DATA = { att: [], pajsk: [], ann: [], cal: [], par: [], db: [], asnaf: [], yatim: [], stu: [], delima: [] };
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
-  let chartInstance = null;
-
+  let chartInstance = null; // Global Chart Instance
+  
+  // REGISTER CHART DATA LABELS
   Chart.register(ChartDataLabels);
 
   window.init = function() {
@@ -365,39 +636,17 @@
     setupTrendSelectors();
     loadAllData();
     renderOPR();
-    document.querySelector('.brand-text h1').textContent = CONFIG.schoolName;
+    document.querySelector('.brand-text h1').textContent = CONFIG.schoolName ? CONFIG.schoolName : DEFAULTS.schoolName;
   }
-
-  // === NAVIGATION WITH DEEP LINKING ===
-  window.navTo = function(id) {
-    document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-    const el = document.getElementById(`nav-${id}`);
-    if(el) el.classList.add('active');
-    
-    document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
-    const target = document.getElementById(`page-${id}`);
-    if(target) target.style.display='block';
-    
-    if(id === 'asnaf') renderAsnafTable();
-    if(id === 'yatim') renderYatimTable();
-    if(id === 'student_list') renderStudentList();
-    
-    if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
-
-    if(window.location.hash !== '#' + id) {
-        history.pushState(null, null, '#' + id);
-    }
-  }
-
-  window.addEventListener('popstate', function() {
-      const hash = window.location.hash.substring(1);
-      if(hash && document.getElementById('page-' + hash)) navTo(hash);
-      else navTo('home');
-  });
 
   window.handleAuth = function() {
-    if (auth.currentUser) { if(confirm("Log keluar?")) signOut(auth).then(() => location.reload()); }
-    else signInWithPopup(auth, provider).catch(e => alert(e.message));
+    if (auth.currentUser) {
+      if(confirm("Adakah anda pasti untuk log keluar?")) {
+          signOut(auth).then(() => { location.reload(); });
+      }
+    } else {
+      signInWithPopup(auth, provider).catch(e => alert(e.message));
+    }
   }
 
   onAuthStateChanged(auth, (user) => {
@@ -408,181 +657,1058 @@
     const appContainer = document.getElementById('appContainer');
 
     if (user) {
-      USER_ROLE = ADMIN_EMAILS.includes(user.email) ? 'admin' : 'family';
-      btn.textContent = "Log Keluar"; btn.style.background = "#B42318";
+      if (ADMIN_EMAILS.includes(user.email)) USER_ROLE = 'admin';
+      else USER_ROLE = 'family';
+      btn.textContent = "Log Keluar";
+      btn.style.background = "#B42318";
       info.style.display = "block";
-      info.innerHTML = `<div>${user.displayName}</div><div style="color:var(--primary); font-size:10px;">${USER_ROLE.toUpperCase()}</div>`;
+      info.innerHTML = `<div>${user.displayName}</div><div style="color:var(--primary); font-size:10px; margin-top:2px;">${USER_ROLE.toUpperCase()}</div>`;
       if(USER_ROLE === 'admin') gear.style.display = 'grid';
-      loginScreen.style.display = 'none'; appContainer.style.display = 'flex';
-      init();
+      loginScreen.style.opacity = '0';
+      setTimeout(() => { loginScreen.style.display = 'none'; appContainer.style.display = 'flex'; init(); }, 500);
     } else {
       USER_ROLE = 'public';
-      btn.textContent = "Log Masuk"; info.style.display = "none"; gear.style.display = "none";
-      loginScreen.style.display = 'none'; appContainer.style.display = 'flex';
+      btn.textContent = "Log Masuk";
+      btn.style.background = "var(--primary)";
+      info.style.display = "none";
+      gear.style.display = "none";
+      loginScreen.style.display = 'none';
+      appContainer.style.display = 'flex';
       init();
     }
     
-    const enrolBtn = document.getElementById('navCardBtn');
-    if(enrolBtn) enrolBtn.style.display = (USER_ROLE === 'admin') ? 'block' : 'none';
+    // === UPDATE DASHBOARD CARDS INTERACTIVITY BASED ON ROLE ===
+    document.querySelectorAll('.att-card').forEach(el => {
+        if(USER_ROLE === 'admin') {
+            el.classList.add('clickable');
+            el.onclick = () => navTo('attendance');
+        } else {
+            el.classList.remove('clickable');
+            el.onclick = null;
+        }
+    });
 
+    // === ENROLMENT CARD BUTTON LOGIC (Admin Only) ===
+    const enrolBtn = document.getElementById('navCardBtn');
+    if(enrolBtn) {
+        if(USER_ROLE === 'admin') enrolBtn.style.display = 'block';
+        else enrolBtn.style.display = 'none';
+    }
+    
+    // === RENDER SIDEBAR ===
     renderSidebar();
 
+    // === URL HASH CHECKER (DEEP LINKING LOGIC) ===
+    // 1. Check if there's a hash in the URL (e.g., #attendance)
     const initialHash = window.location.hash.substring(1);
+    
+    // 2. If hash exists and corresponds to a valid page, try to open it
     if (initialHash && document.getElementById('page-' + initialHash)) {
-        navTo(initialHash);
+        window.navTo(initialHash);
     } else {
-        navTo('home');
+        // 3. If no hash, default to home (unless page already active via other logic)
+        const activePage = document.querySelector('.page-section[style*="block"]');
+        if(!activePage || activePage.id === 'page-home') window.navTo('home');
     }
 
+    // === SECURITY CHECK (KICK UNAUTHORIZED USERS) ===
+    // This runs after a slight delay to ensure user role is set
     setTimeout(() => {
-        const active = document.querySelector('.page-section[style*="block"]');
-        if (active && active.id !== 'page-home') {
-            const m = CONFIG.menus.find(x => 'page-'+x.id === active.id);
-            if (m && ((m.role === 'admin' && USER_ROLE !== 'admin') || (m.role === 'family' && USER_ROLE === 'public'))) {
-                navTo('home');
-            }
+        const currentActive = document.querySelector('.page-section[style*="block"]');
+        if (currentActive && currentActive.id !== 'page-home') {
+           const pageId = currentActive.id.replace('page-', '');
+           const menu = CONFIG.menus.find(m => m.id === pageId);
+           
+           if (menu) {
+               // Rule: If page is ADMIN only, but user is NOT admin -> Kick to Home
+               if (menu.role === 'admin' && USER_ROLE !== 'admin') {
+                   console.log("Access Denied: Admin Only");
+                   window.navTo('home');
+               }
+               // Rule: If page is FAMILY only, but user is PUBLIC -> Kick to Home
+               if (menu.role === 'family' && USER_ROLE === 'public') {
+                   console.log("Access Denied: Login Required");
+                   window.navTo('home');
+               }
+           }
         }
-    }, 300);
+    }, 100);
   });
 
+  window.toggleSidebar = function() {
+    const body = document.body;
+    if (window.innerWidth > 768) body.classList.toggle('desktop-mini');
+    else body.classList.toggle('mobile-active');
+  }
+
+  // === RENDER SIDEBAR WITH DROPDOWNS (ACCORDION) ===
   window.renderSidebar = function() {
-    const nav = document.getElementById('sidebarMenu'); nav.innerHTML = '';
-    const GROUPS = [
+    const nav = document.getElementById('sidebarMenu');
+    nav.innerHTML = '';
+    
+    const NAV_GROUPS = [
         { type: 'single', id: 'home' }, 
-        { type: 'group', label: 'HEM', id: 'grp_hem', items: ['attendance', 'student_list', 'asnaf', 'yatim', 'emailcheck', 'parents'] },
-        { type: 'group', label: 'KOKURIKULUM', id: 'grp_koko', items: ['pajsk'] },
-        { type: 'group', label: 'PENTADBIRAN', id: 'grp_admin', items: ['announcements', 'opr', 'calendar'] }
+        { type: 'group', label: 'PENGURUSAN HEM', id: 'grp_hem', items: ['attendance', 'student_list', 'asnaf', 'yatim', 'emailcheck', 'parents'] },
+        { type: 'group', label: 'PENGURUSAN KOKURIKULUM', id: 'grp_koko', items: ['pajsk'] },
+        { type: 'group', label: 'PENTADBIRAN & HEBAHAN', id: 'grp_admin', items: ['announcements', 'opr', 'calendar'] }
     ];
 
-    GROUPS.forEach(g => {
-        if(g.type === 'single') {
-            const m = CONFIG.menus.find(x => x.id === g.id);
-            if(m && !m.hidden && (m.role === 'public' || USER_ROLE === 'admin' || (m.role === 'family' && USER_ROLE === 'family'))) {
+    NAV_GROUPS.forEach(group => {
+        if(group.type === 'single') {
+            const m = CONFIG.menus.find(x => x.id === group.id);
+            if(m && !m.hidden) {
+                if(m.role === 'admin' && USER_ROLE !== 'admin') return;
+                if(m.role === 'family' && (USER_ROLE !== 'family' && USER_ROLE !== 'admin')) return;
+                
                 const a = document.createElement('a');
-                a.className = 'nav-item'; a.id = `nav-${m.id}`;
+                a.className = `nav-item ${m.id==='home'?'active':''}`;
+                a.id = `nav-${m.id}`;
                 a.innerHTML = `<span class="nav-icon material-icons-round">${m.icon}</span> ${m.label}`;
-                a.onclick = () => navTo(m.id); nav.appendChild(a);
+                a.onclick = () => window.navTo(m.id);
+                nav.appendChild(a);
             }
-        } else {
-            const items = g.items.filter(id => {
-                const m = CONFIG.menus.find(x => x.id === id);
-                return m && !m.hidden && (m.role === 'public' || USER_ROLE === 'admin' || (m.role === 'family' && USER_ROLE === 'family'));
+        } else if (group.type === 'group') {
+            const accessibleItems = group.items.filter(itemId => {
+                const m = CONFIG.menus.find(x => x.id === itemId);
+                if(!m || m.hidden) return false;
+                if(m.role === 'admin' && USER_ROLE !== 'admin') return false;
+                if(m.role === 'family' && (USER_ROLE !== 'family' && USER_ROLE !== 'admin')) return false;
+                return true;
             });
-            if(items.length) {
-                const h = document.createElement('div'); h.className = 'nav-group-header';
-                h.innerHTML = `${g.label} <span class="material-icons-round toggle-icon">expand_more</span>`;
-                h.onclick = () => { h.nextElementSibling.classList.toggle('collapsed'); h.classList.toggle('collapsed'); };
-                nav.appendChild(h);
-                const c = document.createElement('div'); c.className = 'nav-child-container';
-                items.forEach(id => {
-                    const m = CONFIG.menus.find(x => x.id === id);
-                    const a = document.createElement('a'); a.className = 'nav-item'; a.id = `nav-${m.id}`;
-                    a.style.paddingLeft = '24px'; a.style.fontSize = '12px';
+
+            if(accessibleItems.length > 0) {
+                const header = document.createElement('div');
+                header.className = 'nav-group-header';
+                header.innerHTML = `${group.label} <span class="material-icons-round toggle-icon">expand_more</span>`;
+                header.onclick = () => toggleGroup(group.id);
+                nav.appendChild(header);
+
+                const container = document.createElement('div');
+                container.id = `group-${group.id}`;
+                container.className = 'nav-child-container';
+                const activePageId = document.querySelector('.page-section[style*="block"]')?.id?.replace('page-', '');
+                if(!group.items.includes(activePageId)) {
+                   container.classList.add('collapsed');
+                   header.classList.add('collapsed');
+                }
+
+                accessibleItems.forEach(itemId => {
+                    const m = CONFIG.menus.find(x => x.id === itemId);
+                    const a = document.createElement('a');
+                    a.className = 'nav-item';
+                    a.id = `nav-${m.id}`;
+                    a.style.paddingLeft = '24px'; 
+                    a.style.fontSize = '12px';
                     a.innerHTML = `<span class="nav-icon material-icons-round" style="font-size:18px">${m.icon}</span> ${m.label}`;
-                    a.onclick = () => navTo(m.id); c.appendChild(a);
+                    a.onclick = () => window.navTo(m.id);
+                    container.appendChild(a);
                 });
-                nav.appendChild(c);
+                nav.appendChild(container);
             }
         }
     });
   }
 
-  // --- CSV & DATA HANDLING ---
+  window.toggleGroup = function(groupId) {
+      const container = document.getElementById(`group-${groupId}`);
+      const header = container.previousElementSibling;
+      container.classList.toggle('collapsed');
+      header.classList.toggle('collapsed');
+  }
+
+  // === UPDATED NAVTO WITH DEEP LINKING SUPPORT ===
+  window.navTo = function(id) {
+    // 1. Update UI (Visual Active State)
+    document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+    const el = document.getElementById(`nav-${id}`);
+    if(el) el.classList.add('active');
+    
+    // 2. Show Correct Page
+    document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
+    const targetPage = document.getElementById(`page-${id}`);
+    if(targetPage) targetPage.style.display='block';
+    
+    // 3. Trigger Specific Resets
+    if(id === 'asnaf') resetAsnafFilters();
+    if(id === 'yatim') resetYatimFilters();
+    if(id === 'student_list') resetStudentList();
+    
+    // 4. Handle Mobile Sidebar
+    if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
+
+    // 5. UPDATE URL (DEEP LINKING)
+    if(window.location.hash !== '#' + id) {
+        history.pushState(null, null, '#' + id);
+    }
+  }
+
+  // === BROWSER BACK BUTTON LISTENER ===
+  window.addEventListener('popstate', function() {
+      const hash = window.location.hash.substring(1); // Get ID after #
+      if(hash) {
+          // Check if page exists
+          if(document.getElementById('page-' + hash)) {
+              // Manual UI update to prevent loop
+              document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+              const el = document.getElementById(`nav-${hash}`);
+              if(el) el.classList.add('active');
+              document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
+              document.getElementById(`page-${hash}`).style.display='block';
+          }
+      } else {
+          // No hash = Home
+          navTo('home');
+      }
+  });
+
+  window.toggleFilterPanel = function(id) { document.getElementById(id).classList.toggle('open'); }
+
+  async function fetchCSV(url) {
+    if(!url) return [];
+    try {
+      const fetchWithRetry = async (retries = 2) => {
+         try {
+           const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now() + Math.random());
+           if(!res.ok) throw new Error("Status " + res.status);
+           return await res.text();
+         } catch(err) {
+           if(retries > 0) return await fetchWithRetry(retries - 1);
+           throw err;
+         }
+      };
+      const text = await fetchWithRetry();
+      return parseCSV(text);
+    } catch(e) {
+        console.error("Gagal muat data:", url, e);
+        return []; // Return empty array on fail
+    }
+  }
+
+function parseCSV(text) {
+  if (!text) return [];
+  text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const rows = [];
+  let row = [];
+  let cur = "";
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
+    if (ch === '"') {
+      if (inQuotes && next === '"') { cur += '"'; i++; }
+      else { inQuotes = !inQuotes; }
+      continue;
+    }
+    if (ch === "," && !inQuotes) { row.push(cur); cur = ""; continue; }
+    if (ch === "\n" && !inQuotes) { row.push(cur); rows.push(row); row = []; cur = ""; continue; }
+    cur += ch;
+  }
+  row.push(cur);
+  rows.push(row);
+  while (rows.length && rows[rows.length - 1].every(c => (c || "").trim() === "")) { rows.pop(); }
+  if (!rows.length) return [];
+  
+  // === SMART HEADER DETECTION (Ignore Title Rows) ===
+  let headerIdx = -1;
+  for(let i=0; i<Math.min(rows.length, 10); i++) {
+      const rowStr = rows[i].join(' ').toUpperCase();
+      // Cari keyword 'BIL' atau 'NAMA MURID'
+      if(rowStr.includes('NAMA MURID') || (rowStr.includes('BIL') && rowStr.includes('NAMA'))) {
+          headerIdx = i;
+          break;
+      }
+  }
+  if(headerIdx === -1) headerIdx = 0; // Fallback to first row if not found
+
+  const headers = rows[headerIdx].map(h => (h || "").trim().toUpperCase());
+  const dataRows = rows.slice(headerIdx + 1);
+
+  return dataRows.map(r => {
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = (r[idx] ?? "").trim(); });
+    // FALLBACK: If "TAHUN" header is missing, try to grab last column if it looks like a year
+    if(!obj['TAHUN'] && r.length > 0) {
+        const lastVal = r[r.length-1];
+        if(lastVal && (lastVal.includes('2025') || lastVal.includes('2026'))) {
+            obj['TAHUN'] = lastVal;
+        }
+    }
+    return obj;
+  });
+}
+
+  function getVal(row, keyPart) {
+    const key = Object.keys(row).find(k => k.includes(keyPart.toUpperCase()));
+    return key ? row[key] : "";
+  }
+
+  function parseDateStr(dStr) {
+    if(!dStr) return null;
+    dStr = dStr.trim();
+    if(dStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}/)) {
+      const p = dStr.split('/');
+      return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+    }
+    if(dStr.match(/^\d{4}-\d{1,2}-\d{1,2}/)) { return dStr.split('T')[0]; }
+    if(dStr.includes('/')) {
+        const p = dStr.split('/');
+        if(p[2].length === 4) return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+    }
+    return dStr;
+  }
+
   async function loadAllData() {
     document.getElementById('loading-overlay').style.display = 'grid';
     try {
-        const res = await Promise.all([
-            fetchCSV(CONFIG.urls.attendance), fetchCSV(CONFIG.urls.pajsk), fetchCSV(CONFIG.urls.announcements),
-            fetchCSV(CONFIG.urls.calendar), fetchCSV(CONFIG.urls.parents), fetchCSV(CONFIG.urls.database),
-            fetchCSV(CONFIG.urls.asnaf), fetchCSV(CONFIG.urls.yatim), fetchCSV(CONFIG.urls.student_list), fetchCSV(CONFIG.urls.delima)
+        const results = await Promise.all([
+          fetchCSV(CONFIG.urls.attendance),
+          fetchCSV(CONFIG.urls.pajsk),
+          fetchCSV(CONFIG.urls.announcements),
+          fetchCSV(CONFIG.urls.calendar),
+          fetchCSV(CONFIG.urls.parents),
+          fetchCSV(CONFIG.urls.database),
+          fetchCSV(CONFIG.urls.asnaf), 
+          fetchCSV(CONFIG.urls.yatim),
+          fetchCSV(CONFIG.urls.student_list),
+          fetchCSV(CONFIG.urls.delima) 
         ]);
-        DATA.att=res[0]; DATA.pajsk=res[1]; DATA.ann=res[2]; DATA.cal=res[3]; DATA.par=res[4]; DATA.db=res[5]; DATA.asnaf=res[6]; DATA.yatim=res[7]; DATA.stu=res[8]; DATA.delima=res[9];
-        processAttendance(); processEnrolment(); renderAnn(); initPajsk(); renderParents(); initCalendar(); renderCalendarTable(); renderStudentList();
-    } finally { document.getElementById('loading-overlay').style.display = 'none'; }
-  }
+        if(results[0]) DATA.att = results[0];
+        if(results[1]) DATA.pajsk = results[1];
+        if(results[2]) DATA.ann = results[2];
+        if(results[3]) DATA.cal = results[3];
+        if(results[4]) DATA.par = results[4];
+        if(results[5]) DATA.db = results[5];
+        if(results[6]) DATA.asnaf = results[6];
+        if(results[7]) DATA.yatim = results[7];
+        if(results[8]) DATA.stu = results[8];
+        if(results[9]) DATA.delima = results[9];
 
-  async function fetchCSV(url) { if(!url) return []; try { const res = await fetch(url + (url.includes('?')?'&':'?') + 't=' + Date.now()); const text = await res.text(); return parseCSV(text); } catch { return []; } }
-  
-  function parseCSV(text) {
-      const rows = []; let row = []; let cur = ""; let inQuotes = false;
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-        if (ch === '"') inQuotes = !inQuotes;
-        else if (ch === "," && !inQuotes) { row.push(cur.trim()); cur = ""; }
-        else if (ch === "\n" && !inQuotes) { row.push(cur.trim()); rows.push(row); row = []; cur = ""; }
-        else cur += ch;
-      }
-      row.push(cur.trim()); rows.push(row);
-      const headers = rows[0].map(h => h.toUpperCase());
-      return rows.slice(1).map(r => { const o = {}; headers.forEach((h, i) => o[h] = r[i] || ""); return o; });
-  }
+        const now = new Date();
+        document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
 
-  function getVal(r, k) { const key = Object.keys(r).find(x => x.includes(k.toUpperCase())); return key ? r[key] : ""; }
-
-  // --- CORE SYSTEMS ---
-  function processEnrolment() {
-    const grid = document.getElementById('classGrid'); grid.innerHTML = '';
-    const classList = ["1 AL-FARABI", "2 AL-FARABI", "3 AL-FARABI", "4 AL-FARABI", "5 AL-FARABI"];
-    let totalL=0, totalP=0;
-    classList.forEach(cls => {
-        const stds = DATA.db.filter(r => getVal(r,'KELAS').includes(cls[0]));
-        let l=0, p=0;
-        stds.forEach(s => { const g = getVal(s,'JANTINA').toUpperCase(); if(g.startsWith('L')) l++; else if(g.startsWith('P')) p++; });
-        totalL+=l; totalP+=p;
-        const div = document.createElement('div'); div.className='class-card-mini';
-        div.innerHTML=`<div class="cc-icon-box"><span class="material-icons-round">school</span></div><div class="cc-info"><div class="cc-name">${cls}</div><div class="cc-count">${l+p} Murid</div></div>`;
-        div.onclick = () => updateChart(cls, l, p);
-        grid.appendChild(div);
-    });
-    updateChart('SEMUA', totalL, totalP);
-  }
-
-  function updateChart(label, l, p) {
-    document.getElementById('centerCount').innerText = l+p;
-    const ctx = document.getElementById('genderChart').getContext('2d');
-    if(chartInstance) chartInstance.destroy();
-    chartInstance = new Chart(ctx, { type:'doughnut', data:{ labels:['Lelaki','Perempuan'], datasets:[{ data:[l,p], backgroundColor:['#2E90FA','#F63D68'], borderWidth:0 }] }, options:{ cutout:'70%', plugins:{ legend:{ display:false }, datalabels:{ display:false } } } });
-  }
-
-  window.checkEmail = function() {
-    const ic = document.getElementById('inputIC').value.trim();
-    const student = DATA.delima.find(r => (getVal(r,'KP')||getVal(r,'MYKID')).replace(/-/g,'') === ic.replace(/-/g,''));
-    if(student) {
-        document.getElementById('resNama').innerText = getVal(student,'NAMA');
-        document.getElementById('resEmail').innerText = getVal(student,'EMEL') || getVal(student,'DELIMA');
-        document.getElementById('resPass').innerText = getVal(student,'LALUAN') || getVal(student,'KATA LALUAN');
-        document.getElementById('idResultContainer').style.display='block';
-        document.getElementById('idError').style.display='none';
-    } else {
-        document.getElementById('idError').innerText='Rekod tidak dijumpai.';
-        document.getElementById('idError').style.display='block';
+        processAttendance();
+        processEnrolment(); // Update Enrolment Card
+        renderAnn();
+        initPajsk();
+        renderParents();
+        initCalendar();
+        renderCalendarTable();
+        initAsnaf(); 
+        initYatim();
+        renderStudentList();
+    } catch(err) {
+        console.error("Critical Load Error", err);
+    } finally {
+        document.getElementById('loading-overlay').style.display = 'none';
     }
   }
 
+  // === PROCESS ENROLMENT & CHART (Use Database URL CSV directly) ===
+  function processEnrolment() {
+    let rawData = DATA.db || [];
+    
+    // Fallback if DB empty
+    if(rawData.length === 0 && DATA.att && DATA.att.length > 0) {
+         const unique = new Map();
+         DATA.att.forEach(r => {
+             const n = getVal(r, 'NAMA');
+             if(n && !unique.has(n)) unique.set(n, r);
+         });
+         rawData = Array.from(unique.values());
+    }
+
+    const classMap = {
+        "1 AL-FARABI": { L: 0, P: 0, total: 0 },
+        "2 AL-FARABI": { L: 0, P: 0, total: 0 },
+        "3 AL-FARABI": { L: 0, P: 0, total: 0 },
+        "4 AL-FARABI": { L: 0, P: 0, total: 0 },
+        "5 AL-FARABI": { L: 0, P: 0, total: 0 }
+    };
+    
+    let totalL = 0;
+    let totalP = 0;
+    let totalStudents = 0;
+
+    rawData.forEach(r => {
+        let clsName = (getVal(r, 'KELAS') || '').toUpperCase().trim();
+        
+        if(clsName.includes('1')) clsName = '1 AL-FARABI';
+        else if(clsName.includes('2')) clsName = '2 AL-FARABI';
+        else if(clsName.includes('3')) clsName = '3 AL-FARABI';
+        else if(clsName.includes('4')) clsName = '4 AL-FARABI';
+        else if(clsName.includes('5')) clsName = '5 AL-FARABI';
+
+        let l = parseInt(getVal(r, 'LELAKI')) || 0;
+        let p = parseInt(getVal(r, 'PEREMPUAN')) || 0;
+        
+        if(l === 0 && p === 0) {
+            const gender = (getVal(r, 'JANTINA') || '').toUpperCase().trim();
+            if(gender.startsWith('L')) l = 1;
+            else if(gender.startsWith('P')) p = 1;
+        }
+
+        if(classMap[clsName]) {
+            classMap[clsName].L += l;
+            classMap[clsName].P += p;
+            classMap[clsName].total += (l + p);
+            totalL += l;
+            totalP += p;
+            totalStudents += (l + p);
+        }
+    });
+
+    const grid = document.getElementById('classGrid');
+    grid.innerHTML = '';
+    
+    // DEFAULT STATE: ALL
+    updateChart('SEMUA', totalL, totalP);
+    
+    // Render Class Buttons (ENHANCED CARDS)
+    Object.keys(classMap).sort().forEach(cls => {
+        const btn = document.createElement('div');
+        btn.className = 'class-card-mini';
+        btn.innerHTML = `
+            <div class="cc-icon-box"><span class="material-icons-round" style="font-size:20px">school</span></div>
+            <div class="cc-info">
+                <div class="cc-name">${cls}</div>
+                <div class="cc-count">
+                    <span>${classMap[cls].total} Murid</span>
+                    <span style="font-size:10px; opacity:0.7">(L:${classMap[cls].L} P:${classMap[cls].P})</span>
+                </div>
+            </div>
+        `;
+        btn.onclick = () => { 
+            if(btn.classList.contains('active')) {
+                updateChart('SEMUA', totalL, totalP);
+                document.querySelectorAll('.class-card-mini').forEach(c => c.classList.remove('active'));
+            } else {
+                updateChart(cls, classMap[cls].L, classMap[cls].P);
+                setActiveCard(btn);
+            }
+        };
+        grid.appendChild(btn);
+    });
+  }
+
+  function setActiveCard(el) {
+      document.querySelectorAll('.class-card-mini').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+  }
+
+  function updateChart(label, lCount, pCount) {
+      // 1. Update Center Number
+      document.getElementById('centerCount').innerText = lCount + pCount;
+      
+      // 2. Update Nav Button Text
+      const navBtn = document.getElementById('navCardBtn');
+      navBtn.innerText = label === 'SEMUA' ? 'SEMUA MURID' : label;
+
+      // 3. Update Chart
+      const ctx = document.getElementById('genderChart').getContext('2d');
+      if(chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+              labels: ['Lelaki', 'Perempuan'],
+              datasets: [{
+                  data: [lCount, pCount],
+                  backgroundColor: ['#2E90FA', '#F63D68'],
+                  borderWidth: 0
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { 
+                      position: 'bottom', 
+                      labels: { 
+                          usePointStyle: true, 
+                          font: { family: 'Poppins' },
+                          padding: 20 
+                      } 
+                  },
+                  datalabels: {
+                      color: '#fff',
+                      font: { weight: 'bold', size: 14 },
+                      formatter: (value) => value > 0 ? value : '' // Hide 0
+                  }
+              },
+              cutout: '65%'
+          }
+      });
+  }
+
+
+  window.forceReload = async function(type) {
+    document.getElementById('loading-overlay').style.display = 'grid';
+    let url = '';
+    if(type === 'all') { await loadAllData(); return; }
+
+    try {
+        if(type === 'att') { DATA.att = await fetchCSV(CONFIG.urls.attendance); processAttendance(); }
+        else if(type === 'pajsk') { DATA.pajsk = await fetchCSV(CONFIG.urls.pajsk); initPajsk(); }
+        else if(type === 'ann') { DATA.ann = await fetchCSV(CONFIG.urls.announcements); renderAnn(); }
+        else if(type === 'cal') { DATA.cal = await fetchCSV(CONFIG.urls.calendar); initCalendar(); renderCalendarTable(); }
+        else if(type === 'par') { DATA.par = await fetchCSV(CONFIG.urls.parents); renderParents(); }
+        else if(type === 'db') { DATA.db = await fetchCSV(CONFIG.urls.database); processEnrolment(); alert('Pangkalan Data Dikemaskini'); }
+        else if(type === 'asnaf') { DATA.asnaf = await fetchCSV(CONFIG.urls.asnaf); initAsnaf(); }
+        else if(type === 'yatim') { DATA.yatim = await fetchCSV(CONFIG.urls.yatim); initYatim(); }
+        else if(type === 'stulist') { DATA.stu = await fetchCSV(CONFIG.urls.student_list); renderStudentList(); }
+        else if(type === 'db') { DATA.delima = await fetchCSV(CONFIG.urls.delima); alert('Data ID Delima Dikemaskini'); }
+        
+        const now = new Date();
+        document.getElementById('updateTime').innerText = now.toLocaleString('ms-MY', { hour12: true });
+    } catch(e) {
+        console.error(e);
+    } finally {
+        document.getElementById('loading-overlay').style.display = 'none';
+    }
+  }
+
+  // === NEW: STUDENT LIST RENDERER ===
+  window.renderStudentList = function() {
+      if(!DATA.stu || !DATA.stu.length) {
+          document.getElementById('stuBody').innerHTML = '<tr><td colspan="4" style="text-align:center">Tiada Data.</td></tr>';
+          return;
+      }
+      
+      // Populate Filter
+      const fSmart = document.getElementById('fStuSmart');
+      if(fSmart.options.length === 1) {
+          const classes = [...new Set(DATA.stu.map(r => getVal(r,'KELAS')))].filter(Boolean).sort();
+          classes.forEach(c => {
+              const opt = document.createElement('option');
+              opt.value = c;
+              opt.innerText = c;
+              fSmart.appendChild(opt);
+          });
+      }
+
+      const q = document.getElementById('searchStuList').value.toLowerCase();
+      const fVal = fSmart.value;
+
+      const filtered = DATA.stu.filter(r => {
+          const name = (getVal(r, 'NAMA')||"").toLowerCase();
+          const cls = getVal(r, 'KELAS') || "";
+          return (!q || name.includes(q)) && (!fVal || cls === fVal);
+      });
+      
+      document.getElementById('stuCount').innerText = `Jumlah: ${filtered.length} Murid`;
+      document.getElementById('stuBody').innerHTML = filtered.map(r => `
+          <tr>
+              <td><strong>${getVal(r, 'NAMA')}</strong></td>
+              <td>${getVal(r, 'NO. KP') || getVal(r, 'KP')}</td>
+              <td>${getVal(r, 'KELAS')}</td>
+              <td>${getVal(r, 'JANTINA')}</td>
+          </tr>
+      `).join('');
+  }
+  
+  window.resetStudentList = function() {
+      document.getElementById('searchStuList').value = '';
+      document.getElementById('fStuSmart').value = '';
+      renderStudentList();
+  }
+
+  /* ================= ASNAF RENDERER (V28.13) ================= */
+  function initAsnaf() {
+      if(!DATA.asnaf || !DATA.asnaf.length) {
+          document.getElementById('statAsnaf').innerText = "0";
+          document.getElementById('asnafBody').innerHTML = '<tr><td colspan="8" style="text-align:center">Tiada Data.</td></tr>';
+          return;
+      }
+      const pop = (id, key) => {
+          const vals = [...new Set(DATA.asnaf.map(r => getVal(r, key)))].filter(Boolean).sort();
+          document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
+      };
+      pop('fAsnafYear', 'TAHUN');
+      pop('fAsnafClass', 'KELAS');
+      
+      // Auto-set current year
+      const currYear = new Date().getFullYear().toString();
+      const yearSelect = document.getElementById('fAsnafYear');
+      const yearOpts = Array.from(yearSelect.options).map(o => o.value);
+      if(yearOpts.includes(currYear)) yearSelect.value = currYear;
+      else if(yearOpts.length > 1) yearSelect.value = yearOpts[1];
+
+      renderAsnafTable(); 
+  }
+
+  window.renderAsnafTable = function() {
+      if(!DATA.asnaf || !DATA.asnaf.length) return;
+      const q = document.getElementById('searchAsnaf').value.toLowerCase();
+      const fYear = document.getElementById('fAsnafYear').value;
+      const fClass = document.getElementById('fAsnafClass').value;
+      
+      const filtered = DATA.asnaf.filter(r => {
+          const name = (getVal(r, 'NAMA')||"").toLowerCase();
+          const yr = getVal(r, 'TAHUN') || ""; 
+          return (!q || name.includes(q)) && (!fYear || yr == fYear) && (!fClass || getVal(r, 'KELAS') === fClass);
+      });
+
+      document.getElementById('statAsnaf').innerText = filtered.length;
+      document.getElementById('asnafCount').innerText = `Papar: ${filtered.length} rekod.`;
+      
+      document.getElementById('asnafBody').innerHTML = filtered.map(r => `
+            <tr>
+                <td><strong>${getVal(r, 'NAMA')}</strong></td>
+                <td>${getVal(r, 'MYKID')||'-'}</td>
+                <td>${getVal(r, 'KELAS')}</td>
+                <td>${getVal(r, 'PENDAPATAN')||'-'}</td>
+            </tr>`).join('');
+  }
+
+  window.resetAsnafFilters = function() {
+      document.getElementById('searchAsnaf').value = '';
+      document.getElementById('fAsnafClass').value = '';
+      renderAsnafTable();
+  }
+
+  /* ================= YATIM RENDERER ================= */
+  function initYatim() {
+      if(!DATA.yatim || !DATA.yatim.length) {
+          document.getElementById('statYatim').innerText = "0";
+          document.getElementById('yatimBody').innerHTML = '<tr><td colspan="8" style="text-align:center">Tiada Data.</td></tr>';
+          return;
+      }
+      const pop = (id, key) => {
+          const vals = [...new Set(DATA.yatim.map(r => getVal(r, key)))].filter(Boolean).sort();
+          document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
+      };
+      pop('fYatimYear', 'TAHUN');
+      pop('fYatimClass', 'KELAS');
+      
+      const currYear = new Date().getFullYear().toString();
+      const yearSelect = document.getElementById('fYatimYear');
+      const yearOpts = Array.from(yearSelect.options).map(o => o.value);
+      if(yearOpts.includes(currYear)) yearSelect.value = currYear;
+      else if(yearOpts.length > 1) yearSelect.value = yearOpts[1];
+
+      renderYatimTable(); 
+  }
+
+  window.renderYatimTable = function() {
+      if(!DATA.yatim || !DATA.yatim.length) return;
+      const q = document.getElementById('searchYatim').value.toLowerCase();
+      const fYear = document.getElementById('fYatimYear').value;
+      const fClass = document.getElementById('fYatimClass').value;
+      
+      const filtered = DATA.yatim.filter(r => {
+          const name = (getVal(r, 'NAMA')||"").toLowerCase();
+          const yr = getVal(r, 'TAHUN') || "";
+          return (!q || name.includes(q)) && (!fYear || yr == fYear) && (!fClass || getVal(r, 'KELAS') === fClass);
+      });
+
+      document.getElementById('statYatim').innerText = filtered.length;
+      document.getElementById('yatimCount').innerText = `Papar: ${filtered.length} rekod.`;
+      
+      document.getElementById('yatimBody').innerHTML = filtered.map(r => `
+            <tr>
+                <td><strong>${getVal(r, 'NAMA')}</strong></td>
+                <td>${getVal(r, 'MYKID')||'-'}</td>
+                <td>${getVal(r, 'KELAS')}</td>
+                <td>${getVal(r, 'PENDAPATAN')||'-'}</td>
+            </tr>`).join('');
+  }
+
+  window.resetYatimFilters = function() {
+      document.getElementById('searchYatim').value = '';
+      document.getElementById('fYatimClass').value = '';
+      renderYatimTable();
+  }
+
+  /* ================= OPR RENDERER ================= */
+  function renderOPR() {
+    const grid = document.getElementById('oprGrid');
+    grid.innerHTML = OPR_DATA.map(item => `
+        <div class="card clickable" onclick="window.open('${item.url}', '_blank')" style="text-align:center; padding:30px;">
+            <div style="width:60px; height:60px; background:var(--primary-light); border-radius:50%; margin:0 auto 15px; display:grid; place-items:center; color:var(--primary);">
+                <span class="material-icons-round" style="font-size:30px;">${item.icon}</span>
+            </div>
+            <h3 style="margin:0 0 5px;">${item.title}</h3>
+            <p style="color:var(--text-muted); font-size:12px; margin:0;">${item.desc}</p>
+        </div>
+    `).join('');
+  }
+
+  // === NEW CHECK EMAIL (V28.16 - Dedicated Source Search) ===
+  window.checkEmail = function() {
+      const ic = document.getElementById('inputIC').value.trim();
+      const resBox = document.getElementById('idResultContainer');
+      const errBox = document.getElementById('idError');
+      
+      // ONLY SEARCH IN DATA.delima
+      const dataSource = DATA.delima || [];
+      
+      if(dataSource.length === 0) { alert('Data ID Delima belum sedia. Sila tekan Reload.'); return; }
+      
+      const student = dataSource.find(r => {
+          const kp = getVal(r, 'KP') || getVal(r, 'IC') || getVal(r, 'NO') || getVal(r, 'MYKID');
+          return kp && kp.replace(/[^0-9]/g, '') === ic.replace(/[^0-9]/g, '');
+      });
+      
+      if(student) {
+          document.getElementById('resNama').innerText = getVal(student, 'NAMA');
+          // Enhanced Column Finding
+          const delima = getVal(student, 'DELIMA') || getVal(student, 'ID DELIMA') || getVal(student, 'EMEL') || getVal(student, 'EMAIL') || '-';
+          const pass = getVal(student, 'LALUAN') || getVal(student, 'KATA LALUAN') || getVal(student, 'PASSWORD') || getVal(student, 'PASS') || '-';
+          
+          document.getElementById('resEmail').innerText = delima;
+          document.getElementById('resPass').innerText = pass;
+          
+          resBox.style.display = 'block';
+          errBox.style.display = 'none';
+      } else {
+          resBox.style.display = 'none';
+          errBox.innerText = "Rekod tidak dijumpai. Sila semak nombor kad pengenalan.";
+          errBox.style.display = 'block';
+      }
+  }
+
+  window.copyText = function(id) {
+    const text = document.getElementById(id).innerText;
+    if(text === '-') return;
+    navigator.clipboard.writeText(text).then(() => { alert("Disalin: " + text); });
+  }
+
   function processAttendance() {
-    const present = DATA.att.filter(r => getVal(r,'STATUS').toUpperCase()==='HADIR').length;
+    if(!DATA.att.length) return;
+    DATA_ATT_CLEAN = DATA.att.map(r => {
+      const dStr = getVal(r, 'TARIKH');
+      const isoDate = parseDateStr(dStr);
+      return {
+        date: dStr, isoDate: isoDate, rawDate: new Date(isoDate),
+        name: getVal(r, 'NAMA'), kelas: getVal(r, 'KELAS'),
+        gender: getVal(r, 'JANTINA') || '-', status: (getVal(r, 'STATUS')||"").toUpperCase()
+      };
+    }).filter(r => r.isoDate && !isNaN(r.rawDate));
+    DATA_ATT_CLEAN.sort((a,b) => b.rawDate - a.rawDate);
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayRecs = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
+    const present = todayRecs.filter(r => r.status === 'HADIR').length;
+    const absent = todayRecs.filter(r => r.status.includes('TIDAK')).length;
     document.getElementById('dToday').innerText = present;
-    document.getElementById('attBody').innerHTML = DATA.att.slice(0,50).map(r => `<tr><td>${getVal(r,'TARIKH')}</td><td>${getVal(r,'NAMA')}</td><td>${getVal(r,'KELAS')}</td><td><span class="badge ${getVal(r,'STATUS').toUpperCase()==='HADIR'?'b-green':'b-red'}">${getVal(r,'STATUS')}</span></td></tr>`).join('');
+    document.getElementById('dAbsent').innerText = `${absent} Tidak Hadir`;
+    document.getElementById('dWeek').innerText = DATA_ATT_CLEAN.length;
+    document.getElementById('dPct').innerText = DATA_ATT_CLEAN.length ? Math.round((present/(todayRecs.length||1))*100) + "%" : "0%";
+    populateAttSelectors();
+    renderAttTable(DATA_ATT_CLEAN);
+    updateAttStats(DATA_ATT_CLEAN);
+    renderTrend();
   }
 
-  function renderStudentList() {
-    document.getElementById('stuBody').innerHTML = DATA.stu.map(r => `<tr><td>${getVal(r,'NAMA')}</td><td>${getVal(r,'KP')}</td><td>${getVal(r,'KELAS')}</td><td>${getVal(r,'JANTINA')}</td></tr>`).join('');
-    document.getElementById('stuCount').innerText = `Jumlah: ${DATA.stu.length} Murid`;
+  function renderAttTable(data) {
+    const tb = document.getElementById('attBody');
+    tb.innerHTML = data.slice(0,100).map(r => `<tr><td>${r.date}</td><td><strong>${r.name}</strong></td><td>${r.kelas}</td><td>${r.gender}</td><td><span class="badge ${r.status==='HADIR'?'b-green':'b-red'}">${r.status}</span></td></tr>`).join('');
+    document.getElementById('attCount').innerText = `Papar: ${Math.min(data.length,100)} / ${data.length} rekod.`;
   }
 
-  function renderAsnafTable() { document.getElementById('asnafBody').innerHTML = DATA.asnaf.map(r => `<tr><td>${getVal(r,'NAMA')}</td><td>${getVal(r,'KELAS')}</td><td>${getVal(r,'PENDAPATAN')}</td></tr>`).join(''); }
-  function renderYatimTable() { document.getElementById('yatimBody').innerHTML = DATA.yatim.map(r => `<tr><td>${getVal(r,'NAMA')}</td><td>${getVal(r,'KELAS')}</td><td>${getVal(r,'PENDAPATAN')}</td></tr>`).join(''); }
-  function initPajsk() { document.getElementById('pajskBody').innerHTML = DATA.pajsk.map(r => `<tr><td>${getVal(r,'TAHUN')}</td><td>${getVal(r,'TARIKH')}</td><td>${getVal(r,'UNIT')}</td><td>${getVal(r,'NAMA')}</td><td>${getVal(r,'ACARA')}</td><td>${getVal(r,'PENCAPAIAN')}</td></tr>`).join(''); }
-  function renderAnn() { document.getElementById('annGrid').innerHTML = DATA.ann.map(a => `<div class="card"><h4>${getVal(a,'TAJUK')}</h4><p>${getVal(a,'ISI KANDUNGAN')}</p></div>`).join(''); }
-  function renderParents() { document.getElementById('parentsGrid').innerHTML = DATA.par.map(p => `<div class="card clickable" onclick="window.open('${getVal(p,'URL')}','_blank')"><h4>${getVal(p,'TAJUK')}</h4><p>${getVal(p,'KANDUNGAN')}</p></div>`).join(''); }
-  function initCalendar() { document.getElementById('calBody').innerHTML = DATA.cal.map(r => `<tr><td>${getVal(r,'BULAN')}</td><td>${getVal(r,'TARIKH')}</td><td>${getVal(r,'AKTIVITI')}</td><td>${getVal(r,'TINDAKAN')}</td></tr>`).join(''); }
+  function updateAttStats(data) {
+    const p = data.filter(r => r.status==='HADIR').length;
+    const a = data.filter(r => r.status.includes('TIDAK')).length;
+    const t = data.length;
+    document.getElementById('attStatHadir').innerText = p;
+    document.getElementById('attStatTidak').innerText = a;
+    document.getElementById('attStatTotal').innerText = t;
+    document.getElementById('attStatPct').innerText = t ? Math.round((p/t)*100)+"%" : "0%";
+  }
 
-  window.copyText = (id) => { navigator.clipboard.writeText(document.getElementById(id).innerText); alert('Disalin!'); };
-  window.toggleSidebar = () => document.body.classList.toggle('mobile-active');
-  window.toggleTheme = () => { const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-mode',n); localStorage.setItem('theme',n); };
+  window.applyFilterAtt = function() {
+    const q = document.getElementById('searchAtt').value.toLowerCase();
+    const c = document.getElementById('filterClassAtt').value;
+    const s = document.getElementById('filterStatusAtt').value;
+    const g = document.getElementById('filterGenderAtt').value;
+    const start = document.getElementById('filterDateStart').value;
+    const end = document.getElementById('filterDateEnd').value;
+    const filtered = DATA_ATT_CLEAN.filter(r => {
+      let dOk = true;
+      if(start && end) dOk = r.isoDate >= start && r.isoDate <= end;
+      return dOk && (!q || r.name.toLowerCase().includes(q)) &&
+             (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) &&
+             (!s || (s==='HADIR'?r.status==='HADIR':r.status.includes('TIDAK')));
+    });
+    renderAttTable(filtered);
+    updateAttStats(filtered);
+  }
+
+  window.resetFilterAtt = function() {
+    document.getElementById('searchAtt').value = '';
+    document.getElementById('filterClassAtt').value = '';
+    document.getElementById('filterStatusAtt').value = '';
+    document.getElementById('filterGenderAtt').value = '';
+    document.getElementById('filterDateStart').value = '';
+    document.getElementById('filterDateEnd').value = '';
+    renderAttTable(DATA_ATT_CLEAN);
+    updateAttStats(DATA_ATT_CLEAN);
+  }
+
+  function populateAttSelectors() {
+    const classes = [...new Set(DATA_ATT_CLEAN.map(r => r.kelas))].sort();
+    const opts = '<option value="">Semua Kelas</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
+    document.getElementById('filterClassAtt').innerHTML = opts;
+    document.getElementById('trendClass').innerHTML = opts;
+  }
+
+  function initPajsk() {
+    const cleanPajsk = DATA.pajsk.filter(r => getVal(r,'NAMA') || getVal(r,'TARIKH'));
+    cleanPajsk.sort((a,b) => {
+        const dA = parseDateStr(getVal(a,'TARIKH'));
+        const dB = parseDateStr(getVal(b,'TARIKH'));
+        if(!dA || !dB) return 0;
+        return new Date(dB) - new Date(dA);
+    });
+    DATA.pajsk = cleanPajsk;
+    const pop = (id, key) => {
+      const vals = [...new Set(DATA.pajsk.map(r => getVal(r, key)))].filter(Boolean).sort();
+      document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v=>`<option>${v}</option>`).join('');
+    };
+    let years = [...new Set(DATA.pajsk.map(r => {
+        let y = getVal(r, 'TAHUN');
+        if(!y) {
+            let d = parseDateStr(getVal(r, 'TARIKH'));
+            if(d) y = d.split('-')[0];
+        }
+        return y;
+    }))].filter(Boolean).sort().reverse();
+    document.getElementById('fPajskTahun').innerHTML = '<option value="">Semua</option>' + years.map(y=>`<option>${y}</option>`).join('');
+    const currentYear = new Date().getFullYear().toString();
+    if(years.includes(currentYear)) { document.getElementById('fPajskTahun').value = currentYear; }
+    pop('fPajskUnit', 'UNIT');
+    pop('fPajskKelas', 'KELAS');
+    pop('fPajskLibat', 'PENGLIBATAN');
+    pop('fPajskCapai', 'PENCAPAIAN');
+    renderPajskTable();
+  }
+
+  window.renderPajskTable = function() {
+    if(!DATA.pajsk.length) { document.getElementById('pajskBody').innerHTML='<tr><td colspan="8">Tiada Data.</td></tr>'; return; }
+    const q = document.getElementById('searchPajsk').value.toLowerCase();
+    const fTahun = document.getElementById('fPajskTahun').value;
+    const fDate = document.getElementById('fPajskDate').value;
+    const fUnit = document.getElementById('fPajskUnit').value;
+    const fKelas = document.getElementById('fPajskKelas').value;
+    const fLibat = document.getElementById('fPajskLibat').value;
+    const fCapai = document.getElementById('fPajskCapai').value;
+    const filtered = DATA.pajsk.filter(r => {
+      const name = (getVal(r, 'NAMA')||"").toLowerCase();
+      const acara = (getVal(r, 'ACARA')||"").toLowerCase();
+      const searchMatch = !q || name.includes(q) || acara.includes(q);
+      const iso = parseDateStr(getVal(r, 'TARIKH'));
+      let year = getVal(r, 'TAHUN');
+      if(!year && iso) year = iso.split('-')[0];
+      return searchMatch &&
+             (!fTahun || year == fTahun) &&
+             (!fDate || iso === fDate) &&
+             (!fUnit || getVal(r,'UNIT') === fUnit) &&
+             (!fKelas || getVal(r,'KELAS') === fKelas) &&
+             (!fLibat || getVal(r,'PENGLIBATAN') === fLibat) &&
+             (!fCapai || getVal(r,'PENCAPAIAN') === fCapai);
+    });
+    document.getElementById('pajskBody').innerHTML = filtered.map(r => {
+        let displayYear = getVal(r, 'TAHUN');
+        if(!displayYear) {
+             let d = parseDateStr(getVal(r,'TARIKH'));
+             if(d) displayYear = d.split('-')[0];
+        }
+        return `<tr>
+        <td>${displayYear}</td>
+        <td>${getVal(r,'TARIKH')}</td><td>${getVal(r,'UNIT')}</td><td>${getVal(r,'KELAS')}</td>
+        <td><strong>${getVal(r,'NAMA')}</strong></td><td>${getVal(r,'ACARA')}</td>
+        <td>${getVal(r,'PENGLIBATAN')}</td><td><span class="badge b-green">${getVal(r,'PENCAPAIAN')}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  window.resetPajskFilters = function() {
+    document.getElementById('searchPajsk').value = '';
+    document.getElementById('fPajskTahun').value = '';
+    document.getElementById('fPajskDate').value = '';
+    document.querySelectorAll('#pajskFilters select').forEach(s => s.value='');
+    const currentYear = new Date().getFullYear().toString();
+    const options = Array.from(document.getElementById('fPajskTahun').options).map(o => o.value);
+    if(options.includes(currentYear)) document.getElementById('fPajskTahun').value = currentYear;
+    renderPajskTable();
+  }
+
+  window.initCalendar = function() {
+     const monthOrder = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
+     const pop = (id, key) => {
+       let vals = [...new Set(DATA.cal.map(r => getVal(r, key)))].filter(Boolean);
+       if(key === 'BULAN 2') vals.sort((a, b) => monthOrder.indexOf(a.toUpperCase()) - monthOrder.indexOf(b.toUpperCase()));
+       else vals.sort();
+       document.getElementById(id).innerHTML = '<option value="">Semua</option>' + vals.map(v => `<option>${v}</option>`).join('');
+     };
+     pop('fCalBulan', 'BULAN 2');
+     pop('fCalKategori', 'KATEGORI');
+     pop('fCalTindakan', 'TINDAKAN');
+  }
+
+  window.renderCalendarTable = function() {
+      if(!DATA.cal.length) { document.getElementById('calBody').innerHTML='<tr><td colspan="5">Tiada Data.</td></tr>'; return; }
+      const q = document.getElementById('searchCal').value.toLowerCase();
+      const fBulan = document.getElementById('fCalBulan').value;
+      const fTarikhRaw = document.getElementById('fCalTarikh').value;
+      const fKat = document.getElementById('fCalKategori').value;
+      const fTin = document.getElementById('fCalTindakan').value;
+      let fTarikh = "";
+      if(fTarikhRaw) { const p = fTarikhRaw.split('-'); fTarikh = `${p[2]}/${p[1]}/${p[0]}`; }
+      const filtered = DATA.cal.filter(r => {
+         const act = (getVal(r, 'AKTIVITI')||"").toLowerCase();
+         const dateCol = (getVal(r, 'TARIKH')||getVal(r,'TEMPOH')||"");
+         return (!q || act.includes(q)) && (!fBulan || getVal(r, 'BULAN 2') === fBulan) &&
+                (!fTarikh || dateCol.includes(fTarikh)) && (!fKat || getVal(r, 'KATEGORI') === fKat) &&
+                (!fTin || getVal(r, 'TINDAKAN') === fTin);
+      });
+      document.getElementById('calBody').innerHTML = filtered.map(r => `<tr><td>${getVal(r, 'BULAN 2')}</td><td>${getVal(r, 'TARIKH') || getVal(r, 'TEMPOH')}</td><td><strong>${getVal(r, 'AKTIVITI')}</strong></td><td>${getVal(r, 'TINDAKAN')}</td><td><span class="badge b-blue">${getVal(r, 'KATEGORI')}</span></td></tr>`).join('');
+  }
+
+  window.resetCalFilters = function() {
+     document.getElementById('searchCal').value = '';
+     document.getElementById('fCalTarikh').value = '';
+     document.querySelectorAll('#calFilters select').forEach(s => s.value='');
+     renderCalendarTable();
+  }
+
+  function renderAnn() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const list = (DATA.ann || []).filter(a => {
+      const tajuk = getVal(a, 'TAJUK');
+      if (!tajuk) return false;
+      const startStr = parseDateStr(getVal(a, 'TARIKH MULA'));
+      const endStr   = parseDateStr(getVal(a, 'TARIKH TAMAT'));
+      if (!startStr || !endStr) return false;
+      const start = new Date(startStr); start.setHours(0, 0, 0, 0);
+      const end   = new Date(endStr);   end.setHours(23, 59, 59, 999);
+      return today >= start && today <= end;
+    });
+    
+    document.getElementById('dAnn').innerText = list.length;
+    const grid = document.getElementById('annGrid');
+    const emptyMsg = document.getElementById('annEmpty');
+    
+    if(list.length === 0) {
+        grid.style.display = 'none';
+        emptyMsg.style.display = 'block';
+    } else {
+        grid.style.display = 'grid';
+        emptyMsg.style.display = 'none';
+        grid.innerHTML = list.map(a => {
+          const tajuk = getVal(a, 'TAJUK') || '';
+          const isi = getVal(a, 'ISI KANDUNGAN') || '';
+          const tindakan = (getVal(a, 'TINDAKAN') || '').toUpperCase();
+          const keutamaan = (getVal(a, 'KEUTAMAAN') || 'INFO').toUpperCase();
+          const url = getVal(a, 'URL') || '';
+          
+          const badgeClass =
+            (keutamaan.includes('TINGGI') || keutamaan.includes('URGENT')) ? 'b-red' :
+            (keutamaan.includes('SEDERHANA') || keutamaan.includes('MED')) ? 'b-blue' : 'b-blue';
+          
+          return `
+            <div class="card clickable" 
+                 data-title="${escapeHtml(tajuk)}" 
+                 data-body="${escapeHtml(isi)}" 
+                 data-url="${escapeHtml(url)}"
+                 onclick="openInfoModal(this.getAttribute('data-title'), this.getAttribute('data-body'), this.getAttribute('data-url'))">
+                 
+              <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+                <span class="badge ${badgeClass}">${escapeHtml(keutamaan)}</span>
+                <span style="font-size:11px; color:var(--text-muted)">${escapeHtml(getVal(a,'TARIKH MULA') || '')}</span>
+              </div>
+              <h4 style="margin:0 0 10px;">${escapeHtml(tajuk)}</h4>
+              <p style="font-size:13px; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin:0;">${escapeHtml(isi)}</p>
+              ${(tindakan || url) ? `<div style="margin-top:14px; font-size:12px; font-weight:600; color:var(--accent);">${escapeHtml(tindakan || (url ? 'LIHAT MAKLUMAT' : ''))} ${url ? '&nearr;' : ''}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+  }
+
+  function renderParents() {
+    document.getElementById('parentsGrid').innerHTML = (DATA.par || []).map(p => {
+      const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
+      return `<div class="card clickable" onclick="window.open('${url||'#'}', '_blank')"><h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4><p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}</div>`;
+    }).join('');
+  }
+
+  window.renderTrend = function() {
+    if(!DATA_ATT_CLEAN.length) return;
+    const mode = document.getElementById('trendType').value;
+    const mo = parseInt(document.getElementById('trendMonth').value);
+    const yr = parseInt(document.getElementById('trendYear').value);
+    const cl = document.getElementById('trendClass').value;
+    const filtered = DATA_ATT_CLEAN.filter(r => r.rawDate.getMonth()===mo && r.rawDate.getFullYear()===yr && (!cl || r.kelas===cl));
+    
+    // === AUTO-SWITCH YEAR IF DATA EMPTY ===
+    if(filtered.length === 0 && yr == new Date().getFullYear()) {
+         const prevYr = yr - 1;
+         const hasDataPrev = DATA_ATT_CLEAN.some(r => r.rawDate.getFullYear()===prevYr);
+         if(hasDataPrev) {
+             document.getElementById('trendYear').value = prevYr;
+             renderTrend(); 
+             return;
+         }
+    }
+    
+    const daysInMonth = new Date(yr, mo+1, 0).getDate();
+    let points = []; let maxVal = 0;
+    for(let d=1; d<=daysInMonth; d++) {
+      const dayRecs = filtered.filter(r => r.rawDate.getDate()===d);
+      let val = 0;
+      if(mode==='hadir') val = dayRecs.filter(r=>r.status==='HADIR').length;
+      else if(mode==='tidak') val = dayRecs.filter(r=>r.status.includes('TIDAK')).length;
+      else { if(dayRecs.length) val = (dayRecs.filter(r=>r.status==='HADIR').length / dayRecs.length) * 100; }
+      if(val > maxVal) maxVal = val;
+      points.push({x:d, y:val});
+    }
+    if(mode==='pct') maxVal = 100;
+    if(maxVal===0) maxVal = 10;
+    const W=900, H=280, Pad=30;
+    const innerW = W - Pad*2;
+    const innerH = H - Pad*2;
+    const path = points.map((p,i) => {
+      const px = Pad + (i * (innerW / (daysInMonth-1)));
+      const py = (H - Pad) - (p.y / maxVal) * innerH;
+      return `${px},${py}`;
+    }).join(' ');
+    document.getElementById('chartContainer').innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" style="background:var(--bg-card); border-radius:12px;"><polyline points="${path}" fill="none" stroke="var(--primary)" stroke-width="3" /><text x="${Pad}" y="20" fill="var(--text-muted)" font-size="12">Max: ${Math.round(maxVal)}</text></svg>`;
+  }
+
+  function setupTrendSelectors() {
+    const m = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogos","Sep","Okt","Nov","Dis"];
+    document.getElementById('trendMonth').innerHTML = m.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+    document.getElementById('trendMonth').value = new Date().getMonth();
+    const y = new Date().getFullYear();
+    document.getElementById('trendYear').innerHTML = `<option value="${y-1}">${y-1}</option><option value="${y}" selected>${y}</option>`;
+  }
+
+  window.openInfoModal = function(title, body, url) { 
+      document.getElementById('infoTitle').innerText = title || ''; 
+      document.getElementById('infoBody').innerText = body || ''; 
+      
+      const linkDiv = document.getElementById('infoLinkContainer');
+      const linkBtn = document.getElementById('infoLinkBtn');
+      
+      if(url && url !== 'undefined' && url.trim() !== '') {
+          linkDiv.style.display = 'block';
+          linkBtn.onclick = function() { window.open(url, '_blank'); };
+      } else {
+          linkDiv.style.display = 'none';
+      }
+      
+      document.getElementById('infoModal').classList.add('active'); 
+  }
+
+  window.openSettings = function() { document.getElementById('settingsModal').classList.add('active'); document.getElementById('pinInput').value = ''; document.getElementById('pinStep').style.display = 'block'; document.getElementById('settingStep').style.display = 'none'; }
+  window.closeSettings = function() { document.getElementById('settingsModal').classList.remove('active'); }
+  window.checkPin = function() { if(document.getElementById('pinInput').value === CONFIG.pin) { document.getElementById('pinStep').style.display = 'none'; document.getElementById('settingStep').style.display = 'block'; populateSettings(); } else alert('Salah PIN'); }
+  function populateSettings() { document.getElementById('setName').value = CONFIG.schoolName; document.getElementById('menuManagerList').innerHTML = CONFIG.menus.map((m,i) => `<div class="menu-toggle-item"><span>${m.label} (${m.role})</span><input type="checkbox" ${!m.hidden?'checked':''} id="menu_${i}"></div>`).join(''); }
+  window.saveSettings = function() { CONFIG.schoolName = document.getElementById('setName').value; CONFIG.menus.forEach((m,i) => m.hidden = !document.getElementById(`menu_${i}`).checked); localStorage.setItem('portalConfig', JSON.stringify(CONFIG)); location.reload(); }
+  window.toggleTheme = function() { const n = document.documentElement.getAttribute('data-mode')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-mode', n); localStorage.setItem('theme', n); renderTrend(); }
   function applyTheme() { document.documentElement.setAttribute('data-mode', localStorage.getItem('theme')||'light'); }
-  function setupTrendSelectors() { /* implementation */ }
-  window.forceReload = (t) => loadAllData();
+  function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 
   init();
 </script>
