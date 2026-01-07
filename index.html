@@ -1598,10 +1598,38 @@ function parseCSV(text) {
       }
   }
 
+// === KEMASKINI: INFO IBU BAPA DENGAN PENERANGAN ===
   function renderParents() {
-    document.getElementById('parentsGrid').innerHTML = (DATA.par || []).map(p => {
-      const url = getVal(p, 'PAUTAN') || getVal(p, 'URL');
-      return `<div class="card clickable" onclick="window.open('${url||'#'}', '_blank')"><h4 style="margin:0 0 10px 0; color:var(--primary)">${getVal(p,'TAJUK')||'Info'}</h4><p style="font-size:13px; color:var(--text-muted); margin:0;">${getVal(p,'KANDUNGAN')}</p>${url?'<div style="margin-top:15px; font-size:12px; color:var(--accent); font-weight:600;">Klik untuk buka &nearr;</div>':''}</div>`;
+    const grid = document.getElementById('parentsGrid');
+    
+    // Check kalau data wujud
+    if(!DATA.par || DATA.par.length === 0) {
+        grid.innerHTML = '<p style="color:#666; text-align:center; width:100%;">Tiada pautan dijumpai.</p>';
+        return;
+    }
+
+    grid.innerHTML = DATA.par.map(p => {
+      // Ambil data dari column Google Sheet
+      // getVal akan cari column yang ada perkataan 'URL' atau 'PAUTAN'
+      const url = getVal(p, 'APP URL') || getVal(p, 'URL') || getVal(p, 'PAUTAN');
+      const tajuk = getVal(p, 'TAJUK');
+      const deskripsi = getVal(p, 'PENERANGAN') || ''; // Ambil data PENERANGAN
+
+      return `
+        <div class="card clickable" onclick="window.open('${url}', '_blank')" style="display:flex; flex-direction:column; min-height:120px;">
+            <div style="flex:1;">
+                <h4 style="margin:0 0 8px 0; color:var(--primary); font-size:15px; font-weight:700;">
+                    ${tajuk}
+                </h4>
+                <p style="font-size:12px; color:#666; margin:0; line-height:1.4;">
+                    ${deskripsi}
+                </p>
+            </div>
+            <div style="margin-top:15px; font-size:11px; color:var(--accent); font-weight:600; text-align:right; border-top:1px solid #eee; padding-top:8px;">
+                Klik untuk buka <span class="material-icons-round" style="font-size:12px; vertical-align:middle;">open_in_new</span>
+            </div>
+        </div>
+      `;
     }).join('');
   }
 
