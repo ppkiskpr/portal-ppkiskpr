@@ -358,9 +358,9 @@
                   <button class="btn btn-primary" onclick="renderAsnafTable()">Cari</button>
               </div>
               <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px;">
-                   <div style="flex:1"><label class="filter-label">Tahun</label><select class="form-select" id="fAsnafYear"><option value="">Semua</option></select></div>
-                   <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafClass"><option value="">Semua</option></select></div>
-                   <div><button class="btn btn-outline" onclick="resetAsnafFilters()">Reset</button></div>
+                    <div style="flex:1"><label class="filter-label">Tahun</label><select class="form-select" id="fAsnafYear"><option value="">Semua</option></select></div>
+                    <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafClass"><option value="">Semua</option></select></div>
+                    <div><button class="btn btn-outline" onclick="resetAsnafFilters()">Reset</button></div>
               </div>
               <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>NO. MYKID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="asnafBody"></tbody></table></div>
               <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="asnafCount"></div>
@@ -379,9 +379,9 @@
                   <button class="btn btn-primary" onclick="renderYatimTable()">Cari</button>
               </div>
               <div class="filter-row" style="margin-bottom:15px; background:var(--bg-element); padding:15px; border-radius:10px;">
-                   <div style="flex:1"><label class="filter-label">Tahun</label><select class="form-select" id="fYatimYear"><option value="">Semua</option></select></div>
-                   <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fYatimClass"><option value="">Semua</option></select></div>
-                   <div><button class="btn btn-outline" onclick="resetYatimFilters()">Reset</button></div>
+                    <div style="flex:1"><label class="filter-label">Tahun</label><select class="form-select" id="fYatimYear"><option value="">Semua</option></select></div>
+                    <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fYatimClass"><option value="">Semua</option></select></div>
+                    <div><button class="btn btn-outline" onclick="resetYatimFilters()">Reset</button></div>
               </div>
               <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>NO. MYKID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="yatimBody"></tbody></table></div>
               <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="yatimCount"></div>
@@ -441,7 +441,7 @@
       
       <div id="page-opr" class="page-section" style="display:none;">
           <div class="page-banner">
-            <div class="banner-text"><h2>One Page Report (OPR)</h2><p>Laporan & Dokumentasi Tahunan</p></div>
+            <div class="banner-text"><h2>Dokumentasi OPR & Kejayaan PPKI</h2><p>Laporan & Dokumentasi Tahunan</p></div>
           </div>
           <div class="dashboard-grid" id="oprGrid"></div>
       </div>
@@ -501,10 +501,13 @@
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
   
-  // === OPR DATA ===
+  // === KEMASKINI OPR DATA DENGAN KEJAYAAN ===
   const OPR_DATA = [
       { title: "OPR 2025", url: "https://www.canva.com/design/DAGj-NSCaiM/dFdneny6BMl3IR4EOgn7aw/view?utm_content=DAGj-NSCaiM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha053443e84", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2025" },
-      { title: "OPR 2026", url: "https://www.canva.com/design/DAG7lN9ebrs/Y2M_3qNm6U0Q7ge1EEpsZA/view?utm_content=DAG7lN9ebrs&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h13988d7b9d", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2026" }
+      { title: "OPR 2026", url: "https://www.canva.com/design/DAG7lN9ebrs/Y2M_3qNm6U0Q7ge1EEpsZA/view?utm_content=DAG7lN9ebrs&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h13988d7b9d", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2026" },
+      // KAD KEJAYAAN BARU DITAMBAH DI SINI
+      { title: "KEJAYAAN PPKI 2025", url: "https://www.canva.com/design/DAGj8XOhF2Y/k6gN8TgLPzYGhDMu3irSHQ/view?utm_content=DAGj8XOhF2Y&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h18435068bf", icon: "emoji_events", desc: "Pencapaian & Anugerah" },
+      { title: "KEJAYAAN PPKI 2026", url: "https://www.canva.com/design/DAG97fnDoaQ/sPpaF6M8xdDlYWBEdnCKAg/view?utm_content=DAG97fnDoaQ&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=he7b469cd99", icon: "emoji_events", desc: "Pencapaian & Anugerah" }
   ];
 
  
@@ -542,7 +545,8 @@
       
       // GROUP PENTADBIRAN (Campur Public & Family)
       {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'}, // UMUM
-      {id:'opr', label:'Laporan OPR', icon:'description', hidden:false, role:'public'}, // UMUM
+      // KEMASKINI: NAMA MENU DITUKAR
+      {id:'opr', label:'Laporan & Dokumentasi', icon:'description', hidden:false, role:'public'}, // UMUM
       {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'}, // UMUM
       {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM
       
