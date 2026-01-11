@@ -4,7 +4,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  
+   
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Portal Rasmi PPKI SK Paya Resak</title>
@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  
+   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
@@ -40,29 +40,29 @@
     .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 12px; transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow: hidden; height: 100%; max-height: 100vh; }
     @media (min-width: 769px) { .sidebar { width: var(--sidebar-w-full); } body.desktop-mini .sidebar { width: var(--sidebar-w-mini); } body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; } body.desktop-mini .brand { justify-content: center; padding-left: 0; } body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; } body.desktop-mini .nav-icon { margin-right: 0; } }
     @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); } body.mobile-active .sidebar { left: 0; } .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); } body.mobile-active .backdrop { display: block; } }
-    
+     
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-height: 45px; overflow: hidden; white-space: nowrap; flex-shrink: 0; }
     .brand-logo { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
     .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
     .brand-text h1 { margin: 0; font-size: 15px; font-weight: 700; }
     .brand-text p { margin: 0; font-size: 11px; color: var(--text-muted); }
-    
+     
     .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; overflow-x: hidden; padding-bottom: 40px; min-height: 0; }
     .nav-menu::-webkit-scrollbar { width: 5px; }
     .nav-menu::-webkit-scrollbar-track { background: transparent; }
     .nav-menu::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 10px; }
-    
+     
     .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; cursor: pointer; color: var(--text-muted); text-decoration: none; transition: all 0.2s; white-space: nowrap; font-size: 13px; font-weight: 500; flex-shrink: 0; }
     .nav-item:hover { background: var(--bg-element); color: var(--text-main); }
     .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
     .nav-icon { font-size: 20px; display: flex; align-items: center; justify-content: center; min-width: 24px; }
-    
+     
     .nav-group-header { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 15px 14px 5px 14px; margin-top: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; }
     .nav-group-header .toggle-icon { font-size: 16px; transition: transform 0.3s; }
     .nav-group-header.collapsed .toggle-icon { transform: rotate(-90deg); }
     .nav-child-container { overflow: hidden; transition: max-height 0.3s ease; flex-shrink: 0; }
     .nav-child-container.collapsed { max-height: 0; }
-    
+     
     .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); padding-top: 20px; line-height: 1.4; border-top: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-sidebar); }
     #userInfo { margin-bottom: 10px; font-weight: 600; font-size: 12px; display: none; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.3; text-align: center; padding: 0 5px; }
 
@@ -82,7 +82,7 @@
     .stat-sub.red { color: #D92D20; font-weight: 600; }
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
-    
+     
     /* ENROLMEN */
     .enrol-grid { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
     .chart-box { flex: 0 0 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
@@ -94,7 +94,10 @@
     .class-card-mini { background: var(--bg-element); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
     .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); border-color: var(--primary); transform: translateY(-2px); }
     .cc-icon-box { width: 36px; height: 36px; background: #D1FADF; border-radius: 8px; display: grid; place-items: center; color: var(--primary); }
-    .cc-name { font-weight: 700; font-size: 12px; color: var(--text-main); margin-bottom: 2px; text-transform: uppercase; }
+    
+    /* PERUBAHAN: SAIZ FONT DIBESARKAN KE 15PX */
+    .cc-name { font-weight: 700; font-size: 15px; color: var(--text-main); margin-bottom: 2px; text-transform: uppercase; }
+    
     .cc-count { font-size: 11px; color: var(--text-muted); font-weight: 500; }
 
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
@@ -106,7 +109,7 @@
     .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 42px; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-    
+     
     .filter-panel { display: none; padding: 20px; background: var(--bg-element); border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color); }
     .filter-panel.open { display: block; }
     .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
@@ -116,7 +119,7 @@
     table { width: 100%; border-collapse: collapse; min-width: 800px; font-size: 13px; }
     th { text-align: left; padding: 14px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
     td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
-    
+     
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
@@ -212,7 +215,7 @@
           <div class="banner-text"><h2>Dashboard</h2><p>Selamat Datang ke Portal Rasmi PPKI</p></div>
           <div class="banner-actions"><button class="btn-action" onclick="forceReload('all')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload Semua</button></div>
         </div>
-        
+         
         <div class="dashboard-grid">
           <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card att-card"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
@@ -500,7 +503,7 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-  
+   
   // === KEMASKINI OPR DATA DENGAN KEJAYAAN ===
   const OPR_DATA = [
       { title: "OPR 2025", url: "https://www.canva.com/design/DAGj-NSCaiM/dFdneny6BMl3IR4EOgn7aw/view?utm_content=DAGj-NSCaiM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha053443e84", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2025" },
@@ -510,7 +513,7 @@
       { title: "KEJAYAAN PPKI 2026", url: "https://www.canva.com/design/DAG97fnDoaQ/sPpaF6M8xdDlYWBEdnCKAg/view?utm_content=DAG97fnDoaQ&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=he7b469cd99", icon: "emoji_events", desc: "Pencapaian & Anugerah" }
   ];
 
- 
+  
   const DEFAULTS = {
     schoolName: "SK Paya Resak",
     pin: "5235",
@@ -524,7 +527,7 @@
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
       // === NEW STUDENT LIST ===
       student_list: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=1759925919&single=true&output=csv",
-      
+       
       asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=877457981&single=true&output=csv", 
       yatim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=1167967580&single=true&output=csv",
 
@@ -533,34 +536,34 @@
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
-      
+       
       // GROUP HEM (Hanya Admin)
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
       {id:'student_list', label:'Senarai Nama Murid', icon:'groups', hidden:false, role:'admin'}, 
       {id:'asnaf', label:'Rekod Asnaf', icon:'volunteer_activism', hidden:false, role:'admin'},
       {id:'yatim', label:'Rekod Yatim', icon:'child_care', hidden:false, role:'admin'},
-      
+       
       // GROUP KOKO (Hanya Admin)
       {id:'pajsk', label:'Rekod PAJSK', icon:'emoji_events', hidden:false, role:'admin'},
-      
+       
       // GROUP PENTADBIRAN (Campur Public & Family)
       {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'}, // UMUM
       // KEMASKINI: NAMA MENU DITUKAR
       {id:'opr', label:'Laporan & Dokumentasi', icon:'description', hidden:false, role:'public'}, // UMUM
       {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'}, // UMUM
       {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM
-      
+       
       // SENSITIF (Wajib Login)
       {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'family'}, 
     ]
   };
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
-  
+   
   // === AUTO-FIX & HARD RESET (V28.18) ===
   const CURRENT_VERSION = '28.27'; 
   const savedVer = localStorage.getItem('portalVersion');
-  
+   
   if(savedVer !== CURRENT_VERSION) {
       console.log("New version detected. Clearing cache...");
       localStorage.clear(); // Nuke all old data
@@ -573,7 +576,7 @@
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
   let chartInstance = null; // Global Chart Instance
-  
+   
   // REGISTER CHART DATA LABELS
   Chart.register(ChartDataLabels);
 
@@ -1043,7 +1046,6 @@ function parseCSV(text) {
                 <div class="cc-name">${cls}</div>
                 <div class="cc-count">
                     <span>${classMap[cls].total} Murid</span>
-                    <span style="font-size:10px; opacity:0.7">(L:${classMap[cls].L} P:${classMap[cls].P})</span>
                 </div>
             </div>
         `;
@@ -1719,5 +1721,3 @@ function parseCSV(text) {
 </script>
 </body>
 </html>
-
-
