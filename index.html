@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.29 - Pretty Cards Update) === */
+    /* === CSS UTAMA (V28.30 - Tahap Colors & Full Names) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -79,7 +79,7 @@
     /* === REKA BENTUK KAD KEHADIRAN (MODEN & IKON) === */
     .att-class-grid { 
         display: grid; 
-        grid-template-columns: repeat(3, 1fr); /* Desktop: 3 lajur (Total 6 kad = 2 baris) */
+        grid-template-columns: repeat(3, 1fr); /* Desktop: 3 lajur */
         gap: 15px; 
         margin-bottom: 24px; 
     }
@@ -1467,8 +1467,7 @@ function parseCSV(text) {
     document.getElementById('attCount').innerText = `Papar: ${initialTableData.length} rekod (Hari Ini).`;
   }
 
-  // === FUNGSI BARU: KAD CANTIK + ICON + PURATA (6 KAD) ===
-// === FUNGSI KEMASKINI (V2): WARNA IKUT TAHAP, IKON IKUT PRESTASI ===
+  // === FUNGSI KEMASKINI (V2): WARNA IKUT TAHAP, IKON IKUT PRESTASI ===
   function renderClassDailyStats(allData, todayDateStr) {
       const classes = ['1 AL-FARABI', '2 AL-FARABI', '3 AL-FARABI', '4 AL-FARABI', '5 AL-FARABI'];
       const grid = document.getElementById('attClassGrid');
@@ -1557,32 +1556,6 @@ function parseCSV(text) {
           <div class="apc-stat">
               <div class="apc-val" style="color:#039855">${grandPct}%</div>
               <div class="apc-sub" style="color:#027A48">
-                  ${grandTotalHadir} daripada ${grandTotalMurid} Murid Hadir
-              </div>
-          </div>
-      `;
-      grid.appendChild(avgCard);
-  }
-
-      // 2. KAD KE-6: PURATA KESELURUHAN (Genapkan Grid)
-      let grandPct = grandTotalMurid > 0 ? Math.round((grandTotalHadir / grandTotalMurid) * 100) : 0;
-      let avgColor = '#2E90FA'; // Biru Rasmi
-      
-      const avgCard = document.createElement('div');
-      avgCard.className = 'att-pretty-card';
-      avgCard.style.setProperty('--card-color', avgColor);
-      avgCard.style.background = '#eff8ff'; // Background sedikit biru utk bezakan
-      avgCard.style.border = '1px solid #b2ddff';
-
-      avgCard.innerHTML = `
-          <span class="material-icons-round card-bg-icon">pie_chart</span>
-          <div class="apc-header">
-              <div class="apc-title" style="color:#175CD3">PURATA PPKI</div>
-              <div class="apc-badge" style="background:#fff; color:${avgColor}; box-shadow:0 1px 2px rgba(0,0,0,0.05)">HARI INI</div>
-          </div>
-          <div class="apc-stat">
-              <div class="apc-val" style="color:#1570EF">${grandPct}%</div>
-              <div class="apc-sub" style="color:#175CD3">
                   ${grandTotalHadir} daripada ${grandTotalMurid} Murid Hadir
               </div>
           </div>
