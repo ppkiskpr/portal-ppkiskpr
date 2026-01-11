@@ -86,7 +86,33 @@
     
     @media (max-width: 1200px) { .att-class-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 768px) { .att-class-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px) { .att-class-grid { grid-template-columns: 1fr; } }
+    /* === MOBILE OPTIMIZATION (V28.28) === */
+@media (max-width: 600px) {
+    /* 1. Jadikan 4 Kad Utama (Hadir/Tidak/%) jadi 2 kolum */
+    .dashboard-grid { 
+        grid-template-columns: 1fr 1fr !important; 
+        gap: 10px;
+    }
+
+    /* 2. Jadikan 5 Kad Kelas jadi 2 kolum */
+    .att-class-grid { 
+        grid-template-columns: 1fr 1fr !important; 
+        gap: 8px; 
+        margin-bottom: 15px;
+    }
+
+    /* KAD KE-5 (Ganjil) akan jadi lebar penuh supaya kemas */
+    .att-class-card:last-child {
+        grid-column: span 2; 
+    }
+
+    /* 3. Kecilkan sedikit saiz font & padding utk mobile supaya muat */
+    .att-class-card { padding: 10px 12px; }
+    .ac-title { font-size: 10px; margin-bottom: 4px; }
+    .ac-val { font-size: 18px; } /* Nombor besar dikecilkan sikit */
+    .ac-pct { font-size: 11px; }
+    .ac-sub { font-size: 9px; margin-top: 4px; }
+}
 
     .card { background: var(--bg-card); padding: 20px; border-radius: var(--radius-card); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
     .stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
