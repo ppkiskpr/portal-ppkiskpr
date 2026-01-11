@@ -1,19 +1,10 @@
 <!doctype html>
 <html lang="ms" class="h-full">
 <head>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFPTMCWD1K"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-GFPTMCWD1K');
-  </script>
-
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-   
+  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Portal Rasmi PPKI SK Paya Resak</title>
@@ -22,12 +13,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-   
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.30 - Enrolmen Card Update) === */
+    /* === CSS UTAMA (V28.27 - Table Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -49,29 +40,29 @@
     .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 12px; transition: width 0.3s ease; z-index: 50; flex-shrink: 0; overflow: hidden; height: 100%; max-height: 100vh; }
     @media (min-width: 769px) { .sidebar { width: var(--sidebar-w-full); } body.desktop-mini .sidebar { width: var(--sidebar-w-mini); } body.desktop-mini .brand-text, body.desktop-mini .nav-text, body.desktop-mini .sidebar-footer { opacity: 0; pointer-events: none; display: none; } body.desktop-mini .brand { justify-content: center; padding-left: 0; } body.desktop-mini .nav-item { justify-content: center; padding: 12px 0; } body.desktop-mini .nav-icon { margin-right: 0; } }
     @media (max-width: 768px) { .sidebar { position: fixed; left: -100%; top: 0; height: 100%; width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.2); } body.mobile-active .sidebar { left: 0; } .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; display: none; backdrop-filter: blur(2px); } body.mobile-active .backdrop { display: block; } }
-     
+    
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-height: 45px; overflow: hidden; white-space: nowrap; flex-shrink: 0; }
     .brand-logo { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
     .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
     .brand-text h1 { margin: 0; font-size: 15px; font-weight: 700; }
     .brand-text p { margin: 0; font-size: 11px; color: var(--text-muted); }
-     
+    
     .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; overflow-x: hidden; padding-bottom: 40px; min-height: 0; }
     .nav-menu::-webkit-scrollbar { width: 5px; }
     .nav-menu::-webkit-scrollbar-track { background: transparent; }
     .nav-menu::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 10px; }
-     
+    
     .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; cursor: pointer; color: var(--text-muted); text-decoration: none; transition: all 0.2s; white-space: nowrap; font-size: 13px; font-weight: 500; flex-shrink: 0; }
     .nav-item:hover { background: var(--bg-element); color: var(--text-main); }
     .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
     .nav-icon { font-size: 20px; display: flex; align-items: center; justify-content: center; min-width: 24px; }
-     
+    
     .nav-group-header { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 15px 14px 5px 14px; margin-top: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; }
     .nav-group-header .toggle-icon { font-size: 16px; transition: transform 0.3s; }
     .nav-group-header.collapsed .toggle-icon { transform: rotate(-90deg); }
     .nav-child-container { overflow: hidden; transition: max-height 0.3s ease; flex-shrink: 0; }
     .nav-child-container.collapsed { max-height: 0; }
-     
+    
     .sidebar-footer { margin-top: auto; font-size: 11px; text-align: center; color: var(--text-muted); padding-top: 20px; line-height: 1.4; border-top: 1px solid var(--border-color); flex-shrink: 0; background: var(--bg-sidebar); }
     #userInfo { margin-bottom: 10px; font-weight: 600; font-size: 12px; display: none; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; line-height: 1.3; text-align: center; padding: 0 5px; }
 
@@ -91,52 +82,20 @@
     .stat-sub.red { color: #D92D20; font-weight: 600; }
     .clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
-     
-    /* ENROLMEN & NEW CLASS CARDS */
-    .enrol-grid { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
+    
+    /* ENROLMEN */
+    .enrol-grid { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
     .chart-box { flex: 0 0 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
     .chart-center-text { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
     .chart-number { font-size: 28px; font-weight: 800; line-height: 1; color: var(--text-main); }
     .nav-card-btn { margin-top: 25px; background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; border: none; transition: transform 0.2s; }
-    
     .class-list-box { flex: 1; min-width: 250px; }
-    .class-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
-
-    /* NEW DETAILED CLASS CARD STYLE */
-    .class-card-detailed {
-        background: var(--bg-element); 
-        border: 1px solid var(--border-color);
-        border-radius: 12px; 
-        padding: 15px; 
-        cursor: pointer; 
-        transition: all 0.2s;
-        display: flex; flex-direction: column;
-    }
-    .class-card-detailed:hover, .class-card-detailed.active {
-        background: white; border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    .cc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .cc-icon { width: 32px; height: 32px; background: #D1FADF; color: var(--primary); border-radius: 6px; display: grid; place-items: center; }
-    .cc-title { font-weight: 700; font-size: 13px; color: var(--text-main); line-height: 1.2; }
-    .cc-enrol { font-size: 11px; color: var(--text-muted); font-weight: 500; }
-    
-    .cc-stat-box {
-        background: #ECFDF3; border: 1px solid #D1FADF; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px;
-        display: flex; justify-content: space-between; align-items: center;
-    }
-    .cc-val-label { font-size: 10px; font-weight: 700; color: #027A48; text-transform: uppercase; }
-    .cc-val-num { font-size: 16px; font-weight: 800; color: #027A48; }
-    .cc-val-pct { font-size: 11px; font-weight: 500; color: #027A48; margin-left: 4px; }
-    
-    .cc-absent-badge {
-        font-size: 10px; font-weight: 700; color: #B42318; background: #FEF3F2; padding: 2px 8px; border-radius: 20px; border: 1px solid #FECDCA;
-    }
-    .cc-progress { height: 4px; width: 100%; background: #E4E7EC; border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
-    .cc-bar { height: 100%; background: #039855; border-radius: 2px; }
-    
-    .cc-footer { display: flex; justify-content: center; gap: 10px; font-size: 10px; color: var(--text-muted); font-weight: 500; }
-    .cc-sub-stat span b { color: var(--text-main); }
-
+    .class-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+    .class-card-mini { background: var(--bg-element); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+    .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); border-color: var(--primary); transform: translateY(-2px); }
+    .cc-icon-box { width: 36px; height: 36px; background: #D1FADF; border-radius: 8px; display: grid; place-items: center; color: var(--primary); }
+    .cc-name { font-weight: 700; font-size: 12px; color: var(--text-main); margin-bottom: 2px; text-transform: uppercase; }
+    .cc-count { font-size: 11px; color: var(--text-muted); font-weight: 500; }
 
     .page-banner { background: linear-gradient(135deg, var(--primary), #144d33); color: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
@@ -147,7 +106,7 @@
     .btn { padding: 0 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; height: 42px; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-     
+    
     .filter-panel { display: none; padding: 20px; background: var(--bg-element); border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color); }
     .filter-panel.open { display: block; }
     .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
@@ -157,7 +116,7 @@
     table { width: 100%; border-collapse: collapse; min-width: 800px; font-size: 13px; }
     th { text-align: left; padding: 14px 16px; background: var(--bg-element); color: var(--text-muted); font-weight: 600; text-transform: uppercase; white-space: nowrap; }
     td { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
-     
+    
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
     .b-green { background: #ECFDF3; color: #027A48; }
     .b-red { background: #FEF3F2; color: #B42318; }
@@ -234,7 +193,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2026 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.30</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.27</div>
     </div>
   </aside>
 
@@ -253,7 +212,7 @@
           <div class="banner-text"><h2>Dashboard</h2><p>Selamat Datang ke Portal Rasmi PPKI</p></div>
           <div class="banner-actions"><button class="btn-action" onclick="forceReload('all')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload Semua</button></div>
         </div>
-         
+        
         <div class="dashboard-grid">
           <div class="card stat-card att-card"><div class="stat-label">Kehadiran Hari Ini</div><div class="stat-val" id="dToday">-</div><div class="stat-sub red" id="dAbsent">- Tidak Hadir</div></div>
           <div class="card stat-card att-card"><div class="stat-label">Minggu Ini</div><div class="stat-val" id="dWeek">-</div><div class="stat-sub">Rekod Kehadiran</div></div>
@@ -263,9 +222,9 @@
 
         <div class="card" style="margin-bottom: 24px; padding: 24px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin:0; font-size:16px;">🎓 Enrolmen & Kehadiran Harian</h3>
+                <h3 style="margin:0; font-size:16px;">🎓 Enrolmen Murid</h3>
             </div>
-            <div class="enrol-grid" style="justify-content: center; align-items: center;">
+            <div class="enrol-grid">
                 <div class="chart-box">
                     <div style="height: 220px; width: 220px; position:relative;">
                         <canvas id="genderChart"></canvas>
@@ -482,7 +441,7 @@
       
       <div id="page-opr" class="page-section" style="display:none;">
           <div class="page-banner">
-            <div class="banner-text"><h2>Laporan OPR & Kejayaan</h2><p>Laporan & Dokumentasi Tahunan</p></div>
+            <div class="banner-text"><h2>Dokumentasi OPR & Kejayaan PPKI</h2><p>Laporan & Dokumentasi Tahunan</p></div>
           </div>
           <div class="dashboard-grid" id="oprGrid"></div>
       </div>
@@ -541,7 +500,7 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-   
+  
   // === KEMASKINI OPR DATA DENGAN KEJAYAAN ===
   const OPR_DATA = [
       { title: "OPR 2025", url: "https://www.canva.com/design/DAGj-NSCaiM/dFdneny6BMl3IR4EOgn7aw/view?utm_content=DAGj-NSCaiM&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha053443e84", icon: "folder_open", desc: "Laporan Aktiviti Tahun 2025" },
@@ -551,7 +510,7 @@
       { title: "KEJAYAAN PPKI 2026", url: "https://www.canva.com/design/DAG97fnDoaQ/sPpaF6M8xdDlYWBEdnCKAg/view?utm_content=DAG97fnDoaQ&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=he7b469cd99", icon: "emoji_events", desc: "Pencapaian & Anugerah" }
   ];
 
-  
+ 
   const DEFAULTS = {
     schoolName: "SK Paya Resak",
     pin: "5235",
@@ -565,7 +524,7 @@
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
       // === NEW STUDENT LIST ===
       student_list: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=1759925919&single=true&output=csv",
-       
+      
       asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=877457981&single=true&output=csv", 
       yatim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=1167967580&single=true&output=csv",
 
@@ -574,34 +533,34 @@
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
-       
+      
       // GROUP HEM (Hanya Admin)
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
       {id:'student_list', label:'Senarai Nama Murid', icon:'groups', hidden:false, role:'admin'}, 
       {id:'asnaf', label:'Rekod Asnaf', icon:'volunteer_activism', hidden:false, role:'admin'},
       {id:'yatim', label:'Rekod Yatim', icon:'child_care', hidden:false, role:'admin'},
-       
+      
       // GROUP KOKO (Hanya Admin)
       {id:'pajsk', label:'Rekod PAJSK', icon:'emoji_events', hidden:false, role:'admin'},
-       
+      
       // GROUP PENTADBIRAN (Campur Public & Family)
       {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'}, // UMUM
       // KEMASKINI: NAMA MENU DITUKAR
-      {id:'opr', label:'Laporan OPR & Kejayaan', icon:'description', hidden:false, role:'public'}, // UMUM
+      {id:'opr', label:'Laporan & Dokumentasi', icon:'description', hidden:false, role:'public'}, // UMUM
       {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'}, // UMUM
       {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM
-       
+      
       // SENSITIF (Wajib Login)
       {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'family'}, 
     ]
   };
 
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
-   
-  // === AUTO-FIX & HARD RESET (V28.30) ===
-  const CURRENT_VERSION = '28.30'; 
+  
+  // === AUTO-FIX & HARD RESET (V28.18) ===
+  const CURRENT_VERSION = '28.27'; 
   const savedVer = localStorage.getItem('portalVersion');
-   
+  
   if(savedVer !== CURRENT_VERSION) {
       console.log("New version detected. Clearing cache...");
       localStorage.clear(); // Nuke all old data
@@ -614,7 +573,7 @@
   let DATA_ATT_CLEAN = [];
   let USER_ROLE = 'public';
   let chartInstance = null; // Global Chart Instance
-   
+  
   // REGISTER CHART DATA LABELS
   Chart.register(ChartDataLabels);
 
@@ -663,7 +622,7 @@
       appContainer.style.display = 'flex';
       init();
     }
-     
+    
     // === UPDATE DASHBOARD CARDS INTERACTIVITY BASED ON ROLE ===
     document.querySelectorAll('.att-card').forEach(el => {
         if(USER_ROLE === 'admin') {
@@ -681,14 +640,14 @@
         if(USER_ROLE === 'admin') enrolBtn.style.display = 'block';
         else enrolBtn.style.display = 'none';
     }
-     
+    
     // === RENDER SIDEBAR ===
     renderSidebar();
 
     // === URL HASH CHECKER (DEEP LINKING LOGIC) ===
     // 1. Check if there's a hash in the URL (e.g., #attendance)
     const initialHash = window.location.hash.substring(1);
-     
+    
     // 2. If hash exists and corresponds to a valid page, try to open it
     if (initialHash && document.getElementById('page-' + initialHash)) {
         window.navTo(initialHash);
@@ -732,7 +691,7 @@
   window.renderSidebar = function() {
     const nav = document.getElementById('sidebarMenu');
     nav.innerHTML = '';
-     
+    
     const NAV_GROUPS = [
         { type: 'single', id: 'home' }, 
         { type: 'group', label: 'PENGURUSAN HEM', id: 'grp_hem', items: ['attendance', 'student_list', 'asnaf', 'yatim', 'emailcheck', 'parents'] },
@@ -817,7 +776,7 @@
         if (menu.role === 'admin' && USER_ROLE !== 'admin') {
             console.warn("Access Denied: Admin area.");
             alert("Akses Disekat: Halaman ini untuk pentadbir sahaja.");
-             
+            
             // Redirect to Home immediately & Clean URL
             document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
             document.getElementById('page-home').style.display='block';
@@ -829,7 +788,7 @@
         if (menu.role === 'family' && USER_ROLE === 'public') {
             console.warn("Access Denied: Login required.");
             alert("Sila Log Masuk untuk mengakses halaman ini.");
-             
+            
             // Redirect to Home immediately & Clean URL
             document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
             document.getElementById('page-home').style.display='block';
@@ -842,16 +801,16 @@
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     const el = document.getElementById(`nav-${id}`);
     if(el) el.classList.add('active');
-     
+    
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
     const targetPage = document.getElementById(`page-${id}`);
     if(targetPage) targetPage.style.display='block';
-     
+    
     // 3. Trigger Specific Resets
     if(id === 'asnaf') resetAsnafFilters();
     if(id === 'yatim') resetYatimFilters();
     if(id === 'student_list') resetStudentList();
-     
+    
     // 4. Handle Mobile Sidebar
     if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
 
@@ -918,7 +877,7 @@ function parseCSV(text) {
   rows.push(row);
   while (rows.length && rows[rows.length - 1].every(c => (c || "").trim() === "")) { rows.pop(); }
   if (!rows.length) return [];
-   
+  
   // === SMART HEADER DETECTION (Ignore Title Rows) ===
   let headerIdx = -1;
   for(let i=0; i<Math.min(rows.length, 10); i++) {
@@ -1017,15 +976,15 @@ function parseCSV(text) {
   // === PROCESS ENROLMENT & CHART (Use Database URL CSV directly) ===
   function processEnrolment() {
     let rawData = DATA.db || [];
-     
+    
     // Fallback if DB empty
     if(rawData.length === 0 && DATA.att && DATA.att.length > 0) {
-          const unique = new Map();
-          DATA.att.forEach(r => {
-              const n = getVal(r, 'NAMA');
-              if(n && !unique.has(n)) unique.set(n, r);
-          });
-          rawData = Array.from(unique.values());
+         const unique = new Map();
+         DATA.att.forEach(r => {
+             const n = getVal(r, 'NAMA');
+             if(n && !unique.has(n)) unique.set(n, r);
+         });
+         rawData = Array.from(unique.values());
     }
 
     const classMap = {
@@ -1035,8 +994,7 @@ function parseCSV(text) {
         "4 AL-FARABI": { L: 0, P: 0, total: 0 },
         "5 AL-FARABI": { L: 0, P: 0, total: 0 }
     };
-     
-    // 1. CALCULATE ENROLMENT (TOTAL STUDENTS)
+    
     let totalL = 0;
     let totalP = 0;
     let totalStudents = 0;
@@ -1069,78 +1027,33 @@ function parseCSV(text) {
         }
     });
 
-    // 2. GET TODAY'S ATTENDANCE DATA (FOR CARD DISPLAY)
-    const todayStr = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD matches DATA_ATT_CLEAN
-    // Filter attendance records specifically for today
-    const todayAttRecords = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
-
     const grid = document.getElementById('classGrid');
     grid.innerHTML = '';
-     
-    // DEFAULT CHART STATE: ALL
+    
+    // DEFAULT STATE: ALL
     updateChart('SEMUA', totalL, totalP);
-     
-    // 3. RENDER DETAILED CARDS
+    
+    // Render Class Buttons (ENHANCED CARDS)
     Object.keys(classMap).sort().forEach(cls => {
-        const enrolData = classMap[cls];
-        
-        // Calculate Today's Stats for this Class
-        const classAtt = todayAttRecords.filter(r => r.kelas === cls);
-        const presentRecs = classAtt.filter(r => r.status === 'HADIR');
-        
-        // Count Present by Gender
-        const presentL = presentRecs.filter(r => r.gender.startsWith('L')).length;
-        const presentP = presentRecs.filter(r => r.gender.startsWith('P')).length;
-        const totalPresent = presentL + presentP;
-        
-        // Calculate Percentage
-        const pct = enrolData.total > 0 ? Math.round((totalPresent / enrolData.total) * 100) : 0;
-        
-        // Calculate Absent (Total Enrolment - Total Present)
-        // OR use specific 'TIDAK HADIR' records if you prefer strictly logged data. 
-        // For dashboard "Missing" view, (Enrolment - Present) is usually safer to show who isn't here yet.
-        const totalAbsent = enrolData.total - totalPresent; 
-
         const btn = document.createElement('div');
-        btn.className = 'class-card-detailed';
+        btn.className = 'class-card-mini';
         btn.innerHTML = `
-            <div class="cc-header">
-                <div class="cc-icon"><i class="fas fa-graduation-cap" style="font-family:'Font Awesome 5 Free'; font-weight:900; font-style:normal;">🎓</i></div>
-                <div>
-                    <div class="cc-title">${cls}</div>
-                    <div class="cc-enrol">${enrolData.total} Murid • (L:${enrolData.L} P:${enrolData.P})</div>
+            <div class="cc-icon-box"><span class="material-icons-round" style="font-size:20px">school</span></div>
+            <div class="cc-info">
+                <div class="cc-name">${cls}</div>
+                <div class="cc-count">
+                    <span>${classMap[cls].total} Murid</span>
+                    <span style="font-size:10px; opacity:0.7">(L:${classMap[cls].L} P:${classMap[cls].P})</span>
                 </div>
-            </div>
-
-            <div class="cc-stat-box">
-                <div>
-                    <div class="cc-val-label">KEHADIRAN</div>
-                    <div class="cc-val-num">
-                        ${totalPresent}/${enrolData.total} <span class="cc-val-pct">(${pct}%)</span>
-                    </div>
-                </div>
-                ${totalAbsent > 0 ? `<div class="cc-absent-badge">${totalAbsent} TH</div>` : ''}
-            </div>
-
-            <div class="cc-progress">
-                <div class="cc-bar" style="width: ${pct}%"></div>
-            </div>
-
-            <div class="cc-footer">
-                <div class="cc-sub-stat"><span style="color:#027A48">L:</span> <b>${presentL}</b>/${enrolData.L}</div>
-                <div style="color:#D0D5DD">|</div>
-                <div class="cc-sub-stat"><span style="color:#D92D20">P:</span> <b>${presentP}</b>/${enrolData.P}</div>
             </div>
         `;
-
         btn.onclick = () => { 
             if(btn.classList.contains('active')) {
                 updateChart('SEMUA', totalL, totalP);
-                document.querySelectorAll('.class-card-detailed').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.class-card-mini').forEach(c => c.classList.remove('active'));
             } else {
-                updateChart(cls, enrolData.L, enrolData.P);
-                document.querySelectorAll('.class-card-detailed').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
+                updateChart(cls, classMap[cls].L, classMap[cls].P);
+                setActiveCard(btn);
             }
         };
         grid.appendChild(btn);
@@ -1735,13 +1648,13 @@ function parseCSV(text) {
     
     // === AUTO-SWITCH YEAR IF DATA EMPTY ===
     if(filtered.length === 0 && yr == new Date().getFullYear()) {
-          const prevYr = yr - 1;
-          const hasDataPrev = DATA_ATT_CLEAN.some(r => r.rawDate.getFullYear()===prevYr);
-          if(hasDataPrev) {
-              document.getElementById('trendYear').value = prevYr;
-              renderTrend(); 
-              return;
-          }
+         const prevYr = yr - 1;
+         const hasDataPrev = DATA_ATT_CLEAN.some(r => r.rawDate.getFullYear()===prevYr);
+         if(hasDataPrev) {
+             document.getElementById('trendYear').value = prevYr;
+             renderTrend(); 
+             return;
+         }
     }
     
     const daysInMonth = new Date(yr, mo+1, 0).getDate();
@@ -1806,3 +1719,5 @@ function parseCSV(text) {
 </script>
 </body>
 </html>
+
+
