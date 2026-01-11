@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.33 - Print Header Fix) === */
+    /* === CSS UTAMA (V28.34 - Print Clean Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -179,7 +179,7 @@
     .cc-name { font-weight: 700; font-size: 15px; color: var(--text-main); margin-bottom: 2px; text-transform: uppercase; }
     .cc-count { font-size: 11px; color: var(--text-muted); font-weight: 500; }
 
-    /* === UPDATE CSS PAGE BANNER & BUTANG (DIPERBAIKI) === */
+    /* === PAGE BANNER & BUTANG ACTION === */
     .page-banner { 
         background: linear-gradient(135deg, var(--primary), #144d33); 
         color: white; 
@@ -195,14 +195,8 @@
 
     .banner-text h2 { margin: 0; font-size: 22px; font-weight: 700; }
 
-    /* TAMBAHAN: Class untuk container butang supaya ada GAP */
-    .banner-actions {
-        display: flex;
-        gap: 10px; /* Jarak antara butang */
-        flex-wrap: wrap;
-    }
+    .banner-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-    /* UPDATE: Class butang supaya sama besar */
     .btn-action { 
         background: rgba(255,255,255,0.2); 
         color: white; 
@@ -215,10 +209,8 @@
         align-items: center; 
         gap: 8px; 
         transition: background 0.2s;
-        
-        /* SETTING BARU UTK SAMA SAIZ */
-        min-width: 120px; /* Tetapkan lebar minimum */
-        justify-content: center; /* Teks tengah */
+        min-width: 120px; 
+        justify-content: center; 
         text-align: center;
     }
 
@@ -261,13 +253,16 @@
     .copy-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 4px; transition: 0.2s; display: flex; }
     .copy-btn:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
 
-    /* === PRINT CONFIG (DIKEMASKINI UNTUK HEADER RASMI) === */
+    /* === PRINT CONFIG (DIKEMASKINI: HIDDEN SEARCH & HEADER RASMI) === */
     @media print {
       @page { size: A4; margin: 1cm; }
       body { background: white; color: black; font-family: "Times New Roman", Times, serif; } /* Guna Font Serif */
       
-      /* Sembunyikan elemen UI */
-      .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, .search-bar-container, #login-screen, #loading-overlay, .att-class-grid, .btn-action, .banner-actions { display: none !important; }
+      /* Sembunyikan elemen UI + FILTER/SEARCH */
+      .sidebar, .top-bar, .page-banner, .dashboard-grid, .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, #login-screen, #loading-overlay, .att-class-grid, .btn-action, .banner-actions { display: none !important; }
+      
+      /* --- [PENTING] HILANGKAN FILTER & SEARCH BAR --- */
+      .search-bar-container, .filter-row, .filter-panel, input, select { display: none !important; }
       
       /* Sembunyikan input search & butang di ID Check semasa print */
       #page-emailcheck input, #page-emailcheck button { display: none !important; }
