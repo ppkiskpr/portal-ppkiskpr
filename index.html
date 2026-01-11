@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.32 - Butang Seragam Fix) === */
+    /* === CSS UTAMA (V28.33 - Print Header Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -111,23 +111,23 @@
         background: var(--card-color, #ccc);
     }
 
-/* Ikon Latar Belakang (Watermark) */
-.card-bg-icon {
-    position: absolute;
-    bottom: -10px;
-    right: -10px;
-    font-size: 80px;
-    opacity: 0.08;
-    color: var(--card-color, #000); /* Mode Cerah: Ikut warna tahap */
-    pointer-events: none;
-    transform: rotate(-15deg);
-}
+    /* Ikon Latar Belakang (Watermark) */
+    .card-bg-icon {
+        position: absolute;
+        bottom: -10px;
+        right: -10px;
+        font-size: 80px;
+        opacity: 0.08;
+        color: var(--card-color, #000); /* Mode Cerah: Ikut warna tahap */
+        pointer-events: none;
+        transform: rotate(-15deg);
+    }
 
-/* FIX UNTUK DARK MODE: Paksa ikon jadi Putih */
-html[data-mode="dark"] .card-bg-icon {
-    color: #ffffff; 
-    opacity: 0.05; /* Lebih pudar sikit sbb putih atas hitam nampak terang */
-}
+    /* FIX UNTUK DARK MODE: Paksa ikon jadi Putih */
+    html[data-mode="dark"] .card-bg-icon {
+        color: #ffffff; 
+        opacity: 0.05; /* Lebih pudar sikit sbb putih atas hitam nampak terang */
+    }
 
     /* Typography */
     .apc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; position: relative; z-index: 2; }
@@ -261,24 +261,45 @@ html[data-mode="dark"] .card-bg-icon {
     .copy-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 4px; transition: 0.2s; display: flex; }
     .copy-btn:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
 
-    /* PRINT */
+    /* === PRINT CONFIG (DIKEMASKINI UNTUK HEADER RASMI) === */
     @media print {
       @page { size: A4; margin: 1cm; }
-      body { background: white; color: black; font-family: serif; }
-      .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, .search-bar-container, #login-screen, #loading-overlay, .att-class-grid { display: none !important; }
+      body { background: white; color: black; font-family: "Times New Roman", Times, serif; } /* Guna Font Serif */
+      
+      /* Sembunyikan elemen UI */
+      .sidebar, .top-bar, .page-banner, .dashboard-grid, .filter-row, .filter-panel, .btn, .icon-btn, .backdrop, .modal-overlay, #attCount, .search-bar-container, #login-screen, #loading-overlay, .att-class-grid, .btn-action, .banner-actions { display: none !important; }
+      
+      /* Sembunyikan input search & butang di ID Check semasa print */
+      #page-emailcheck input, #page-emailcheck button { display: none !important; }
+      
+      /* Paparkan content penuh */
       .app-container, .main-content, .content-area { height: auto; width: 100%; margin: 0; padding: 0; overflow: visible; display: block; }
       .card { border: none; box-shadow: none; padding: 0; margin: 0; background: transparent; }
       .table-wrap { overflow: visible; border: none; }
-      table { width: 100%; border: 1px solid black; font-size: 11pt; border-collapse: collapse; }
-      th, td { border: 1px solid black; padding: 8px; color: black; font-family: serif; }
-      th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; font-weight: bold; text-align: center; }
+      
+      /* Format Table untuk Laporan */
+      table { width: 100%; border: 1px solid black; font-size: 11pt; border-collapse: collapse; margin-top: 10px; }
+      th, td { border: 1px solid black; padding: 8px; color: black; font-family: "Times New Roman", Times, serif; }
+      th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; font-weight: bold; text-align: center; text-transform: uppercase; }
       td { text-align: left; }
+      
+      /* Bersihkan Badge Warna */
       .badge { border: none; padding: 0; font-weight: normal; background: none !important; color: black !important; }
-      .print-header { display: block !important; text-align: center; margin-bottom: 20px; }
-      .print-header h2 { font-size: 16pt; margin: 0; font-weight: bold; text-transform: uppercase; }
-      .print-header p { font-size: 12pt; margin: 5px 0 0; }
+      
+      /* --- HEADER RASMI (PAPAR BILA PRINT SAHAJA) --- */
+      .print-header { display: block !important; text-align: center; margin-bottom: 30px; }
+      .print-header h2 { font-size: 14pt; margin: 0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+      .print-header p { font-size: 12pt; margin: 5px 0 0; font-weight: bold; text-transform: uppercase; }
+      
+      /* ID Check Result Box Print Style */
+      .id-result-box { border: 1px solid black !important; padding: 20px !important; margin-top: 20px; display: block !important; }
+      .id-result-item { border-bottom: 1px solid #ccc; }
+      .copy-btn { display: none !important; } /* Hilangkan butang copy */
     }
+    
+    /* Header disembunyikan di skrin biasa */
     .print-header { display: none; }
+    
     @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .page-banner { flex-direction: column; align-items: flex-start; } .enrol-grid { flex-direction: column; } }
   </style>
@@ -400,6 +421,12 @@ html[data-mode="dark"] .card-bg-icon {
                   <div style="flex:1"><label class="filter-label">Filter Pintar</label><select class="form-select" id="fStuSmart"><option value="">Semua Data</option></select></div>
                   <div style="display:flex; align-items:flex-end;"><button class="btn btn-outline" onclick="resetStudentList()">Reset</button></div>
               </div>
+              
+              <div class="print-header">
+                  <h2>SENARAI NAMA MURID PPKI</h2>
+                  <p>SK PAYA RESAK</p>
+              </div>
+
               <div class="table-wrap">
                   <table id="stuTable">
                       <thead>
@@ -425,6 +452,12 @@ html[data-mode="dark"] .card-bg-icon {
             </div>
         </div>
         <div class="card" style="max-width:600px; margin:0 auto;">
+            
+            <div class="print-header">
+                <h2>SEMAKAN ID DELIMA MURID</h2>
+                <p>SK PAYA RESAK</p>
+            </div>
+
             <div style="text-align:center; margin-bottom:20px;">
                 <span class="material-icons-round" style="font-size:48px; color:var(--primary);">fingerprint</span>
                 <p style="color:var(--text-muted); font-size:13px; margin-top:5px;">Sila masukkan No. Kad Pengenalan murid untuk semakan.</p>
@@ -444,8 +477,7 @@ html[data-mode="dark"] .card-bg-icon {
       </div>
 
       <div id="page-attendance" class="page-section" style="display:none;">
-        <div class="page-banner">
-            <div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div>
+        <div class="page-banner"><div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div>
             <div class="banner-actions">
                 <button class="btn-action" onclick="forceReload('att')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
                 <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
@@ -477,7 +509,12 @@ html[data-mode="dark"] .card-bg-icon {
             </div>
             <div style="text-align:right"><button class="btn btn-outline" onclick="resetFilterAtt()">Reset</button> <button class="btn btn-primary" onclick="applyFilterAtt()">Terapkan</button></div>
           </div>
-          <div class="print-header"><h2>LAPORAN KEHADIRAN MURID PPKI</h2><p>SK PAYA RESAK</p></div>
+          
+          <div class="print-header">
+              <h2>LAPORAN KEHADIRAN MURID PPKI</h2>
+              <p>SK PAYA RESAK</p>
+          </div>
+
           <div class="table-wrap"><table><thead><tr><th>Tarikh</th><th>Nama Murid</th><th>Kelas</th><th>Jantina</th><th>Status</th></tr></thead><tbody id="attBody"></tbody></table></div>
           <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="attCount"></div>
         </div>
@@ -502,6 +539,12 @@ html[data-mode="dark"] .card-bg-icon {
                     <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fAsnafClass"><option value="">Semua</option></select></div>
                     <div><button class="btn btn-outline" onclick="resetAsnafFilters()">Reset</button></div>
               </div>
+              
+              <div class="print-header">
+                  <h2>REKOD MURID ASNAF PPKI</h2>
+                  <p>SK PAYA RESAK</p>
+              </div>
+
               <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>NO. MYKID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="asnafBody"></tbody></table></div>
               <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="asnafCount"></div>
           </div>
@@ -526,14 +569,19 @@ html[data-mode="dark"] .card-bg-icon {
                     <div style="flex:1"><label class="filter-label">Kelas</label><select class="form-select" id="fYatimClass"><option value="">Semua</option></select></div>
                     <div><button class="btn btn-outline" onclick="resetYatimFilters()">Reset</button></div>
               </div>
+              
+              <div class="print-header">
+                  <h2>REKOD MURID YATIM PPKI</h2>
+                  <p>SK PAYA RESAK</p>
+              </div>
+
               <div class="table-wrap"><table><thead><tr><th>NAMA MURID</th><th>NO. MYKID</th><th>KELAS</th><th>PENDAPATAN</th></tr></thead><tbody id="yatimBody"></tbody></table></div>
               <div style="margin-top:10px; font-size:12px; color:var(--text-muted);" id="yatimCount"></div>
           </div>
       </div>
 
       <div id="page-pajsk" class="page-section" style="display:none;">
-        <div class="page-banner">
-            <div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div>
+        <div class="page-banner"><div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div>
             <div class="banner-actions">
                 <button class="btn-action" onclick="forceReload('pajsk')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
                 <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
@@ -556,7 +604,12 @@ html[data-mode="dark"] .card-bg-icon {
             </div>
             <div style="text-align:right"><button class="btn btn-outline" onclick="resetPajskFilters()">Reset</button> <button class="btn btn-primary" onclick="renderPajskTable()">Terapkan</button></div>
           </div>
-          <div class="print-header"><h2>LAPORAN PAJSK PPKI</h2><p>SK PAYA RESAK</p></div>
+          
+          <div class="print-header">
+              <h2>REKOD PENCAPAIAN PAJSK</h2>
+              <p>SK PAYA RESAK</p>
+          </div>
+
           <div class="table-wrap"><table><thead><tr><th>Tahun</th><th>Tarikh</th><th>Unit</th><th>Kelas</th><th>Nama Murid</th><th>Acara</th><th>Penglibatan</th><th>Pencapaian</th></tr></thead><tbody id="pajskBody"></tbody></table></div>
         </div>
       </div>
