@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.31 - Dark Mode Fix) === */
+    /* === CSS UTAMA (V28.32 - Butang Seragam Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -386,7 +386,10 @@ html[data-mode="dark"] .card-bg-icon {
       <div id="page-student_list" class="page-section" style="display:none;">
           <div class="page-banner">
               <div class="banner-text"><h2>Senarai Nama Murid</h2><p>Rekod Penuh Enrolmen</p></div>
-              <div class="banner-actions"><button class="btn-action" onclick="forceReload('stulist')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+              <div class="banner-actions">
+                  <button class="btn-action" onclick="forceReload('stulist')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+                  <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+              </div>
           </div>
           <div class="card">
               <div style="margin-bottom:15px; display:flex; gap:10px;">
@@ -416,7 +419,10 @@ html[data-mode="dark"] .card-bg-icon {
       <div id="page-emailcheck" class="page-section" style="display:none;">
         <div class="page-banner">
             <div class="banner-text"><h2>Semakan ID Delima</h2><p>Semak Emel & Kata Laluan Murid</p></div>
-            <div class="banner-actions"><button class="btn-action" onclick="forceReload('db')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+            <div class="banner-actions">
+                <button class="btn-action" onclick="forceReload('db')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+                <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+            </div>
         </div>
         <div class="card" style="max-width:600px; margin:0 auto;">
             <div style="text-align:center; margin-bottom:20px;">
@@ -438,7 +444,13 @@ html[data-mode="dark"] .card-bg-icon {
       </div>
 
       <div id="page-attendance" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('att')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
+        <div class="page-banner">
+            <div class="banner-text"><h2>Analisis Kehadiran</h2><p>Rekod kehadiran & statistik</p></div>
+            <div class="banner-actions">
+                <button class="btn-action" onclick="forceReload('att')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+                <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+            </div>
+        </div>
          
         <div class="dashboard-grid">
           <div class="card"><div class="stat-label">Hadir (Tapis)</div><div class="stat-val" id="attStatHadir">-</div></div>
@@ -474,7 +486,10 @@ html[data-mode="dark"] .card-bg-icon {
       <div id="page-asnaf" class="page-section" style="display:none;">
           <div class="page-banner">
               <div class="banner-text"><h2>Rekod Murid Asnaf</h2><p>Bantuan & Kebajikan</p></div>
-              <div class="banner-actions"><button class="btn-action" onclick="forceReload('asnaf')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+              <div class="banner-actions">
+                  <button class="btn-action" onclick="forceReload('asnaf')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+                  <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+              </div>
           </div>
           <div class="dashboard-grid" style="grid-template-columns: 1fr;"><div class="card"><div class="stat-label">Jumlah Murid Asnaf</div><div class="stat-val" id="statAsnaf">-</div></div></div>
           <div class="card">
@@ -495,7 +510,10 @@ html[data-mode="dark"] .card-bg-icon {
       <div id="page-yatim" class="page-section" style="display:none;">
           <div class="page-banner">
               <div class="banner-text"><h2>Rekod Murid Yatim</h2><p>Bantuan & Kebajikan</p></div>
-              <div class="banner-actions"><button class="btn-action" onclick="forceReload('yatim')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button></div>
+              <div class="banner-actions">
+                  <button class="btn-action" onclick="forceReload('yatim')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+                  <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+              </div>
           </div>
           <div class="dashboard-grid" style="grid-template-columns: 1fr;"><div class="card"><div class="stat-label">Jumlah Murid Yatim</div><div class="stat-val" id="statYatim">-</div></div></div>
           <div class="card">
@@ -514,7 +532,13 @@ html[data-mode="dark"] .card-bg-icon {
       </div>
 
       <div id="page-pajsk" class="page-section" style="display:none;">
-        <div class="page-banner"><div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div><div class="banner-actions"><button class="btn-action" onclick="forceReload('pajsk')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button><button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button></div></div>
+        <div class="page-banner">
+            <div class="banner-text"><h2>Rekod PAJSK</h2><p>Pencapaian Kokurikulum</p></div>
+            <div class="banner-actions">
+                <button class="btn-action" onclick="forceReload('pajsk')"><span class="material-icons-round" style="font-size:16px">refresh</span> Reload</button>
+                <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
+            </div>
+        </div>
         <div class="card">
           <div class="search-bar-container" style="display:flex; gap:10px; margin-bottom:10px;">
             <input class="form-input" id="searchPajsk" placeholder="Cari Nama / Acara..." style="flex:1;">
