@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.30 - Tahap Colors & Full Names) === */
+    /* === CSS UTAMA (V28.31 - Dark Mode Fix) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -86,13 +86,13 @@
 
     /* Reka bentuk Kad */
     .att-pretty-card { 
-        background: #fff; 
+        background: var(--bg-card); /* Guna Variable supaya Dark Mode jadi hitam */
         border-radius: 16px; 
         padding: 16px; 
         position: relative; 
         overflow: hidden; 
         box-shadow: 0 2px 4px rgba(0,0,0,0.04); 
-        border: 1px solid #eaecf0;
+        border: 1px solid var(--border-color); /* Guna Variable border */
         transition: transform 0.2s;
         display: flex;
         flex-direction: column;
@@ -125,15 +125,17 @@
 
     /* Typography */
     .apc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; position: relative; z-index: 2; }
-    .apc-title { font-size: 11px; font-weight: 700; color: #667085; text-transform: uppercase; letter-spacing: 0.5px; }
+    .apc-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
     .apc-badge { 
         font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 12px; 
         background: #f2f4f7; color: #344054;
     }
+    /* Dark mode fix untuk badge */
+    html[data-mode="dark"] .apc-badge { background: #333; }
 
     .apc-stat { position: relative; z-index: 2; }
-    .apc-val { font-size: 24px; font-weight: 800; color: #101828; line-height: 1; }
-    .apc-sub { font-size: 11px; color: #667085; margin-top: 4px; font-weight: 500; display:flex; gap: 8px;}
+    .apc-val { font-size: 24px; font-weight: 800; color: var(--text-main); line-height: 1; } /* Guna var text-main */
+    .apc-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 500; display:flex; gap: 8px;}
 
     /* === MOBILE OPTIMIZATION (GRID 2 KOLUM) === */
     @media (max-width: 1100px) { .att-class-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -1501,7 +1503,7 @@ function parseCSV(text) {
           const isTahap1 = cls.startsWith('1') || cls.startsWith('2') || cls.startsWith('3');
 
           // 2. Warna Mengikut Tahap (Permintaan Cikgu)
-          let colorTheme = isTahap1 ? '#F79009' : '#DFFF00'; // Oren vs Kuning
+          let colorTheme = isTahap1 ? '#F79009' : '#9B1C1C'; // Oren vs Maroon
 
           // 3. Ikon Mengikut Prestasi & Tahap
           let iconName = 'school'; 
@@ -1527,7 +1529,7 @@ function parseCSV(text) {
                   <div class="apc-badge" style="color:${colorTheme}; background:${colorTheme}15;">${pct}%</div>
               </div>
               <div class="apc-stat">
-                  <div class="apc-val">${countHadir} <span style="font-size:12px; color:#98A2B3; font-weight:500">/ ${totalRecords}</span></div>
+                  <div class="apc-val">${countHadir} <span style="font-size:12px; color:var(--text-muted); font-weight:500">/ ${totalRecords}</span></div>
                   <div class="apc-sub">
                       <span style="color:#2E90FA"><span class="material-icons-round" style="font-size:12px; vertical-align:middle">male</span> L:${male}</span>
                       <span style="color:#F63D68"><span class="material-icons-round" style="font-size:12px; vertical-align:middle">female</span> P:${female}</span>
@@ -1539,23 +1541,27 @@ function parseCSV(text) {
 
       // 2. KAD KE-6: PURATA KESELURUHAN (Genapkan Grid)
       let grandPct = grandTotalMurid > 0 ? Math.round((grandTotalHadir / grandTotalMurid) * 100) : 0;
-      let avgColor = '#1F6F4A'; // Hijau Rasmi Sekolah (Primary)
+      
+      // === RUANG UBAH WARNA (BIRU) ===
+      let avgColor = '#2E90FA'; // Warna Utama (Biru)
       
       const avgCard = document.createElement('div');
       avgCard.className = 'att-pretty-card';
       avgCard.style.setProperty('--card-color', avgColor);
-      avgCard.style.background = '#ECFDF3'; // Hijau Sangat Muda
-      avgCard.style.border = '1px solid #6CE9A6';
+      avgCard.style.border = `1px solid ${avgColor}`; // Highlight border sikit
 
+      // Guna background opacity (supaya cantik di Dark Mode juga)
+      // avgCard.style.background = '#eff8ff'; <-- JANGAN GUNA BACKGROUND TETAP (Tak sesuai Dark Mode)
+      
       avgCard.innerHTML = `
           <span class="material-icons-round card-bg-icon">pie_chart</span>
           <div class="apc-header">
-              <div class="apc-title" style="color:#027A48">PURATA PPKI</div>
+              <div class="apc-title" style="color:${avgColor}">PURATA PPKI</div>
               <div class="apc-badge" style="background:#fff; color:${avgColor}; box-shadow:0 1px 2px rgba(0,0,0,0.05)">HARI INI</div>
           </div>
           <div class="apc-stat">
-              <div class="apc-val" style="color:#039855">${grandPct}%</div>
-              <div class="apc-sub" style="color:#027A48">
+              <div class="apc-val" style="color:${avgColor}">${grandPct}%</div>
+              <div class="apc-sub" style="color:${avgColor}; opacity:0.8;">
                   ${grandTotalHadir} daripada ${grandTotalMurid} Murid Hadir
               </div>
           </div>
