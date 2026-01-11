@@ -111,17 +111,23 @@
         background: var(--card-color, #ccc);
     }
 
-    /* Ikon Latar Belakang (Watermark) */
-    .card-bg-icon {
-        position: absolute;
-        bottom: -10px;
-        right: -10px;
-        font-size: 80px;
-        opacity: 0.08;
-        color: var(--card-color, #000);
-        pointer-events: none;
-        transform: rotate(-15deg);
-    }
+/* Ikon Latar Belakang (Watermark) */
+.card-bg-icon {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    font-size: 80px;
+    opacity: 0.08;
+    color: var(--card-color, #000); /* Mode Cerah: Ikut warna tahap */
+    pointer-events: none;
+    transform: rotate(-15deg);
+}
+
+/* FIX UNTUK DARK MODE: Paksa ikon jadi Putih */
+html[data-mode="dark"] .card-bg-icon {
+    color: #ffffff; 
+    opacity: 0.05; /* Lebih pudar sikit sbb putih atas hitam nampak terang */
+}
 
     /* Typography */
     .apc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; position: relative; z-index: 2; }
