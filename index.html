@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
   <style>
-    /* === CSS UTAMA (V28.34 - Print Clean Fix) === */
+    /* === CSS UTAMA (V28.35 - Mobile 2 Columns Layout) === */
     :root { --font-main: 'Poppins', sans-serif; --bg-body: #F2F4F7; --bg-sidebar: #FFFFFF; --bg-card: #FFFFFF; --bg-element: #F9FAFB; --border-color: #EAECF0; --text-main: #101828; --text-muted: #667085; --primary: #1F6F4A; --primary-light: #E8F5E9; --accent: #F79009; --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05); --radius-card: 16px; --sidebar-w-full: 260px; --sidebar-w-mini: 74px; }
     html[data-mode="dark"] { --bg-body: #0F1115; --bg-sidebar: #161B22; --bg-card: #1C2128; --bg-element: #252B36; --border-color: #30363D; --text-main: #F0F6FC; --text-muted: #8B949E; --primary: #2EA043; --primary-light: rgba(46, 160, 67, 0.15); }
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -180,8 +180,11 @@
     /* Responsive Grid */
     @media (max-width: 1100px) { .att-class-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) {
-        .att-class-grid { grid-template-columns: 1fr; } /* Mobile 1 kad sebaris */
-        .apc-val { font-size: 28px; }
+        .att-class-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } /* Mobile 2 kad sebaris */
+        .apc-val { font-size: 24px; } /* Adjust font size for mobile */
+        .att-pretty-card { padding: 15px; min-height: 110px; }
+        .apc-title { font-size: 11px; }
+        .apc-sub { font-size: 11px; gap: 8px; }
     }
     /* ================================================================ */
 
@@ -325,7 +328,11 @@
     .print-header { display: none; }
     
     @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .page-banner { flex-direction: column; align-items: flex-start; } .enrol-grid { flex-direction: column; } }
+    @media (max-width: 768px) { 
+        .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } /* MODIFIED: 2 COLUMNS ON MOBILE */
+        .page-banner { flex-direction: column; align-items: flex-start; } 
+        .enrol-grid { flex-direction: column; } 
+    }
   </style>
 </head>
 <body>
@@ -359,7 +366,7 @@
       <button id="authBtn" onclick="handleAuth()" class="btn btn-primary" style="width:100%; font-size:12px; margin-bottom:15px;">Log Masuk</button>
       <div>© 2026 NK.</div>
       <div>Hak Cipta Terpelihara.</div>
-      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.27</div>
+      <div style="font-size: 10px; color: var(--text-muted); margin-top: 5px;">Ver 28.35</div>
     </div>
   </aside>
 
@@ -784,7 +791,7 @@
   let CONFIG = JSON.parse(localStorage.getItem('portalConfig')) || DEFAULTS;
     
   // === AUTO-FIX & HARD RESET (V28.18) ===
-  const CURRENT_VERSION = '28.27'; 
+  const CURRENT_VERSION = '28.35'; 
   const savedVer = localStorage.getItem('portalVersion');
     
   if(savedVer !== CURRENT_VERSION) {
