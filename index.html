@@ -76,85 +76,114 @@
     /* COMPONENTS */
     .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; }
      
-    /* === REKA BENTUK KAD KEHADIRAN (MODEN & IKON) === */
+    /* ================================================================
+       [EDIT TEMA DI SINI] - CSS KAD KEHADIRAN (REKA BENTUK BARU)
+       ================================================================
+    */
     .att-class-grid { 
         display: grid; 
-        grid-template-columns: repeat(3, 1fr); /* Desktop: 3 lajur */
+        grid-template-columns: repeat(3, 1fr); 
         gap: 15px; 
         margin-bottom: 24px; 
     }
 
-    /* Reka bentuk Kad */
+    /* KAD UTAMA */
     .att-pretty-card { 
-        background: var(--bg-card); /* Guna Variable supaya Dark Mode jadi hitam */
-        border-radius: 16px; 
-        padding: 16px; 
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 20px; 
         position: relative; 
         overflow: hidden; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.04); 
-        border: 1px solid var(--border-color); /* Guna Variable border */
-        transition: transform 0.2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid var(--border-color);
+        border-left: 5px solid var(--card-color, #ccc); /* Garis Tebal Kiri */
+        transition: transform 0.2s, box-shadow 0.2s;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        min-height: 110px;
+        min-height: 130px;
     }
 
-    .att-pretty-card:active { transform: scale(0.98); }
-
-    /* Jalur Warna di Kiri (Indicator) */
-    .att-pretty-card::before {
-        content: '';
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 6px;
-        background: var(--card-color, #ccc);
+    .att-pretty-card:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
-    /* Ikon Latar Belakang (Watermark) */
-    .card-bg-icon {
-        position: absolute;
-        bottom: -10px;
-        right: -10px;
-        font-size: 80px;
-        opacity: 0.08;
-        color: var(--card-color, #000); /* Mode Cerah: Ikut warna tahap */
-        pointer-events: none;
-        transform: rotate(-15deg);
+    /* HEADER KAD (NAMA KELAS & % BADGE) */
+    .apc-header { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: flex-start; 
+        margin-bottom: 10px; 
+    }
+    
+    .apc-title { 
+        font-size: 13px; 
+        font-weight: 700; 
+        color: var(--text-muted); 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px; 
     }
 
-    /* FIX UNTUK DARK MODE: Paksa ikon jadi Putih */
-    html[data-mode="dark"] .card-bg-icon {
-        color: #ffffff; 
-        opacity: 0.05; /* Lebih pudar sikit sbb putih atas hitam nampak terang */
-    }
-
-    /* Typography */
-    .apc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; position: relative; z-index: 2; }
-    .apc-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
     .apc-badge { 
-        font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 12px; 
-        background: #f2f4f7; color: #344054;
+        font-size: 11px; 
+        font-weight: 700; 
+        padding: 2px 8px; 
+        border-radius: 6px; 
+        background: #f2f4f7; 
+        color: #344054;
+        border: 1px solid rgba(0,0,0,0.05);
     }
-    /* Dark mode fix untuk badge */
-    html[data-mode="dark"] .apc-badge { background: #333; }
 
-    .apc-stat { position: relative; z-index: 2; }
-    .apc-val { font-size: 24px; font-weight: 800; color: var(--text-main); line-height: 1; } /* Guna var text-main */
-    .apc-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 500; display:flex; gap: 8px;}
+    /* DATA UTAMA (NOMBOR BESAR) */
+    .apc-stat-row {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: 12px;
+    }
 
-    /* === MOBILE OPTIMIZATION (GRID 2 KOLUM) === */
+    .apc-val { 
+        font-size: 32px; /* Saiz Nombor Besar */
+        font-weight: 800; 
+        color: var(--text-main); 
+        line-height: 1; 
+        margin-right: 6px;
+    }
+    
+    .apc-total-label {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    /* GARIS PEMISAH NIPIS */
+    .apc-divider {
+        height: 1px;
+        background: var(--border-color);
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    /* FOOTER (JANTINA) */
+    .apc-sub { 
+        font-size: 13px; 
+        color: var(--text-muted); 
+        font-weight: 500; 
+        display: flex; 
+        gap: 15px; 
+        align-items: center;
+    }
+
+    /* Dark mode adjustments */
+    html[data-mode="dark"] .apc-badge { background: #333; color: #fff; border-color: #444; }
+    
+    /* Responsive Grid */
     @media (max-width: 1100px) { .att-class-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) {
-        .dashboard-grid { grid-template-columns: 1fr 1fr !important; gap: 10px; }
-        .att-class-grid { 
-            grid-template-columns: 1fr 1fr !important; /* 2 Kad Sebaris */
-            gap: 10px; 
-        }
-        .att-pretty-card { padding: 12px; min-height: 100px; }
-        .apc-val { font-size: 20px; }
-        .card-bg-icon { font-size: 60px; }
+        .att-class-grid { grid-template-columns: 1fr; } /* Mobile 1 kad sebaris */
+        .apc-val { font-size: 28px; }
     }
+    /* ================================================================ */
 
     .card { background: var(--bg-card); padding: 20px; border-radius: var(--radius-card); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
     .stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
@@ -175,7 +204,7 @@
     .class-card-mini { background: var(--bg-element); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
     .class-card-mini:hover, .class-card-mini.active { background: var(--primary-light); border-color: var(--primary); transform: translateY(-2px); }
     .cc-icon-box { width: 36px; height: 36px; background: #D1FADF; border-radius: 8px; display: grid; place-items: center; color: var(--primary); }
-     
+      
     .cc-name { font-weight: 700; font-size: 15px; color: var(--text-main); margin-bottom: 2px; text-transform: uppercase; }
     .cc-count { font-size: 11px; color: var(--text-muted); font-weight: 500; }
 
@@ -478,7 +507,7 @@
                 <button class="btn-action" onclick="window.print()"><span class="material-icons-round" style="font-size:16px">print</span> Cetak</button>
             </div>
         </div>
-         
+          
         <div class="dashboard-grid">
           <div class="card"><div class="stat-label">Jumlah Kehadiran</div><div class="stat-val" id="attStatHadir">-</div></div>
           <div class="card"><div class="stat-label">Jumlah Tidak Hadir</div><div class="stat-val" id="attStatTidak">-</div></div>
@@ -721,7 +750,7 @@
       database: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=630662258&single=true&output=csv",
       // === NEW STUDENT LIST ===
       student_list: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQN1zKkJFojiuyR1EGgdRJiS_ohrrWgxc12rC9dXRfnIR9WGC1Xdh6zdkSVLHzmqn89UHsJsSLaattG/pub?gid=1759925919&single=true&output=csv",
-        
+       
       asnaf: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=877457981&single=true&output=csv", 
       yatim: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQqXBgq99xruYi-J-st-Rz9CF4UcgZZLvqWJM26C2J51oWXdYy2O1z-x7e6U8To8OSBpgQuYXCS-lTv/pub?gid=1167967580&single=true&output=csv",
 
@@ -730,23 +759,23 @@
     },
     menus: [
       {id:'home', label:'Dashboard', icon:'dashboard', hidden:false, role:'public'},
-        
+       
       // GROUP HEM (Hanya Admin)
       {id:'attendance', label:'Kehadiran', icon:'analytics', hidden:false, role:'admin'},
       {id:'student_list', label:'Senarai Nama Murid', icon:'groups', hidden:false, role:'admin'}, 
       {id:'asnaf', label:'Rekod Asnaf', icon:'volunteer_activism', hidden:false, role:'admin'},
       {id:'yatim', label:'Rekod Yatim', icon:'child_care', hidden:false, role:'admin'},
-        
+       
       // GROUP KOKO (Hanya Admin)
       {id:'pajsk', label:'Rekod PAJSK', icon:'emoji_events', hidden:false, role:'admin'},
-        
+       
       // GROUP PENTADBIRAN (Campur Public & Family)
       {id:'announcements', label:'Pengumuman', icon:'campaign', hidden:false, role:'public'}, // UMUM
       // KEMASKINI: NAMA MENU DITUKAR
       {id:'opr', label:'Laporan & Dokumentasi', icon:'description', hidden:false, role:'public'}, // UMUM
       {id:'calendar', label:'Takwim Tahunan', icon:'calendar_month', hidden:false, role:'public'}, // UMUM
       {id:'parents', label:'Info Ibu Bapa', icon:'diversity_3', hidden:false, role:'public'}, // UMUM
-        
+       
       // SENSITIF (Wajib Login)
       {id:'emailcheck', label:'Semakan ID', icon:'password', hidden:false, role:'family'}, 
     ]
@@ -819,7 +848,7 @@
       appContainer.style.display = 'flex';
       init();
     }
-     
+      
     // === UPDATE DASHBOARD CARDS INTERACTIVITY BASED ON ROLE ===
     document.querySelectorAll('.att-card').forEach(el => {
         if(USER_ROLE === 'admin') {
@@ -837,14 +866,14 @@
         if(USER_ROLE === 'admin') enrolBtn.style.display = 'block';
         else enrolBtn.style.display = 'none';
     }
-     
+      
     // === RENDER SIDEBAR ===
     renderSidebar();
 
     // === URL HASH CHECKER (DEEP LINKING LOGIC) ===
     // 1. Check if there's a hash in the URL (e.g., #attendance)
     const initialHash = window.location.hash.substring(1);
-     
+      
     // 2. If hash exists and corresponds to a valid page, try to open it
     if (initialHash && document.getElementById('page-' + initialHash)) {
         window.navTo(initialHash);
@@ -888,7 +917,7 @@
   window.renderSidebar = function() {
     const nav = document.getElementById('sidebarMenu');
     nav.innerHTML = '';
-     
+      
     const NAV_GROUPS = [
         { type: 'single', id: 'home' }, 
         { type: 'group', label: 'PENGURUSAN HEM', id: 'grp_hem', items: ['attendance', 'student_list', 'asnaf', 'yatim', 'emailcheck', 'parents'] },
@@ -998,16 +1027,16 @@
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     const el = document.getElementById(`nav-${id}`);
     if(el) el.classList.add('active');
-     
+      
     document.querySelectorAll('.page-section').forEach(e => e.style.display='none');
     const targetPage = document.getElementById(`page-${id}`);
     if(targetPage) targetPage.style.display='block';
-     
+      
     // 3. Trigger Specific Resets
     if(id === 'asnaf') resetAsnafFilters();
     if(id === 'yatim') resetYatimFilters();
     if(id === 'student_list') resetStudentList();
-     
+      
     // 4. Handle Mobile Sidebar
     if(window.innerWidth <= 768) document.body.classList.remove('mobile-active');
 
@@ -1074,7 +1103,7 @@ function parseCSV(text) {
   rows.push(row);
   while (rows.length && rows[rows.length - 1].every(c => (c || "").trim() === "")) { rows.pop(); }
   if (!rows.length) return [];
-   
+    
   // === SMART HEADER DETECTION (Ignore Title Rows) ===
   let headerIdx = -1;
   for(let i=0; i<Math.min(rows.length, 10); i++) {
@@ -1173,7 +1202,7 @@ function parseCSV(text) {
   // === PROCESS ENROLMENT & CHART (Use Database URL CSV directly) ===
   function processEnrolment() {
     let rawData = DATA.db || [];
-     
+      
     // Fallback if DB empty
     if(rawData.length === 0 && DATA.att && DATA.att.length > 0) {
          const unique = new Map();
@@ -1191,7 +1220,7 @@ function parseCSV(text) {
         "4 AL-FARABI": { L: 0, P: 0, total: 0 },
         "5 AL-FARABI": { L: 0, P: 0, total: 0 }
     };
-     
+      
     let totalL = 0;
     let totalP = 0;
     let totalStudents = 0;
@@ -1226,10 +1255,10 @@ function parseCSV(text) {
 
     const grid = document.getElementById('classGrid');
     grid.innerHTML = '';
-     
+      
     // DEFAULT STATE: ALL
     updateChart('SEMUA', totalL, totalP);
-     
+      
     // Render Class Buttons (ENHANCED CARDS)
     Object.keys(classMap).sort().forEach(cls => {
         const btn = document.createElement('div');
@@ -1586,7 +1615,10 @@ function parseCSV(text) {
     document.getElementById('attCount').innerText = `Papar: ${initialTableData.length} rekod (Hari Ini).`;
   }
 
-  // === FUNGSI KEMASKINI (V2): WARNA IKUT TAHAP, IKON IKUT PRESTASI ===
+/* ================================================================
+   [EDIT TEMA DI SINI] - LOGIK KAD KEHADIRAN & WARNA
+   ================================================================
+*/
   function renderClassDailyStats(allData, todayDateStr) {
       const classes = ['1 AL-FARABI', '2 AL-FARABI', '3 AL-FARABI', '4 AL-FARABI', '5 AL-FARABI'];
       const grid = document.getElementById('attClassGrid');
@@ -1597,94 +1629,84 @@ function parseCSV(text) {
 
       // 1. Loop 5 Kelas Utama
       classes.forEach(cls => {
-          // Filter data kelas & tarikh
+          // Filter data
           const classTodayRecords = allData.filter(r => r.isoDate === todayDateStr && r.kelas === cls);
           
           const totalRecords = classTodayRecords.length;
           const countHadir = classTodayRecords.filter(r => r.status === 'HADIR').length;
           
-          // Simpan untuk kiraan Purata nanti
           grandTotalMurid += totalRecords;
           grandTotalHadir += countHadir;
 
-          // Pecahan Jantina
           const male = classTodayRecords.filter(r => r.status === 'HADIR' && r.gender.toUpperCase().startsWith('L')).length;
           const female = classTodayRecords.filter(r => r.status === 'HADIR' && r.gender.toUpperCase().startsWith('P')).length;
           
-          // Kira Peratus
           let pct = totalRecords > 0 ? Math.round((countHadir / totalRecords) * 100) : 0;
 
-          // --- LOGIK TEMA (WARNA & IKON) ---
-          
-          // 1. Tentukan Tahap (1,2,3 = Tahap 1 | 4,5 = Tahap 2)
+          // --- LOGIK WARNA BORDER (EDIT SINI KALAU NAK TUKAR) ---
+          // Tahap 1 (1,2,3) = Oren (#F79009)
+          // Tahap 2 (4,5) = Maroon (#7f1d1d - Merah Gelap)
           const isTahap1 = cls.startsWith('1') || cls.startsWith('2') || cls.startsWith('3');
+          let colorTheme = isTahap1 ? '#F79009' : '#7f1d1d'; 
 
-          // 2. Warna Mengikut Tahap (Permintaan Cikgu)
-          let colorTheme = isTahap1 ? '#F79009' : '#9B1C1C'; // Oren vs Maroon
-
-          // 3. Ikon Mengikut Prestasi & Tahap
-          let iconName = 'school'; 
-
-          if(pct === 100) {
-              iconName = 'emoji_events'; // 100% = Piala
-          } else if(pct < 80) {
-              iconName = 'priority_high'; // <80% = Tanda Seru
-          } else {
-              // Jika biasa, ikon ikut tahap
-              iconName = isTahap1 ? 'backpack' : 'menu_book'; // Beg vs Buku
-          }
-
-          // HTML Template Kad
+          // HTML Template (Clean Design)
           const card = document.createElement('div');
           card.className = 'att-pretty-card';
-          card.style.setProperty('--card-color', colorTheme); // Set variable warna CSS
+          card.style.setProperty('--card-color', colorTheme); 
           
           card.innerHTML = `
-              <span class="material-icons-round card-bg-icon">${iconName}</span>
               <div class="apc-header">
                   <div class="apc-title">${cls}</div>
-                  <div class="apc-badge" style="color:${colorTheme}; background:${colorTheme}15;">${pct}%</div>
+                  <div class="apc-badge" style="${pct===100 ? 'background:#ECFDF3; color:#027A48; border-color:#D1FADF;' : ''}">${pct}%</div>
               </div>
-              <div class="apc-stat">
-                  <div class="apc-val">${countHadir} <span style="font-size:12px; color:var(--text-muted); font-weight:500">/ ${totalRecords}</span></div>
-                  <div class="apc-sub">
-                      <span style="color:#2E90FA"><span class="material-icons-round" style="font-size:12px; vertical-align:middle">male</span> L:${male}</span>
-                      <span style="color:#F63D68"><span class="material-icons-round" style="font-size:12px; vertical-align:middle">female</span> P:${female}</span>
+
+              <div class="apc-stat-row">
+                  <div class="apc-val">${countHadir}</div>
+                  <div class="apc-total-label">/ ${totalRecords} Hadir</div>
+              </div>
+
+              <div class="apc-divider"></div>
+
+              <div class="apc-sub">
+                  <div style="display:flex; align-items:center; color:#2E90FA">
+                      <span class="material-icons-round" style="font-size:16px; margin-right:4px;">male</span> ${male}
+                  </div>
+                  <div style="display:flex; align-items:center; color:#F63D68">
+                      <span class="material-icons-round" style="font-size:16px; margin-right:4px;">female</span> ${female}
                   </div>
               </div>
           `;
           grid.appendChild(card);
       });
 
-      // 2. KAD KE-6: PURATA KESELURUHAN (Genapkan Grid)
+      // 2. KAD KE-6: PURATA KESELURUHAN (Warna Biru)
       let grandPct = grandTotalMurid > 0 ? Math.round((grandTotalHadir / grandTotalMurid) * 100) : 0;
-      
-      // === RUANG UBAH WARNA (BIRU) ===
-      let avgColor = '#2E90FA'; // Warna Utama (Biru)
-      
+      let avgColor = '#1570EF'; // Biru Diraja
+
       const avgCard = document.createElement('div');
       avgCard.className = 'att-pretty-card';
       avgCard.style.setProperty('--card-color', avgColor);
-      avgCard.style.border = `1px solid ${avgColor}`; // Highlight border sikit
-
-      // Guna background opacity (supaya cantik di Dark Mode juga)
-      // avgCard.style.background = '#eff8ff'; <-- JANGAN GUNA BACKGROUND TETAP (Tak sesuai Dark Mode)
       
       avgCard.innerHTML = `
-          <span class="material-icons-round card-bg-icon">pie_chart</span>
           <div class="apc-header">
               <div class="apc-title" style="color:${avgColor}">PURATA PPKI</div>
-              <div class="apc-badge" style="background:#fff; color:${avgColor}; box-shadow:0 1px 2px rgba(0,0,0,0.05)">HARI INI</div>
+              <div class="apc-badge" style="background:${avgColor}; color:white;">HARI INI</div>
           </div>
-          <div class="apc-stat">
+
+          <div class="apc-stat-row">
               <div class="apc-val" style="color:${avgColor}">${grandPct}%</div>
-              <div class="apc-sub" style="color:${avgColor}; opacity:0.8;">
-                  ${grandTotalHadir} daripada ${grandTotalMurid} Murid Hadir
-              </div>
+              <div class="apc-total-label">Kehadiran</div>
+          </div>
+
+          <div class="apc-divider"></div>
+
+          <div class="apc-sub">
+              <span>Total: ${grandTotalHadir} / ${grandTotalMurid} Murid</span>
           </div>
       `;
       grid.appendChild(avgCard);
   }
+/* ================================================================ */
 
   function renderAttTable(data) {
     const tb = document.getElementById('attBody');
@@ -1709,7 +1731,7 @@ function parseCSV(text) {
     const g = document.getElementById('filterGenderAtt').value;
     const start = document.getElementById('filterDateStart').value;
     const end = document.getElementById('filterDateEnd').value;
-     
+      
     // Filter from MAIN dataset (DATA_ATT_CLEAN) to allow history search
     const filtered = DATA_ATT_CLEAN.filter(r => {
       let dOk = true;
@@ -1718,7 +1740,7 @@ function parseCSV(text) {
              (!c || r.kelas === c) && (!g || r.gender.toUpperCase() === g) &&
              (!s || (s==='HADIR'?r.status==='HADIR':r.status.includes('TIDAK')));
     });
-     
+      
     renderAttTable(filtered);
     updateAttStats(filtered); // Update top stats based on filter
     document.getElementById('attCount').innerText = `Papar: ${Math.min(filtered.length,100)} / ${filtered.length} rekod.`;
@@ -1731,11 +1753,11 @@ function parseCSV(text) {
     document.getElementById('filterGenderAtt').value = '';
     document.getElementById('filterDateStart').value = '';
     document.getElementById('filterDateEnd').value = '';
-     
+      
     // Reset to DEFAULT view (TODAY ONLY)
     const todayStr = new Date().toISOString().split('T')[0];
     const initialTableData = DATA_ATT_CLEAN.filter(r => r.isoDate === todayStr);
-     
+      
     renderAttTable(initialTableData);
     updateAttStats(DATA_ATT_CLEAN); // Reset stats to global
     document.getElementById('attCount').innerText = `Papar: ${initialTableData.length} rekod (Hari Ini).`;
